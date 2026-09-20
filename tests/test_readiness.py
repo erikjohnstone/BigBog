@@ -18,6 +18,7 @@ def test_readiness_is_conservative_and_complete() -> None:
         "niagara-point-bindings",
         "modelica-buildings",
         "modelica-json",
+        "ctrl-flow",
         "open-control-engine",
         "open-control-library",
         "n4-hvac-optimization-blocks",

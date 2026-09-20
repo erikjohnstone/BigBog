@@ -41,6 +41,14 @@
       "patch_sha256": "4aa839080fc23327a4a1da2c62bd3c1d850c536ae702b61b4e0d5746c4362124",
       "scope": "CDL/CXF translation with local null-type and symbolic-array IRI guards"
     },
+    "ctrl-flow": {
+      "repository": "https://github.com/lbl-srg/ctrl-flow-dev",
+      "revision": "9063e347b13b1a55f9b324ab35da01b5006492de",
+      "parser_dependency_revision": "b715c09d3092192779e8eccd80c813f08ea1a8e6",
+      "license": "BSD-3-Clause-style LBNL license with notices",
+      "license_sha256": "1d1367874c6d5f974749edc9fdbd8988a5ab3d73c6900bc03737f8547d95c29f",
+      "scope": "Product-wired Linkage Schema and upstream interpreter: 3 HVAC templates, 2 system families, 2,593 typed/conditional options, configuration evidence API"
+    },
     "modelica-standard-library": {
       "repository": "https://github.com/modelica/ModelicaStandardLibrary",
       "release": "v4.1.0",

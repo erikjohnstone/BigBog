@@ -51,6 +51,7 @@ from bactalk.integrations.boptest_graph import (
 )
 from bactalk.integrations.buildingmotif import BuildingMotifAdapter, BuildingMotifError
 from bactalk.integrations.constrain import ConStrainError, ConStrainVerifier
+from bactalk.integrations.ctrl_flow import CtrlFlowError, CtrlFlowLibrary
 from bactalk.integrations.cxf_importer import CxfImporter, CxfImportError
 from bactalk.integrations.cxf_vectors import CxfVectorError, CxfVectorVerifier
 from bactalk.integrations.g36_library import G36Library
@@ -184,6 +185,13 @@ class AixocatTranslationRequest(BaseModel):
     parameters: dict[str, float] = Field(default_factory=dict, max_length=100)
 
 
+class CtrlFlowConfigurationRequest(BaseModel):
+    selections: dict[str, str | float | int | bool | None] = Field(
+        default_factory=dict,
+        max_length=500,
+    )
+
+
 def _free_loopback_udp_port() -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         sock.bind(("127.0.0.1", 0))
@@ -253,6 +261,7 @@ def create_app(
     aixocat_library = AixocatLibrary()
     haxall = HaxallValidator()
     constrain = ConStrainVerifier()
+    ctrl_flow = CtrlFlowLibrary()
     open_fdd = OpenFddVerifier()
     cxf_importer = CxfImporter()
     cxf_vectors = CxfVectorVerifier()
@@ -456,6 +465,53 @@ def create_app(
             return g36_library.catalog()
         except (FileNotFoundError, RuntimeError) as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    @app.get("/api/library/ctrl-flow/templates")
+    def ctrl_flow_template_catalog() -> dict:
+        try:
+            return ctrl_flow.catalog()
+        except (FileNotFoundError, CtrlFlowError) as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    @app.get("/api/library/ctrl-flow/templates/{template_id:path}/schema")
+    def ctrl_flow_template_schema(template_id: str) -> dict:
+        try:
+            return ctrl_flow.schema(template_id)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except CtrlFlowError as exc:
+            status = 404 if "unknown ctrl-flow template" in str(exc) else 422
+            raise HTTPException(status_code=status, detail=str(exc)) from exc
+
+    @app.post("/api/library/ctrl-flow/templates/{template_id:path}/configure")
+    def configure_ctrl_flow_template(
+        template_id: str,
+        request: CtrlFlowConfigurationRequest,
+    ) -> dict:
+        try:
+            return ctrl_flow.configure(template_id, request.selections)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except CtrlFlowError as exc:
+            status = 404 if "unknown ctrl-flow template" in str(exc) else 422
+            raise HTTPException(status_code=status, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.post("/api/library/ctrl-flow/templates/{template_id:path}/programming-brief")
+    def build_ctrl_flow_programming_brief(
+        template_id: str,
+        request: CtrlFlowConfigurationRequest,
+    ) -> dict:
+        try:
+            return ctrl_flow.programming_brief(template_id, request.selections)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except CtrlFlowError as exc:
+            status = 404 if "unknown ctrl-flow template" in str(exc) else 422
+            raise HTTPException(status_code=status, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     @app.post("/api/library/g36/controllers/{controller_id}/translate")
     def translate_g36_controller(

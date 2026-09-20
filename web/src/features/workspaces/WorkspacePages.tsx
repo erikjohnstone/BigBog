@@ -71,6 +71,7 @@ const libraryDefinitions: LibraryDefinition[] = [
   { key: 'faults', name: 'Open Control Faults', detail: 'Vector-verified FDD and commissioning rules', icon: <ShieldCheck size={20} />, color: 'amber' },
   { key: 'aixocat', name: 'AixOCAT Patterns', detail: 'Allowlisted IEC 61131-3 control patterns', icon: <Braces size={20} />, color: 'purple' },
   { key: 'niagara', name: 'Niagara ProgramObjects', detail: 'Pinned Niagara-native reference templates', icon: <Code2 size={20} />, color: 'slate' },
+  { key: 'ctrlFlow', name: 'HVAC System Configurator', detail: 'Conditional system choices from LBNL ctrl-flow', icon: <Layers3 size={20} />, color: 'blue' },
 ];
 
 export function LibraryWorkspace() {
@@ -174,7 +175,7 @@ function catalogRows(catalog: Catalog): Array<Record<string, unknown>> {
 }
 
 function catalogCount(catalog: Catalog): number {
-  for (const key of ['controller_count', 'source_model_count', 'count', 'pattern_count']) {
+  for (const key of ['controller_count', 'source_model_count', 'count', 'pattern_count', 'template_count']) {
     if (typeof catalog[key] === 'number') return catalog[key];
   }
   return catalogRows(catalog).length;

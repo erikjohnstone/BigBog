@@ -728,12 +728,13 @@ export const api = {
     return getArtifact(`/api/runs/${runId}/environment-manifest`, z.record(z.string(), z.unknown()));
   },
   async libraryCatalogs() {
-    const [g36, plant, faults, aixocat, niagara] = await Promise.all([
+    const [g36, plant, faults, aixocat, niagara, ctrlFlow] = await Promise.all([
       getJson('/api/library/g36/controllers'),
       getJson('/api/library/plant-controls/controllers'),
       getJson('/api/library/open-control/faults'),
       getJson('/api/library/aixocat/patterns'),
       getJson('/api/library/niagara-programs'),
+      getJson('/api/library/ctrl-flow/templates'),
     ]);
     return {
       g36: catalogSchema.parse(g36),
@@ -741,6 +742,7 @@ export const api = {
       faults: catalogSchema.parse(faults),
       aixocat: catalogSchema.parse(aixocat),
       niagara: catalogSchema.parse(niagara),
+      ctrlFlow: catalogSchema.parse(ctrlFlow),
     };
   },
   async approve(runId: string, reviewer: string) {

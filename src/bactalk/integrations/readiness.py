@@ -219,6 +219,34 @@ class IntegrationReadiness:
                 ),
             ),
             _component(
+                "ctrl-flow",
+                "LBNL ctrl-flow",
+                stage="product-wired",
+                installed=(
+                    self.root
+                    / ".vendor/ctrl-flow-dev/client/src/interpreter/interpreter.ts"
+                ).is_file()
+                and (self.root / ".vendor/ctrl-flow-dev/client/node_modules/ts-node").is_dir(),
+                version=revisions.get("ctrl-flow"),
+                license_name="BSD-3-Clause-style LBNL license with notices",
+                role=(
+                    "System-level HVAC design configuration, conditional option semantics, "
+                    "and auditable engineering decisions"
+                ),
+                product_path=(
+                    "Template catalog/schema/configure APIs invoke the pinned upstream Linkage "
+                    "Schema interpreter; the programming-brief API binds approved choices to "
+                    "components, points, scenarios, exact G36 controllers, and release gates"
+                ),
+                evidence_command="make ctrl-flow-contract",
+                blocker=(
+                    "The current upstream snapshot has three templates (multizone VAV AHU, "
+                    "cooling-only VAV, and VAV reheat). The generated brief still requires the "
+                    "contractor sequence/point reconciliation, target completion, and licensed "
+                    "Niagara qualification."
+                ),
+            ),
+            _component(
                 "modelica-plant-controls",
                 "LBNL Modelica Buildings plant controls",
                 stage="product-wired",

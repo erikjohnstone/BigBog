@@ -9,6 +9,7 @@ from .boptest_graph import (
     BoptestTrajectoryOracle,
 )
 from .cdl import CdlTranslator
+from .ctrl_flow import CtrlFlowLibrary
 from .funnel import FunnelResult, FunnelScorer
 from .g36_library import G36Library
 from .niagara_template import NiagaraTemplateAnalyzer
@@ -24,6 +25,7 @@ __all__ = [
     "BoptestTrajectoryOracle",
     "CdlTranslator",
     "G36Library",
+    "CtrlFlowLibrary",
     "FunnelResult",
     "FunnelScorer",
     "NiagaraTemplateAnalyzer",

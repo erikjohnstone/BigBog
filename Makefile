@@ -1,4 +1,4 @@
-.PHONY: install install-suite install-haxall aixocat-contract alfalfa-contract bacnet-lab-contract independent-bacnet-simulator-install independent-bacnet-simulator-contract environment-pack-contract buildingmotif-install buildingmotif-contract constrain-install constrain-contract dflexlibs-contract g36-audit g36-audit-contract plant-controls-audit plant-controls-contract plant-job-contract haxall-contract nhaystack-contract niagara-alarm-contract niagara-binding-contract niagara-graphics-contract niagara-program-codegen-contract niagara-station-contract project-signal-contract integration-use-contract n4-hvac-library-contract open-control-library-contract open-fdd-contract pybog-examples-contract rumoca-install rumoca-contract suite-contract cerebras-smoke test lint demo demo-package record-demo serve clean boptest-contract boptest-smoke boptest-runtime-build boptest-runtime-up boptest-runtime-smoke boptest-graph-runtime boptest-runtime-down volttron-install volttron-contract oce-contract cdl-oce-contract web-install web-build web-test web-lint web-sbom
+.PHONY: install install-suite install-haxall aixocat-contract alfalfa-contract bacnet-lab-contract independent-bacnet-simulator-install independent-bacnet-simulator-contract environment-pack-contract buildingmotif-install buildingmotif-contract constrain-install constrain-contract ctrl-flow-install ctrl-flow-contract dflexlibs-contract g36-audit g36-audit-contract plant-controls-audit plant-controls-contract plant-job-contract haxall-contract nhaystack-contract niagara-alarm-contract niagara-binding-contract niagara-graphics-contract niagara-program-codegen-contract niagara-station-contract project-signal-contract integration-use-contract n4-hvac-library-contract open-control-library-contract open-fdd-contract pybog-examples-contract rumoca-install rumoca-contract suite-contract cerebras-smoke test lint demo demo-package record-demo serve clean boptest-contract boptest-smoke boptest-runtime-build boptest-runtime-up boptest-runtime-smoke boptest-graph-runtime boptest-runtime-down volttron-install volttron-contract oce-contract cdl-oce-contract web-install web-build web-test web-lint web-sbom
 
 web-install:
 	cd web && npm ci
@@ -57,6 +57,14 @@ constrain-install:
 
 constrain-contract:
 	PYTHONPATH=src .constrain-venv/bin/python scripts/verify_constrain.py
+
+ctrl-flow-install:
+	scripts/install_ctrl_flow.sh
+
+ctrl-flow-contract:
+	PYTHONPATH=src .venv/bin/python scripts/verify_ctrl_flow.py
+	PYTHONPATH=src .venv/bin/python scripts/verify_ctrl_flow_planning.py
+	MODELICA_DEPENDENCIES=$(CURDIR)/.vendor/ctrl-flow-dependencies npm --prefix .vendor/ctrl-flow-dev/server test -- --runInBand tests/integration/parser/template.test.ts
 
 dflexlibs-contract:
 	.venv/bin/python scripts/verify_dflexlibs.py

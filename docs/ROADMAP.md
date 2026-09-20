@@ -26,6 +26,7 @@ Exit criterion: reproduce an approved contractor pattern without copying stale s
 - Version-pin LBNL Buildings controls sources.
 - Run modelica-json as an external build service to produce CDL JSON/CXF.
 - Normalize CXF to the BACTalk IR and preserve clause/source provenance.
+- Expand the product-wired ctrl-flow Linkage Schema lane beyond its current multizone AHU and VAV terminal templates. **The three current templates now map into exact LBNL G36 controller IDs, component inventories, conditional point contracts, qualification scenarios, capability candidates, and explicit release blockers; compiling those briefs into complete verified target jobs and adding more upstream templates remain.**
 - Expand the compiler test matrix across Niagara versions and module sets.
 
 Exit criterion: every generated block and test is traceable to an input, shop rule, or versioned sequence requirement.

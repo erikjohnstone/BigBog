@@ -38,6 +38,7 @@ CHECKS = [
     ("open-fdd", ["make", "open-fdd-contract"]),
     ("open-control-engine", ["make", "oce-contract"]),
     ("cdl-oce", ["make", "cdl-oce-contract"]),
+    ("ctrl-flow", ["make", "ctrl-flow-contract"]),
     ("g36-coverage-audit", ["make", "g36-audit-contract"]),
     ("plant-controls", ["make", "plant-controls-contract"]),
     ("plant-contractor-job", ["make", "plant-job-contract"]),

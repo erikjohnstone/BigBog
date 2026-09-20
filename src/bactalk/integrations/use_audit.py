@@ -55,6 +55,15 @@ _BINDINGS: dict[str, dict[str, str]] = {
         ),
         "proof": "make cdl-oce-contract && make plant-controls-contract",
     },
+    "ctrl-flow": {
+        "mode": "product-api-and-upstream-interpreter",
+        "product_path": (
+            "GET /api/library/ctrl-flow/templates plus schema/configure endpoints; pinned "
+            "Linkage Schema -> upstream conditional-option interpreter -> configuration digest "
+            "-> exact controller, point, scenario, capability, and release-gate programming brief"
+        ),
+        "proof": "make ctrl-flow-contract",
+    },
     "modelica-standard-library": {
         "mode": "isolated-build-input",
         "product_path": "Rumoca G36 flattening source root",
