@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -19,6 +21,25 @@ CO2_SELECTION = (
     "Buildings.Templates.ZoneEquipment.Components.Interfaces.PartialControllerVAVBox."
     "have_CO2Sen-ctl.have_CO2Sen"
 )
+
+
+def test_ctrl_flow_adapter_does_not_create_a_capability_import_cycle() -> None:
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            (
+                "from bactalk.projects import ProjectSpec; "
+                "from bactalk.capabilities import CapabilityRegistry; "
+                "assert CapabilityRegistry().packs"
+            ),
+        ],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
 
 
 def test_catalog_exposes_real_upstream_linkage_schema() -> None:

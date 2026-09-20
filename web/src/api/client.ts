@@ -526,6 +526,93 @@ const catalogSchema = z.object({
   license: z.string().optional(),
 }).passthrough();
 
+const ctrlFlowFieldSchema = z.object({
+  selection_path: z.string(),
+  instance_path: z.string(),
+  name: z.string(),
+  selection_type: z.string(),
+  value: z.unknown(),
+  choices: z.array(z.object({ value: z.string(), label: z.string() })).optional(),
+  boolean_choices: z.array(z.boolean()).optional(),
+}).passthrough();
+
+const ctrlFlowConfigurationSchema = z.object({
+  schema: z.string(),
+  configuration_digest: z.string(),
+  accepted_selection_count: z.number(),
+  rejected_selection_count: z.number(),
+  selections: z.record(z.string(), z.unknown()),
+  fields: z.array(ctrlFlowFieldSchema),
+}).passthrough();
+
+const ctrlFlowBriefSchema = z.object({
+  schema: z.literal('bactalk.ctrl-flow-programming-brief/v1'),
+  status: z.string(),
+  configuration_digest: z.string(),
+  design_binding: z.object({
+    equipment_family: z.string(),
+    controller_id: z.string(),
+  }).passthrough(),
+  components: z.array(z.object({
+    id: z.string(),
+    type: z.string(),
+    quantity: z.union([z.string(), z.number()]),
+  }).passthrough()),
+  point_requirements: z.object({
+    required_count: z.number(),
+    conditional_count: z.number(),
+    points: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+      role: z.string(),
+      data_type: z.string(),
+      units: z.string().nullable(),
+      required: z.boolean(),
+      condition: z.string(),
+      subsystem: z.string(),
+    }).passthrough()),
+  }).passthrough(),
+  qualification_plan: z.object({
+    scenario_count: z.number(),
+    required_count: z.number(),
+    scenarios: z.array(z.object({
+      id: z.string(),
+      title: z.string(),
+      level: z.string(),
+      status: z.string(),
+    }).passthrough()),
+    execution_status: z.string(),
+  }).passthrough(),
+  capability_alignment: z.object({
+    candidate_packs: z.array(z.object({
+      id: z.string(),
+      name: z.string(),
+      stage: z.string(),
+      status: z.string(),
+      production_ready: z.boolean(),
+    }).passthrough()),
+    reference_controller_available: z.boolean(),
+    complete_niagara_job_ready: z.boolean(),
+  }).passthrough(),
+  release_blockers: z.array(z.string()),
+}).passthrough();
+
+const ctrlFlowReconciliationSchema = z.object({
+  schema: z.literal('bactalk.ctrl-flow-point-reconciliation/v1'),
+  provided_point_count: z.number(),
+  required_point_count: z.number(),
+  matched_requirement_count: z.number(),
+  missing_required_count: z.number(),
+  missing_required: z.array(z.string()),
+  ambiguous: z.array(z.record(z.string(), z.unknown())),
+  duplicates: z.array(z.record(z.string(), z.unknown())),
+  unmatched_provided: z.array(z.record(z.string(), z.unknown())),
+  unit_conversions: z.array(z.record(z.string(), z.unknown())),
+  blocking_issues: z.array(z.record(z.string(), z.unknown())),
+  ready_for_sequence_reconciliation: z.boolean(),
+  complete_niagara_job_ready: z.boolean(),
+}).passthrough();
+
 const graphicsModelSchema = z.object({
   schema: z.string(),
   equipment_name: z.string(),
@@ -600,6 +687,9 @@ export type BoptestEvidence = z.infer<typeof boptestSchema>;
 export type Deliverables = z.infer<typeof deliverablesSchema>;
 export type ReleaseSummary = z.infer<typeof releaseSummarySchema>;
 export type Catalog = z.infer<typeof catalogSchema>;
+export type CtrlFlowConfiguration = z.infer<typeof ctrlFlowConfigurationSchema>;
+export type CtrlFlowBrief = z.infer<typeof ctrlFlowBriefSchema>;
+export type CtrlFlowReconciliation = z.infer<typeof ctrlFlowReconciliationSchema>;
 export type GraphicsModel = z.infer<typeof graphicsModelSchema>;
 export type GraphicsPlan = z.infer<typeof graphicsPlanSchema>;
 export type ArtifactState<T> =
@@ -744,6 +834,27 @@ export const api = {
       niagara: catalogSchema.parse(niagara),
       ctrlFlow: catalogSchema.parse(ctrlFlow),
     };
+  },
+  async ctrlFlowConfigure(templateId: string, selections: Record<string, unknown>) {
+    return ctrlFlowConfigurationSchema.parse(await postJson(
+      `/api/library/ctrl-flow/templates/${encodeURIComponent(templateId)}/configure`,
+      { selections },
+    ));
+  },
+  async ctrlFlowProgrammingBrief(templateId: string, selections: Record<string, unknown>) {
+    return ctrlFlowBriefSchema.parse(await postJson(
+      `/api/library/ctrl-flow/templates/${encodeURIComponent(templateId)}/programming-brief`,
+      { selections },
+    ));
+  },
+  async inspectCtrlFlowPoints(templateId: string, selections: Record<string, unknown>, file: File) {
+    const body = new FormData();
+    body.append('selections', JSON.stringify(selections));
+    body.append('points_file', file);
+    return ctrlFlowReconciliationSchema.parse(await postForm(
+      `/api/library/ctrl-flow/templates/${encodeURIComponent(templateId)}/inspect-points`,
+      body,
+    ));
   },
   async approve(runId: string, reviewer: string) {
     return runDetailSchema.parse(await postJson(`/api/runs/${runId}/approve`, { reviewer }));

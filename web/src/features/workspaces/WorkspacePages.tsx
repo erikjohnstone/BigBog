@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useMutation, useQueries, useQuery } from '@tanstack/react-query';
 import {
   Blocks,
   BookOpen,
@@ -13,6 +13,7 @@ import {
   Code2,
   Cpu,
   FileArchive,
+  FileSpreadsheet,
   FlaskConical,
   Layers3,
   Library,
@@ -92,12 +93,68 @@ export function LibraryWorkspace() {
         <aside className="library-nav"><div className="pane-heading"><Library size={16} /><strong>Installed sources</strong></div>{libraryDefinitions.map((item) => <button className={selected === item.key ? 'active' : ''} key={item.key} onClick={() => setSelected(item.key)} type="button"><span className={`library-dot ${item.color}`} /> <span><strong>{item.name}</strong><small>{item.detail}</small></span></button>)}</aside>
         <section className="library-results">
           <header><div><span className="eyebrow">{definition.name}</span><h2>{stringValue(catalog.source) || definition.detail}</h2><p>{stringValue(catalog.scope) || definition.detail}</p></div><div className="license-chip"><ShieldCheck size={14} /><span><small>License</small><strong>{stringValue(catalog.license) || 'Source-specific'}</strong></span></div></header>
-          <label className="library-search"><Search size={15} /><span className="sr-only">Search current library</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={`Search ${rows.length.toLocaleString()} records…`} /></label>
-          <div aria-label={`${definition.name} records`} className="library-table" tabIndex={0}><table><thead><tr><th>Name / identifier</th><th>Family</th><th>Product status</th><th>Source</th></tr></thead><tbody>{filtered.slice(0, 500).map((row, index) => <tr key={stringValue(row.id) || stringValue(row.name) || index}><th><strong>{stringValue(row.name) || stringValue(row.id) || `Record ${index + 1}`}</strong><code>{stringValue(row.id) || stringValue(row.relative_path)}</code></th><td>{stringValue(row.family) || stringValue(row.group) || stringValue(row.declaration) || '—'}</td><td><span className={`library-status ${libraryStatus(row)}`}>{libraryStatusLabel(row)}</span></td><td>{stringValue(row.relative_path) || stringValue(row.method) || stringValue(row.file) || 'Pinned source'}</td></tr>)}</tbody></table>{filtered.length > 500 && <div className="table-limit">Showing 500 of {filtered.length.toLocaleString()} matches. Refine the search to inspect more.</div>}{filtered.length === 0 && <div className="table-limit">No records match this search.</div>}</div>
+          {selected === 'ctrlFlow' ? <CtrlFlowConfigurator catalog={catalog} /> : <><label className="library-search"><Search size={15} /><span className="sr-only">Search current library</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={`Search ${rows.length.toLocaleString()} records…`} /></label>
+          <div aria-label={`${definition.name} records`} className="library-table" tabIndex={0}><table><thead><tr><th>Name / identifier</th><th>Family</th><th>Product status</th><th>Source</th></tr></thead><tbody>{filtered.slice(0, 500).map((row, index) => <tr key={stringValue(row.id) || stringValue(row.name) || index}><th><strong>{stringValue(row.name) || stringValue(row.id) || `Record ${index + 1}`}</strong><code>{stringValue(row.id) || stringValue(row.relative_path)}</code></th><td>{stringValue(row.family) || stringValue(row.group) || stringValue(row.declaration) || '—'}</td><td><span className={`library-status ${libraryStatus(row)}`}>{libraryStatusLabel(row)}</span></td><td>{stringValue(row.relative_path) || stringValue(row.method) || stringValue(row.file) || 'Pinned source'}</td></tr>)}</tbody></table>{filtered.length > 500 && <div className="table-limit">Showing 500 of {filtered.length.toLocaleString()} matches. Refine the search to inspect more.</div>}{filtered.length === 0 && <div className="table-limit">No records match this search.</div>}</div></>}
         </section>
       </div>
     </div>
   );
+}
+
+function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
+  const templates = catalogRows(catalog);
+  const [templateId, setTemplateId] = useState(() => stringValue(templates[0]?.id));
+  const [selections, setSelections] = useState<Record<string, unknown>>({});
+  const [pointsFile, setPointsFile] = useState<File | null>(null);
+  const configuration = useQuery({
+    queryKey: ['ctrl-flow-configuration', templateId, selections],
+    queryFn: () => api.ctrlFlowConfigure(templateId, selections),
+    enabled: Boolean(templateId),
+  });
+  const effectiveSelections = configuration.data?.selections ?? selections;
+  const brief = useMutation({ mutationFn: () => api.ctrlFlowProgrammingBrief(templateId, effectiveSelections) });
+  const reconciliation = useMutation({ mutationFn: () => {
+    if (!pointsFile) throw new Error('Choose a points CSV or XLSX file first.');
+    return api.inspectCtrlFlowPoints(templateId, effectiveSelections, pointsFile);
+  } });
+  const chooseTemplate = (value: string) => {
+    setTemplateId(value);
+    setSelections({});
+    setPointsFile(null);
+    brief.reset();
+    reconciliation.reset();
+  };
+  const chooseValue = (path: string, value: unknown) => {
+    setSelections({ ...(configuration.data?.selections ?? selections), [path]: value });
+    brief.reset();
+    reconciliation.reset();
+  };
+  return <div className="ctrl-flow-configurator">
+    <aside className="ctrl-flow-controls">
+      <div className="ctrl-flow-boundary"><Layers3 size={18} /><span><strong>System design, evaluated by LBNL semantics</strong><small>Selections change the point and test contract. Nothing here writes to a building.</small></span></div>
+      <label><span>System template</span><select value={templateId} onChange={(event) => chooseTemplate(event.target.value)}>{templates.map((template) => <option key={stringValue(template.id)} value={stringValue(template.id)}>{stringValue(template.name) || stringValue(template.id)}</option>)}</select></label>
+      <div className="ctrl-flow-fields" aria-label="Applicable system choices">
+        {configuration.isLoading && <div className="ctrl-flow-state">Evaluating applicable choices…</div>}
+        {configuration.isError && <div className="ctrl-flow-state error">{configuration.error.message}</div>}
+        {configuration.data?.fields.map((field) => <label key={field.selection_path}><span>{field.name}<small>{field.instance_path}</small></span>{field.choices ? <select value={String(selections[field.selection_path] ?? field.value)} onChange={(event) => chooseValue(field.selection_path, event.target.value)}>{field.choices.map((choice) => <option key={choice.value} value={choice.value}>{choice.label}</option>)}</select> : <select value={String(selections[field.selection_path] ?? field.value)} onChange={(event) => chooseValue(field.selection_path, event.target.value === 'true')}><option value="true">Yes</option><option value="false">No</option></select>}</label>)}
+      </div>
+      <button className="ctrl-flow-primary" disabled={brief.isPending || configuration.isFetching} onClick={() => brief.mutate()} type="button">{brief.isPending ? 'Building engineering brief…' : 'Generate programming brief'}<ChevronRight size={15} /></button>
+      <div className="ctrl-flow-upload"><FileSpreadsheet size={18} /><label><strong>{pointsFile?.name || 'Contractor points list'}</strong><small>CSV or XLSX · checked against this design</small><input accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={(event) => { setPointsFile(event.target.files?.[0] ?? null); reconciliation.reset(); }} type="file" /></label><button disabled={!pointsFile || reconciliation.isPending} onClick={() => reconciliation.mutate()} type="button">{reconciliation.isPending ? 'Checking…' : 'Check points'}</button></div>
+    </aside>
+    <section className="ctrl-flow-results">
+      {!brief.data && !brief.isError && <div className="ctrl-flow-empty"><Network size={28} /><strong>Configure the physical system</strong><p>Generate a traceable component, point, controller, and qualification contract before any code is proposed.</p></div>}
+      {brief.isError && <div className="ctrl-flow-empty error"><CircleAlert size={28} /><strong>Brief generation stopped</strong><p>{brief.error.message}</p></div>}
+      {brief.data && <>
+        <header><div><span className="eyebrow">PROGRAMMING BRIEF</span><h3>{brief.data.design_binding.equipment_family.replaceAll('.', ' / ')}</h3><code>{brief.data.design_binding.controller_id}</code></div><span className="ctrl-flow-status"><CheckCircle2 size={14} />Engineering brief ready</span></header>
+        <div className="ctrl-flow-metrics"><div><strong>{brief.data.components.length}</strong><span>Selected components</span></div><div><strong>{brief.data.point_requirements.required_count}</strong><span>Required points</span></div><div><strong>{brief.data.qualification_plan.scenario_count}</strong><span>Test scenarios</span></div><div><strong>{brief.data.capability_alignment.candidate_packs.length}</strong><span>Candidate packs</span></div></div>
+        <div className="ctrl-flow-detail-grid"><article aria-label="Selected physical components" tabIndex={0}><h4>Physical components</h4><ul>{brief.data.components.map((component) => <li key={component.id}><span>{component.id.replaceAll('-', ' ')}</span><small>{component.type} · {component.quantity}</small></li>)}</ul></article><article aria-label="Required test coverage" tabIndex={0}><h4>Required test coverage</h4><ul>{brief.data.qualification_plan.scenarios.map((scenario) => <li key={scenario.id}><span>{scenario.title}</span><small>{scenario.status.replaceAll('-', ' ')}</small></li>)}</ul></article></div>
+        <details className="ctrl-flow-points"><summary>{brief.data.point_requirements.required_count} required + {brief.data.point_requirements.conditional_count} conditional points</summary><div>{brief.data.point_requirements.points.map((point) => <span key={point.id}><strong>{point.id}</strong><small>{point.role} · {point.units || point.data_type}</small></span>)}</div></details>
+        <details className="ctrl-flow-blockers" open><summary>Why this is not deployable yet</summary><ol>{brief.data.release_blockers.map((blocker) => <li key={blocker}>{blocker}</li>)}</ol></details>
+      </>}
+      {reconciliation.data && <div className={`ctrl-flow-reconciliation ${reconciliation.data.ready_for_sequence_reconciliation ? 'ready' : 'blocked'}`}><header>{reconciliation.data.ready_for_sequence_reconciliation ? <CheckCircle2 size={18} /> : <CircleAlert size={18} />}<div><strong>{reconciliation.data.ready_for_sequence_reconciliation ? 'Point contract satisfied' : 'Point contract blocked'}</strong><span>{reconciliation.data.matched_requirement_count}/{reconciliation.data.required_point_count} required points matched · {reconciliation.data.blocking_issues.length} blocking issues</span></div></header>{reconciliation.data.missing_required.length > 0 && <p>Missing: {reconciliation.data.missing_required.join(' · ')}</p>}{reconciliation.data.unit_conversions.length > 0 && <p>{reconciliation.data.unit_conversions.length} explicit unit converter(s) required.</p>}</div>}
+      {reconciliation.isError && <div className="ctrl-flow-reconciliation blocked"><header><CircleAlert size={18} /><div><strong>Points inspection stopped</strong><span>{reconciliation.error.message}</span></div></header></div>}
+    </section>
+  </div>;
 }
 
 export function EnvironmentWorkspace() {

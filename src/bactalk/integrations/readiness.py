@@ -236,7 +236,9 @@ class IntegrationReadiness:
                 product_path=(
                     "Template catalog/schema/configure APIs invoke the pinned upstream Linkage "
                     "Schema interpreter; the programming-brief API binds approved choices to "
-                    "components, points, scenarios, exact G36 controllers, and release gates"
+                    "components, points, scenarios, exact G36 controllers, and release gates; "
+                    "point reconciliation blocks missing, ambiguous, duplicate, mistyped, or "
+                    "unit-invalid contractor I/O"
                 ),
                 evidence_command="make ctrl-flow-contract",
                 blocker=(

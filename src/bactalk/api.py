@@ -32,6 +32,7 @@ from bactalk.domain import (
     ControlGraph,
     DeliverableRequirements,
     JobSpec,
+    PointSpec,
     RunOrigin,
     SequenceSpec,
 )
@@ -190,6 +191,10 @@ class CtrlFlowConfigurationRequest(BaseModel):
         default_factory=dict,
         max_length=500,
     )
+
+
+class CtrlFlowPointReconciliationRequest(CtrlFlowConfigurationRequest):
+    points: list[PointSpec] = Field(min_length=1, max_length=2_000)
 
 
 def _free_loopback_udp_port() -> int:
@@ -511,6 +516,46 @@ def create_app(
             status = 404 if "unknown ctrl-flow template" in str(exc) else 422
             raise HTTPException(status_code=status, detail=str(exc)) from exc
         except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.post("/api/library/ctrl-flow/templates/{template_id:path}/reconcile-points")
+    def reconcile_ctrl_flow_points(
+        template_id: str,
+        request: CtrlFlowPointReconciliationRequest,
+    ) -> dict:
+        try:
+            return ctrl_flow.reconcile_points(
+                template_id,
+                request.selections,
+                request.points,
+            )
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except CtrlFlowError as exc:
+            status = 404 if "unknown ctrl-flow template" in str(exc) else 422
+            raise HTTPException(status_code=status, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.post("/api/library/ctrl-flow/templates/{template_id:path}/inspect-points")
+    async def inspect_ctrl_flow_points_file(
+        template_id: str,
+        points_file: Annotated[UploadFile, File()],
+        selections: Annotated[str, Form(max_length=50_000)] = "{}",
+    ) -> dict:
+        try:
+            parsed_selections = _form_json_object(selections, "ctrl-flow selections")
+            points = parse_points_file(
+                await points_file.read(),
+                points_file.filename or "points.csv",
+            )
+            return ctrl_flow.reconcile_points(template_id, parsed_selections, points)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except CtrlFlowError as exc:
+            status = 404 if "unknown ctrl-flow template" in str(exc) else 422
+            raise HTTPException(status_code=status, detail=str(exc)) from exc
+        except (IntakeError, ValueError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     @app.post("/api/library/g36/controllers/{controller_id}/translate")

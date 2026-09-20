@@ -194,6 +194,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/library/ctrl-flow/templates/{template_id}/inspect-points": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Inspect Ctrl Flow Points File */
+        post: operations["inspect_ctrl_flow_points_file_api_library_ctrl_flow_templates__template_id__inspect_points_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/library/ctrl-flow/templates/{template_id}/programming-brief": {
         parameters: {
             query?: never;
@@ -205,6 +222,23 @@ export interface paths {
         put?: never;
         /** Build Ctrl Flow Programming Brief */
         post: operations["build_ctrl_flow_programming_brief_api_library_ctrl_flow_templates__template_id__programming_brief_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/library/ctrl-flow/templates/{template_id}/reconcile-points": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reconcile Ctrl Flow Points */
+        post: operations["reconcile_ctrl_flow_points_api_library_ctrl_flow_templates__template_id__reconcile_points_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1567,6 +1601,16 @@ export interface components {
              */
             sequence_family: string;
         };
+        /** Body_inspect_ctrl_flow_points_file_api_library_ctrl_flow_templates__template_id__inspect_points_post */
+        Body_inspect_ctrl_flow_points_file_api_library_ctrl_flow_templates__template_id__inspect_points_post: {
+            /** Points File */
+            points_file: string;
+            /**
+             * Selections
+             * @default {}
+             */
+            selections: string;
+        };
         /** BoptestActuatorBinding */
         BoptestActuatorBinding: {
             /** Activation Actuator */
@@ -1727,6 +1771,15 @@ export interface components {
         };
         /** CtrlFlowConfigurationRequest */
         CtrlFlowConfigurationRequest: {
+            /** Selections */
+            selections?: {
+                [key: string]: string | number | boolean | null;
+            };
+        };
+        /** CtrlFlowPointReconciliationRequest */
+        CtrlFlowPointReconciliationRequest: {
+            /** Points */
+            points: components["schemas"]["PointSpec"][];
             /** Selections */
             selections?: {
                 [key: string]: string | number | boolean | null;
@@ -2584,6 +2637,43 @@ export interface operations {
             };
         };
     };
+    inspect_ctrl_flow_points_file_api_library_ctrl_flow_templates__template_id__inspect_points_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                template_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_inspect_ctrl_flow_points_file_api_library_ctrl_flow_templates__template_id__inspect_points_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     build_ctrl_flow_programming_brief_api_library_ctrl_flow_templates__template_id__programming_brief_post: {
         parameters: {
             query?: never;
@@ -2596,6 +2686,43 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["CtrlFlowConfigurationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reconcile_ctrl_flow_points_api_library_ctrl_flow_templates__template_id__reconcile_points_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                template_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CtrlFlowPointReconciliationRequest"];
             };
         };
         responses: {

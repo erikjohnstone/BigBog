@@ -6,8 +6,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from bactalk.domain import PointSpec
 from bactalk.integrations.ctrl_flow import CtrlFlowLibrary
 from bactalk.integrations.ctrl_flow_planning import AHU_TEMPLATE
+from bactalk.integrations.ctrl_flow_reconciliation import CtrlFlowPointReconciler
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE_PATH = ROOT / ".bactalk/ctrl-flow-planning-evidence.json"
@@ -36,6 +38,7 @@ def _validate_brief(brief: dict[str, Any]) -> None:
 
 def main() -> int:
     library = CtrlFlowLibrary(ROOT)
+    reconciler = CtrlFlowPointReconciler()
     per_template: dict[str, dict[str, Any]] = defaultdict(
         lambda: {
             "variant_count": 0,
@@ -46,6 +49,8 @@ def main() -> int:
         }
     )
     total_variants = 0
+    point_contracts_proved = 0
+    total_required_point_obligations = 0
     for template in library.catalog()["templates"]:
         template_id = template["id"]
         for field in library.schema(template_id)["fields"]:
@@ -58,6 +63,24 @@ def main() -> int:
                     {field["selection_path"]: value},
                 )
                 _validate_brief(brief)
+                contractor_points = [
+                    PointSpec(
+                        name=requirement["id"],
+                        label=requirement["label"],
+                        data_type=requirement["data_type"],
+                        role=requirement["role"],
+                        units=requirement["units"],
+                        default=(False if requirement["data_type"] == "boolean" else 0.0),
+                    )
+                    for requirement in brief["point_requirements"]["points"]
+                    if requirement["required"]
+                ]
+                reconciliation = reconciler.reconcile(brief, contractor_points)
+                if not reconciliation["ready_for_sequence_reconciliation"]:
+                    raise RuntimeError(
+                        "an exact generated point contract failed reconciliation: "
+                        f"{reconciliation['blocking_issues']}"
+                    )
                 required_points = brief["point_requirements"]["required_count"]
                 scenarios = brief["qualification_plan"]["scenario_count"]
                 stats = per_template[template_id]
@@ -77,6 +100,8 @@ def main() -> int:
                 )
                 stats["maximum_scenarios"] = max(stats["maximum_scenarios"], scenarios)
                 total_variants += 1
+                point_contracts_proved += 1
+                total_required_point_obligations += required_points
 
     # The fan-position selectors form a reciprocal upstream dependency. Prove
     # that both request key orders produce the same valid blow-through design.
@@ -104,6 +129,8 @@ def main() -> int:
         "passed": True,
         "template_count": len(per_template),
         "first_order_variant_count": total_variants,
+        "point_contracts_proved": point_contracts_proved,
+        "required_point_obligations_proved": total_required_point_obligations,
         "reciprocal_fan_dependency_orders_proved": 2,
         "templates": dict(sorted(per_template.items())),
         "complete_niagara_job_ready": False,

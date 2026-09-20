@@ -7,7 +7,9 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from bactalk.domain import PointSpec
 from bactalk.integrations.ctrl_flow_planning import CtrlFlowProgrammingPlanner
+from bactalk.integrations.ctrl_flow_reconciliation import CtrlFlowPointReconciler
 
 
 class CtrlFlowError(RuntimeError):
@@ -135,6 +137,17 @@ class CtrlFlowLibrary:
 
         configuration = self.configure(template_id, selections)
         return CtrlFlowProgrammingPlanner().build(configuration)
+
+    def reconcile_points(
+        self,
+        template_id: str,
+        selections: dict[str, Any],
+        points: list[PointSpec],
+    ) -> dict[str, Any]:
+        """Compare contractor points against the exact selected-system brief."""
+
+        brief = self.programming_brief(template_id, selections)
+        return CtrlFlowPointReconciler().reconcile(brief, points)
 
     def _decorate_configuration(
         self,
