@@ -2357,12 +2357,61 @@ export interface components {
             /** Weekly Periods */
             weekly_periods?: components["schemas"]["WeeklySchedulePeriod"][];
         };
+        /**
+         * SequenceFacetOracleAuthoring
+         * @description Engineer-authored trajectory for a non-numeric scenario facet.
+         */
+        SequenceFacetOracleAuthoring: {
+            /** Baseline Expectations */
+            baseline_expectations: components["schemas"]["SequenceOracleExpectation"][];
+            /** Baseline Inputs */
+            baseline_inputs: {
+                [key: string]: number | boolean;
+            };
+            /**
+             * Baseline Repeat
+             * @default 1
+             */
+            baseline_repeat: number;
+            /** Facet Id */
+            facet_id: string;
+            /** Name */
+            name: string;
+            /** Recovery Expectations */
+            recovery_expectations: components["schemas"]["SequenceOracleExpectation"][];
+            /** Recovery Inputs */
+            recovery_inputs: {
+                [key: string]: number | boolean;
+            };
+            /**
+             * Recovery Repeat
+             * @default 1
+             */
+            recovery_repeat: number;
+            /** Scenario Id */
+            scenario_id: string;
+            /** Step Seconds */
+            step_seconds: number;
+            /** Trigger Expectations */
+            trigger_expectations: components["schemas"]["SequenceOracleExpectation"][];
+            /** Trigger Inputs */
+            trigger_inputs: {
+                [key: string]: number | boolean;
+            };
+            /**
+             * Trigger Repeat
+             * @default 1
+             */
+            trigger_repeat: number;
+        };
         /** SequenceOracleApprovalRequest */
         SequenceOracleApprovalRequest: {
             /** Author */
             author?: string | null;
             /** Cases */
             cases: components["schemas"]["SequenceOracleCaseAuthoring"][];
+            /** Facet Cases */
+            facet_cases?: components["schemas"]["SequenceFacetOracleAuthoring"][];
             /** Review Artifact Digest */
             review_artifact_digest: string;
         };

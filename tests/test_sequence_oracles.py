@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from copy import deepcopy
 from pathlib import Path
 
 import pytest
@@ -407,3 +408,134 @@ def test_authenticated_oracle_gate_requires_a_different_principal(tmp_path: Path
     assert independent.status_code == 200, independent.text
     assert independent.json()["approval"]["actor_id"] == "oracle@example.com"
     assert independent.json()["approval"]["author"] == "Oracle Author"
+
+
+def test_source_bound_boolean_facet_oracle_adds_an_executable_recovery_case(
+    tmp_path: Path,
+) -> None:
+    record = _retained_review(tmp_path)
+    retained = deepcopy(record.model_dump(mode="json"))
+    retained["artifact_digest"] = "a" * 64
+    retained["result"]["manual_facet_oracle_requirements"] = [
+        {
+            "scenario_id": "fire-smoke",
+            "scenario_title": "Fire and smoke shutdown",
+            "facet_id": "shutdown-actions",
+            "facet_label": "fan and outdoor-air shutdown actions",
+            "phrase_mentioned": True,
+            "source_evidence": [
+                {
+                    "start": 0,
+                    "end": 60,
+                    "excerpt": "On smoke alarm, the supply fan is commanded off.",
+                }
+            ],
+            "authoring_allowed": True,
+            "blocking_reason": "Author an independent trajectory.",
+        }
+    ]
+    payload = _oracle_payload(record)
+    payload["review_artifact_digest"] = "a" * 64
+    payload["facet_cases"] = [
+        {
+            "scenario_id": "fire-smoke",
+            "facet_id": "shutdown-actions",
+            "name": "Smoke shutdown and recovery",
+            "baseline_inputs": {"FireSmokeShutdown": False},
+            "trigger_inputs": {"FireSmokeShutdown": True},
+            "recovery_inputs": {"FireSmokeShutdown": False},
+            "step_seconds": 1.0,
+            "baseline_expectations": [
+                {"target": "SupplyFanCommand", "operator": "eq", "value": True}
+            ],
+            "trigger_expectations": [
+                {"target": "SupplyFanCommand", "operator": "eq", "value": False}
+            ],
+            "recovery_expectations": [
+                {"target": "SupplyFanCommand", "operator": "eq", "value": True}
+            ],
+        }
+    ]
+    result = compile_sequence_oracle_approval(
+        record.id,
+        retained,
+        SequenceOracleApprovalRequest.model_validate(payload),
+        author="Independent Test Engineer",
+        actor_id=None,
+        tenant_id=None,
+        authentication="self-asserted-local",
+    )
+
+    assert result["case_count"] == 3
+    assert result["ready_for_graph_generation"] is True
+    facet_evidence = next(
+        item
+        for item in result["validation_evidence"]
+        if item.get("kind") == "manual-scenario-facet"
+    )
+    assert facet_evidence["changed_and_recovered_inputs"] == ["FireSmokeShutdown"]
+    assert facet_evidence["changed_and_recovered_outputs"] == ["SupplyFanCommand"]
+    assert [
+        phase["name"] for phase in result["acceptance_cases"][-1]["timeline"]
+    ] == ["baseline", "trigger", "recovery"]
+
+
+def test_manual_facet_oracle_is_exhaustive_and_rejects_non_recovery(tmp_path: Path) -> None:
+    record = _retained_review(tmp_path)
+    retained = deepcopy(record.model_dump(mode="json"))
+    retained["artifact_digest"] = "b" * 64
+    retained["result"]["manual_facet_oracle_requirements"] = [
+        {
+            "scenario_id": "communications-loss",
+            "scenario_title": "Communications loss",
+            "facet_id": "loss-detection",
+            "facet_label": "communications loss detection",
+            "phrase_mentioned": True,
+            "source_evidence": [{"start": 0, "end": 10, "excerpt": "communications loss"}],
+            "authoring_allowed": True,
+            "blocking_reason": "Author an independent trajectory.",
+        }
+    ]
+    payload = _oracle_payload(record)
+    payload["review_artifact_digest"] = "b" * 64
+    with pytest.raises(ValueError, match="must cover every source-mentioned facet"):
+        compile_sequence_oracle_approval(
+            record.id,
+            retained,
+            SequenceOracleApprovalRequest.model_validate(payload),
+            author="Independent Test Engineer",
+            actor_id=None,
+            tenant_id=None,
+            authentication="self-asserted-local",
+        )
+
+    payload["facet_cases"] = [
+        {
+            "scenario_id": "communications-loss",
+            "facet_id": "loss-detection",
+            "name": "Communications fallback",
+            "baseline_inputs": {"FireSmokeShutdown": False},
+            "trigger_inputs": {"FireSmokeShutdown": True},
+            "recovery_inputs": {"FireSmokeShutdown": True},
+            "step_seconds": 1.0,
+            "baseline_expectations": [
+                {"target": "SupplyFanCommand", "operator": "eq", "value": True}
+            ],
+            "trigger_expectations": [
+                {"target": "SupplyFanCommand", "operator": "eq", "value": False}
+            ],
+            "recovery_expectations": [
+                {"target": "SupplyFanCommand", "operator": "eq", "value": True}
+            ],
+        }
+    ]
+    with pytest.raises(ValueError, match="return it to baseline"):
+        compile_sequence_oracle_approval(
+            record.id,
+            retained,
+            SequenceOracleApprovalRequest.model_validate(payload),
+            author="Independent Test Engineer",
+            actor_id=None,
+            tenant_id=None,
+            authentication="self-asserted-local",
+        )

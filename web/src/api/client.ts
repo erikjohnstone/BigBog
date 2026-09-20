@@ -721,6 +721,17 @@ const ctrlFlowSequenceReviewSchema = z.object({
   review_digest: z.string(),
   configuration_digest: z.string(),
   source_sha256: z.string(),
+  point_contract: z.object({
+    schema: z.literal('bactalk.sequence-review-point-contract/v1'),
+    points: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+      role: z.string(),
+      data_type: z.enum(['numeric', 'boolean']),
+      units: z.string().nullable().optional(),
+      required: z.boolean(),
+    }).passthrough()),
+  }),
   review: z.object({
     reviewer: z.string(),
     authentication: z.string(),
@@ -766,6 +777,20 @@ const ctrlFlowSequenceReviewSchema = z.object({
   }).passthrough()),
   all_scenario_facets_have_oracle_drafts: z.boolean(),
   scenario_oracle_gap_count: z.number(),
+  manual_facet_oracle_requirements: z.array(z.object({
+    scenario_id: z.string(),
+    scenario_title: z.string(),
+    facet_id: z.string(),
+    facet_label: z.string(),
+    phrase_mentioned: z.boolean(),
+    source_evidence: z.array(z.object({
+      start: z.number(),
+      end: z.number(),
+      excerpt: z.string(),
+    }).passthrough()),
+    authoring_allowed: z.boolean(),
+    blocking_reason: z.string(),
+  }).passthrough()),
   skipped_relationships: z.array(z.record(z.string(), z.unknown())),
   blockers: z.array(z.string()),
   ready_for_independent_oracle_authoring: z.boolean(),

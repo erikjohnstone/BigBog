@@ -982,6 +982,34 @@ def compile_sequence_requirement_review(
     all_scenario_facets_have_oracle_drafts = bool(scenario_oracle_coverage) and all(
         item["all_facets_have_oracle_drafts"] for item in scenario_oracle_coverage
     )
+    manual_facet_oracle_requirements = [
+        {
+            "scenario_id": scenario["id"],
+            "scenario_title": scenario["title"],
+            "facet_id": facet["id"],
+            "facet_label": facet["label"],
+            "phrase_mentioned": facet["phrase_mentioned"],
+            "source_evidence": [
+                evidence
+                for source_scenario in reconciliation["scenarios"]
+                if source_scenario["id"] == scenario["id"]
+                for source_facet in source_scenario["facets"]
+                if source_facet["id"] == facet["id"]
+                for evidence in source_facet["evidence"]
+            ],
+            "authoring_allowed": facet["phrase_mentioned"],
+            "blocking_reason": (
+                "Author an independent baseline/trigger/recovery trajectory using the "
+                "retained point contract."
+                if facet["phrase_mentioned"]
+                else "The contractor sequence does not mention this required facet; revise "
+                "and re-upload the source before authoring a test."
+            ),
+        }
+        for scenario in scenario_oracle_coverage
+        for facet in scenario["facets"]
+        if not facet["executable_oracle_draft_present"]
+    ]
     return {
         "schema": "bactalk.sequence-requirement-review/v1",
         "candidate_digest": candidates["candidate_digest"],
@@ -1026,6 +1054,7 @@ def compile_sequence_requirement_review(
             for scenario in scenario_oracle_coverage
             for facet in scenario["facets"]
         ),
+        "manual_facet_oracle_requirements": manual_facet_oracle_requirements,
         "skipped_relationships": skipped_relationships,
         "blockers": sorted(set(blockers)),
         "ready_for_independent_oracle_authoring": bool(oracle_drafts) and not blockers,

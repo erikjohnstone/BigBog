@@ -94,18 +94,77 @@ class SequenceOracleCaseAuthoring(BaseModel):
         return self
 
 
+class SequenceFacetOracleAuthoring(BaseModel):
+    """Engineer-authored trajectory for a non-numeric scenario facet."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    scenario_id: str = Field(pattern=r"^[a-z][a-z0-9-]*$")
+    facet_id: str = Field(pattern=r"^[a-z][a-z0-9-]*$")
+    name: str = Field(min_length=2, max_length=200)
+    baseline_inputs: dict[str, float | bool] = Field(min_length=1, max_length=1_000)
+    trigger_inputs: dict[str, float | bool] = Field(min_length=1, max_length=1_000)
+    recovery_inputs: dict[str, float | bool] = Field(min_length=1, max_length=1_000)
+    step_seconds: float = Field(gt=0.0, le=86_400.0, allow_inf_nan=False)
+    baseline_repeat: int = Field(default=1, ge=1, le=1_000_000)
+    trigger_repeat: int = Field(default=1, ge=1, le=1_000_000)
+    recovery_repeat: int = Field(default=1, ge=1, le=1_000_000)
+    baseline_expectations: list[SequenceOracleExpectation] = Field(
+        min_length=1, max_length=1_000
+    )
+    trigger_expectations: list[SequenceOracleExpectation] = Field(
+        min_length=1, max_length=1_000
+    )
+    recovery_expectations: list[SequenceOracleExpectation] = Field(
+        min_length=1, max_length=1_000
+    )
+
+    @model_validator(mode="after")
+    def values_and_expectations_are_well_formed(self) -> SequenceFacetOracleAuthoring:
+        for phase, inputs in (
+            ("baseline", self.baseline_inputs),
+            ("trigger", self.trigger_inputs),
+            ("recovery", self.recovery_inputs),
+        ):
+            for point, value in inputs.items():
+                if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", point) is None:
+                    raise ValueError(f"{phase} input point is invalid: {point}")
+                if isinstance(value, float) and not math.isfinite(value):
+                    raise ValueError(f"{phase} input {point} must be finite")
+        for phase, expectations in (
+            ("baseline", self.baseline_expectations),
+            ("trigger", self.trigger_expectations),
+            ("recovery", self.recovery_expectations),
+        ):
+            targets = [expectation.target for expectation in expectations]
+            if len(targets) != len(set(targets)):
+                raise ValueError(f"{phase} expectation targets must be unique")
+            if any(expectation.operator != "eq" for expectation in expectations):
+                raise ValueError(
+                    "manual scenario-facet expectations must use exact equality so the "
+                    "trigger transition and recovery can be proven"
+                )
+        return self
+
+
 class SequenceOracleApprovalRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     review_artifact_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
     author: str | None = Field(default=None, min_length=2, max_length=120)
     cases: list[SequenceOracleCaseAuthoring] = Field(min_length=1, max_length=10_000)
+    facet_cases: list[SequenceFacetOracleAuthoring] = Field(
+        default_factory=list, max_length=10_000
+    )
 
     @model_validator(mode="after")
     def oracle_ids_are_unique(self) -> SequenceOracleApprovalRequest:
         ids = [case.oracle_id for case in self.cases]
         if len(ids) != len(set(ids)):
             raise ValueError("sequence oracle authoring contains duplicate oracle IDs")
+        facet_ids = [(case.scenario_id, case.facet_id) for case in self.facet_cases]
+        if len(facet_ids) != len(set(facet_ids)):
+            raise ValueError("sequence oracle authoring contains duplicate scenario facet IDs")
         return self
 
 
@@ -224,6 +283,24 @@ def _phase_proves_non_triggered(
     )
 
 
+def _validate_point_value(
+    *,
+    point: dict[str, Any],
+    value: float | bool,
+    context: str,
+) -> None:
+    if point["data_type"] == "boolean" and not isinstance(value, bool):
+        raise ValueError(f"{context} point {point['id']} requires a Boolean value")
+    if point["data_type"] == "numeric" and isinstance(value, bool):
+        raise ValueError(f"{context} point {point['id']} requires a numeric value")
+
+
+def _expectation_values(
+    expectations: list[SequenceOracleExpectation],
+) -> dict[str, float | bool]:
+    return {expectation.target: expectation.value for expectation in expectations}
+
+
 def compile_sequence_oracle_approval(
     review_id: str,
     review_record: dict[str, Any],
@@ -286,6 +363,12 @@ def compile_sequence_oracle_approval(
                     f"{oracle_id} {phase_name} inputs reference unknown points: "
                     + ", ".join(unknown_points)
                 )
+            for point_id, value in inputs.items():
+                _validate_point_value(
+                    point=point_contract[point_id],
+                    value=value,
+                    context=f"{oracle_id} {phase_name} input",
+                )
         expected_targets = {item["point"] for item in draft["expectations"]}
         for phase_name, expectations in (
             ("baseline", case.baseline_expectations),
@@ -300,6 +383,12 @@ def compile_sequence_oracle_approval(
                 raise ValueError(
                     f"{oracle_id} {phase_name} expectations reference unknown points: "
                     + ", ".join(unknown_targets)
+                )
+            for expectation in expectations:
+                _validate_point_value(
+                    point=point_contract[expectation.target],
+                    value=expectation.value,
+                    context=f"{oracle_id} {phase_name} expectation",
                 )
         for draft_expectation in draft["expectations"]:
             if not _draft_expectation_covered(
@@ -463,6 +552,171 @@ def compile_sequence_oracle_approval(
             }
         )
 
+    manual_requirements_payload = review.get("manual_facet_oracle_requirements")
+    if not isinstance(manual_requirements_payload, list):
+        raise ValueError(
+            "retained review predates scenario-facet oracle authoring; repeat requirement review"
+        )
+    manual_requirements = {
+        (item["scenario_id"], item["facet_id"]): item
+        for item in manual_requirements_payload
+    }
+    authorable_requirements = {
+        key: item
+        for key, item in manual_requirements.items()
+        if item["authoring_allowed"]
+    }
+    authored_facets = {
+        (case.scenario_id, case.facet_id): case for case in request.facet_cases
+    }
+    unknown_facets = sorted(set(authored_facets) - set(authorable_requirements))
+    missing_facets = sorted(set(authorable_requirements) - set(authored_facets))
+    if unknown_facets:
+        raise ValueError(
+            "oracle approval contains unknown or source-unmentioned scenario facets: "
+            + ", ".join(f"{scenario}/{facet}" for scenario, facet in unknown_facets)
+        )
+    if missing_facets:
+        raise ValueError(
+            "oracle approval must cover every source-mentioned facet without an extracted "
+            "oracle; missing: "
+            + ", ".join(f"{scenario}/{facet}" for scenario, facet in missing_facets)
+        )
+
+    for key in sorted(authorable_requirements):
+        requirement = authorable_requirements[key]
+        case = authored_facets[key]
+        phase_inputs = (
+            ("baseline", case.baseline_inputs),
+            ("trigger", case.trigger_inputs),
+            ("recovery", case.recovery_inputs),
+        )
+        input_sets = {frozenset(inputs) for _, inputs in phase_inputs}
+        if len(input_sets) != 1:
+            raise ValueError(
+                f"{case.scenario_id}/{case.facet_id} must use the same input points in every phase"
+            )
+        for phase_name, inputs in phase_inputs:
+            for point_id, value in inputs.items():
+                point = point_contract.get(point_id)
+                if point is None:
+                    raise ValueError(
+                        f"{case.scenario_id}/{case.facet_id} {phase_name} references unknown "
+                        f"input point {point_id}"
+                    )
+                if point["role"] in {"command", "alarm"}:
+                    raise ValueError(
+                        f"{case.scenario_id}/{case.facet_id} cannot drive {point['role']} "
+                        f"point {point_id} as an input"
+                    )
+                _validate_point_value(
+                    point=point,
+                    value=value,
+                    context=f"{case.scenario_id}/{case.facet_id} {phase_name} input",
+                )
+        recovered_input_transitions = [
+            point_id
+            for point_id in case.baseline_inputs
+            if _same_scalar(case.baseline_inputs[point_id], case.recovery_inputs[point_id])
+            and not _same_scalar(case.baseline_inputs[point_id], case.trigger_inputs[point_id])
+        ]
+        if not recovered_input_transitions:
+            raise ValueError(
+                f"{case.scenario_id}/{case.facet_id} must change at least one input for the "
+                "trigger and return it to baseline for recovery"
+            )
+
+        phase_expectations = (
+            ("baseline", case.baseline_expectations),
+            ("trigger", case.trigger_expectations),
+            ("recovery", case.recovery_expectations),
+        )
+        expectation_sets = {
+            frozenset(expectation.target for expectation in expectations)
+            for _, expectations in phase_expectations
+        }
+        if len(expectation_sets) != 1:
+            raise ValueError(
+                f"{case.scenario_id}/{case.facet_id} must observe the same output points in "
+                "every phase"
+            )
+        for phase_name, expectations in phase_expectations:
+            for expectation in expectations:
+                point = point_contract.get(expectation.target)
+                if point is None:
+                    raise ValueError(
+                        f"{case.scenario_id}/{case.facet_id} {phase_name} references unknown "
+                        f"expectation point {expectation.target}"
+                    )
+                if point["role"] in {"sensor", "setpoint"}:
+                    raise ValueError(
+                        f"{case.scenario_id}/{case.facet_id} cannot observe {point['role']} "
+                        f"point {expectation.target} as a controlled output"
+                    )
+                _validate_point_value(
+                    point=point,
+                    value=expectation.value,
+                    context=(
+                        f"{case.scenario_id}/{case.facet_id} {phase_name} expectation"
+                    ),
+                )
+        baseline_outputs = _expectation_values(case.baseline_expectations)
+        trigger_outputs = _expectation_values(case.trigger_expectations)
+        recovery_outputs = _expectation_values(case.recovery_expectations)
+        recovered_output_transitions = [
+            point_id
+            for point_id in baseline_outputs
+            if _same_scalar(baseline_outputs[point_id], recovery_outputs[point_id])
+            and not _same_scalar(baseline_outputs[point_id], trigger_outputs[point_id])
+        ]
+        if not recovered_output_transitions:
+            raise ValueError(
+                f"{case.scenario_id}/{case.facet_id} must prove at least one controlled output "
+                "changes on trigger and returns on recovery"
+            )
+        timeline = [
+            AcceptancePhase(
+                name="baseline",
+                inputs=case.baseline_inputs,
+                repeat=case.baseline_repeat,
+                step_seconds=case.step_seconds,
+                expectations=[item.domain() for item in case.baseline_expectations],
+            ),
+            AcceptancePhase(
+                name="trigger",
+                inputs=case.trigger_inputs,
+                repeat=case.trigger_repeat,
+                step_seconds=case.step_seconds,
+                expectations=[item.domain() for item in case.trigger_expectations],
+            ),
+            AcceptancePhase(
+                name="recovery",
+                inputs=case.recovery_inputs,
+                repeat=case.recovery_repeat,
+                step_seconds=case.step_seconds,
+                expectations=[item.domain() for item in case.recovery_expectations],
+            ),
+        ]
+        acceptance_cases.append(
+            AcceptanceCase(
+                name=case.name,
+                expectations=[item.domain() for item in case.recovery_expectations],
+                timeline=timeline,
+            )
+        )
+        evidence.append(
+            {
+                "kind": "manual-scenario-facet",
+                "scenario_id": case.scenario_id,
+                "facet_id": case.facet_id,
+                "facet_label": requirement["facet_label"],
+                "source_evidence": requirement["source_evidence"],
+                "changed_and_recovered_inputs": recovered_input_transitions,
+                "changed_and_recovered_outputs": recovered_output_transitions,
+                "complete_false_true_false_trajectory": True,
+            }
+        )
+
     approval_payload = {
         "review_id": review_id,
         "review_artifact_digest": request.review_artifact_digest,
@@ -471,12 +725,16 @@ def compile_sequence_oracle_approval(
         "tenant_id": tenant_id,
         "authentication": authentication,
         "authored_cases": [case.model_dump(mode="json") for case in request.cases],
+        "authored_facet_cases": [
+            case.model_dump(mode="json") for case in request.facet_cases
+        ],
         "acceptance_cases": [case.model_dump(mode="json") for case in acceptance_cases],
     }
     oracle_digest = _digest(approval_payload)
-    scenario_coverage_complete = bool(
-        review.get("all_scenario_facets_have_oracle_drafts", False)
-    )
+    source_unmentioned_facets = [
+        key for key, item in manual_requirements.items() if not item["authoring_allowed"]
+    ]
+    scenario_coverage_complete = not source_unmentioned_facets
     return {
         "schema": "bactalk.sequence-oracle-approval/v1",
         "review_id": review_id,
@@ -499,7 +757,7 @@ def compile_sequence_oracle_approval(
         "sequence_requirement_gate_passed": scenario_coverage_complete,
         "ready_for_graph_generation": scenario_coverage_complete,
         "ready_for_deployment": False,
-        "scenario_oracle_gap_count": review.get("scenario_oracle_gap_count"),
+        "scenario_oracle_gap_count": len(source_unmentioned_facets),
         "next_gate": (
             "A planner may generate a new whole-system candidate graph against these immutable "
             "acceptance cases; that graph must pass every test and all target/runtime release "

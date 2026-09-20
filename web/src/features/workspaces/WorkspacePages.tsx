@@ -86,6 +86,18 @@ type OracleAuthoringDraft = {
   recoveryOutputs: Record<string, string>;
 };
 
+type FacetOracleDraft = {
+  inputPoint: string;
+  outputPoint: string;
+  stepSeconds: string;
+  baselineInput: string;
+  triggerInput: string;
+  recoveryInput: string;
+  baselineOutput: string;
+  triggerOutput: string;
+  recoveryOutput: string;
+};
+
 export function LibraryWorkspace() {
   const catalogs = useQuery({ queryKey: ['library-catalogs'], queryFn: api.libraryCatalogs });
   const [selected, setSelected] = useState<LibraryDefinition['key']>('g36');
@@ -122,6 +134,7 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
   const [reviewDecisions, setReviewDecisions] = useState<Record<string, { disposition: 'approve' | 'reject' | 'resolve'; selected_point?: string; replacement_text?: string; note?: string }>>({});
   const [oracleAuthor, setOracleAuthor] = useState('');
   const [oracleDrafts, setOracleDrafts] = useState<Record<string, OracleAuthoringDraft>>({});
+  const [facetOracleDrafts, setFacetOracleDrafts] = useState<Record<string, FacetOracleDraft>>({});
   const configuration = useQuery({
     queryKey: ['ctrl-flow-configuration', templateId, selections],
     queryFn: () => api.ctrlFlowConfigure(templateId, selections),
@@ -162,6 +175,17 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
       preTriggerOutputs: Object.fromEntries(draft.expectations.map((expectation) => [expectation.point, ''])),
       recoveryOutputs: Object.fromEntries(draft.expectations.map((expectation) => [expectation.point, ''])),
     }])));
+    setFacetOracleDrafts(Object.fromEntries(result.manual_facet_oracle_requirements.filter((requirement) => requirement.authoring_allowed).map((requirement) => [`${requirement.scenario_id}/${requirement.facet_id}`, {
+      inputPoint: '',
+      outputPoint: '',
+      stepSeconds: '',
+      baselineInput: '',
+      triggerInput: '',
+      recoveryInput: '',
+      baselineOutput: '',
+      triggerOutput: '',
+      recoveryOutput: '',
+    }])));
   } });
   const oracleApproval = useMutation({ mutationFn: () => {
     const retained = sequenceReview.data;
@@ -190,10 +214,28 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
         recovery_expectations: outputExpectations(authored.recoveryOutputs),
       };
     });
+    const pointById = Object.fromEntries(retained.point_contract.points.map((point) => [point.id, point]));
+    const valueForPoint = (pointId: string, value: string) => pointById[pointId]?.data_type === 'boolean' ? value === 'true' : Number(value);
+    const facet_cases = retained.manual_facet_oracle_requirements.filter((requirement) => requirement.authoring_allowed).map((requirement) => {
+      const authored = facetOracleDrafts[`${requirement.scenario_id}/${requirement.facet_id}`];
+      return {
+        scenario_id: requirement.scenario_id,
+        facet_id: requirement.facet_id,
+        name: `${requirement.scenario_title} · ${requirement.facet_label}`,
+        baseline_inputs: { [authored.inputPoint]: valueForPoint(authored.inputPoint, authored.baselineInput) },
+        trigger_inputs: { [authored.inputPoint]: valueForPoint(authored.inputPoint, authored.triggerInput) },
+        recovery_inputs: { [authored.inputPoint]: valueForPoint(authored.inputPoint, authored.recoveryInput) },
+        step_seconds: Number(authored.stepSeconds),
+        baseline_expectations: [{ target: authored.outputPoint, operator: 'eq', value: valueForPoint(authored.outputPoint, authored.baselineOutput) }],
+        trigger_expectations: [{ target: authored.outputPoint, operator: 'eq', value: valueForPoint(authored.outputPoint, authored.triggerOutput) }],
+        recovery_expectations: [{ target: authored.outputPoint, operator: 'eq', value: valueForPoint(authored.outputPoint, authored.recoveryOutput) }],
+      };
+    });
     return api.approveSequenceOracles(retained.review_id, {
       review_artifact_digest: retained.retention.artifact_digest,
       author: oracleAuthor,
       cases,
+      facet_cases,
     });
   } });
   const updateReview = (id: string, patch: Partial<(typeof reviewDecisions)[string]>) => setReviewDecisions((current) => ({ ...current, [id]: { ...current[id], ...patch } as (typeof reviewDecisions)[string] }));
@@ -211,9 +253,13 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
     const everyValue = (values: Record<string, string>) => Object.values(values).every((value) => value !== '' && Number.isFinite(Number(value)));
     const everyOutput = (values: Record<string, string>) => Object.values(values).every((value) => value !== '');
     return everyValue(authored.baselineInputs) && everyValue(authored.triggerInputs) && everyValue(authored.recoveryInputs) && everyOutput(authored.baselineOutputs) && everyOutput(authored.recoveryOutputs) && (draft.durations.length === 0 || everyOutput(authored.preTriggerOutputs));
+  }) && sequenceReview.data!.manual_facet_oracle_requirements.filter((requirement) => requirement.authoring_allowed).every((requirement) => {
+    const authored = facetOracleDrafts[`${requirement.scenario_id}/${requirement.facet_id}`];
+    return Boolean(authored?.inputPoint && authored.outputPoint && Number(authored.stepSeconds) > 0 && authored.baselineInput !== '' && authored.triggerInput !== '' && authored.recoveryInput !== '' && authored.baselineOutput !== '' && authored.triggerOutput !== '' && authored.recoveryOutput !== '');
   });
   const updateOracleDraft = (id: string, patch: Partial<OracleAuthoringDraft>) => setOracleDrafts((current) => ({ ...current, [id]: { ...current[id], ...patch } }));
   const updateOracleMap = (id: string, key: keyof Pick<OracleAuthoringDraft, 'baselineInputs' | 'triggerInputs' | 'recoveryInputs' | 'baselineOutputs' | 'preTriggerOutputs' | 'recoveryOutputs'>, point: string, value: string) => setOracleDrafts((current) => ({ ...current, [id]: { ...current[id], [key]: { ...current[id][key], [point]: value } } }));
+  const updateFacetOracle = (id: string, patch: Partial<FacetOracleDraft>) => setFacetOracleDrafts((current) => ({ ...current, [id]: { ...current[id], ...patch } }));
   const chooseTemplate = (value: string) => {
     setTemplateId(value);
     setSelections({});
@@ -223,6 +269,7 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
     setReviewDecisions({});
     setOracleAuthor('');
     setOracleDrafts({});
+    setFacetOracleDrafts({});
     brief.reset();
     reconciliation.reset();
     sequenceReconciliation.reset();
@@ -236,6 +283,7 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
     sequenceReconciliation.reset();
     setReviewDecisions({});
     setOracleDrafts({});
+    setFacetOracleDrafts({});
     sequenceReview.reset();
     oracleApproval.reset();
   };
@@ -250,7 +298,7 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
       </div>
       <button className="ctrl-flow-primary" disabled={brief.isPending || configuration.isFetching} onClick={() => brief.mutate()} type="button">{brief.isPending ? 'Building engineering brief…' : 'Generate programming brief'}<ChevronRight size={15} /></button>
       <div className="ctrl-flow-upload"><FileSpreadsheet size={18} /><label><strong>{pointsFile?.name || 'Contractor points list'}</strong><small>CSV or XLSX · checked against this design</small><input accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={(event) => { setPointsFile(event.target.files?.[0] ?? null); reconciliation.reset(); }} type="file" /></label><button disabled={!pointsFile || reconciliation.isPending} onClick={() => reconciliation.mutate()} type="button">{reconciliation.isPending ? 'Checking…' : 'Check points'}</button></div>
-      <div className="ctrl-flow-upload ctrl-flow-sequence-upload"><FileText size={18} /><label><strong>{sequenceFile?.name || 'Sequence of operations'}</strong><small>TXT, MD, JSON, DOCX, or PDF · scenario coverage</small><input accept=".txt,.md,.json,.docx,.pdf,text/plain,text/markdown,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(event) => { setSequenceFile(event.target.files?.[0] ?? null); setReviewDecisions({}); setOracleAuthor(''); setOracleDrafts({}); sequenceReconciliation.reset(); sequenceReview.reset(); oracleApproval.reset(); }} type="file" /></label><button disabled={!sequenceFile || sequenceReconciliation.isPending} onClick={() => sequenceReconciliation.mutate()} type="button">{sequenceReconciliation.isPending ? 'Checking…' : 'Check sequence'}</button></div>
+      <div className="ctrl-flow-upload ctrl-flow-sequence-upload"><FileText size={18} /><label><strong>{sequenceFile?.name || 'Sequence of operations'}</strong><small>TXT, MD, JSON, DOCX, or PDF · scenario coverage</small><input accept=".txt,.md,.json,.docx,.pdf,text/plain,text/markdown,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(event) => { setSequenceFile(event.target.files?.[0] ?? null); setReviewDecisions({}); setOracleAuthor(''); setOracleDrafts({}); setFacetOracleDrafts({}); sequenceReconciliation.reset(); sequenceReview.reset(); oracleApproval.reset(); }} type="file" /></label><button disabled={!sequenceFile || sequenceReconciliation.isPending} onClick={() => sequenceReconciliation.mutate()} type="button">{sequenceReconciliation.isPending ? 'Checking…' : 'Check sequence'}</button></div>
     </aside>
     <section className="ctrl-flow-results">
       {!brief.data && !brief.isError && <div className="ctrl-flow-empty"><Network size={28} /><strong>Configure the physical system</strong><p>Generate a traceable component, point, controller, and qualification contract before any code is proposed.</p></div>}
@@ -290,7 +338,8 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
               {draft.conditions.map((condition) => <fieldset key={condition.point}><legend>{condition.point} values in {condition.point_unit || 'point units'}</legend><label><span>Baseline · condition false</span><input onChange={(event) => updateOracleMap(draft.id, 'baselineInputs', condition.point, event.target.value)} step="any" type="number" value={authored.baselineInputs[condition.point]} /></label><label><span>Trigger · condition true</span><input onChange={(event) => updateOracleMap(draft.id, 'triggerInputs', condition.point, event.target.value)} step="any" type="number" value={authored.triggerInputs[condition.point]} /></label><label><span>Recovery · false again</span><input onChange={(event) => updateOracleMap(draft.id, 'recoveryInputs', condition.point, event.target.value)} step="any" type="number" value={authored.recoveryInputs[condition.point]} /></label></fieldset>)}
               {draft.expectations.map((expectation) => <fieldset key={expectation.point}><legend>{expectation.point} response</legend><label><span>Baseline expected</span><OracleValueInput booleanValue={typeof expectation.value === 'boolean'} onChange={(value) => updateOracleMap(draft.id, 'baselineOutputs', expectation.point, value)} value={authored.baselineOutputs[expectation.point]} /></label>{duration > 0 && <label><span>Before timer expires</span><OracleValueInput booleanValue={typeof expectation.value === 'boolean'} onChange={(value) => updateOracleMap(draft.id, 'preTriggerOutputs', expectation.point, value)} value={authored.preTriggerOutputs[expectation.point]} /></label>}<div className="oracle-required-outcome"><span>After trigger · locked requirement</span><strong>{String(expectation.value)} · {expectation.verb}</strong></div><label><span>After recovery</span><OracleValueInput booleanValue={typeof expectation.value === 'boolean'} onChange={(value) => updateOracleMap(draft.id, 'recoveryOutputs', expectation.point, value)} value={authored.recoveryOutputs[expectation.point]} /></label></fieldset>)}
             </article>; })}</div>
-            <button className="ctrl-flow-review-submit" disabled={!oracleComplete || oracleApproval.isPending} onClick={() => oracleApproval.mutate()} type="button">{oracleApproval.isPending ? 'Validating independent trajectories…' : `Approve ${sequenceReview.data.oracle_draft_count} test trajectories`}<ChevronRight size={15} /></button>
+            {sequenceReview.data.manual_facet_oracle_requirements.some((requirement) => requirement.authoring_allowed) && <section className="ctrl-flow-facet-oracles"><header><strong>Event and mode trajectories</strong><span>Source-mentioned facets without numeric extraction still require explicit I/O transitions.</span></header>{sequenceReview.data.manual_facet_oracle_requirements.filter((requirement) => requirement.authoring_allowed).map((requirement) => { const id = `${requirement.scenario_id}/${requirement.facet_id}`; const authored = facetOracleDrafts[id]; if (!authored) return null; const inputPoint = sequenceReview.data.point_contract.points.find((point) => point.id === authored.inputPoint); const outputPoint = sequenceReview.data.point_contract.points.find((point) => point.id === authored.outputPoint); return <article key={id}><header><div><b>{requirement.scenario_title}</b><strong>{requirement.facet_label}</strong></div><span>{requirement.source_evidence[0]?.excerpt}</span></header><div className="facet-oracle-bindings"><label><span>Trigger input point</span><select onChange={(event) => updateFacetOracle(id, { inputPoint: event.target.value, baselineInput: '', triggerInput: '', recoveryInput: '' })} value={authored.inputPoint}><option value="">Select input…</option>{sequenceReview.data.point_contract.points.filter((point) => ['sensor', 'status', 'setpoint'].includes(point.role)).map((point) => <option key={point.id} value={point.id}>{point.id} · {point.data_type}</option>)}</select></label><label><span>Observed output point</span><select onChange={(event) => updateFacetOracle(id, { outputPoint: event.target.value, baselineOutput: '', triggerOutput: '', recoveryOutput: '' })} value={authored.outputPoint}><option value="">Select output…</option>{sequenceReview.data.point_contract.points.filter((point) => ['command', 'alarm', 'status'].includes(point.role)).map((point) => <option key={point.id} value={point.id}>{point.id} · {point.data_type}</option>)}</select></label><label><span>Step seconds</span><input min="0.001" onChange={(event) => updateFacetOracle(id, { stepSeconds: event.target.value })} step="any" type="number" value={authored.stepSeconds} /></label></div>{inputPoint && <fieldset><legend>{inputPoint.id} stimulus</legend><label><span>Baseline</span><OracleValueInput booleanValue={inputPoint.data_type === 'boolean'} onChange={(value) => updateFacetOracle(id, { baselineInput: value })} value={authored.baselineInput} /></label><label><span>Trigger</span><OracleValueInput booleanValue={inputPoint.data_type === 'boolean'} onChange={(value) => updateFacetOracle(id, { triggerInput: value })} value={authored.triggerInput} /></label><label><span>Recovery</span><OracleValueInput booleanValue={inputPoint.data_type === 'boolean'} onChange={(value) => updateFacetOracle(id, { recoveryInput: value })} value={authored.recoveryInput} /></label></fieldset>}{outputPoint && <fieldset><legend>{outputPoint.id} expected response</legend><label><span>Baseline</span><OracleValueInput booleanValue={outputPoint.data_type === 'boolean'} onChange={(value) => updateFacetOracle(id, { baselineOutput: value })} value={authored.baselineOutput} /></label><label><span>Trigger</span><OracleValueInput booleanValue={outputPoint.data_type === 'boolean'} onChange={(value) => updateFacetOracle(id, { triggerOutput: value })} value={authored.triggerOutput} /></label><label><span>Recovery</span><OracleValueInput booleanValue={outputPoint.data_type === 'boolean'} onChange={(value) => updateFacetOracle(id, { recoveryOutput: value })} value={authored.recoveryOutput} /></label></fieldset>}</article>; })}</section>}
+            <button className="ctrl-flow-review-submit" disabled={!oracleComplete || oracleApproval.isPending} onClick={() => oracleApproval.mutate()} type="button">{oracleApproval.isPending ? 'Validating independent trajectories…' : `Approve ${sequenceReview.data.oracle_draft_count + sequenceReview.data.manual_facet_oracle_requirements.filter((requirement) => requirement.authoring_allowed).length} test trajectories`}<ChevronRight size={15} /></button>
             {oracleApproval.data && <div className={`ctrl-flow-review-outcome ${oracleApproval.data.ready_for_graph_generation ? 'ready' : 'blocked'}`}><strong>{oracleApproval.data.ready_for_graph_generation ? 'Whole-system sequence requirement gate passed' : 'Local oracles approved; whole-system coverage still blocked'}</strong><span>Oracle approval {oracleApproval.data.oracle_approval_id.slice(0, 12)} · {oracleApproval.data.case_count} executable timelines · {oracleApproval.data.scenario_oracle_gap_count ?? 0} scenario facets still lack executable oracles · deployment remains blocked</span></div>}
             {oracleApproval.isError && <div className="ctrl-flow-review-outcome blocked"><strong>Oracle approval rejected</strong><span>{oracleApproval.error.message}</span></div>}
           </section>}
