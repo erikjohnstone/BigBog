@@ -8,6 +8,7 @@ from .boptest_graph import (
     BoptestMeasurementBinding,
     BoptestTrajectoryOracle,
 )
+from .boptest_scale import BoptestScaleProfile, BoptestScaleRunner
 from .cdl import CdlTranslator
 from .funnel import FunnelResult, FunnelScorer
 from .g36_library import G36Library
@@ -17,6 +18,8 @@ from .rumoca import RumocaCompiler, RumocaError
 __all__ = [
     "BoptestClient",
     "BoptestError",
+    "BoptestScaleProfile",
+    "BoptestScaleRunner",
     "BoptestActuatorBinding",
     "BoptestGraphMap",
     "BoptestGraphRunner",
