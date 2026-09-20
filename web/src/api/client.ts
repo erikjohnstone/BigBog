@@ -599,6 +599,7 @@ const ctrlFlowBriefSchema = z.object({
 
 const ctrlFlowReconciliationSchema = z.object({
   schema: z.literal('bactalk.ctrl-flow-point-reconciliation/v1'),
+  point_reconciliation_id: z.string(),
   provided_point_count: z.number(),
   required_point_count: z.number(),
   matched_requirement_count: z.number(),
@@ -611,6 +612,13 @@ const ctrlFlowReconciliationSchema = z.object({
   blocking_issues: z.array(z.record(z.string(), z.unknown())),
   ready_for_sequence_reconciliation: z.boolean(),
   complete_niagara_job_ready: z.boolean(),
+  retention: z.object({
+    artifact_digest: z.string(),
+    result_digest: z.string(),
+    source_sha256: z.string(),
+    source_bytes_retained: z.boolean(),
+    external_immutable_retention: z.boolean(),
+  }).passthrough(),
 }).passthrough();
 
 const ctrlFlowSequenceReconciliationSchema = z.object({
@@ -1093,11 +1101,12 @@ export const api = {
       body,
     ));
   },
-  async approveCtrlFlowSequenceRequirements(templateId: string, selections: Record<string, unknown>, file: File, review: Record<string, unknown>) {
+  async approveCtrlFlowSequenceRequirements(templateId: string, selections: Record<string, unknown>, file: File, pointReconciliationId: string, review: Record<string, unknown>) {
     const body = new FormData();
     body.append('selections', JSON.stringify(selections));
     body.append('review', JSON.stringify(review));
     body.append('sequence_document', file);
+    body.append('point_reconciliation_id', pointReconciliationId);
     return ctrlFlowSequenceReviewSchema.parse(await postForm(
       `/api/library/ctrl-flow/templates/${encodeURIComponent(templateId)}/review-requirements/approve`,
       body,

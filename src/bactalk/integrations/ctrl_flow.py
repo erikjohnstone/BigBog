@@ -177,6 +177,7 @@ class CtrlFlowLibrary:
         actor_id: str | None,
         tenant_id: str | None,
         authentication: str,
+        point_reconciliation: dict[str, Any],
     ) -> dict[str, Any]:
         """Re-derive and review every sequence candidate against immutable source evidence."""
 
@@ -190,6 +191,7 @@ class CtrlFlowLibrary:
             actor_id=actor_id,
             tenant_id=tenant_id,
             authentication=authentication,
+            point_reconciliation=point_reconciliation,
         )
 
     def _decorate_configuration(

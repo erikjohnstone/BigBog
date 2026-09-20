@@ -7,6 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from bactalk.api import create_app
+from bactalk.domain import PointSpec
 from bactalk.intake import parse_sequence_document
 from bactalk.integrations.ctrl_flow import CtrlFlowLibrary
 from bactalk.integrations.ctrl_flow_planning import AHU_TEMPLATE
@@ -27,6 +28,66 @@ def _inspection():
     document = parse_sequence_document(REVIEWABLE_SEQUENCE.encode(), "reviewable-sequence.txt")
     reconciliation = CtrlFlowLibrary().reconcile_sequence(AHU_TEMPLATE, {}, document)
     return document, reconciliation
+
+
+def _point_evidence(library: CtrlFlowLibrary | None = None) -> dict:
+    library = library or CtrlFlowLibrary()
+    brief = library.programming_brief(AHU_TEMPLATE, {})
+    points = [
+        PointSpec(
+            name=point["id"],
+            label=point["label"],
+            data_type=point["data_type"],
+            role=point["role"],
+            units=point["units"],
+            default=False if point["data_type"] == "boolean" else 0.0,
+        )
+        for point in brief["point_requirements"]["points"]
+        if point["required"]
+    ]
+    result = library.reconcile_points(AHU_TEMPLATE, {}, points)
+    return {
+        "id": "1" * 32,
+        "artifact_digest": "2" * 64,
+        "result_digest": "3" * 64,
+        "source_sha256": "4" * 64,
+        "source_filename": "points.csv",
+        "template_id": AHU_TEMPLATE,
+        "configuration_digest": result["configuration_digest"],
+        "ready_for_sequence_reconciliation": result["ready_for_sequence_reconciliation"],
+        "canonical_points": result["canonical_points"],
+        "matches": result["matches"],
+        "unit_conversions": result["unit_conversions"],
+        "unmatched_provided": result["unmatched_provided"],
+    }
+
+
+def _retain_point_contract(client: TestClient, headers: dict[str, str] | None = None) -> dict:
+    brief = CtrlFlowLibrary().programming_brief(AHU_TEMPLATE, {})
+    rows = ["name,label,data_type,role,units,default,required"]
+    for point in brief["point_requirements"]["points"]:
+        if point["required"]:
+            rows.append(
+                ",".join(
+                    (
+                        point["id"],
+                        point["label"],
+                        point["data_type"],
+                        point["role"],
+                        point["units"] or "",
+                        "false" if point["data_type"] == "boolean" else "0",
+                        "true",
+                    )
+                )
+            )
+    response = client.post(
+        f"/api/library/ctrl-flow/templates/{AHU_TEMPLATE}/inspect-points",
+        headers=headers,
+        data={"selections": "{}"},
+        files={"points_file": ("points.csv", "\n".join(rows).encode(), "text/csv")},
+    )
+    assert response.status_code == 200, response.text
+    return response.json()
 
 
 def _review_payload(reconciliation: dict) -> dict:
@@ -77,6 +138,7 @@ def test_exhaustive_review_emits_source_bound_non_executable_oracle_drafts() -> 
         actor_id=None,
         tenant_id=None,
         authentication="self-asserted-local",
+        point_reconciliation=_point_evidence(),
     )
 
     assert review["blockers"] == []
@@ -90,9 +152,7 @@ def test_exhaustive_review_emits_source_bound_non_executable_oracle_drafts() -> 
     assert review["source_sha256"] == document.sha256
     assert review["safety"]["text_approval_authorizes_deployment"] is False
 
-    by_input = {
-        draft["conditions"][0]["point"]: draft for draft in review["oracle_drafts"]
-    }
+    by_input = {draft["conditions"][0]["point"]: draft for draft in review["oracle_drafts"]}
     mixed_air = by_input["MixedAirTemp"]
     assert mixed_air["conditions"][0]["operator"] == "lt"
     assert mixed_air["conditions"][0]["value"] == 38.0
@@ -128,6 +188,7 @@ def test_review_rederivation_rejects_digest_tampering_and_incomplete_decisions()
             actor_id=None,
             tenant_id=None,
             authentication="self-asserted-local",
+            point_reconciliation=_point_evidence(),
         )
 
     payload = _review_payload(reconciliation)
@@ -142,6 +203,7 @@ def test_review_rederivation_rejects_digest_tampering_and_incomplete_decisions()
             actor_id=None,
             tenant_id=None,
             authentication="self-asserted-local",
+            point_reconciliation=_point_evidence(),
         )
 
 
@@ -159,6 +221,7 @@ def test_vague_language_requires_source_revision_even_after_review_resolution() 
         actor_id=None,
         tenant_id=None,
         authentication="self-asserted-local",
+        point_reconciliation=_point_evidence(),
     )
 
     assert review["ready_for_independent_oracle_authoring"] is False
@@ -168,11 +231,38 @@ def test_vague_language_requires_source_revision_even_after_review_resolution() 
 def test_review_approval_api_rederives_the_uploaded_source(tmp_path: Path) -> None:
     document, reconciliation = _inspection()
     client = TestClient(create_app(tmp_path / "runs"))
+    missing_points = client.post(
+        f"/api/library/ctrl-flow/templates/{AHU_TEMPLATE}/review-requirements/approve",
+        data={
+            "selections": "{}",
+            "review": json.dumps(_review_payload(reconciliation)),
+        },
+        files={
+            "sequence_document": (
+                document.filename,
+                REVIEWABLE_SEQUENCE.encode(),
+                "text/plain",
+            )
+        },
+    )
+    assert missing_points.status_code == 422
+    point_record = _retain_point_contract(client)
+    retained_points = client.get(
+        f"/api/ctrl-flow-point-reconciliations/{point_record['point_reconciliation_id']}"
+    )
+    assert retained_points.status_code == 200, retained_points.text
+    assert retained_points.json()["source_sha256"] == point_record["retention"]["source_sha256"]
+    point_listing = client.get("/api/ctrl-flow-point-reconciliations")
+    assert point_listing.status_code == 200, point_listing.text
+    assert (
+        point_listing.json()["reconciliations"][0]["id"] == point_record["point_reconciliation_id"]
+    )
     response = client.post(
         f"/api/library/ctrl-flow/templates/{AHU_TEMPLATE}/review-requirements/approve",
         data={
             "selections": "{}",
             "review": json.dumps(_review_payload(reconciliation)),
+            "point_reconciliation_id": point_record["point_reconciliation_id"],
         },
         files={
             "sequence_document": (
@@ -188,6 +278,9 @@ def test_review_approval_api_rederives_the_uploaded_source(tmp_path: Path) -> No
     assert payload["schema"] == "bactalk.sequence-requirement-review/v1"
     assert payload["review"]["reviewer"] == "Controls Engineer"
     assert payload["review"]["authentication"] == "self-asserted-local"
+    assert (
+        payload["contractor_point_reconciliation"]["id"] == point_record["point_reconciliation_id"]
+    )
     assert payload["oracle_draft_count"] == 2
     assert payload["ready_for_graph_generation"] is False
     assert len(payload["review_id"]) == 32
@@ -221,6 +314,7 @@ def test_retained_review_detects_source_and_manifest_tampering(tmp_path: Path) -
         actor_id=None,
         tenant_id=None,
         authentication="self-asserted-local",
+        point_reconciliation=_point_evidence(),
     )
     repository = SequenceRequirementReviewRepository(tmp_path / "reviews")
     record = repository.save(
@@ -253,6 +347,7 @@ def test_retained_review_rejects_mismatched_source_bytes(tmp_path: Path) -> None
         actor_id=None,
         tenant_id=None,
         authentication="self-asserted-local",
+        point_reconciliation=_point_evidence(),
     )
     repository = SequenceRequirementReviewRepository(tmp_path / "reviews")
 

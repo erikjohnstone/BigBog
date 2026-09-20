@@ -48,6 +48,7 @@ class SequenceRequirementReviewRequest(BaseModel):
             raise ValueError("sequence requirement decisions contain duplicate candidate IDs")
         return self
 
+
 _QUANTITY = re.compile(
     r"(?<![\w.])(?P<value>[+-]?\d+(?:,\d{3})*(?:\.\d+)?)\s*"
     r"(?P<unit>"
@@ -246,9 +247,9 @@ def _timing_relation(prefix: str) -> str:
 
 
 def _stable_id(document_hash: str, kind: str, start: int, end: int, value: str) -> str:
-    digest = hashlib.sha256(
-        f"{document_hash}:{kind}:{start}:{end}:{value}".encode()
-    ).hexdigest()[:16]
+    digest = hashlib.sha256(f"{document_hash}:{kind}:{start}:{end}:{value}".encode()).hexdigest()[
+        :16
+    ]
     return f"seqreq-{digest}"
 
 
@@ -309,9 +310,7 @@ def extract_sequence_requirement_candidates(
 ) -> dict[str, Any]:
     """Extract reviewable temporal/math candidates without treating prose as executable code."""
 
-    available_points = {
-        point["id"] for point in programming_brief["point_requirements"]["points"]
-    }
+    available_points = {point["id"] for point in programming_brief["point_requirements"]["points"]}
     quantities: list[dict[str, Any]] = []
     actions: list[dict[str, Any]] = []
     policies: list[dict[str, Any]] = []
@@ -520,9 +519,7 @@ def extract_sequence_requirement_candidates(
             and item["source"]["end"] <= duration["source"]["start"]
         ]
         duration["condition_quantity_candidate_id"] = (
-            max(preceding, key=lambda item: item["source"]["end"])["id"]
-            if preceding
-            else None
+            max(preceding, key=lambda item: item["source"]["end"])["id"] if preceding else None
         )
 
     for quantity in (item for item in quantities if item["kind"] == "command-value"):
@@ -605,9 +602,7 @@ def extract_sequence_requirement_candidates(
         item["kind"] == "duration" or item["point_binding_status"] == "single-candidate"
         for item in quantities
     )
-    bound_action_count = sum(
-        item["point_binding_status"] == "single-candidate" for item in actions
-    )
+    bound_action_count = sum(item["point_binding_status"] == "single-candidate" for item in actions)
     result = {
         "schema": "bactalk.sequence-requirement-candidates/v1",
         "source_sha256": document.sha256,
@@ -726,10 +721,15 @@ def compile_sequence_requirement_review(
     actor_id: str | None,
     tenant_id: str | None,
     authentication: str,
+    point_reconciliation: dict[str, Any],
 ) -> dict[str, Any]:
     """Validate exhaustive human decisions and emit non-executable oracle drafts."""
 
     candidates = reconciliation["requirement_candidates"]
+    if not point_reconciliation.get("ready_for_sequence_reconciliation", False):
+        raise ValueError("contractor point reconciliation must pass before sequence review")
+    if point_reconciliation.get("configuration_digest") != reconciliation["configuration_digest"]:
+        raise ValueError("contractor point reconciliation configuration digest changed")
     if request.candidate_digest != candidates["candidate_digest"]:
         raise ValueError("sequence candidate digest changed; inspect the source again")
     reviewable = _reviewable_candidates(candidates)
@@ -828,14 +828,11 @@ def compile_sequence_requirement_review(
             if decisions[candidate_id].disposition != "approve"
         ]
         if rejected:
-            message = (
-                f"{relationship['id']} has rejected or unresolved candidates: "
-                + ", ".join(rejected)
+            message = f"{relationship['id']} has rejected or unresolved candidates: " + ", ".join(
+                rejected
             )
             blockers.append(message)
-            skipped_relationships.append(
-                {"relationship_id": relationship["id"], "reason": message}
-            )
+            skipped_relationships.append({"relationship_id": relationship["id"], "reason": message})
             continue
 
         conditions = []
@@ -941,6 +938,8 @@ def compile_sequence_requirement_review(
         "actor_id": actor_id,
         "tenant_id": tenant_id,
         "authentication": authentication,
+        "point_reconciliation_id": point_reconciliation["id"],
+        "point_reconciliation_artifact_digest": point_reconciliation["artifact_digest"],
         "decisions": [decision.model_dump(mode="json") for decision in request.decisions],
     }
     review_digest = hashlib.sha256(
@@ -998,20 +997,15 @@ def compile_sequence_requirement_review(
                 if source_facet["id"] == facet["id"]
                 for evidence in source_facet["evidence"]
             ],
-            "input_point_candidates": scenario["io_contract"][
-                "input_point_candidates"
-            ],
-            "output_point_candidates": scenario["io_contract"][
-                "output_point_candidates"
-            ],
+            "input_point_candidates": scenario["io_contract"]["input_point_candidates"],
+            "output_point_candidates": scenario["io_contract"]["output_point_candidates"],
             "io_contract_status": scenario["io_contract"]["status"],
             "authoring_allowed": facet["phrase_mentioned"]
             and scenario["io_contract"]["status"] == "ready",
             "blocking_reason": (
                 "Author an independent baseline/trigger/recovery trajectory using the "
                 "retained point contract."
-                if facet["phrase_mentioned"]
-                and scenario["io_contract"]["status"] == "ready"
+                if facet["phrase_mentioned"] and scenario["io_contract"]["status"] == "ready"
                 else "The selected scenario has no complete audited trigger/output point "
                 "contract; extend the programming brief before authoring a test."
                 if facet["phrase_mentioned"]
@@ -1029,6 +1023,10 @@ def compile_sequence_requirement_review(
         "review_digest": review_digest,
         "configuration_digest": reconciliation["configuration_digest"],
         "source_sha256": candidates["source_sha256"],
+        "contractor_point_reconciliation": {
+            **point_reconciliation,
+            "schema": "bactalk.sequence-review-contractor-point-evidence/v1",
+        },
         "point_contract": {
             "schema": "bactalk.sequence-review-point-contract/v1",
             "points": [

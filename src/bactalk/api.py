@@ -26,6 +26,11 @@ from bactalk.ai import (
     StructuredChatProvider,
 )
 from bactalk.capabilities import CapabilityRegistry
+from bactalk.ctrl_flow_point_repository import (
+    CtrlFlowPointIntegrityError,
+    CtrlFlowPointReconciliationRecord,
+    CtrlFlowPointReconciliationRepository,
+)
 from bactalk.demo import demo_job, generalist_demo_job
 from bactalk.domain import (
     AcceptanceCase,
@@ -277,6 +282,9 @@ def create_app(
     sequence_review_repository = SequenceRequirementReviewRepository(
         root.parent / "sequence-requirement-reviews"
     )
+    ctrl_flow_point_repository = CtrlFlowPointReconciliationRepository(
+        root.parent / "ctrl-flow-point-reconciliations"
+    )
     sequence_oracle_repository = SequenceOracleApprovalRepository(
         root.parent / "sequence-oracle-approvals"
     )
@@ -334,9 +342,19 @@ def create_app(
         if not security.enabled:
             return True
         principal: Principal | None = getattr(http_request.state, "principal", None)
-        return principal is not None and record.result.get("review", {}).get(
-            "tenant_id"
-        ) == principal.tenant_id
+        return (
+            principal is not None
+            and record.result.get("review", {}).get("tenant_id") == principal.tenant_id
+        )
+
+    def retained_point_reconciliation_visible(
+        http_request: Request,
+        record: CtrlFlowPointReconciliationRecord,
+    ) -> bool:
+        if not security.enabled:
+            return True
+        principal: Principal | None = getattr(http_request.state, "principal", None)
+        return principal is not None and record.tenant_id == principal.tenant_id
 
     def retained_oracle_visible(
         http_request: Request,
@@ -345,9 +363,10 @@ def create_app(
         if not security.enabled:
             return True
         principal: Principal | None = getattr(http_request.state, "principal", None)
-        return principal is not None and record.result.get("approval", {}).get(
-            "tenant_id"
-        ) == principal.tenant_id
+        return (
+            principal is not None
+            and record.result.get("approval", {}).get("tenant_id") == principal.tenant_id
+        )
 
     @app.middleware("http")
     async def enforce_identity_and_audit(request: Request, call_next):
@@ -581,16 +600,43 @@ def create_app(
     @app.post("/api/library/ctrl-flow/templates/{template_id:path}/inspect-points")
     async def inspect_ctrl_flow_points_file(
         template_id: str,
+        http_request: Request,
         points_file: Annotated[UploadFile, File()],
         selections: Annotated[str, Form(max_length=50_000)] = "{}",
     ) -> dict:
         try:
             parsed_selections = _form_json_object(selections, "ctrl-flow selections")
+            source_content = await points_file.read()
             points = parse_points_file(
-                await points_file.read(),
+                source_content,
                 points_file.filename or "points.csv",
             )
-            return ctrl_flow.reconcile_points(template_id, parsed_selections, points)
+            result = ctrl_flow.reconcile_points(template_id, parsed_selections, points)
+            principal: Principal | None = getattr(http_request.state, "principal", None)
+            record = ctrl_flow_point_repository.save(
+                template_id=template_id,
+                selections=parsed_selections,
+                source_content=source_content,
+                source_filename=points_file.filename or "points.csv",
+                source_media_type=points_file.content_type or "application/octet-stream",
+                actor_id=principal.subject if principal is not None else None,
+                tenant_id=principal.tenant_id if principal is not None else None,
+                result=result,
+            )
+            return {
+                **result,
+                "point_reconciliation_id": record.id,
+                "retention": {
+                    "schema": record.schema_name,
+                    "artifact_digest": record.artifact_digest,
+                    "result_digest": record.result_digest,
+                    "source_sha256": record.source_sha256,
+                    "created_at": record.created_at.isoformat(),
+                    "source_bytes_retained": True,
+                    "storage": "append-only-local-hash-verified",
+                    "external_immutable_retention": False,
+                },
+            }
         except FileNotFoundError as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
         except CtrlFlowError as exc:
@@ -598,6 +644,54 @@ def create_app(
             raise HTTPException(status_code=status, detail=str(exc)) from exc
         except (IntakeError, ValueError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.get("/api/ctrl-flow-point-reconciliations")
+    def list_ctrl_flow_point_reconciliations(http_request: Request) -> dict:
+        try:
+            records = [
+                record
+                for record in ctrl_flow_point_repository.list()
+                if retained_point_reconciliation_visible(http_request, record)
+            ]
+            return {
+                "schema": "bactalk.ctrl-flow-point-reconciliation-list/v1",
+                "count": len(records),
+                "reconciliations": [
+                    {
+                        "id": record.id,
+                        "template_id": record.template_id,
+                        "created_at": record.created_at.isoformat(),
+                        "source_filename": record.source_filename,
+                        "source_sha256": record.source_sha256,
+                        "configuration_digest": record.configuration_digest,
+                        "result_digest": record.result_digest,
+                        "artifact_digest": record.artifact_digest,
+                        "ready_for_sequence_reconciliation": record.result.get(
+                            "ready_for_sequence_reconciliation", False
+                        ),
+                    }
+                    for record in records
+                ],
+            }
+        except CtrlFlowPointIntegrityError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+    @app.get("/api/ctrl-flow-point-reconciliations/{reconciliation_id}")
+    def get_ctrl_flow_point_reconciliation(
+        reconciliation_id: str,
+        http_request: Request,
+    ) -> dict:
+        try:
+            record = ctrl_flow_point_repository.get(reconciliation_id)
+        except KeyError as exc:
+            raise HTTPException(
+                status_code=404, detail="ctrl-flow point reconciliation not found"
+            ) from exc
+        except (CtrlFlowPointIntegrityError, ValueError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        if not retained_point_reconciliation_visible(http_request, record):
+            raise HTTPException(status_code=404, detail="ctrl-flow point reconciliation not found")
+        return record.model_dump(mode="json", by_alias=True)
 
     @app.post("/api/library/ctrl-flow/templates/{template_id:path}/inspect-sequence")
     async def inspect_ctrl_flow_sequence_file(
@@ -621,18 +715,30 @@ def create_app(
         except (IntakeError, ValueError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    @app.post(
-        "/api/library/ctrl-flow/templates/{template_id:path}/review-requirements/approve"
-    )
+    @app.post("/api/library/ctrl-flow/templates/{template_id:path}/review-requirements/approve")
     async def approve_ctrl_flow_sequence_requirements(
         template_id: str,
         http_request: Request,
         sequence_document: Annotated[UploadFile, File()],
         review: Annotated[str, Form(min_length=2, max_length=5_000_000)],
+        point_reconciliation_id: Annotated[str, Form(pattern=r"^[0-9a-f]{32}$")],
         selections: Annotated[str, Form(max_length=50_000)] = "{}",
     ) -> dict:
         try:
             parsed_selections = _form_json_object(selections, "ctrl-flow selections")
+            point_record = ctrl_flow_point_repository.get(point_reconciliation_id)
+            if not retained_point_reconciliation_visible(http_request, point_record):
+                raise HTTPException(
+                    status_code=404, detail="ctrl-flow point reconciliation not found"
+                )
+            if point_record.template_id != template_id:
+                raise ValueError("point reconciliation belongs to a different ctrl-flow template")
+            if point_record.selections != parsed_selections:
+                raise ValueError("point reconciliation selections changed; inspect points again")
+            if not point_record.result.get("ready_for_sequence_reconciliation", False):
+                raise ValueError(
+                    "point reconciliation is blocked; resolve the contractor point list first"
+                )
             parsed_review = SequenceRequirementReviewRequest.model_validate(
                 _form_json_object(review, "sequence requirement review")
             )
@@ -655,6 +761,22 @@ def create_app(
                 actor_id=actor_id,
                 tenant_id=tenant_id,
                 authentication=authentication,
+                point_reconciliation={
+                    "id": point_record.id,
+                    "artifact_digest": point_record.artifact_digest,
+                    "result_digest": point_record.result_digest,
+                    "source_sha256": point_record.source_sha256,
+                    "source_filename": point_record.source_filename,
+                    "template_id": point_record.template_id,
+                    "configuration_digest": point_record.configuration_digest,
+                    "ready_for_sequence_reconciliation": point_record.result[
+                        "ready_for_sequence_reconciliation"
+                    ],
+                    "canonical_points": point_record.result["canonical_points"],
+                    "matches": point_record.result["matches"],
+                    "unit_conversions": point_record.result["unit_conversions"],
+                    "unmatched_provided": point_record.result["unmatched_provided"],
+                },
             )
             record = sequence_review_repository.save(
                 template_id=template_id,
@@ -681,6 +803,12 @@ def create_app(
         except CtrlFlowError as exc:
             status = 404 if "unknown ctrl-flow template" in str(exc) else 422
             raise HTTPException(status_code=status, detail=str(exc)) from exc
+        except CtrlFlowPointIntegrityError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except KeyError as exc:
+            raise HTTPException(
+                status_code=404, detail="ctrl-flow point reconciliation not found"
+            ) from exc
         except (IntakeError, ValueError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
@@ -729,9 +857,7 @@ def create_app(
         except (SequenceReviewIntegrityError, ValueError) as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
         if not retained_review_visible(http_request, record):
-            raise HTTPException(
-                status_code=404, detail="sequence requirement review not found"
-            )
+            raise HTTPException(status_code=404, detail="sequence requirement review not found")
         return record.model_dump(mode="json", by_alias=True)
 
     @app.post("/api/sequence-requirement-reviews/{review_id}/oracles/approve")
@@ -743,9 +869,7 @@ def create_app(
         try:
             review_record = sequence_review_repository.get(review_id)
             if not retained_review_visible(http_request, review_record):
-                raise HTTPException(
-                    status_code=404, detail="sequence requirement review not found"
-                )
+                raise HTTPException(status_code=404, detail="sequence requirement review not found")
             author, actor_id, tenant_id, authentication = review_identity(
                 http_request, request.author
             )
@@ -802,9 +926,7 @@ def create_app(
                         "artifact_digest": record.artifact_digest,
                         "author": record.result["approval"]["author"],
                         "case_count": record.result["case_count"],
-                        "ready_for_graph_generation": record.result[
-                            "ready_for_graph_generation"
-                        ],
+                        "ready_for_graph_generation": record.result["ready_for_graph_generation"],
                     }
                     for record in records
                 ],
@@ -1040,9 +1162,7 @@ def create_app(
         except (ValueError, RuntimeError, json.JSONDecodeError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
-    @app.post(
-        "/api/library/plant-controls/controllers/{controller_id}/niagara-program-package"
-    )
+    @app.post("/api/library/plant-controls/controllers/{controller_id}/niagara-program-package")
     def build_plant_niagara_program_package(
         controller_id: str,
         request: G36ParameterRequest | None = None,
@@ -1726,19 +1846,13 @@ def create_app(
                 ),
                 "artifacts": deliverables.get("artifacts", []) if deliverables else [],
                 "coverage": deliverables.get("coverage", {}) if deliverables else {},
-                "blocking_gates": (
-                    deliverables.get("blocking_gates", []) if deliverables else []
-                ),
+                "blocking_gates": (deliverables.get("blocking_gates", []) if deliverables else []),
             },
-            "approval": (
-                record.approval.model_dump(mode="json") if record.approval else None
-            ),
+            "approval": (record.approval.model_dump(mode="json") if record.approval else None),
             "downloads": {
                 "available": approved,
                 "target_url": f"/api/runs/{record.id}/export" if approved else None,
-                "review_bundle_url": (
-                    f"/api/runs/{record.id}/review-bundle" if approved else None
-                ),
+                "review_bundle_url": (f"/api/runs/{record.id}/review-bundle" if approved else None),
             },
             "safety": {
                 "live_writes_enabled": False,
@@ -1881,9 +1995,7 @@ def create_app(
                     origin=RunOrigin.AI_PROPOSAL,
                     parent_run_id=source_record.id,
                     planner=(
-                        ProposedGraphPlanner(proposal, chat_agent)
-                        if proposal is not None
-                        else None
+                        ProposedGraphPlanner(proposal, chat_agent) if proposal is not None else None
                     ),
                 )
             return {

@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from bactalk.api import create_app
+from bactalk.domain import PointSpec
 from bactalk.intake import parse_sequence_document
 from bactalk.integrations.ctrl_flow import CtrlFlowLibrary
 from bactalk.integrations.ctrl_flow_planning import AHU_TEMPLATE
@@ -41,7 +42,7 @@ def _credential(token: str, subject: str, display_name: str) -> TokenCredential:
         subject=subject,
         display_name=display_name,
         tenant_id="oracle-test-tenant",
-        roles=frozenset({Role.APPROVER}),
+        roles=frozenset({Role.APPROVER, Role.PROGRAMMER}),
         credential_id=f"{subject}-token",
     )
     return TokenCredential(principal.credential_id, hash_token(token), principal)
@@ -90,6 +91,69 @@ def _review_payload(reconciliation: dict) -> dict:
     }
 
 
+def _point_evidence(library: CtrlFlowLibrary | None = None) -> dict:
+    library = library or CtrlFlowLibrary()
+    brief = library.programming_brief(AHU_TEMPLATE, {})
+    points = [
+        PointSpec(
+            name=point["id"],
+            label=point["label"],
+            data_type=point["data_type"],
+            role=point["role"],
+            units=point["units"],
+            default=False if point["data_type"] == "boolean" else 0.0,
+        )
+        for point in brief["point_requirements"]["points"]
+        if point["required"]
+    ]
+    result = library.reconcile_points(AHU_TEMPLATE, {}, points)
+    return {
+        "id": "1" * 32,
+        "artifact_digest": "2" * 64,
+        "result_digest": "3" * 64,
+        "source_sha256": "4" * 64,
+        "source_filename": "points.csv",
+        "template_id": AHU_TEMPLATE,
+        "configuration_digest": result["configuration_digest"],
+        "ready_for_sequence_reconciliation": result["ready_for_sequence_reconciliation"],
+        "canonical_points": result["canonical_points"],
+        "matches": result["matches"],
+        "unit_conversions": result["unit_conversions"],
+        "unmatched_provided": result["unmatched_provided"],
+    }
+
+
+def _retain_point_contract(
+    client: TestClient,
+    headers: dict[str, str] | None = None,
+) -> dict:
+    brief = CtrlFlowLibrary().programming_brief(AHU_TEMPLATE, {})
+    rows = ["name,label,data_type,role,units,default,required"]
+    for point in brief["point_requirements"]["points"]:
+        if point["required"]:
+            rows.append(
+                ",".join(
+                    (
+                        point["id"],
+                        point["label"],
+                        point["data_type"],
+                        point["role"],
+                        point["units"] or "",
+                        "false" if point["data_type"] == "boolean" else "0",
+                        "true",
+                    )
+                )
+            )
+    response = client.post(
+        f"/api/library/ctrl-flow/templates/{AHU_TEMPLATE}/inspect-points",
+        headers=headers,
+        data={"selections": "{}"},
+        files={"points_file": ("points.csv", "\n".join(rows).encode(), "text/csv")},
+    )
+    assert response.status_code == 200, response.text
+    return response.json()
+
+
 def _retained_review(tmp_path: Path, sequence: str = SEQUENCE):
     library = CtrlFlowLibrary()
     document = parse_sequence_document(sequence.encode(), "sequence.txt")
@@ -103,6 +167,7 @@ def _retained_review(tmp_path: Path, sequence: str = SEQUENCE):
         actor_id=None,
         tenant_id=None,
         authentication="self-asserted-local",
+        point_reconciliation=_point_evidence(library),
     )
     record = SequenceRequirementReviewRepository(tmp_path / "reviews").save(
         template_id=AHU_TEMPLATE,
@@ -151,12 +216,9 @@ def _oracle_payload(record) -> dict:
             for expectation in draft["expectations"]
         ]
         non_triggered = [
-            _non_triggered_expectation(expectation)
-            for expectation in draft["expectations"]
+            _non_triggered_expectation(expectation) for expectation in draft["expectations"]
         ]
-        duration = max(
-            (float(item["seconds"]) for item in draft["durations"]), default=0.0
-        )
+        duration = max((float(item["seconds"]) for item in draft["durations"]), default=0.0)
         cases.append(
             {
                 "oracle_id": draft["id"],
@@ -196,9 +258,7 @@ def test_independent_oracle_approval_emits_timed_acceptance_cases(tmp_path: Path
     assert result["ready_for_deployment"] is False
     assert result["case_count"] == 2
     assert len(result["oracle_digest"]) == 64
-    by_duration = {
-        item["duration_seconds"]: item for item in result["validation_evidence"]
-    }
+    by_duration = {item["duration_seconds"]: item for item in result["validation_evidence"]}
     assert by_duration[300.0]["pre_expiration_steps"] == 4
     assert by_duration[10.0]["pre_expiration_steps"] == 4
     assert all(
@@ -233,9 +293,9 @@ def test_oracle_gate_rejects_self_review_bad_trigger_and_weakened_output(
         )
 
     condition_point = record.result["oracle_drafts"][0]["conditions"][0]["point"]
-    payload["cases"][0]["trigger_inputs"][condition_point] = payload["cases"][0][
-        "baseline_inputs"
-    ][condition_point]
+    payload["cases"][0]["trigger_inputs"][condition_point] = payload["cases"][0]["baseline_inputs"][
+        condition_point
+    ]
     with pytest.raises(ValueError, match="trigger does not satisfy"):
         compile_sequence_oracle_approval(
             record.id,
@@ -263,8 +323,7 @@ def test_oracle_gate_rejects_self_review_bad_trigger_and_weakened_output(
 
 def test_oracle_thresholds_are_converted_to_point_engineering_units(tmp_path: Path) -> None:
     sequence = (
-        "If mixed-air temperature falls below 5 °C for 5 minutes, "
-        "close the outdoor-air damper."
+        "If mixed-air temperature falls below 5 °C for 5 minutes, close the outdoor-air damper."
     )
     record = _retained_review(tmp_path, sequence)
     payload = _oracle_payload(record)
@@ -292,9 +351,14 @@ def test_oracle_approval_api_persists_and_retrieves_exact_gate(tmp_path: Path) -
     library = CtrlFlowLibrary()
     document = parse_sequence_document(SEQUENCE.encode(), "sequence.txt")
     reconciliation = library.reconcile_sequence(AHU_TEMPLATE, {}, document)
+    point_record = _retain_point_contract(client)
     review_response = client.post(
         f"/api/library/ctrl-flow/templates/{AHU_TEMPLATE}/review-requirements/approve",
-        data={"selections": "{}", "review": json.dumps(_review_payload(reconciliation))},
+        data={
+            "selections": "{}",
+            "review": json.dumps(_review_payload(reconciliation)),
+            "point_reconciliation_id": point_record["point_reconciliation_id"],
+        },
         files={"sequence_document": ("sequence.txt", SEQUENCE.encode(), "text/plain")},
     )
     assert review_response.status_code == 200, review_response.text
@@ -331,9 +395,7 @@ def test_oracle_approval_api_persists_and_retrieves_exact_gate(tmp_path: Path) -
         )
         is Role.APPROVER
     )
-    fetched = client.get(
-        f"/api/sequence-oracle-approvals/{approved['oracle_approval_id']}"
-    )
+    fetched = client.get(f"/api/sequence-oracle-approvals/{approved['oracle_approval_id']}")
     assert fetched.status_code == 200, fetched.text
     assert fetched.json()["result"]["oracle_digest"] == approved["oracle_digest"]
     listing = client.get("/api/sequence-oracle-approvals")
@@ -368,10 +430,15 @@ def test_authenticated_oracle_gate_requires_a_different_principal(tmp_path: Path
     library = CtrlFlowLibrary()
     document = parse_sequence_document(SEQUENCE.encode(), "sequence.txt")
     reconciliation = library.reconcile_sequence(AHU_TEMPLATE, {}, document)
+    point_record = _retain_point_contract(client, _bearer(REVIEWER_TOKEN))
     review_response = client.post(
         f"/api/library/ctrl-flow/templates/{AHU_TEMPLATE}/review-requirements/approve",
         headers=_bearer(REVIEWER_TOKEN),
-        data={"selections": "{}", "review": json.dumps(_review_payload(reconciliation))},
+        data={
+            "selections": "{}",
+            "review": json.dumps(_review_payload(reconciliation)),
+            "point_reconciliation_id": point_record["point_reconciliation_id"],
+        },
         files={"sequence_document": ("sequence.txt", SEQUENCE.encode(), "text/plain")},
     )
     assert review_response.status_code == 200, review_response.text
@@ -478,9 +545,11 @@ def test_source_bound_boolean_facet_oracle_adds_an_executable_recovery_case(
     )
     assert facet_evidence["changed_and_recovered_inputs"] == ["FireSmokeShutdown"]
     assert facet_evidence["changed_and_recovered_outputs"] == ["SupplyFanCommand"]
-    assert [
-        phase["name"] for phase in result["acceptance_cases"][-1]["timeline"]
-    ] == ["baseline", "trigger", "recovery"]
+    assert [phase["name"] for phase in result["acceptance_cases"][-1]["timeline"]] == [
+        "baseline",
+        "trigger",
+        "recovery",
+    ]
 
 
 def test_manual_facet_oracle_is_exhaustive_and_rejects_non_recovery(tmp_path: Path) -> None:
