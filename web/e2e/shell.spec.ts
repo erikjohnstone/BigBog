@@ -1,5 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
 import path from 'node:path';
 
 test('enterprise shell exposes workflow and safety boundary', async ({ page }) => {
@@ -124,11 +125,11 @@ test('real candidate opens across wiresheet, test, and review workspaces', async
 
 test('whole-building topology and high-fidelity evidence are usable end to end', async ({ page }) => {
   test.setTimeout(90_000);
-  const projects = await (await page.request.get('/api/projects')).json() as Array<{ id: string }>;
+  const projects = await (await page.request.get('/api/projects')).json() as Array<{ id: string; project: { name: string } }>;
   test.skip(!projects.length, 'A retained whole-building project is required.');
   await page.goto(`/next/projects/${projects[0].id}`);
-  await expect(page.getByRole('heading', { name: /integrated heating request/i, level: 1 })).toBeVisible();
-  await expect(page.getByLabel(/equipment topology/i)).toBeVisible();
+  await expect(page.getByRole('heading', { name: projects[0].project.name, level: 1 })).toBeVisible();
+  await expect(page.locator('.topology-canvas')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'System behavior passed' })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
@@ -177,6 +178,40 @@ test('whole-building topology and high-fidelity evidence are usable end to end',
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
+test('contractor can upload, preflight, compile, and assemble a complex building project', async ({ page }, testInfo) => {
+  test.setTimeout(120_000);
+  const inputs = testInfo.outputPath('complex-project-inputs');
+  execFileSync(path.resolve('../.venv/bin/python'), [
+    path.resolve('../scripts/create_complex_demo_package.py'),
+    '--output',
+    inputs,
+  ], {
+    cwd: path.resolve('..'),
+    env: { ...process.env, PYTHONPATH: path.resolve('../src') },
+  });
+
+  await page.goto('/next/projects/new');
+  await expect(page.getByRole('heading', { name: /compile the full controls package/i })).toBeVisible();
+  await page.locator('#project-package').setInputFiles(path.join(inputs, 'riverview-complex-building-project.json'));
+  await page.locator('#station-template').setInputFiles(path.join(inputs, 'riverview-contractor-station.bog'));
+  await expect(page.getByRole('heading', { name: /riverview integrated air and hydronic systems/i })).toBeVisible();
+  await expect(page.getByText('6', { exact: true }).first()).toBeVisible();
+
+  await page.getByRole('button', { name: /run system preflight/i }).click();
+  await expect(page.getByText('System contract accepted for build')).toBeVisible();
+  await expect(page.getByText('ahu-safety-cooling-v1')).toBeVisible();
+  expect((await new AxeBuilder({ page }).exclude('[data-sonner-toaster]').analyze()).violations).toEqual([]);
+  if (testInfo.project.name === 'chromium-tablet') return;
+
+  await page.getByRole('button', { name: /build, assemble, and test/i }).click();
+  await expect(page).toHaveURL(/\/next\/projects\/[a-z0-9]+$/, { timeout: 90_000 });
+  await expect(page.getByRole('heading', { name: /riverview integrated air and hydronic systems/i, level: 1 })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'System behavior passed' })).toBeVisible();
+  await expect(page.getByText('assembled-station.bog retained in this release')).toBeVisible();
+  await expect(page.getByRole('button', { name: /approve entire building candidate/i })).toBeDisabled();
+  expect((await new AxeBuilder({ page }).exclude('[data-sonner-toaster]').analyze()).violations).toEqual([]);
+});
+
 test('installed controls libraries and contractor environments are transparent', async ({ page }) => {
   test.setTimeout(60_000);
   await page.goto('/next/libraries');
@@ -203,7 +238,7 @@ test('global command center and AI launcher route into real work', async ({ page
   await page.getByRole('button', { name: /search projects/i }).click();
   await expect(page.getByRole('dialog', { name: /find anything/i })).toBeVisible();
   await page.getByPlaceholder(/search projects/i).fill(runs[0].job.equipment_name);
-  await page.getByPlaceholder(/search projects/i).press('Enter');
+  await page.locator(`a[role="option"][href$="/studio/${runs[0].id}/wiresheet"]`).click();
   await expect(page).toHaveURL(new RegExp(`/next/studio/${runs[0].id}/wiresheet`));
 
   await page.keyboard.press('Meta+K');
@@ -213,7 +248,7 @@ test('global command center and AI launcher route into real work', async ({ page
 
   await page.getByRole('button', { name: 'Ask BACTalk' }).click();
   await expect(page.getByRole('dialog', { name: /choose a program/i })).toBeVisible();
-  await page.getByRole('option', { name: new RegExp(runs[0].job.equipment_name, 'i') }).click();
+  await page.locator(`a[role="option"][href$="/studio/${runs[0].id}/wiresheet?agent=1"]`).click();
   await expect(page.getByRole('dialog', { name: /work through this candidate/i })).toBeVisible();
   await expect(page.getByText('Proposal-only authority')).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);

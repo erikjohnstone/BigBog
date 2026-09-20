@@ -268,6 +268,26 @@ const projectRecordSchema = z.object({
   }).passthrough()),
 }).passthrough();
 
+const projectPreflightSchema = z.object({
+  accepted_for_build: z.boolean(),
+  production_ready: z.boolean(),
+  project: z.string(),
+  site: z.string(),
+  equipment_count: z.number(),
+  relationship_count: z.number(),
+  signal_binding_count: z.number(),
+  project_acceptance_case_count: z.number(),
+  equipment: z.array(z.object({
+    equipment_name: z.string(),
+    sequence_family: z.string(),
+    pack_id: z.string().nullable(),
+    pack_stage: z.string().nullable(),
+    preflight_passed: z.boolean(),
+    blockers: z.array(z.string()),
+  }).passthrough()),
+  next_gate: z.string(),
+}).passthrough();
+
 const bacnetLabSchema = z.object({
   format: z.string(),
   mode: z.literal('isolated-loopback'),
@@ -524,6 +544,7 @@ export type AIStatus = z.infer<typeof aiStatusSchema>;
 export type ChatTurn = z.infer<typeof chatTurnSchema>;
 export type ChatResponse = z.infer<typeof chatResponseSchema>;
 export type ProjectRecord = z.infer<typeof projectRecordSchema>;
+export type ProjectPreflight = z.infer<typeof projectPreflightSchema>;
 export type BacnetLab = z.infer<typeof bacnetLabSchema>;
 export type BacnetProbe = z.infer<typeof probeSchema>;
 export type BoptestEvidence = z.infer<typeof boptestSchema>;
@@ -605,6 +626,21 @@ export const api = {
   },
   async projectReport(projectId: string) {
     return reportSchema.parse(await getJson(`/api/projects/${projectId}/report`));
+  },
+  async preflightProject(project: unknown) {
+    return projectPreflightSchema.parse(await postJson('/api/projects/preflight', project));
+  },
+  async buildProject(project: unknown, stationTemplate?: File | null) {
+    if (stationTemplate) {
+      const body = new FormData();
+      body.append('project_json', JSON.stringify(project));
+      body.append('station_template', stationTemplate);
+      return projectRecordSchema.parse(await postForm('/api/projects/build-import', body));
+    }
+    return projectRecordSchema.parse(await postJson('/api/projects/build', project));
+  },
+  async approveProject(projectId: string, reviewer: string) {
+    return projectRecordSchema.parse(await postJson(`/api/projects/${projectId}/approve`, { reviewer }));
   },
   async aiStatus() {
     return aiStatusSchema.parse(await getJson('/api/ai/status'));

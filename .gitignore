@@ -24,3 +24,6 @@ web/test-results/
 .env
 .env.*
 !.env.example
+artifacts/demo-inputs/
+artifacts/demo-validation/
+artifacts/demos/

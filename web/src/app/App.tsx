@@ -26,6 +26,7 @@ import { CommandCenter, type CommandMode } from './CommandCenter';
 
 const ControlStudio = lazy(() => import('../features/control-studio/ControlStudio').then((module) => ({ default: module.ControlStudio })));
 const IntakeStudio = lazy(() => import('../features/intake/IntakeStudio').then((module) => ({ default: module.IntakeStudio })));
+const ProjectIntake = lazy(() => import('../features/projects/ProjectIntake').then((module) => ({ default: module.ProjectIntake })));
 const ProjectWorkspace = lazy(() => import('../features/projects/ProjectWorkspace').then((module) => ({ default: module.ProjectWorkspace })));
 const StudioIndex = lazy(() => import('../features/workspaces/WorkspacePages').then((module) => ({ default: module.StudioIndex })));
 const SimulationIndex = lazy(() => import('../features/workspaces/WorkspacePages').then((module) => ({ default: module.SimulationIndex })));
@@ -105,6 +106,7 @@ function ProductShell() {
           <Routes>
             <Route path="/" element={<Home onOpenAgent={() => setCommandMode('agent')} />} />
             <Route path="/intake" element={<Suspense fallback={<div className="route-loading">Opening contractor intake…</div>}><IntakeStudio /></Suspense>} />
+            <Route path="/projects/new" element={<Suspense fallback={<div className="route-loading">Opening building project intake…</div>}><ProjectIntake /></Suspense>} />
             <Route path="/projects/:projectId?" element={<Suspense fallback={<div className="route-loading">Opening building projects…</div>}><ProjectWorkspace /></Suspense>} />
             <Route path="/studio" element={<Suspense fallback={<div className="route-loading">Opening Control Studio…</div>}><StudioIndex /></Suspense>} />
             <Route path="/studio/:runId/:view?" element={<Suspense fallback={<div className="route-loading">Opening Control Studio…</div>}><ControlStudio /></Suspense>} />
@@ -214,7 +216,7 @@ function RunRow({ run }: { run: RunSummary }) {
 }
 
 function LoadingRows() {
-  return <div className="loading-rows" aria-label="Loading work queue"><i /><i /><i /></div>;
+  return <div className="loading-rows" aria-label="Loading work queue" role="status"><i /><i /><i /></div>;
 }
 
 export function App() {

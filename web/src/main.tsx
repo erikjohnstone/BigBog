@@ -14,6 +14,7 @@ import './features/control-studio/simulation-lab.css';
 import './features/control-studio/graphics-studio.css';
 import './features/intake/intake-studio.css';
 import './features/projects/project-workspace.css';
+import './features/projects/project-intake.css';
 import './features/workspaces/workspace-pages.css';
 
 const queryClient = new QueryClient({

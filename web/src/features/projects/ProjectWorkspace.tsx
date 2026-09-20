@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import dagre from '@dagrejs/dagre';
 import {
   Background,
@@ -21,13 +21,18 @@ import {
   CheckCircle2,
   ChevronRight,
   CircleAlert,
+  Download,
+  ExternalLink,
   FileCheck2,
   GitBranch,
   Network,
+  PackageCheck,
   ShieldCheck,
+  UserCheck,
   Workflow,
 } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { api, type ProjectRecord } from '../../api/client';
 import './project-workspace.css';
@@ -139,7 +144,7 @@ function ProjectIndex({ projects, loading, failed }: { projects: ProjectRecord[]
     <div className="project-index">
       <header className="workspace-page-heading">
         <div><span className="eyebrow">WHOLE-BUILDING WORKSPACE</span><h1>Projects</h1><p>See equipment programs as one connected control system, with retained cross-equipment proof.</p></div>
-        <Link className="primary-action" to="/intake"><Building2 size={17} />Start a job</Link>
+        <Link className="primary-action" to="/projects/new"><Building2 size={17} />New building project</Link>
       </header>
       {failed && <div className="system-error" role="alert"><CircleAlert size={18} />Project builds could not be loaded.</div>}
       {loading ? <WorkspaceState label="Loading building projects…" /> : projects.length ? (
@@ -154,16 +159,33 @@ function ProjectIndex({ projects, loading, failed }: { projects: ProjectRecord[]
           ))}
         </section>
       ) : (
-        <section className="project-empty"><Network size={30} /><h2>No whole-building project yet</h2><p>Individual programs are already retained. A project build binds them into a topology and runs typed, cross-equipment acceptance scenarios.</p><Link className="primary-action" to="/intake">Start the first building</Link></section>
+        <section className="project-empty"><Network size={30} /><h2>No whole-building project yet</h2><p>Individual programs are already retained. A project build binds them into a topology and runs typed, cross-equipment acceptance scenarios.</p><Link className="primary-action" to="/projects/new">Start the first building</Link></section>
       )}
     </div>
   );
 }
 
 function ProjectDetail({ record, report }: { record: ProjectRecord; report: Awaited<ReturnType<typeof api.projectReport>> }) {
+  const queryClient = useQueryClient();
+  const [reviewer, setReviewer] = useState('');
+  const [checks, setChecks] = useState({ topology: false, behavior: false, artifacts: false });
   const flow = useMemo(() => topology(record), [record]);
   const assertions = report.scenarios.flatMap((scenario) => scenario.assertions);
   const passed = assertions.filter((assertion) => assertion.passed).length;
+  const approved = record.status === 'approved' && Boolean(record.approval);
+  const allChecked = Object.values(checks).every(Boolean);
+  const approve = useMutation({
+    mutationFn: () => api.approveProject(record.id, reviewer.trim()),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['project', record.id] }),
+        queryClient.invalidateQueries({ queryKey: ['projects'] }),
+        queryClient.invalidateQueries({ queryKey: ['runs'] }),
+      ]);
+      toast.success('Exact whole-building candidate approved and locked');
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : 'Project approval failed'),
+  });
   return (
     <div className="project-detail">
       <div className="studio-breadcrumbs"><Link to="/projects"><ArrowLeft size={15} />Projects</Link><ChevronRight size={14} /><span>{record.project.site}</span><ChevronRight size={14} /><strong>{record.project.name}</strong></div>
@@ -185,7 +207,7 @@ function ProjectDetail({ record, report }: { record: ProjectRecord; report: Awai
           <div className="topology-canvas" aria-label={`${record.project.name} equipment topology`}>
             <ReactFlow fitView fitViewOptions={{ padding: 0.2 }} minZoom={0.2} nodes={flow.nodes} edges={flow.edges} nodesConnectable={false} nodesDraggable={false} nodeTypes={nodeTypes} proOptions={{ hideAttribution: true }}>
               <Background color="#d8dee1" gap={24} size={1} />
-              <MiniMap pannable zoomable maskColor="rgba(244,247,246,.76)" nodeColor="#17785a" />
+              <MiniMap maskColor="rgba(244,247,246,.76)" nodeColor="#17785a" />
               <Controls showInteractive={false} />
             </ReactFlow>
           </div>
@@ -204,8 +226,51 @@ function ProjectDetail({ record, report }: { record: ProjectRecord; report: Awai
           <div className="project-digest"><span>Immutable project digest</span><code>{record.artifact_sha256}</code></div>
         </aside>
       </div>
+      <section className="project-release" aria-labelledby="project-release-heading">
+        <div className="project-release-heading">
+          <div><span className="eyebrow">HUMAN RELEASE GATE</span><h2 id="project-release-heading">Review and release the exact building candidate</h2><p>Approval signs the project digest and every child program. It still does not enable live BACnet or Niagara writes.</p></div>
+          <span className={approved ? 'release-state approved' : report.passed ? 'release-state ready' : 'release-state blocked'}>{approved ? <PackageCheck size={17} /> : report.passed ? <ShieldCheck size={17} /> : <CircleAlert size={17} />}{approved ? 'Approved and exportable' : report.passed ? 'Evidence ready for review' : 'Release blocked'}</span>
+        </div>
+        <div className="project-release-grid">
+          <div className="project-child-programs">
+            <h3>Programs in this release</h3>
+            {record.equipment_runs.map((item) => (
+              <Link key={item.run_id} to={`/studio/${item.run_id}/review`}>
+                <span><Blocks size={15} /><strong>{item.equipment_name}</strong></span>
+                <span className={`status-badge ${item.status}`}>{statusLabels[item.status]}</span>
+                <ExternalLink size={13} />
+              </Link>
+            ))}
+            <div className="project-assembly-row"><FileCheck2 size={16} /><span><strong>Atomic station assembly</strong><small>{record.assembled_station_path ? 'assembled-station.bog retained in this release' : 'Project configured without a station template'}</small></span><b>{record.assembled_station_path ? 'Included' : 'Not requested'}</b></div>
+          </div>
+          <div className="project-approval-card">
+            {approved ? (
+              <>
+                <div className="approval-confirmed"><UserCheck size={24} /><span><strong>Approved by {record.approval?.reviewer}</strong><small>{record.approval ? new Date(record.approval.approved_at).toLocaleString() : ''}</small></span></div>
+                <div className="approved-digest"><span>Signed artifact digest</span><code>{record.artifact_sha256}</code></div>
+                <a className="project-download" download href={`/api/projects/${record.id}/export`}><Download size={17} />Download complete station bundle</a>
+              </>
+            ) : (
+              <>
+                <h3>Engineer sign-off</h3>
+                <label className="project-reviewer"><span>Reviewer name</span><input aria-label="Project reviewer name" onChange={(event) => setReviewer(event.target.value)} placeholder="Controls engineer" value={reviewer} /></label>
+                <div className="project-release-checks">
+                  <ApprovalCheck checked={checks.topology} label="I reviewed the equipment topology and typed cross-program signals." onChange={(value) => setChecks((current) => ({ ...current, topology: value }))} />
+                  <ApprovalCheck checked={checks.behavior} label={`I reviewed ${assertions.length} system assertions and the child-program evidence.`} onChange={(value) => setChecks((current) => ({ ...current, behavior: value }))} />
+                  <ApprovalCheck checked={checks.artifacts} label="I understand this is offline-generated programming requiring Workbench import and field commissioning." onChange={(value) => setChecks((current) => ({ ...current, artifacts: value }))} />
+                </div>
+                <button className="project-approve-button" disabled={!report.passed || !reviewer.trim() || !allChecked || approve.isPending} onClick={() => approve.mutate()} type="button">{approve.isPending ? <div className="studio-state-spinner" /> : <UserCheck size={17} />}{approve.isPending ? 'Signing exact candidate…' : 'Approve entire building candidate'}</button>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
     </div>
   );
+}
+
+function ApprovalCheck({ checked, label, onChange }: { checked: boolean; label: string; onChange: (checked: boolean) => void }) {
+  return <label><input checked={checked} onChange={(event) => onChange(event.target.checked)} type="checkbox" /><span>{label}</span></label>;
 }
 
 function Metric({ icon, label, value, good = false }: { icon: React.ReactNode; label: string; value: string | number; good?: boolean }) {

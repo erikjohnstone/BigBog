@@ -63,7 +63,7 @@ For AI programming, copy `.env.example` to `.env`, add the Cerebras key locally,
 
 Open [http://127.0.0.1:8000](http://127.0.0.1:8000), click **Build demo job**, inspect the graph and test results, enter a reviewer name, and approve the artifact. Generated runs live under `.bactalk/runs/` and are ignored by git.
 
-The enterprise UI rewrite is available side-by-side at [http://127.0.0.1:8000/next/](http://127.0.0.1:8000/next/). It guides a contractor through scope and source-package intake, performs real point normalization and mapping preflight, and opens retained candidates in a typed wiresheet, deterministic Test Lab, multi-fidelity Simulation Lab, Graphics Studio, and digest-bound Review & Release workspace. Whole-building projects expose equipment topology and cross-program evidence; the library, environment, and administration workspaces expose installed OSS, contractor Niagara inputs, maturity stages, blockers, and audit integrity. Global search and the AI launcher route directly into retained programs. The release workspace verifies the signed artifact set on the server, inventories every handoff file and SHA-256 digest, distinguishes engineering approval from deployment qualification, and offers separate target and full-review-bundle downloads. A connected AI controls-engineer drawer keeps conversation and coding roles visibly separate and presents every proposed change as a new tested candidate. The existing workbench remains at `/` while each proven workflow is migrated, so no controls capability is removed during the transition. To develop and verify the React/TypeScript frontend:
+The enterprise UI rewrite is available side-by-side at [http://127.0.0.1:8000/next/](http://127.0.0.1:8000/next/). It guides a contractor through scope and source-package intake, performs real point normalization and mapping preflight, and opens retained candidates in a typed wiresheet, deterministic Test Lab, multi-fidelity Simulation Lab, Graphics Studio, and digest-bound Review & Release workspace. `/next/projects/new` is the complete whole-building lane: upload one coordinated project contract plus an optional/required contractor station `.bog`, inspect every equipment pack and topology contract in server preflight, compile and test all child programs, execute cross-program acceptance phases, atomically assemble the station, review the system topology and artifacts, sign the exact project digest, and download one approved station bundle. Whole-building projects expose equipment topology and cross-program evidence; the library, environment, and administration workspaces expose installed OSS, contractor Niagara inputs, maturity stages, blockers, and audit integrity. Global search and the AI launcher route directly into retained programs. The release workspace verifies the signed artifact set on the server, inventories every handoff file and SHA-256 digest, distinguishes engineering approval from deployment qualification, and offers separate target and full-review-bundle downloads. A connected AI controls-engineer drawer keeps conversation and coding roles visibly separate and presents every proposed change as a new tested candidate. The existing workbench remains at `/` while each proven workflow is migrated, so no controls capability is removed during the transition. To develop and verify the React/TypeScript frontend:
 
 ```bash
 make web-install
@@ -74,6 +74,14 @@ make web-sbom
 ```
 
 The build regenerates TypeScript API types from FastAPI's OpenAPI document before compiling. Browser tests cover desktop and tablet layouts, the real intake-normalization path, the legacy workbench migration boundary, and automated accessibility checks.
+
+To generate and record the reproducible six-program contractor acceptance workflow, run the server on port 8011 and then:
+
+```bash
+make record-demo
+```
+
+The workflow uploads an AHU, duct-static PI loop, two VAVs, duty/standby pump pair, and exhaust proof sequence; preflights six installed Niagara-target packs; compiles five topology relationships and one typed cross-program link; exercises stateful cross-equipment proof loss/recovery; drills through the wiresheet, Cerebras explanation, Test Lab, isolated BACnet/IP proof, Graphics Studio, and release evidence; signs the entire building candidate; and downloads the deterministic 200-file station bundle. The ignored recording, approved ZIP, and generated input package are written beneath `artifacts/`.
 
 You can also submit a job directly:
 

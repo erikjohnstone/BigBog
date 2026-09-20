@@ -1,4 +1,4 @@
-.PHONY: install install-suite install-haxall aixocat-contract alfalfa-contract bacnet-lab-contract independent-bacnet-simulator-install independent-bacnet-simulator-contract environment-pack-contract buildingmotif-install buildingmotif-contract constrain-install constrain-contract dflexlibs-contract g36-audit g36-audit-contract plant-controls-audit plant-controls-contract plant-job-contract haxall-contract nhaystack-contract niagara-alarm-contract niagara-binding-contract niagara-graphics-contract niagara-program-codegen-contract niagara-station-contract project-signal-contract integration-use-contract n4-hvac-library-contract open-control-library-contract open-fdd-contract pybog-examples-contract rumoca-install rumoca-contract suite-contract cerebras-smoke test lint demo serve clean boptest-contract boptest-smoke boptest-runtime-build boptest-runtime-up boptest-runtime-smoke boptest-graph-runtime boptest-runtime-down volttron-install volttron-contract oce-contract cdl-oce-contract web-install web-build web-test web-lint web-sbom
+.PHONY: install install-suite install-haxall aixocat-contract alfalfa-contract bacnet-lab-contract independent-bacnet-simulator-install independent-bacnet-simulator-contract environment-pack-contract buildingmotif-install buildingmotif-contract constrain-install constrain-contract dflexlibs-contract g36-audit g36-audit-contract plant-controls-audit plant-controls-contract plant-job-contract haxall-contract nhaystack-contract niagara-alarm-contract niagara-binding-contract niagara-graphics-contract niagara-program-codegen-contract niagara-station-contract project-signal-contract integration-use-contract n4-hvac-library-contract open-control-library-contract open-fdd-contract pybog-examples-contract rumoca-install rumoca-contract suite-contract cerebras-smoke test lint demo demo-package record-demo serve clean boptest-contract boptest-smoke boptest-runtime-build boptest-runtime-up boptest-runtime-smoke boptest-graph-runtime boptest-runtime-down volttron-install volttron-contract oce-contract cdl-oce-contract web-install web-build web-test web-lint web-sbom
 
 web-install:
 	cd web && npm ci
@@ -170,6 +170,12 @@ lint:
 
 demo:
 	.venv/bin/bactalk demo --output .bactalk/runs
+
+demo-package:
+	PYTHONPATH=src .venv/bin/python scripts/create_complex_demo_package.py --output artifacts/demo-inputs
+
+record-demo: demo-package web-build
+	cd web && node scripts/record-complex-workflow.mjs
 
 serve:
 	.venv/bin/bactalk serve --reload
