@@ -62,7 +62,8 @@ _BINDINGS: dict[str, dict[str, str]] = {
             "Linkage Schema -> upstream conditional-option interpreter -> configuration digest "
             "-> exact controller, point, scenario, capability, and release-gate programming "
             "brief -> fail-closed contractor point reconciliation -> source-hashed sequence "
-            "facet coverage with excerpt evidence and mandatory engineer review"
+            "facet coverage with excerpt evidence -> unapproved temporal/math/action candidates "
+            "with ambiguity retention and mandatory engineer review"
         ),
         "proof": "make ctrl-flow-contract",
     },

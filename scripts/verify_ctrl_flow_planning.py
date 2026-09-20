@@ -98,6 +98,13 @@ def main() -> int:
                     raise RuntimeError(
                         "a generated scenario has no deterministic sequence-coverage rule"
                     )
+                candidates = sequence_reconciliation["requirement_candidates"]
+                if candidates["ready_for_graph_generation"]:
+                    raise RuntimeError(
+                        "unapproved sequence text bypassed the graph-generation gate"
+                    )
+                if candidates["schema"] != "bactalk.sequence-requirement-candidates/v1":
+                    raise RuntimeError("structured sequence-candidate contract changed")
                 required_points = brief["point_requirements"]["required_count"]
                 scenarios = brief["qualification_plan"]["scenario_count"]
                 stats = per_template[template_id]

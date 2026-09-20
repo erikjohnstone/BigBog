@@ -239,7 +239,8 @@ class IntegrationReadiness:
                     "components, points, scenarios, exact G36 controllers, and release gates; "
                     "point reconciliation blocks missing, ambiguous, duplicate, mistyped, or "
                     "unit-invalid contractor I/O; sequence reconciliation maps every selected "
-                    "scenario to deterministic facet evidence and exposes omitted language"
+                    "scenario to deterministic facet evidence, exposes omitted language, and "
+                    "extracts unapproved thresholds, timing, actions, policies, and bindings"
                 ),
                 evidence_command="make ctrl-flow-contract",
                 blocker=(

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from bactalk.intake import SequenceDocument
+from bactalk.sequence_requirements import extract_sequence_requirement_candidates
 
 
 @dataclass(frozen=True)
@@ -403,6 +404,11 @@ class CtrlFlowSequenceReconciler:
         )
         missing_facet_count = sum(len(item["missing_facets"]) for item in results)
         language_complete = all_mentioned == len(results) and bool(results)
+        requirement_candidates = extract_sequence_requirement_candidates(
+            document,
+            programming_brief,
+            results,
+        )
         return {
             "schema": "bactalk.ctrl-flow-sequence-reconciliation/v1",
             "configuration_digest": programming_brief["configuration_digest"],
@@ -422,6 +428,7 @@ class CtrlFlowSequenceReconciler:
             "missing_facet_count": missing_facet_count,
             "language_coverage_complete": language_complete,
             "scenarios": results,
+            "requirement_candidates": requirement_candidates,
             "gate": (
                 "engineer-review-required"
                 if language_complete

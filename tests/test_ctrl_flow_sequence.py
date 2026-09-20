@@ -127,6 +127,80 @@ def test_topic_like_words_do_not_count_as_life_safety_behavior() -> None:
     assert fire_smoke["mentioned_facet_count"] == 0
 
 
+def test_temporal_math_and_actions_are_extracted_as_review_candidates() -> None:
+    sequence = """
+If mixed-air temperature falls below 38 °F for 5 minutes, limit the outdoor-air
+damper to 20% and command the heating coil valve to 100%.
+Automatically recover when mixed-air temperature rises above 42 °F for 2 minutes.
+If duct static pressure exceeds 1.5 in. w.c. for 10 seconds, stop the supply fan and
+latch the alarm until manual reset.
+After a short delay, restart the system as required.
+""".strip()
+    document = parse_sequence_document(sequence.encode(), "numeric-sequence.txt")
+    result = CtrlFlowLibrary().reconcile_sequence(AHU_TEMPLATE, {}, document)
+    candidates = result["requirement_candidates"]
+
+    assert candidates["duration_count"] == 3
+    assert candidates["threshold_count"] == 3
+    assert candidates["action_count"] >= 5
+    assert candidates["ready_for_graph_generation"] is False
+    assert candidates["approval_required"] is True
+
+    thresholds = {
+        (item["canonical"]["value"], item["canonical"]["unit"]): item
+        for item in candidates["quantities"]
+        if item["kind"] == "threshold"
+    }
+    assert thresholds[(38.0, "degF")]["comparison"] == "lt"
+    assert thresholds[(38.0, "degF")]["input_point_candidates"] == ["MixedAirTemp"]
+    assert thresholds[(42.0, "degF")]["comparison"] == "gt"
+    assert thresholds[(1.5, "inH2O")]["comparison"] == "gt"
+    assert thresholds[(1.5, "inH2O")]["input_point_candidates"] == ["DuctStatic"]
+
+    durations = {
+        item["canonical"]["value"]: item
+        for item in candidates["quantities"]
+        if item["kind"] == "duration"
+    }
+    assert set(durations) == {120.0, 300.0, 10.0}
+    assert all(item["timing_relation"] == "persistence" for item in durations.values())
+    assert all(item["point_binding_status"] == "not-applicable" for item in durations.values())
+    assert all(item["condition_quantity_candidate_id"] for item in durations.values())
+
+    command_values = [
+        item for item in candidates["quantities"] if item["kind"] == "command-value"
+    ]
+    assert {(item["canonical"]["value"], item["canonical"]["unit"]) for item in command_values} == {
+        (20.0, "%"),
+        (100.0, "%"),
+    }
+    assert {tuple(item["input_point_candidates"]) for item in command_values} == {
+        ("OutdoorDamperCommand",),
+        (),
+    }
+    assert all(item["action_candidate_id"] for item in command_values)
+
+    numeric_relationships = [
+        item
+        for item in candidates["relationships"]
+        if item["shape"] == "numeric-condition-to-actions"
+    ]
+    assert len(numeric_relationships) == 2
+    assert all(item["threshold_candidate_ids"] for item in numeric_relationships)
+    assert all(item["duration_candidate_ids"] for item in numeric_relationships)
+    assert all(item["action_candidate_ids"] for item in numeric_relationships)
+
+    policies = {item["policy"] for item in candidates["policies"]}
+    assert {"latched", "manual-reset"} <= policies
+    unresolved = {item["kind"] for item in candidates["unresolved"]}
+    assert {"non-numeric-delay", "external-policy"} <= unresolved
+    assert all(
+        item["source"]["sha256"] == document.sha256
+        for group in ("quantities", "actions", "policies", "unresolved")
+        for item in candidates[group]
+    )
+
+
 def test_unknown_future_scenario_fails_closed_without_a_coverage_rule() -> None:
     brief = CtrlFlowLibrary().programming_brief(AHU_TEMPLATE, {})
     brief["qualification_plan"]["scenarios"] = [
@@ -168,3 +242,7 @@ def test_uploaded_sequence_document_uses_the_same_reconciliation_boundary(
     assert payload["scenario_count"] == 19
     assert payload["language_coverage_complete"] is True
     assert payload["ready_for_code_generation"] is False
+    assert payload["requirement_candidates"]["schema"] == (
+        "bactalk.sequence-requirement-candidates/v1"
+    )
+    assert payload["requirement_candidates"]["ready_for_graph_generation"] is False

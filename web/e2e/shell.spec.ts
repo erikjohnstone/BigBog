@@ -275,6 +275,8 @@ test('installed controls libraries and contractor environments are transparent',
   await page.getByRole('button', { name: 'Check sequence' }).click();
   await expect(page.getByText('Sequence gaps found')).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText(/Phrase coverage only/)).toBeVisible();
+  await expect(page.getByText('Structured requirement candidates')).toBeVisible();
+  await expect(page.getByText('Unapproved · never executable from text alone')).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.goto('/next/environments');
