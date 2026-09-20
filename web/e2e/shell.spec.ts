@@ -298,6 +298,26 @@ test('installed controls libraries and contractor environments are transparent',
   await page.getByRole('button', { name: 'Submit 6 decisions' }).click();
   await expect(page.getByText('2 oracle drafts ready for independent authoring')).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText(/graph generation remains disabled/)).toBeVisible();
+  await expect(page.getByText('Independent acceptance trajectories')).toBeVisible();
+  await page.getByLabel('Independent oracle author').fill('E2E Test Engineer');
+  const oracleCards = page.locator('.ctrl-flow-oracle-list > article');
+  await expect(oracleCards).toHaveCount(2);
+  const mixedAirOracle = oracleCards.filter({ hasText: 'MixedAirTemp' });
+  const mixedInputs = mixedAirOracle.locator('input[type="number"]');
+  for (const [index, value] of ['60', '50', '30', '50', '100', '100', '100'].entries()) {
+    await mixedInputs.nth(index).fill(value);
+  }
+  const ductOracle = oracleCards.filter({ hasText: 'DuctStatic' });
+  const ductInputs = ductOracle.locator('input[type="number"]');
+  for (const [index, value] of ['2', '1', '2', '1'].entries()) {
+    await ductInputs.nth(index).fill(value);
+  }
+  for (const select of await ductOracle.locator('fieldset select').all()) {
+    await select.selectOption('true');
+  }
+  await page.getByRole('button', { name: 'Approve 2 test trajectories' }).click();
+  await expect(page.getByText('Sequence requirement gate passed')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText(/graph generation may begin · deployment remains blocked/)).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.goto('/next/environments');

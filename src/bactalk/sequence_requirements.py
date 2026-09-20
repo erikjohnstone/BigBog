@@ -952,6 +952,26 @@ def compile_sequence_requirement_review(
         "review_digest": review_digest,
         "configuration_digest": reconciliation["configuration_digest"],
         "source_sha256": candidates["source_sha256"],
+        "point_contract": {
+            "schema": "bactalk.sequence-review-point-contract/v1",
+            "points": [
+                {
+                    key: point.get(key)
+                    for key in (
+                        "id",
+                        "label",
+                        "role",
+                        "data_type",
+                        "units",
+                        "required",
+                        "condition",
+                        "reason",
+                        "subsystem",
+                    )
+                }
+                for point in programming_brief["point_requirements"]["points"]
+            ],
+        },
         "review": {
             "reviewer": reviewer,
             "actor_id": actor_id,

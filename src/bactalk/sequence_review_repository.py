@@ -18,10 +18,10 @@ class SequenceReviewIntegrityError(ValueError):
 
 
 class SequenceRequirementReviewRecord(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    schema: Literal["bactalk.sequence-requirement-review-record/v1"] = (
-        "bactalk.sequence-requirement-review-record/v1"
+    schema_name: Literal["bactalk.sequence-requirement-review-record/v1"] = Field(
+        default="bactalk.sequence-requirement-review-record/v1", alias="schema"
     )
     id: str = Field(pattern=r"^[0-9a-f]{32}$")
     template_id: str = Field(min_length=1, max_length=500)
@@ -38,7 +38,7 @@ class SequenceRequirementReviewRecord(BaseModel):
 
 def _canonical_json(value: Any) -> str:
     if isinstance(value, BaseModel):
-        value = value.model_dump(mode="json")
+        value = value.model_dump(mode="json", by_alias=True)
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 

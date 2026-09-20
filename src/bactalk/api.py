@@ -83,6 +83,13 @@ from bactalk.projects import (
 )
 from bactalk.repository import RunRepository
 from bactalk.security import AuditLog, Principal, SecurityConfig, required_role
+from bactalk.sequence_oracles import (
+    SequenceOracleApprovalRecord,
+    SequenceOracleApprovalRepository,
+    SequenceOracleApprovalRequest,
+    SequenceOracleIntegrityError,
+    compile_sequence_oracle_approval,
+)
 from bactalk.sequence_requirements import SequenceRequirementReviewRequest
 from bactalk.sequence_review_repository import (
     SequenceRequirementReviewRecord,
@@ -270,6 +277,9 @@ def create_app(
     sequence_review_repository = SequenceRequirementReviewRepository(
         root.parent / "sequence-requirement-reviews"
     )
+    sequence_oracle_repository = SequenceOracleApprovalRepository(
+        root.parent / "sequence-oracle-approvals"
+    )
     project_builder = ProjectBuildService(project_repository, service, capabilities)
     buildingmotif = BuildingMotifAdapter()
     aixocat_library = AixocatLibrary()
@@ -325,6 +335,17 @@ def create_app(
             return True
         principal: Principal | None = getattr(http_request.state, "principal", None)
         return principal is not None and record.result.get("review", {}).get(
+            "tenant_id"
+        ) == principal.tenant_id
+
+    def retained_oracle_visible(
+        http_request: Request,
+        record: SequenceOracleApprovalRecord,
+    ) -> bool:
+        if not security.enabled:
+            return True
+        principal: Principal | None = getattr(http_request.state, "principal", None)
+        return principal is not None and record.result.get("approval", {}).get(
             "tenant_id"
         ) == principal.tenant_id
 
@@ -647,7 +668,7 @@ def create_app(
                 **result,
                 "review_id": record.id,
                 "retention": {
-                    "schema": record.schema,
+                    "schema": record.schema_name,
                     "artifact_digest": record.artifact_digest,
                     "created_at": record.created_at.isoformat(),
                     "source_bytes_retained": True,
@@ -711,7 +732,99 @@ def create_app(
             raise HTTPException(
                 status_code=404, detail="sequence requirement review not found"
             )
-        return record.model_dump(mode="json")
+        return record.model_dump(mode="json", by_alias=True)
+
+    @app.post("/api/sequence-requirement-reviews/{review_id}/oracles/approve")
+    def approve_sequence_oracles(
+        review_id: str,
+        request: SequenceOracleApprovalRequest,
+        http_request: Request,
+    ) -> dict:
+        try:
+            review_record = sequence_review_repository.get(review_id)
+            if not retained_review_visible(http_request, review_record):
+                raise HTTPException(
+                    status_code=404, detail="sequence requirement review not found"
+                )
+            author, actor_id, tenant_id, authentication = review_identity(
+                http_request, request.author
+            )
+            result = compile_sequence_oracle_approval(
+                review_id,
+                review_record.model_dump(mode="json"),
+                request,
+                author=author,
+                actor_id=actor_id,
+                tenant_id=tenant_id,
+                authentication=authentication,
+            )
+            record = sequence_oracle_repository.save(result)
+            return {
+                **result,
+                "oracle_approval_id": record.id,
+                "retention": {
+                    "schema": record.schema_name,
+                    "artifact_digest": record.artifact_digest,
+                    "created_at": record.created_at.isoformat(),
+                    "storage": "append-only-local-hash-verified",
+                    "external_immutable_retention": False,
+                },
+            }
+        except KeyError as exc:
+            raise HTTPException(
+                status_code=404, detail="sequence requirement review not found"
+            ) from exc
+        except HTTPException:
+            raise
+        except (SequenceReviewIntegrityError, SequenceOracleIntegrityError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.get("/api/sequence-oracle-approvals")
+    def list_sequence_oracle_approvals(http_request: Request) -> dict:
+        try:
+            records = [
+                record
+                for record in sequence_oracle_repository.list()
+                if retained_oracle_visible(http_request, record)
+            ]
+            return {
+                "schema": "bactalk.sequence-oracle-approval-list/v1",
+                "count": len(records),
+                "approvals": [
+                    {
+                        "id": record.id,
+                        "review_id": record.review_id,
+                        "review_artifact_digest": record.review_artifact_digest,
+                        "created_at": record.created_at.isoformat(),
+                        "oracle_digest": record.oracle_digest,
+                        "artifact_digest": record.artifact_digest,
+                        "author": record.result["approval"]["author"],
+                        "case_count": record.result["case_count"],
+                        "ready_for_graph_generation": record.result[
+                            "ready_for_graph_generation"
+                        ],
+                    }
+                    for record in records
+                ],
+            }
+        except SequenceOracleIntegrityError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+    @app.get("/api/sequence-oracle-approvals/{approval_id}")
+    def get_sequence_oracle_approval(approval_id: str, http_request: Request) -> dict:
+        try:
+            record = sequence_oracle_repository.get(approval_id)
+        except KeyError as exc:
+            raise HTTPException(
+                status_code=404, detail="sequence oracle approval not found"
+            ) from exc
+        except (SequenceOracleIntegrityError, ValueError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        if not retained_oracle_visible(http_request, record):
+            raise HTTPException(status_code=404, detail="sequence oracle approval not found")
+        return record.model_dump(mode="json", by_alias=True)
 
     @app.post("/api/library/g36/controllers/{controller_id}/translate")
     def translate_g36_controller(

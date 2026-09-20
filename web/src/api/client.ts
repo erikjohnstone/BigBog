@@ -731,9 +731,23 @@ const ctrlFlowSequenceReviewSchema = z.object({
   oracle_draft_count: z.number(),
   oracle_drafts: z.array(z.object({
     id: z.string(),
-    conditions: z.array(z.record(z.string(), z.unknown())),
-    durations: z.array(z.record(z.string(), z.unknown())),
-    expectations: z.array(z.record(z.string(), z.unknown())),
+    conditions: z.array(z.object({
+      point: z.string(),
+      operator: z.enum(['lt', 'le', 'gt', 'ge', 'eq']),
+      value: z.number(),
+      unit: z.string(),
+      point_unit: z.string().nullable().optional(),
+    }).passthrough()),
+    durations: z.array(z.object({
+      seconds: z.number(),
+      relation: z.string(),
+    }).passthrough()),
+    expectations: z.array(z.object({
+      point: z.string(),
+      operator: z.literal('eq'),
+      value: z.union([z.number(), z.boolean()]),
+      verb: z.string(),
+    }).passthrough()),
     status: z.literal('draft-independent-oracle-required'),
     executable: z.literal(false),
   }).passthrough()),
@@ -748,6 +762,35 @@ const ctrlFlowSequenceReviewSchema = z.object({
     artifact_digest: z.string(),
     created_at: z.string(),
     source_bytes_retained: z.literal(true),
+    storage: z.literal('append-only-local-hash-verified'),
+    external_immutable_retention: z.literal(false),
+  }),
+}).passthrough();
+
+const sequenceOracleApprovalSchema = z.object({
+  schema: z.literal('bactalk.sequence-oracle-approval/v1'),
+  oracle_approval_id: z.string(),
+  review_id: z.string(),
+  review_artifact_digest: z.string(),
+  review_digest: z.string(),
+  source_sha256: z.string(),
+  oracle_digest: z.string(),
+  approval: z.object({
+    author: z.string(),
+    approved_at: z.string(),
+    independent_from_requirement_reviewer: z.literal(true),
+  }).passthrough(),
+  case_count: z.number(),
+  acceptance_cases: z.array(z.record(z.string(), z.unknown())),
+  validation_evidence: z.array(z.record(z.string(), z.unknown())),
+  sequence_requirement_gate_passed: z.literal(true),
+  ready_for_graph_generation: z.literal(true),
+  ready_for_deployment: z.literal(false),
+  next_gate: z.string(),
+  retention: z.object({
+    schema: z.literal('bactalk.sequence-oracle-approval-record/v1'),
+    artifact_digest: z.string(),
+    created_at: z.string(),
     storage: z.literal('append-only-local-hash-verified'),
     external_immutable_retention: z.literal(false),
   }),
@@ -1013,6 +1056,12 @@ export const api = {
     return ctrlFlowSequenceReviewSchema.parse(await postForm(
       `/api/library/ctrl-flow/templates/${encodeURIComponent(templateId)}/review-requirements/approve`,
       body,
+    ));
+  },
+  async approveSequenceOracles(reviewId: string, approval: Record<string, unknown>) {
+    return sequenceOracleApprovalSchema.parse(await postJson(
+      `/api/sequence-requirement-reviews/${encodeURIComponent(reviewId)}/oracles/approve`,
+      approval,
     ));
   },
   async approve(runId: string, reviewer: string) {

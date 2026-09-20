@@ -1242,6 +1242,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sequence-oracle-approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Sequence Oracle Approvals */
+        get: operations["list_sequence_oracle_approvals_api_sequence_oracle_approvals_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sequence-oracle-approvals/{approval_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Sequence Oracle Approval */
+        get: operations["get_sequence_oracle_approval_api_sequence_oracle_approvals__approval_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sequence-requirement-reviews": {
         parameters: {
             query?: never;
@@ -1270,6 +1304,23 @@ export interface paths {
         get: operations["get_sequence_requirement_review_api_sequence_requirement_reviews__review_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/sequence-requirement-reviews/{review_id}/oracles/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve Sequence Oracles */
+        post: operations["approve_sequence_oracles_api_sequence_requirement_reviews__review_id__oracles_approve_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2305,6 +2356,74 @@ export interface components {
             timezone: string;
             /** Weekly Periods */
             weekly_periods?: components["schemas"]["WeeklySchedulePeriod"][];
+        };
+        /** SequenceOracleApprovalRequest */
+        SequenceOracleApprovalRequest: {
+            /** Author */
+            author?: string | null;
+            /** Cases */
+            cases: components["schemas"]["SequenceOracleCaseAuthoring"][];
+            /** Review Artifact Digest */
+            review_artifact_digest: string;
+        };
+        /** SequenceOracleCaseAuthoring */
+        SequenceOracleCaseAuthoring: {
+            /** Baseline Expectations */
+            baseline_expectations: components["schemas"]["SequenceOracleExpectation"][];
+            /** Baseline Inputs */
+            baseline_inputs: {
+                [key: string]: number | boolean;
+            };
+            /**
+             * Baseline Repeat
+             * @default 1
+             */
+            baseline_repeat: number;
+            /** Name */
+            name: string;
+            /** Oracle Id */
+            oracle_id: string;
+            /** Post Trigger Expectations */
+            post_trigger_expectations: components["schemas"]["SequenceOracleExpectation"][];
+            /** Pre Trigger Expectations */
+            pre_trigger_expectations?: components["schemas"]["SequenceOracleExpectation"][];
+            /** Recovery Expectations */
+            recovery_expectations: components["schemas"]["SequenceOracleExpectation"][];
+            /** Recovery Inputs */
+            recovery_inputs: {
+                [key: string]: number | boolean;
+            };
+            /**
+             * Recovery Repeat
+             * @default 1
+             */
+            recovery_repeat: number;
+            /** Step Seconds */
+            step_seconds: number;
+            /** Trigger Inputs */
+            trigger_inputs: {
+                [key: string]: number | boolean;
+            };
+        };
+        /** SequenceOracleExpectation */
+        SequenceOracleExpectation: {
+            /**
+             * Operator
+             * @default eq
+             * @enum {string}
+             */
+            operator: "eq" | "ne" | "gt" | "gte" | "lt" | "lte" | "between";
+            /** Target */
+            target: string;
+            /**
+             * Tolerance
+             * @default 0
+             */
+            tolerance: number;
+            /** Upper */
+            upper?: number | null;
+            /** Value */
+            value: number | boolean;
         };
         /** SequenceSpec */
         SequenceSpec: {
@@ -4749,6 +4868,61 @@ export interface operations {
             };
         };
     };
+    list_sequence_oracle_approvals_api_sequence_oracle_approvals_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_sequence_oracle_approval_api_sequence_oracle_approvals__approval_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                approval_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_sequence_requirement_reviews_api_sequence_requirement_reviews_get: {
         parameters: {
             query?: never;
@@ -4781,6 +4955,43 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_sequence_oracles_api_sequence_requirement_reviews__review_id__oracles_approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                review_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SequenceOracleApprovalRequest"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
