@@ -6,10 +6,13 @@ import socket
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
+
 from bactalk.demo import demo_job
 from bactalk.domain import (
     AcceptanceCase,
     DataType,
+    JobSpec,
     OutputExpectation,
     canonical_json,
 )
@@ -19,6 +22,7 @@ from bactalk.integrations.bacnet_lab import (
     build_bacnet_lab_export,
     probe_manifest_with_bac0,
 )
+from bactalk.integrations.virtual_actuator import VirtualActuatorFault
 
 
 def _free_udp_port() -> int:
@@ -37,6 +41,84 @@ def _write_export(root: Path, base_port: int) -> Path:
     manifest_path = root / "manifest.json"
     manifest_path.write_text(canonical_json(export.manifest), encoding="utf-8")
     return manifest_path
+
+
+def _actuator_job() -> JobSpec:
+    payload = demo_job().model_dump(mode="json")
+    payload["points"].extend(
+        [
+            {
+                "name": "DamperPosition",
+                "label": "VAV damper position",
+                "data_type": "numeric",
+                "role": "status",
+                "units": "%",
+                "default": 0.0,
+                "bacnet_device_instance": 120012,
+                "bacnet_object": "analog-input,2",
+            },
+            {
+                "name": "DamperOpenProof",
+                "label": "VAV damper open proof",
+                "data_type": "boolean",
+                "role": "status",
+                "default": False,
+                "bacnet_device_instance": 120012,
+                "bacnet_object": "binary-input,1",
+            },
+            {
+                "name": "DamperClosedProof",
+                "label": "VAV damper closed proof",
+                "data_type": "boolean",
+                "role": "status",
+                "default": True,
+                "bacnet_device_instance": 120012,
+                "bacnet_object": "binary-input,2",
+            },
+        ]
+    )
+    payload["bacnet_scan"]["devices"][0]["objects"].extend(
+        [
+            {
+                "object_id": "analog-input,2",
+                "name": "Damper Position",
+                "data_type": "numeric",
+                "writable": False,
+                "units": "%",
+                "present_value": 0.0,
+            },
+            {
+                "object_id": "binary-input,1",
+                "name": "Damper Open Proof",
+                "data_type": "boolean",
+                "writable": False,
+                "present_value": False,
+            },
+            {
+                "object_id": "binary-input,2",
+                "name": "Damper Closed Proof",
+                "data_type": "boolean",
+                "writable": False,
+                "present_value": True,
+            },
+        ]
+    )
+    payload["virtual_actuators"] = [
+        {
+            "id": "SupplyDamper",
+            "kind": "damper",
+            "command_point": "DamperCommand",
+            "position_point": "DamperPosition",
+            "open_proof_point": "DamperOpenProof",
+            "closed_proof_point": "DamperClosedProof",
+            "stroke_open_seconds": 0.2,
+            "stroke_close_seconds": 0.2,
+            "proof_timeout_seconds": 0.1,
+            "leakage_percent": 1.0,
+            "flow_exponent": 1.5,
+        }
+    ]
+    return JobSpec.model_validate(payload)
 
 
 def test_generated_bacnet_device_is_readable_and_commandable_over_real_udp(
@@ -263,5 +345,94 @@ def test_all_common_analog_binary_and_multistate_objects_construct() -> None:
             obj = VirtualBacnetLab._object(config)
             await asyncio.sleep(0)
             assert obj.objectIdentifier is not None
+
+    asyncio.run(exercise())
+
+
+def test_real_bacnet_command_drives_virtual_damper_motion_proofs_and_faults(
+    tmp_path: Path,
+) -> None:
+    async def exercise() -> None:
+        server_port = _free_udp_port()
+        export = build_bacnet_lab_export(_actuator_job(), base_port=server_port)
+        assert export is not None
+        for artifact in export.artifacts:
+            path = tmp_path / artifact.relative_path
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(artifact.content, encoding="utf-8")
+        manifest_path = tmp_path / "manifest.json"
+        manifest_path.write_text(canonical_json(export.manifest), encoding="utf-8")
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        assert manifest["actuator_models"][0]["id"] == "SupplyDamper"
+
+        lab = VirtualBacnetLab.load(manifest_path)
+        await lab.start()
+        from bacpypes3.app import Application
+
+        client = Application.from_args(
+            SimpleNamespace(
+                vendoridentifier=999,
+                instance=4_193_998,
+                name="BACTalk-Actuator-Proof-Client",
+                address=f"127.0.0.1/32:{_free_udp_port()}",
+                foreign=None,
+                network=0,
+                ttl=30,
+                bbmd=None,
+            )
+        )
+        address = f"127.0.0.1:{server_port}"
+        try:
+            await client.write_property(
+                address,
+                "analog-output,1",
+                "present-value",
+                100.0,
+                priority=8,
+            )
+            await asyncio.sleep(0.3)
+            position = await client.read_property(
+                address,
+                "analog-input,2",
+                "present-value",
+            )
+            open_proof = await client.read_property(
+                address,
+                "binary-input,1",
+                "present-value",
+            )
+            assert float(position) == pytest.approx(100.0)
+            assert str(open_proof) == "active"
+            assert lab.actuator_snapshot("SupplyDamper")["flow_percent"] == 100.0
+
+            lab.set_actuator_fault(
+                "SupplyDamper",
+                VirtualActuatorFault(stuck_position=40.0, open_proof_failed=True),
+            )
+            await asyncio.sleep(0.12)
+            stuck_position = await client.read_property(
+                address,
+                "analog-input,2",
+                "present-value",
+            )
+            failed_proof = await client.read_property(
+                address,
+                "binary-input,1",
+                "present-value",
+            )
+            snapshot = lab.actuator_snapshot("SupplyDamper")
+            assert float(stuck_position) == pytest.approx(40.0)
+            assert str(failed_proof) == "inactive"
+            assert snapshot["command_feedback_mismatch"] is True
+            assert snapshot["proof_alarm"] is True
+
+            lab.clear_actuator_fault("SupplyDamper")
+            await asyncio.sleep(0.2)
+            recovered = lab.actuator_snapshot("SupplyDamper")
+            assert recovered["physical_position"] == pytest.approx(100.0)
+            assert recovered["proof_alarm"] is False
+        finally:
+            client.close()
+            lab.close()
 
     asyncio.run(exercise())

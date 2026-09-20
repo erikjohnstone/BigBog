@@ -117,6 +117,68 @@ class PointSpec(BaseModel):
         return self
 
 
+class VirtualActuatorKind(StrEnum):
+    """Physical actuator families modeled by the isolated BACnet lab."""
+
+    VALVE = "valve"
+    DAMPER = "damper"
+
+
+class VirtualActuatorSpec(BaseModel):
+    """Reviewed command-to-motion contract for one virtual valve or damper.
+
+    The point bindings are deliberately explicit. BACTalk must not guess that an
+    arbitrary sensor is actuator feedback when exercising an external controller.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$", max_length=120)
+    kind: VirtualActuatorKind
+    command_point: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$", max_length=120)
+    position_point: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$", max_length=120)
+    open_proof_point: str | None = Field(
+        default=None,
+        pattern=r"^[A-Za-z_][A-Za-z0-9_]*$",
+        max_length=120,
+    )
+    closed_proof_point: str | None = Field(
+        default=None,
+        pattern=r"^[A-Za-z_][A-Za-z0-9_]*$",
+        max_length=120,
+    )
+    stroke_open_seconds: float = Field(default=90.0, gt=0.0, le=3_600.0)
+    stroke_close_seconds: float = Field(default=90.0, gt=0.0, le=3_600.0)
+    minimum_position: float = Field(default=0.0, ge=0.0, le=100.0)
+    maximum_position: float = Field(default=100.0, ge=0.0, le=100.0)
+    fail_position: float = Field(default=0.0, ge=0.0, le=100.0)
+    command_deadband: float = Field(default=0.25, ge=0.0, le=25.0)
+    proof_timeout_seconds: float = Field(default=120.0, ge=0.0, le=86_400.0)
+    open_proof_threshold: float = Field(default=90.0, ge=0.0, le=100.0)
+    closed_proof_threshold: float = Field(default=10.0, ge=0.0, le=100.0)
+    leakage_percent: float = Field(default=0.0, ge=0.0, le=100.0)
+    flow_exponent: float = Field(default=1.0, gt=0.0, le=10.0)
+
+    @model_validator(mode="after")
+    def physical_contract_is_coherent(self) -> VirtualActuatorSpec:
+        if self.minimum_position >= self.maximum_position:
+            raise ValueError("virtual actuator minimum_position must be below maximum_position")
+        if not self.minimum_position <= self.fail_position <= self.maximum_position:
+            raise ValueError("virtual actuator fail_position must be inside its travel range")
+        if self.closed_proof_threshold >= self.open_proof_threshold:
+            raise ValueError("closed proof threshold must be below open proof threshold")
+        point_names = [
+            self.command_point,
+            self.position_point,
+            self.open_proof_point,
+            self.closed_proof_point,
+        ]
+        bound = [item for item in point_names if item is not None]
+        if len(bound) != len(set(bound)):
+            raise ValueError("virtual actuator point bindings must be distinct")
+        return self
+
+
 class SequenceSpec(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -560,6 +622,7 @@ class JobSpec(BaseModel):
     qualification_profile: QualificationProfile | None = None
     deliverables: DeliverableRequirements = Field(default_factory=DeliverableRequirements)
     bacnet_scan: BacnetScan | None = None
+    virtual_actuators: list[VirtualActuatorSpec] = Field(default_factory=list, max_length=10_000)
     template_bog: str | None = None
     notes: str | None = None
 
@@ -569,6 +632,51 @@ class JobSpec(BaseModel):
         if len(names) != len(set(names)):
             raise ValueError("point names must be unique")
         points = {point.name: point for point in self.points}
+        actuator_ids = [item.id for item in self.virtual_actuators]
+        if len(actuator_ids) != len(set(actuator_ids)):
+            raise ValueError("virtual actuator ids must be unique")
+        actuator_commands = [item.command_point for item in self.virtual_actuators]
+        actuator_positions = [item.position_point for item in self.virtual_actuators]
+        if len(actuator_commands) != len(set(actuator_commands)):
+            raise ValueError("virtual actuator command points must be unique")
+        if len(actuator_positions) != len(set(actuator_positions)):
+            raise ValueError("virtual actuator position points must be unique")
+        for actuator in self.virtual_actuators:
+            command = points.get(actuator.command_point)
+            position = points.get(actuator.position_point)
+            if command is None or position is None:
+                raise ValueError(
+                    f"virtual actuator {actuator.id} references an unknown command or "
+                    "position point"
+                )
+            if command.data_type != DataType.NUMERIC or command.role != PointRole.COMMAND:
+                raise ValueError(
+                    f"virtual actuator {actuator.id} command point must be a numeric command"
+                )
+            if position.data_type != DataType.NUMERIC or position.role not in {
+                PointRole.SENSOR,
+                PointRole.STATUS,
+            }:
+                raise ValueError(
+                    f"virtual actuator {actuator.id} position point must be numeric sensor/status"
+                )
+            for proof_name in (actuator.open_proof_point, actuator.closed_proof_point):
+                if proof_name is None:
+                    continue
+                proof = points.get(proof_name)
+                if (
+                    proof is None
+                    or proof.data_type != DataType.BOOLEAN
+                    or proof.role
+                    not in {
+                        PointRole.SENSOR,
+                        PointRole.STATUS,
+                    }
+                ):
+                    raise ValueError(
+                        f"virtual actuator {actuator.id} proof point {proof_name!r} must be "
+                        "a Boolean sensor/status"
+                    )
         for alarm in self.deliverables.alarms:
             point = points.get(alarm.point)
             if point is None:
@@ -662,6 +770,8 @@ class BlockKind(StrEnum):
     BOOLEAN_FALLING_EDGE = "boolean_falling_edge"
     MOVING_AVERAGE = "moving_average"
     NUMERIC_SAMPLER = "numeric_sampler"
+    NUMERIC_FIRST_ORDER_HOLD = "numeric_first_order_hold"
+    BOOLEAN_SAMPLE_TRIGGER = "boolean_sample_trigger"
     NUMERIC_UNIT_DELAY = "numeric_unit_delay"
     NUMERIC_CHANGED = "numeric_changed"
     NUMERIC_INCREASED = "numeric_increased"
@@ -786,6 +896,10 @@ BLOCK_SLOTS: dict[BlockKind, SlotSpec] = {
     BlockKind.NUMERIC_SAMPLER: SlotSpec(
         inputs={"in": DataType.NUMERIC}, outputs={"out": DataType.NUMERIC}
     ),
+    BlockKind.NUMERIC_FIRST_ORDER_HOLD: SlotSpec(
+        inputs={"in": DataType.NUMERIC}, outputs={"out": DataType.NUMERIC}
+    ),
+    BlockKind.BOOLEAN_SAMPLE_TRIGGER: SlotSpec(outputs={"out": DataType.BOOLEAN}),
     BlockKind.NUMERIC_UNIT_DELAY: SlotSpec(
         inputs={"in": DataType.NUMERIC}, outputs={"out": DataType.NUMERIC}
     ),
@@ -1311,12 +1425,34 @@ class Block(BaseModel):
             window = self.config.get("window_seconds")
             if isinstance(window, bool) or not isinstance(window, (int, float)) or window <= 0:
                 raise ValueError("moving_average config.window_seconds must be positive numeric")
-        if self.kind in {BlockKind.NUMERIC_SAMPLER, BlockKind.NUMERIC_UNIT_DELAY}:
+        if self.kind in {
+            BlockKind.NUMERIC_SAMPLER,
+            BlockKind.NUMERIC_FIRST_ORDER_HOLD,
+            BlockKind.NUMERIC_UNIT_DELAY,
+        }:
             period = self.config.get("sample_period_seconds")
             if isinstance(period, bool) or not isinstance(period, (int, float)) or period < 0.001:
                 raise ValueError(
                     f"{self.kind.value} config.sample_period_seconds must be at least 0.001"
                 )
+        if self.kind == BlockKind.BOOLEAN_SAMPLE_TRIGGER:
+            period = self.config.get("period_seconds")
+            shift = self.config.get("shift_seconds")
+            if (
+                isinstance(period, bool)
+                or not isinstance(period, (int, float))
+                or not math.isfinite(float(period))
+                or period <= 0
+            ):
+                raise ValueError(
+                    "boolean_sample_trigger config.period_seconds must be positive finite"
+                )
+            if (
+                isinstance(shift, bool)
+                or not isinstance(shift, (int, float))
+                or not math.isfinite(float(shift))
+            ):
+                raise ValueError("boolean_sample_trigger config.shift_seconds must be finite")
         if self.kind in {
             BlockKind.NUMERIC_UNIT_DELAY,
             BlockKind.NUMERIC_CHANGED,

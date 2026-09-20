@@ -2,7 +2,7 @@ use std::env;
 use std::fs;
 use std::process::ExitCode;
 
-use oce_api::{Engine, PointValueType, Value};
+use oce_api::{Engine, PointValueType, Value, catalog};
 use serde_json::json;
 
 fn inspect(path: &str) -> Result<serde_json::Value, String> {
@@ -51,11 +51,19 @@ fn inspect(path: &str) -> Result<serde_json::Value, String> {
         .blocks
         .iter()
         .map(|block| {
+            let descriptor = catalog()
+                .iter()
+                .find(|entry| entry.class_path == block.class_iri);
             json!({
                 "instance_path": block.instance_path,
                 "class_iri": block.class_iri,
                 "inputs": block.inputs,
                 "outputs": block.outputs,
+                "input_names": descriptor.map(|entry| entry.inputs.iter().map(|port| port.name).collect::<Vec<_>>()),
+                "output_names": descriptor.map(|entry| entry.outputs.iter().map(|port| port.name).collect::<Vec<_>>()),
+                "params": block.params.iter().map(|(name, value)| {
+                    json!({"name": name, "value": value_json(value.clone())})
+                }).collect::<Vec<_>>(),
             })
         })
         .collect::<Vec<_>>();
@@ -75,9 +83,54 @@ fn inspect(path: &str) -> Result<serde_json::Value, String> {
         "blocks": blocks,
         "connections": connections,
         "external_inputs": topology.external_inputs,
+        "pass_through": topology.pass_through.iter().map(|pair| {
+            json!({"input": pair.input, "output": pair.output})
+        }).collect::<Vec<_>>(),
         "boundary_outputs": topology.boundary_outputs.iter().map(|output| {
             json!({"path": output.path, "driver_path": output.driver_path})
         }).collect::<Vec<_>>(),
+    }))
+}
+
+fn flatten(path: &str) -> Result<serde_json::Value, String> {
+    let bytes = fs::read(path).map_err(|error| format!("cannot read CXF: {error}"))?;
+    let mut engine = Engine::in_memory();
+    let load = engine
+        .load_cxf(&bytes)
+        .map_err(|error| format!("CXF validation failed: {error}"))?;
+    let export = engine
+        .export_cxf()
+        .map_err(|error| format!("CXF flattening failed: {error}"))?;
+    let content_id = export.content_id_complete().map_err(|error| {
+        let diagnostics = export
+            .warnings
+            .iter()
+            .take(100)
+            .map(|diagnostic| {
+                format!(
+                    "{}|{}|{}|{}",
+                    diagnostic.severity.as_str(),
+                    diagnostic.code.as_str(),
+                    diagnostic.subject.as_deref().unwrap_or("<none>"),
+                    diagnostic.message.chars().take(500).collect::<String>()
+                )
+            })
+            .collect::<Vec<_>>()
+            .join("\n");
+        format!("CXF flattening was incomplete: {error}\n{diagnostics}")
+    })?;
+    let document: serde_json::Value = serde_json::from_slice(&export.bytes)
+        .map_err(|error| format!("flattened CXF is invalid JSON: {error}"))?;
+    Ok(json!({
+        "schema": "bactalk.oce-flatten/v1",
+        "engine": "open-control-engine",
+        "source_model_id": load.model_id.0.as_ref(),
+        "source_block_count": load.block_count,
+        "source_stateful_blocks": load.stateful_blocks,
+        "source_warning_count": load.warnings.len(),
+        "export_warning_count": export.warnings.len(),
+        "content_id": content_id,
+        "document": document,
     }))
 }
 
@@ -205,7 +258,7 @@ fn simulate(path: &str, scenario_path: &str) -> Result<serde_json::Value, String
 fn main() -> ExitCode {
     let mut args = env::args().skip(1);
     let Some(command) = args.next() else {
-        eprintln!("usage: bactalk-oce-runner inspect <cxf.jsonld>");
+        eprintln!("usage: bactalk-oce-runner <inspect|flatten> <cxf.jsonld>");
         return ExitCode::from(2);
     };
     let Some(path) = args.next() else {
@@ -214,11 +267,12 @@ fn main() -> ExitCode {
     };
     let result = match command.as_str() {
         "inspect" if args.next().is_none() => inspect(&path),
+        "flatten" if args.next().is_none() => flatten(&path),
         "simulate" => match args.next() {
             Some(scenario) if args.next().is_none() => simulate(&path, &scenario),
             _ => Err("usage: bactalk-oce-runner simulate <cxf.jsonld> <scenario.json>".into()),
         },
-        _ => Err("usage: bactalk-oce-runner inspect <cxf.jsonld>".into()),
+        _ => Err("usage: bactalk-oce-runner <inspect|flatten> <cxf.jsonld>".into()),
     };
     match result {
         Ok(result) => {

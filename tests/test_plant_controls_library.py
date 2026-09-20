@@ -128,9 +128,7 @@ def test_catalog_separates_source_presence_from_product_support() -> None:
     assert catalog["proven_controller_count"] == 38
     controller = next(item for item in catalog["controllers"] if item["id"] == CONTROLLER)
     assert controller["product_status"] == "exact_ir_generated_program_source"
-    plant_reset = next(
-        item for item in catalog["controllers"] if item["id"] == PLANT_RESET
-    )
+    plant_reset = next(item for item in catalog["controllers"] if item["id"] == PLANT_RESET)
     assert plant_reset["product_status"] == "exact_ir_generated_program_source"
     air_to_water = next(
         item for item in catalog["controllers"] if item["id"] == "HeatPumps.AirToWater"
@@ -182,8 +180,7 @@ def test_hold_real_program_package_preserves_graph_and_wiring() -> None:
     assert {
         item["behavior_kind"]
         for item in wiring["components"]
-        if item["behavior_kind"]
-        not in {"numeric_input", "boolean_input", "numeric_output"}
+        if item["behavior_kind"] not in {"numeric_input", "boolean_input", "numeric_output"}
     } == {
         "numeric_latch",
         "boolean_true_false_hold",
@@ -211,9 +208,7 @@ def test_configured_controller_emits_exact_contractor_job_template() -> None:
     assert template["acceptance_output_targets"] == [
         {"target": "y", "data_type": "numeric", "required": True}
     ]
-    assert template["points_csv"].splitlines()[0] == (
-        "name,label,data_type,role,default,required"
-    )
+    assert template["points_csv"].splitlines()[0] == ("name,label,data_type,role,default,required")
 
 
 def test_parameterized_plant_reset_lowers_hold_logic_and_array_outputs() -> None:
@@ -232,9 +227,7 @@ def test_parameterized_plant_reset_lowers_hold_logic_and_array_outputs() -> None
         "dpSet__1",
         "dpSet__2",
     }
-    assert library.assess_niagara_source_target(translation)[
-        "generated_program_count"
-    ] == 1
+    assert library.assess_niagara_source_target(translation)["generated_program_count"] == 1
 
     samples = [
         {
@@ -254,9 +247,7 @@ def test_parameterized_plant_reset_lowers_hold_logic_and_array_outputs() -> None
         collect=["TSupSet"],
     )
     output_id = execution["interface"]["outputs"][0]["id"]
-    assert [
-        row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]
-    ] == [
+    assert [row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]] == [
         279.15,
         279.15,
         279.15,
@@ -340,14 +331,10 @@ def test_full_minimum_flow_controller_executes_every_enable_topology(
         "Buildings.Controls.OBC.CDL.Reals.PIDWithReset"
     ]
     actual_enable_inputs = {
-        name
-        for name in input_labels
-        if name.startswith("u1Val") or name.startswith("u1Pum")
+        name for name in input_labels if name.startswith("u1Val") or name.startswith("u1Pum")
     }
     assert actual_enable_inputs == {
-        f"{prefix}__{index}"
-        for prefix in expected_enable_prefixes
-        for index in (1, 2)
+        f"{prefix}__{index}" for prefix in expected_enable_prefixes for index in (1, 2)
     }
 
     base_inputs = {
@@ -374,16 +361,12 @@ def test_full_minimum_flow_controller_executes_every_enable_topology(
     )
     outputs = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
     assert [
-        row["outputs"][outputs["VPriSet_flow"]]["value"]
-        for row in execution["trace"]["trace"]
+        row["outputs"][outputs["VPriSet_flow"]]["value"] for row in execution["trace"]["trace"]
     ] == [0.12, 0.12, 0.12, 0.12]
     assert [
-        row["outputs"][outputs["y"]]["value"]
-        for row in execution["trace"]["trace"]
+        row["outputs"][outputs["y"]]["value"] for row in execution["trace"]["trace"]
     ] == pytest.approx([1.0, 1.0, 1.0, 0.82])
-    assert library.assess_niagara_source_target(translation)[
-        "generated_program_count"
-    ] == 1
+    assert library.assess_niagara_source_target(translation)["generated_program_count"] == 1
 
 
 def test_full_minimum_flow_controller_rejects_unsafe_dimensions() -> None:
@@ -527,12 +510,12 @@ def test_dual_mode_minimum_flow_common_pumps_are_filtered_by_equipment_mode() ->
     assert [
         row["outputs"][outputs["VChiWatPriSet_flow"]]["value"] for row in trace
     ] == pytest.approx([0.04] * len(pump_states))
-    assert [
-        row["outputs"][outputs["yValHeaWatMinByp"]]["value"] for row in trace
-    ] == pytest.approx([1.0, 1.0, 1.0, 0.82, 1.0, 1.0, 1.0])
-    assert [
-        row["outputs"][outputs["yValChiWatMinByp"]]["value"] for row in trace
-    ] == pytest.approx([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.94])
+    assert [row["outputs"][outputs["yValHeaWatMinByp"]]["value"] for row in trace] == pytest.approx(
+        [1.0, 1.0, 1.0, 0.82, 1.0, 1.0, 1.0]
+    )
+    assert [row["outputs"][outputs["yValChiWatMinByp"]]["value"] for row in trace] == pytest.approx(
+        [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.94]
+    )
 
     package, _ = library.niagara_program_package(
         "MinimumFlow.ControllerDualMode",
@@ -594,12 +577,8 @@ def test_equipment_availability_topology_matrix_has_complete_program_source(
         },
     )
 
-    assert {port["label"] for port in translation["interface"]["inputs"]} == (
-        expected_inputs
-    )
-    assert {port["label"] for port in translation["interface"]["outputs"]} == (
-        expected_outputs
-    )
+    assert {port["label"] for port in translation["interface"]["inputs"]} == (expected_inputs)
+    assert {port["label"] for port in translation["interface"]["outputs"]} == (expected_outputs)
     assert translation["product_status"] == "exact_ir_generated_program_source"
     state = next(
         block
@@ -675,12 +654,8 @@ def test_equipment_availability_enforces_mode_exclusion_off_time_and_recovery() 
     )
     with zipfile.ZipFile(io.BytesIO(package)) as archive:
         manifest = json.loads(archive.read("manifest.json"))
-        slots = json.loads(
-            archive.read("programs/availability_state/slots.json")
-        )
-    assert manifest["programs"][0]["behavior_kind"] == (
-        "plant_equipment_availability"
-    )
+        slots = json.loads(archive.read("programs/availability_state/slots.json"))
+    assert manifest["programs"][0]["behavior_kind"] == ("plant_equipment_availability")
     assert {slot["name"] for slot in slots["slots"]} == {
         "enableHeating",
         "enableCooling",
@@ -722,10 +697,7 @@ def test_plant_enable_topologies_have_typed_inputs_and_complete_source(
     translation = library.translate(
         "Enabling.Enable",
         parameters={
-            "typ": (
-                "Buildings.Templates.Plants.Controls.Types.Application."
-                f"{application}"
-            ),
+            "typ": (f"Buildings.Templates.Plants.Controls.Types.Application.{application}"),
             "have_inpSch": external_schedule,
             "TOutLck": 290.0,
             "dTOutLck": 1.0,
@@ -812,8 +784,7 @@ def test_plant_enable_internal_daily_schedule_is_executable_and_packaged() -> No
         "Enabling.Enable",
         parameters=parameters,
         samples=[
-            {"time": timestamp, "inputs": {"nReqPla": 1, "TOut": 295.0}}
-            for timestamp in range(7)
+            {"time": timestamp, "inputs": {"nReqPla": 1, "TOut": 295.0}} for timestamp in range(7)
         ],
     )
     output_id = execution["interface"]["outputs"][0]["id"]
@@ -921,9 +892,7 @@ def test_hrc_enable_qualifies_load_then_pulses_mode_before_delayed_enable() -> N
     with zipfile.ZipFile(io.BytesIO(package)) as archive:
         manifest = json.loads(archive.read("manifest.json"))
     assert manifest["programs"][0]["behavior_kind"] == "plant_hrc_enable"
-    assert "QChiWatReq_flow" in manifest["programs"][0]["source_contract"][
-        "source_connection_note"
-    ]
+    assert "QChiWatReq_flow" in manifest["programs"][0]["source_contract"]["source_connection_note"]
 
 
 @pytest.mark.parametrize(
@@ -952,12 +921,8 @@ def test_hrc_enable_applies_mode_specific_timed_temperature_shutdowns(
                     "u1Hrc_actual": True,
                     "QChiWatReq_flow": 20.0,
                     "QHeaWatReq_flow": 20.0,
-                    "TChiWatHrcLvg": (
-                        chilled_temperature if timestamp >= 8 else 285.0
-                    ),
-                    "THeaWatHrcLvg": (
-                        heating_temperature if timestamp >= 8 else 320.0
-                    ),
+                    "TChiWatHrcLvg": (chilled_temperature if timestamp >= 8 else 285.0),
+                    "THeaWatHrcLvg": (heating_temperature if timestamp >= 8 else 320.0),
                     "u1CooHrc": cooling_mode,
                 },
             }
@@ -967,9 +932,7 @@ def test_hrc_enable_applies_mode_specific_timed_temperature_shutdowns(
         parameters=HRC_ENABLE_PARAMETERS,
         samples=samples,
     )
-    output = next(
-        port["id"] for port in execution["interface"]["outputs"] if port["label"] == "y1"
-    )
+    output = next(port["id"] for port in execution["interface"]["outputs"] if port["label"] == "y1")
     values = [row["outputs"][output]["value"] for row in execution["trace"]["trace"]]
     assert values[7] is True
     assert values[trip_time - 1] is True
@@ -1007,9 +970,7 @@ def test_hrc_enable_preserves_exact_low_load_source_connection_and_boundaries() 
         parameters=parameters,
         samples=samples,
     )
-    output = next(
-        port["id"] for port in execution["interface"]["outputs"] if port["label"] == "y1"
-    )
+    output = next(port["id"] for port in execution["interface"]["outputs"] if port["label"] == "y1")
     values = [row["outputs"][output]["value"] for row in execution["trace"]["trace"]]
     assert values[7:12] == [True, True, True, True, False]
 
@@ -1060,10 +1021,7 @@ def test_hrc_controller_executes_complete_load_enable_mode_and_pump_chain() -> N
     )
     outputs = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
     trajectories = {
-        name: [
-            row["outputs"][outputs[name]]["value"]
-            for row in execution["trace"]["trace"]
-        ]
+        name: [row["outputs"][outputs[name]]["value"] for row in execution["trace"]["trace"]]
         for name in outputs
     }
     assert trajectories["y1"] == [False] * 8 + [True] * 4
@@ -1124,12 +1082,20 @@ def test_hrc_controller_flow_requests_hold_each_pump_until_its_request_clears() 
     )
     outputs = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
     trace = execution["trace"]["trace"]
-    assert [
-        row["outputs"][outputs["y1PumChiWat"]]["value"] for row in trace[8:]
-    ] == [True, True, True, False, False]
-    assert [
-        row["outputs"][outputs["y1PumHeaWat"]]["value"] for row in trace[8:]
-    ] == [True, True, True, True, False]
+    assert [row["outputs"][outputs["y1PumChiWat"]]["value"] for row in trace[8:]] == [
+        True,
+        True,
+        True,
+        False,
+        False,
+    ]
+    assert [row["outputs"][outputs["y1PumHeaWat"]]["value"] for row in trace[8:]] == [
+        True,
+        True,
+        True,
+        True,
+        False,
+    ]
 
 
 def test_hrc_controller_requires_all_designer_parameters() -> None:
@@ -1168,14 +1134,9 @@ def test_stage_completion_tracks_progress_and_emits_single_completion_pulse() ->
     samples = []
     for timestamp, (stage, commands, statuses) in enumerate(rows):
         inputs: dict[str, int | bool] = {"uSta": stage}
+        inputs.update({f"u1__{index}": value for index, value in enumerate(commands, start=1)})
         inputs.update(
-            {f"u1__{index}": value for index, value in enumerate(commands, start=1)}
-        )
-        inputs.update(
-            {
-                f"u1_actual__{index}": value
-                for index, value in enumerate(statuses, start=1)
-            }
+            {f"u1_actual__{index}": value for index, value in enumerate(statuses, start=1)}
         )
         samples.append({"time": timestamp, "inputs": inputs})
     library = PlantControlsLibrary()
@@ -1212,9 +1173,7 @@ def test_stage_completion_tracks_progress_and_emits_single_completion_pulse() ->
         "StagingRotation.StageCompletion",
         parameters={"nin": 3},
     )
-    assert translation["typed_ir"]["metadata"]["vector_encoding"] == (
-        "lossless_integer_bitmask"
-    )
+    assert translation["typed_ir"]["metadata"]["vector_encoding"] == ("lossless_integer_bitmask")
     target = library.assess_niagara_source_target(translation)
     assert target["complete"] is True
     assert target["generated_program_count"] == 1
@@ -1256,10 +1215,7 @@ def test_equipment_enable_selects_holds_and_replaces_runtime_ordered_equipment()
     for timestamp, (stage, order, availability) in enumerate(rows):
         inputs: dict[str, int | bool] = {"uSta": stage}
         inputs.update(
-            {
-                f"uIdxAltSor__{rank}": equipment
-                for rank, equipment in enumerate(order, start=1)
-            }
+            {f"uIdxAltSor__{rank}": equipment for rank, equipment in enumerate(order, start=1)}
         )
         inputs.update(
             {
@@ -1273,14 +1229,9 @@ def test_equipment_enable_selects_holds_and_replaces_runtime_ordered_equipment()
         parameters=parameters,
         samples=samples,
     )
-    output_ids = {
-        port["label"]: port["id"] for port in execution["interface"]["outputs"]
-    }
+    output_ids = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
     assert [
-        [
-            row["outputs"][output_ids[f"y1__{equipment}"]]["value"]
-            for equipment in range(1, 4)
-        ]
+        [row["outputs"][output_ids[f"y1__{equipment}"]]["value"] for equipment in range(1, 4)]
         for row in execution["trace"]["trace"]
     ] == [
         [False, False, False],
@@ -1377,14 +1328,20 @@ def test_stage_index_enforces_runtime_and_skips_unavailable_stages() -> None:
         samples=samples,
     )
     output_id = execution["interface"]["outputs"][0]["id"]
-    assert [
-        row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]
-    ] == [0, 1, 1, 3, 4, 4, 1, 1, 0]
+    assert [row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]] == [
+        0,
+        1,
+        1,
+        3,
+        4,
+        4,
+        1,
+        1,
+        0,
+    ]
     assert execution["interface"]["outputs"][0]["type"] == "S231:IntegerOutput"
     translation = library.translate("Utilities.StageIndex", parameters=parameters)
-    assert translation["typed_ir"]["metadata"]["vector_encoding"] == (
-        "lossless_integer_bitmask"
-    )
+    assert translation["typed_ir"]["metadata"]["vector_encoding"] == ("lossless_integer_bitmask")
     target = library.assess_niagara_source_target(translation)
     assert target["complete"] is True
     assert target["generated_program_count"] == 1
@@ -1411,9 +1368,7 @@ def test_stage_index_supports_always_available_topology_and_rejects_bad_sizes() 
         ],
     )
     output_id = execution["interface"]["outputs"][0]["id"]
-    assert [
-        row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]
-    ] == [1, 2, 1]
+    assert [row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]] == [1, 2, 1]
     assert {port["label"] for port in execution["interface"]["inputs"]} == {
         "u1Lea",
         "u1Up",
@@ -1443,30 +1398,17 @@ def test_sort_runtime_orders_running_off_and_unavailable_alternates() -> None:
     ]
     samples = []
     for timestamp, running, available in rows:
-        inputs = {
-            f"u1Run__{index}": value
-            for index, value in enumerate(running, start=1)
-        }
-        inputs.update(
-            {
-                f"u1Ava__{index}": value
-                for index, value in enumerate(available, start=1)
-            }
-        )
+        inputs = {f"u1Run__{index}": value for index, value in enumerate(running, start=1)}
+        inputs.update({f"u1Ava__{index}": value for index, value in enumerate(available, start=1)})
         samples.append({"time": timestamp, "inputs": inputs})
     execution = library.execute(
         "StagingRotation.SortRuntime",
         parameters=parameters,
         samples=samples,
     )
-    output_ids = {
-        port["label"]: port["id"] for port in execution["interface"]["outputs"]
-    }
+    output_ids = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
     assert [
-        [
-            row["outputs"][output_ids[f"yIdx__{rank}"]]["value"]
-            for rank in range(1, 4)
-        ]
+        [row["outputs"][output_ids[f"yIdx__{rank}"]]["value"] for rank in range(1, 4)]
         for row in execution["trace"]["trace"]
     ] == [
         [2, 3, 4],
@@ -1477,10 +1419,7 @@ def test_sort_runtime_orders_running_off_and_unavailable_alternates() -> None:
         [4, 2, 3],
     ]
     assert [
-        [
-            row["outputs"][output_ids[f"yRunTimSta__{position}"]]["value"]
-            for position in range(1, 4)
-        ]
+        [row["outputs"][output_ids[f"yRunTimSta__{position}"]]["value"] for position in range(1, 4)]
         for row in execution["trace"]["trace"]
     ] == [
         [0.0, 0.0, 0.0],
@@ -1690,10 +1629,7 @@ def test_event_sequencing_delays_enable_and_holds_hardware_through_shutdown() ->
     outputs = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
 
     def trajectory(label: str) -> list[bool]:
-        return [
-            row["outputs"][outputs[label]]["value"]
-            for row in execution["trace"]["trace"]
-        ]
+        return [row["outputs"][outputs[label]]["value"] for row in execution["trace"]["trace"]]
 
     assert trajectory("y1") == [
         False,
@@ -1725,9 +1661,7 @@ def test_event_sequencing_delays_enable_and_holds_hardware_through_shutdown() ->
         "StagingRotation.EventSequencing",
         parameters=parameters,
     )
-    assert library.assess_niagara_source_target(translation)[
-        "generated_program_count"
-    ] == 4
+    assert library.assess_niagara_source_target(translation)["generated_program_count"] == 4
 
 
 def test_connector_sized_array_rejects_shape_mismatch() -> None:
@@ -1752,9 +1686,7 @@ def test_local_differential_pressure_reset_executes_and_generates_exact_pid() ->
 
     assert translation["product_status"] == "exact_ir_generated_program_source"
     assert translation["engine_report"]["engine"] == "open-control-engine"
-    assert library.assess_niagara_source_target(translation)[
-        "generated_program_count"
-    ] == 1
+    assert library.assess_niagara_source_target(translation)["generated_program_count"] == 1
     execution = library.execute(
         controller_id,
         parameters=parameters,
@@ -1766,9 +1698,12 @@ def test_local_differential_pressure_reset_executes_and_generates_exact_pid() ->
         ],
     )
     output_id = execution["interface"]["outputs"][0]["id"]
-    assert [
-        row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]
-    ] == [30000.0, 30700.0, 30816.666666666668, 30000.0]
+    assert [row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]] == [
+        30000.0,
+        30700.0,
+        30816.666666666668,
+        30000.0,
+    ]
 
     package, _ = library.niagara_program_package(controller_id, parameters=parameters)
     with zipfile.ZipFile(io.BytesIO(package)) as archive:
@@ -1795,18 +1730,20 @@ def test_pump_differential_pressure_control_expands_pid_with_enable_exactly(
     assert translation["product_status"] == "exact_ir_generated_program_source"
     assert translation["lowering"]["translatable"] is True
     assert translation["engine_report"]["engine"] == "bactalk-reviewed-composite-lowering"
-    assert translation["engine_report"]["oce_missing_classes"] == [
-        "Utilities.PIDWithEnable"
-    ]
-    assert translation["connection_normalization"]["array_scalarization"][
-        "applied"
-    ] is True
-    assert library.assess_niagara_source_target(translation)[
-        "generated_program_count"
-    ] == (2 if remote else 1)
+    assert translation["engine_report"]["oce_missing_classes"] == ["Utilities.PIDWithEnable"]
+    assert translation["connection_normalization"]["array_scalarization"]["applied"] is True
+    assert library.assess_niagara_source_target(translation)["generated_program_count"] == (
+        2 if remote else 1
+    )
 
-    statuses = [(False, False), (True, False), (True, False), (False, False),
-                (False, True), (False, True)]
+    statuses = [
+        (False, False),
+        (True, False),
+        (True, False),
+        (False, False),
+        (False, True),
+        (False, True),
+    ]
     samples = []
     for timestamp, (first, second) in enumerate(statuses):
         inputs = {
@@ -1851,12 +1788,8 @@ def test_pump_differential_pressure_control_expands_pid_with_enable_exactly(
         manifest = json.loads(archive.read("manifest.json"))
         graph = json.loads(archive.read("control-graph.json"))
     assert len(manifest["programs"]) == (2 if remote else 1)
-    assert {program["behavior_kind"] for program in manifest["programs"]} == {
-        "pid_with_reset"
-    }
-    assert sum(block["kind"] == "one_shot" for block in graph["blocks"]) == (
-        2 if remote else 1
-    )
+    assert {program["behavior_kind"] for program in manifest["programs"]} == {"pid_with_reset"}
+    assert sum(block["kind"] == "one_shot" for block in graph["blocks"]) == (2 if remote else 1)
 
 
 def test_count_true_connector_array_executes_and_has_stock_target() -> None:
@@ -1894,12 +1827,8 @@ def test_dedicated_primary_pump_disable_executes_both_flow_request_variants() ->
     translation = library.translate(DISABLE_DEDICATED, parameters=parameters)
 
     assert translation["product_status"] == "exact_ir_generated_program_source"
-    assert translation["engine_report"]["engine"] == (
-        "bactalk-reviewed-composite-lowering"
-    )
-    assert translation["engine_report"]["oce_missing_classes"] == [
-        "Utilities.Initialization"
-    ]
+    assert translation["engine_report"]["engine"] == ("bactalk-reviewed-composite-lowering")
+    assert translation["engine_report"]["oce_missing_classes"] == ["Utilities.Initialization"]
     assert {port["label"] for port in translation["interface"]["inputs"]} == {
         "u1",
         "u1Equ",
@@ -1921,9 +1850,15 @@ def test_dedicated_primary_pump_disable_executes_both_flow_request_variants() ->
         ],
     )
     output_id = execution["interface"]["outputs"][0]["id"]
-    assert [
-        row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]
-    ] == [True, True, True, True, False, False, False]
+    assert [row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]] == [
+        True,
+        True,
+        True,
+        True,
+        False,
+        False,
+        False,
+    ]
 
     with_flow = {"have_reqFlo": True, "dtOff": 3.0}
     flow_translation = library.translate(DISABLE_DEDICATED, parameters=with_flow)
@@ -1968,8 +1903,7 @@ def test_dedicated_primary_pump_disable_executes_both_flow_request_variants() ->
     )
     flow_output_id = flow_execution["interface"]["outputs"][0]["id"]
     assert [
-        row["outputs"][flow_output_id]["value"]
-        for row in flow_execution["trace"]["trace"]
+        row["outputs"][flow_output_id]["value"] for row in flow_execution["trace"]["trace"]
     ] == [True, False, False]
 
     package, _ = library.niagara_program_package(
@@ -2027,8 +1961,7 @@ def test_staging_failsafe_executes_heating_and_cooling_topologies() -> None:
     )
     heating_output = heating_execution["interface"]["outputs"][0]["id"]
     assert [
-        row["outputs"][heating_output]["value"]
-        for row in heating_execution["trace"]["trace"]
+        row["outputs"][heating_output]["value"] for row in heating_execution["trace"]["trace"]
     ] == [False, False, False, False, True, False]
     assert library.assess_niagara_source_target(heating)["generated_program_count"] == 1
 
@@ -2067,8 +2000,7 @@ def test_staging_failsafe_executes_heating_and_cooling_topologies() -> None:
     )
     cooling_output = cooling_execution["interface"]["outputs"][0]["id"]
     assert [
-        row["outputs"][cooling_output]["value"]
-        for row in cooling_execution["trace"]["trace"]
+        row["outputs"][cooling_output]["value"] for row in cooling_execution["trace"]["trace"]
     ] == [False, False, False, True, True]
     assert library.assess_niagara_source_target(cooling)["generated_program_count"] == 3
 
@@ -2078,17 +2010,13 @@ def test_staging_failsafe_executes_heating_and_cooling_topologies() -> None:
     )
     with zipfile.ZipFile(io.BytesIO(package)) as archive:
         manifest = json.loads(archive.read("manifest.json"))
-    assert {program["behavior_kind"] for program in manifest["programs"]} == {
-        "timer_with_reset"
-    }
+    assert {program["behavior_kind"] for program in manifest["programs"]} == {"timer_with_reset"}
 
 
 def test_headered_delta_p_staging_executes_efficiency_and_failsafe_paths() -> None:
     library = PlantControlsLibrary()
     stage_index_schema = library.parameter_schema("Utilities.StageIndex")
-    assert stage_index_schema["parameterization"]["remaining_required_parameters"] == [
-        "nSta"
-    ]
+    assert stage_index_schema["parameterization"]["remaining_required_parameters"] == ["nSta"]
     parameters = {
         "nPum": 3,
         "nSenDp": 2,
@@ -2102,9 +2030,7 @@ def test_headered_delta_p_staging_executes_efficiency_and_failsafe_paths() -> No
         "yUp": 0.9,
         "yDow": 0.4,
     }
-    translation = library.translate(
-        "Pumps.Generic.StagingHeaderedDeltaP", parameters=parameters
-    )
+    translation = library.translate("Pumps.Generic.StagingHeaderedDeltaP", parameters=parameters)
 
     assert translation["product_status"] == "exact_ir_generated_program_source"
     assert translation["lowering"]["translatable"] is True
@@ -2123,26 +2049,15 @@ def test_headered_delta_p_staging_executes_efficiency_and_failsafe_paths() -> No
         for timestamp in range(6):
             statuses = [True, False, False] if timestamp < 3 else [True, True, False]
             inputs: dict[str, object] = {
-                "V_flow": (
-                    0.8
-                    if failsafe
-                    else 1.5
-                    if timestamp < 3
-                    else 0.3
-                ),
+                "V_flow": (0.8 if failsafe else 1.5 if timestamp < 3 else 0.3),
                 "y": 1.0 if failsafe and timestamp < 3 else 0.2 if failsafe else 0.5,
             }
             inputs.update(
-                {
-                    f"u1_actual__{index}": value
-                    for index, value in enumerate(statuses, start=1)
-                }
+                {f"u1_actual__{index}": value for index, value in enumerate(statuses, start=1)}
             )
             inputs.update(
                 {
-                    f"dp__{index}": (
-                        80.0 if failsafe and timestamp < 3 else 100.0
-                    )
+                    f"dp__{index}": (80.0 if failsafe and timestamp < 3 else 100.0)
                     for index in range(1, 3)
                 }
             )
@@ -2156,9 +2071,7 @@ def test_headered_delta_p_staging_executes_efficiency_and_failsafe_paths() -> No
             parameters=parameters,
             samples=samples(failsafe=failsafe),
         )
-        output_ids = {
-            port["label"]: port["id"] for port in execution["interface"]["outputs"]
-        }
+        output_ids = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
         assert [
             (
                 row["outputs"][output_ids["y1Up"]]["value"],
@@ -2218,14 +2131,10 @@ def test_stage_change_command_executes_load_hold_capacity_and_failsafe_paths() -
         "dtPri": 2.0,
         "dtSec": 2.0,
     }
-    translation = library.translate(
-        "StagingRotation.StageChangeCommand", parameters=parameters
-    )
+    translation = library.translate("StagingRotation.StageChangeCommand", parameters=parameters)
     assert translation["product_status"] == "exact_ir_generated_program_source"
     assert len(translation["typed_ir"]["blocks"]) == 59
-    assert library.assess_niagara_source_target(translation)[
-        "generated_program_count"
-    ] == 9
+    assert library.assess_niagara_source_target(translation)["generated_program_count"] == 9
 
     samples = []
     for timestamp in range(10):
@@ -2250,9 +2159,7 @@ def test_stage_change_command_executes_load_hold_capacity_and_failsafe_paths() -
         parameters=parameters,
         samples=samples,
     )
-    output_ids = {
-        port["label"]: port["id"] for port in execution["interface"]["outputs"]
-    }
+    output_ids = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
     assert [
         (
             row["outputs"][output_ids["y1Up"]]["value"],
@@ -2298,12 +2205,9 @@ def test_stage_change_command_executes_load_hold_capacity_and_failsafe_paths() -
             for timestamp in range(4)
         ],
     )
-    secondary_ids = {
-        port["label"]: port["id"] for port in secondary["interface"]["outputs"]
-    }
+    secondary_ids = {port["label"]: port["id"] for port in secondary["interface"]["outputs"]}
     assert [
-        row["outputs"][secondary_ids["y1Up"]]["value"]
-        for row in secondary["trace"]["trace"]
+        row["outputs"][secondary_ids["y1Up"]]["value"] for row in secondary["trace"]["trace"]
     ] == [False, False, True, True]
     secondary_target = library.assess_niagara_source_target(
         library.translate(
@@ -2373,14 +2277,9 @@ def test_headered_pump_parent_composes_rotation_staging_and_status_feedback() ->
         parameters=parameters,
         samples=samples,
     )
-    output_ids = {
-        port["label"]: port["id"] for port in execution["interface"]["outputs"]
-    }
+    output_ids = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
     assert [
-        [
-            row["outputs"][output_ids[f"y1__{pump}"]]["value"]
-            for pump in range(1, 3)
-        ]
+        [row["outputs"][output_ids[f"y1__{pump}"]]["value"] for pump in range(1, 3)]
         for row in execution["trace"]["trace"]
     ] == [
         [False, False],
@@ -2452,14 +2351,9 @@ def test_headered_pump_parent_executes_primary_and_secondary_delta_p_topologies(
             parameters=parameters,
             samples=samples,
         )
-        output_ids = {
-            port["label"]: port["id"] for port in execution["interface"]["outputs"]
-        }
+        output_ids = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
         assert [
-            [
-                row["outputs"][output_ids[f"y1__{pump}"]]["value"]
-                for pump in range(1, 3)
-            ]
+            [row["outputs"][output_ids[f"y1__{pump}"]]["value"] for pump in range(1, 3)]
             for row in execution["trace"]["trace"]
         ] == [
             [True, False],
@@ -2469,12 +2363,11 @@ def test_headered_pump_parent_executes_primary_and_secondary_delta_p_topologies(
             [True, True],
             [False, False],
         ]
-        translation = library.translate(
-            "Pumps.Generic.StagingHeadered", parameters=parameters
+        translation = library.translate("Pumps.Generic.StagingHeadered", parameters=parameters)
+        assert (
+            library.assess_niagara_source_target(translation)["generated_program_count"]
+            == expected_programs
         )
-        assert library.assess_niagara_source_target(translation)[
-            "generated_program_count"
-        ] == expected_programs
         package, _ = library.niagara_program_package(
             "Pumps.Generic.StagingHeadered", parameters=parameters
         )
@@ -2536,12 +2429,17 @@ def test_primary_variable_speed_executes_fixed_and_common_reversible_topologies(
         ],
     )
     output_id = execution["interface"]["outputs"][0]["id"]
-    assert [
-        row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]
-    ] == [0.0, 0.8, 0.0]
-    assert library.assess_niagara_source_target(
-        library.translate("Pumps.Primary.VariableSpeed", parameters=fixed_headered)
-    )["delivery_mode"] == "qualified_stock_components"
+    assert [row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]] == [
+        0.0,
+        0.8,
+        0.0,
+    ]
+    assert (
+        library.assess_niagara_source_target(
+            library.translate("Pumps.Primary.VariableSpeed", parameters=fixed_headered)
+        )["delivery_mode"]
+        == "qualified_stock_components"
+    )
 
     common = {
         "have_heaWat": True,
@@ -2570,10 +2468,7 @@ def test_primary_variable_speed_executes_fixed_and_common_reversible_topologies(
             for timestamp in range(5)
         ],
     )
-    common_ids = {
-        port["label"]: port["id"]
-        for port in common_execution["interface"]["outputs"]
-    }
+    common_ids = {port["label"]: port["id"] for port in common_execution["interface"]["outputs"]}
     assert [
         row["outputs"][common_ids["yPumHeaWatPriDed__1"]]["value"]
         for row in common_execution["trace"]["trace"]
@@ -2627,9 +2522,7 @@ def test_primary_variable_speed_composes_local_and_remote_delta_p_loops() -> Non
             for timestamp in range(3)
         ],
     )
-    output_ids = {
-        port["label"]: port["id"] for port in execution["interface"]["outputs"]
-    }
+    output_ids = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
     assert [
         row["outputs"][output_ids["yPumHeaWatPriHdr"]]["value"]
         for row in execution["trace"]["trace"]
@@ -2674,9 +2567,7 @@ def test_primary_variable_speed_rejects_invalid_common_pump_dimensions() -> None
 
 def test_air_to_water_executes_primary_only_startup_and_packages_complete_plant() -> None:
     library = PlantControlsLibrary()
-    translation = library.translate(
-        "HeatPumps.AirToWater", parameters=AIR_TO_WATER_PARAMETERS
-    )
+    translation = library.translate("HeatPumps.AirToWater", parameters=AIR_TO_WATER_PARAMETERS)
     assert translation["product_status"] == "exact_ir_generated_program_source"
     assert len(translation["typed_ir"]["blocks"]) == 480
     target = library.assess_niagara_source_target(translation)
@@ -2710,16 +2601,13 @@ def test_air_to_water_executes_primary_only_startup_and_packages_complete_plant(
         parameters=AIR_TO_WATER_PARAMETERS,
         samples=samples,
     )
-    output_ids = {
-        port["label"]: port["id"] for port in execution["interface"]["outputs"]
-    }
+    output_ids = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
     assert [
         row["outputs"][output_ids["y1PumHeaWatPri__1"]]["value"]
         for row in execution["trace"]["trace"]
     ] == [False, False, True, True, True, True, True, True]
     assert [
-        row["outputs"][output_ids["y1Hp__1"]]["value"]
-        for row in execution["trace"]["trace"]
+        row["outputs"][output_ids["y1Hp__1"]]["value"] for row in execution["trace"]["trace"]
     ] == [False, False, False, False, False, True, True, True]
     assert [
         row["outputs"][output_ids["yPumHeaWatPriHdr"]]["value"]
@@ -2757,9 +2645,7 @@ def test_air_to_water_builds_primary_secondary_hrc_and_alternate_rotation() -> N
         "dtResChiWat": 2.0,
         "TiCtlDpChiWat": 10.0,
     }
-    translation = library.translate(
-        "HeatPumps.AirToWater", parameters=primary_secondary
-    )
+    translation = library.translate("HeatPumps.AirToWater", parameters=primary_secondary)
     target = library.assess_niagara_source_target(translation)
     assert target["complete"] is True
     assert target["generated_program_count"] == 143
@@ -2784,9 +2670,7 @@ def test_air_to_water_builds_primary_secondary_hrc_and_alternate_rotation() -> N
         "VHeaWatHp_flow_nominal": [1.0, 1.0, 1.0],
         "VHeaWatHp_flow_min": [0.1, 0.1, 0.1],
     }
-    alternate_translation = library.translate(
-        "HeatPumps.AirToWater", parameters=alternates
-    )
+    alternate_translation = library.translate("HeatPumps.AirToWater", parameters=alternates)
     assert alternate_translation["parameterization"]["parameters"][21]["value"] == [
         2,
         3,
@@ -2852,18 +2736,13 @@ def test_true_index_utilities_execute_vector_reductions_with_stock_target(
         samples=[
             {
                 "time": index,
-                "inputs": {
-                    f"u1__{position + 1}": value
-                    for position, value in enumerate(values)
-                },
+                "inputs": {f"u1__{position + 1}": value for position, value in enumerate(values)},
             }
             for index, values in enumerate(samples)
         ],
     )
     output_id = execution["interface"]["outputs"][0]["id"]
-    assert [
-        row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]
-    ] == expected
+    assert [row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]] == expected
     assert library.assess_niagara_source_target(translation) == {
         "complete": True,
         "delivery_mode": "qualified_stock_components",
@@ -2969,23 +2848,15 @@ def test_true_array_conditional_preserves_priority_invalid_and_duplicate_semanti
                 "time": sample_index,
                 "inputs": {
                     "u": count,
-                    **{
-                        f"uIdx__{index + 1}": value
-                        for index, value in enumerate(priority)
-                    },
+                    **{f"uIdx__{index + 1}": value for index, value in enumerate(priority)},
                 },
             }
             for sample_index, count in enumerate(requested)
         ],
     )
-    output_ids = {
-        port["label"]: port["id"] for port in execution["interface"]["outputs"]
-    }
+    output_ids = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
     assert [
-        [
-            row["outputs"][output_ids[f"y1__{index}"]]["value"]
-            for index in range(1, 5)
-        ]
+        [row["outputs"][output_ids[f"y1__{index}"]]["value"] for index in range(1, 5)]
         for row in execution["trace"]["trace"]
     ] == [
         [False, False, False, False],
@@ -3025,10 +2896,7 @@ def test_true_array_conditional_parameter_contract_is_bounded_and_defaults_nout(
         "Utilities.TrueArrayConditional",
         parameters={"nin": 3},
     )
-    values = {
-        item["name"]: item["value"]
-        for item in translation["parameterization"]["parameters"]
-    }
+    values = {item["name"]: item["value"] for item in translation["parameterization"]["parameters"]}
     assert values == {"nin": 3, "nout": 3}
     assert len(translation["interface"]["outputs"]) == 3
 
@@ -3182,9 +3050,7 @@ def test_load_average_executes_heating_and_cooling_and_packages_moving_average(
         ],
     )
     output_id = execution["interface"]["outputs"][0]["id"]
-    values = [
-        row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]
-    ]
+    values = [row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]]
     assert values == pytest.approx(
         [0.0, 119.88011988011989, 119.9400299850075, 120.0, 120.0, 120.0]
     )
@@ -3195,9 +3061,7 @@ def test_load_average_executes_heating_and_cooling_and_packages_moving_average(
     )
     with zipfile.ZipFile(io.BytesIO(package)) as archive:
         manifest = json.loads(archive.read("manifest.json"))
-    assert [program["behavior_kind"] for program in manifest["programs"]] == [
-        "moving_average"
-    ]
+    assert [program["behavior_kind"] for program in manifest["programs"]] == ["moving_average"]
 
 
 @pytest.mark.parametrize(
@@ -3292,18 +3156,19 @@ def test_lead_headered_pump_enable_executes_all_connection_and_valve_topologies(
         samples=[
             {
                 "time": timestamp,
-                "inputs": {
-                    f"{prefix}__{index + 1}": value
-                    for index, value in enumerate(row)
-                },
+                "inputs": {f"{prefix}__{index + 1}": value for index, value in enumerate(row)},
             }
             for timestamp, row in enumerate(rows)
         ],
     )
     output_id = execution["interface"]["outputs"][0]["id"]
-    assert [
-        row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]
-    ] == [False, True, False, True, False]
+    assert [row["outputs"][output_id]["value"] for row in execution["trace"]["trace"]] == [
+        False,
+        True,
+        False,
+        True,
+        False,
+    ]
 
     package, _ = library.niagara_program_package(
         "Pumps.Primary.EnableLeadHeadered",
@@ -3311,9 +3176,7 @@ def test_lead_headered_pump_enable_executes_all_connection_and_valve_topologies(
     )
     with zipfile.ZipFile(io.BytesIO(package)) as archive:
         manifest = json.loads(archive.read("manifest.json"))
-    assert [program["behavior_kind"] for program in manifest["programs"]] == [
-        "boolean_set_reset"
-    ]
+    assert [program["behavior_kind"] for program in manifest["programs"]] == ["boolean_set_reset"]
 
 
 def test_stage_availability_exhausts_required_and_alternate_equipment_truth_table(
@@ -3358,25 +3221,20 @@ def test_stage_availability_exhausts_required_and_alternate_equipment_truth_tabl
             {
                 "time": sample_index,
                 "inputs": {
-                    f"u1Ava__{index + 1}": value
-                    for index, value in enumerate(availability)
+                    f"u1Ava__{index + 1}": value for index, value in enumerate(availability)
                 },
             }
             for sample_index, availability in enumerate(availability_vectors)
         ],
     )
-    output_ids = {
-        port["label"]: port["id"] for port in execution["interface"]["outputs"]
-    }
+    output_ids = {port["label"]: port["id"] for port in execution["interface"]["outputs"]}
 
     def expected(row: list[float], availability: tuple[bool, ...]) -> bool:
         fixed_available = all(
-            coefficient <= 0.99 or availability[index]
-            for index, coefficient in enumerate(row)
+            coefficient <= 0.99 or availability[index] for index, coefficient in enumerate(row)
         )
         candidate_count = sum(
-            coefficient > 0.0 and availability[index]
-            for index, coefficient in enumerate(row)
+            coefficient > 0.0 and availability[index] for index, coefficient in enumerate(row)
         )
         return fixed_available and candidate_count >= round(sum(row))
 
@@ -3387,8 +3245,7 @@ def test_stage_availability_exhausts_required_and_alternate_equipment_truth_tabl
         ]
         for row in execution["trace"]["trace"]
     ] == [
-        [expected(stage, availability) for stage in matrix]
-        for availability in availability_vectors
+        [expected(stage, availability) for stage in matrix] for availability in availability_vectors
     ]
 
 
@@ -3425,8 +3282,7 @@ def test_direct_initialization_and_resettable_timer_source_equations_package() -
     )
     initialization_output = initialization["interface"]["outputs"][0]["id"]
     assert [
-        row["outputs"][initialization_output]["value"]
-        for row in initialization["trace"]["trace"]
+        row["outputs"][initialization_output]["value"] for row in initialization["trace"]["trace"]
     ] == [False, True, False]
 
     timer = library.execute(
@@ -3459,9 +3315,7 @@ def test_direct_initialization_and_resettable_timer_source_equations_package() -
         )
         with zipfile.ZipFile(io.BytesIO(package)) as archive:
             manifest = json.loads(archive.read("manifest.json"))
-        assert [program["behavior_kind"] for program in manifest["programs"]] == [
-            behavior
-        ]
+        assert [program["behavior_kind"] for program in manifest["programs"]] == [behavior]
 
 
 def test_plant_controls_api_is_executable_and_downloadable(tmp_path) -> None:
@@ -3471,9 +3325,7 @@ def test_plant_controls_api_is_executable_and_downloadable(tmp_path) -> None:
     assert catalog.status_code == 200
     assert catalog.json()["proven_controller_count"] == 38
 
-    translated = client.post(
-        f"/api/library/plant-controls/controllers/{CONTROLLER}/translate"
-    )
+    translated = client.post(f"/api/library/plant-controls/controllers/{CONTROLLER}/translate")
     assert translated.status_code == 200
     assert translated.json()["lowering"]["translatable"] is True
 
@@ -3506,9 +3358,7 @@ def test_parameterized_plant_controller_fails_closed_until_job_values_are_suppli
 ) -> None:
     client = TestClient(create_app(tmp_path / "runs"))
 
-    response = client.post(
-        "/api/library/plant-controls/controllers/Setpoints.PlantReset/translate"
-    )
+    response = client.post("/api/library/plant-controls/controllers/Setpoints.PlantReset/translate")
 
     assert response.status_code == 422
     assert "requires job parameter values" in response.json()["detail"]

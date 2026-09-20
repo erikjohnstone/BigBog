@@ -50,8 +50,8 @@ def test_reference_stack_distinguishes_sources_runtime_and_oracles(tmp_path: Pat
     ).inventory()
 
     assert result["summary"] == {
-            "modelica_control_files": 1,
-            "modelica_plant_control_files": 0,
+        "modelica_control_files": 1,
+        "modelica_plant_control_files": 0,
         "executable_cdl_blocks": 2,
         "g36_cxf_fixtures": 1,
         "independent_verification_rules": 2,
@@ -90,3 +90,20 @@ def test_open_control_engine_command_is_isolated(tmp_path: Path) -> None:
 
     assert command[:3] == ["cargo-test", "run", "--quiet"]
     assert command[-2:] == ["inspect", str(source.resolve())]
+
+
+def test_open_control_engine_flattens_only_complete_composites() -> None:
+    source = Path(
+        ".vendor/open-control-engine/crates/oce-cxf/tests/fixtures/"
+        "composite_contract/accepted/minimal_nested.jsonld"
+    )
+    engine = OpenControlEngine()
+
+    result = engine.flatten(source)
+    inspected = engine.inspect_document(result["document"])
+
+    assert result["schema"] == "bactalk.oce-flatten/v1"
+    assert result["export_warning_count"] == 0
+    assert result["content_id"].startswith("cxf:fnv1a128:")
+    assert inspected["warning_count"] == 0
+    assert inspected["block_count"] == result["source_block_count"]

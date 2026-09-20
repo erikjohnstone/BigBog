@@ -83,19 +83,13 @@ TRUE_FALSE_HOLD_CLASS = "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold"
 ASSERT_WARNING_CLASS = "Buildings.Controls.OBC.CDL.Utilities.Assert"
 PID_WITH_ENABLE_CLASS = "Buildings.Controls.OBC.Utilities.PIDWithEnable"
 PID_WITH_ENABLE_CLASS_SHORT = "Utilities.PIDWithEnable"
-PID_WITH_ENABLE_CLASSES = frozenset(
-    {PID_WITH_ENABLE_CLASS, PID_WITH_ENABLE_CLASS_SHORT}
-)
+PID_WITH_ENABLE_CLASSES = frozenset({PID_WITH_ENABLE_CLASS, PID_WITH_ENABLE_CLASS_SHORT})
 INITIALIZATION_CLASS = "Buildings.Templates.Plants.Controls.Utilities.Initialization"
 INITIALIZATION_CLASS_SHORT = "Utilities.Initialization"
 INITIALIZATION_CLASSES = frozenset({INITIALIZATION_CLASS, INITIALIZATION_CLASS_SHORT})
-TIMER_WITH_RESET_CLASS = (
-    "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset"
-)
+TIMER_WITH_RESET_CLASS = "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset"
 TIMER_WITH_RESET_CLASS_SHORT = "Utilities.TimerWithReset"
-TIMER_WITH_RESET_CLASSES = frozenset(
-    {TIMER_WITH_RESET_CLASS, TIMER_WITH_RESET_CLASS_SHORT}
-)
+TIMER_WITH_RESET_CLASSES = frozenset({TIMER_WITH_RESET_CLASS, TIMER_WITH_RESET_CLASS_SHORT})
 PLACEHOLDER_BOOLEAN_CLASSES = frozenset(
     {
         "Buildings.Templates.Plants.Controls.Utilities.PlaceholderLogical",
@@ -150,6 +144,8 @@ SUPPORTED_CLASSES = frozenset(
         ASSERT_WARNING_CLASS,
         "Buildings.Controls.OBC.CDL.Reals.MovingAverage",
         "Buildings.Controls.OBC.CDL.Discrete.Sampler",
+        "Buildings.Controls.OBC.CDL.Discrete.FirstOrderHold",
+        "Buildings.Controls.OBC.CDL.Logical.Sources.SampleTrigger",
         "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler",
         "Buildings.Controls.OBC.CDL.Discrete.UnitDelay",
         "Buildings.Controls.OBC.CDL.Integers.Change",
@@ -167,6 +163,8 @@ NIAGARA_UNSUPPORTED_CLASSES = frozenset(
     {
         "Buildings.Controls.OBC.CDL.Reals.MovingAverage",
         "Buildings.Controls.OBC.CDL.Discrete.Sampler",
+        "Buildings.Controls.OBC.CDL.Discrete.FirstOrderHold",
+        "Buildings.Controls.OBC.CDL.Logical.Sources.SampleTrigger",
         "Buildings.Controls.OBC.CDL.Discrete.UnitDelay",
         "Buildings.Controls.OBC.CDL.Integers.Change",
         "Buildings.Controls.OBC.CDL.Reals.Hysteresis",
@@ -256,6 +254,12 @@ INSTANCE_SCHEMAS: dict[str, dict[str, tuple[str, ...]]] = {
     ASSERT_WARNING_CLASS: _schema(("u",), outputs=(), parameters=("message",)),
     "Buildings.Controls.OBC.CDL.Reals.MovingAverage": _schema(("u",), parameters=("delta",)),
     "Buildings.Controls.OBC.CDL.Discrete.Sampler": _schema(("u",), parameters=("samplePeriod",)),
+    "Buildings.Controls.OBC.CDL.Discrete.FirstOrderHold": _schema(
+        ("u",), parameters=("samplePeriod",)
+    ),
+    "Buildings.Controls.OBC.CDL.Logical.Sources.SampleTrigger": _schema(
+        parameters=("period", "shift")
+    ),
     "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler": _schema(
         ("u", "trigger"), parameters=("y_start",)
     ),
@@ -325,9 +329,7 @@ INSTANCE_SCHEMAS: dict[str, dict[str, tuple[str, ...]]] = {
     ),
     INITIALIZATION_CLASS: _schema(("u",), parameters=("yIni",)),
     INITIALIZATION_CLASS_SHORT: _schema(("u",), parameters=("yIni",)),
-    TIMER_WITH_RESET_CLASS: _schema(
-        ("u", "reset"), outputs=("y", "passed"), parameters=("t",)
-    ),
+    TIMER_WITH_RESET_CLASS: _schema(("u", "reset"), outputs=("y", "passed"), parameters=("t",)),
     TIMER_WITH_RESET_CLASS_SHORT: _schema(
         ("u", "reset"), outputs=("y", "passed"), parameters=("t",)
     ),
@@ -1137,9 +1139,7 @@ class CxfImporter:
             elif class_name in PLACEHOLDER_CLASSES:
                 have_input = parameters.get("have_inp", True)
                 have_placeholder_input = parameters.get("have_inpPh", False)
-                if not isinstance(have_input, bool) or not isinstance(
-                    have_placeholder_input, bool
-                ):
+                if not isinstance(have_input, bool) or not isinstance(have_placeholder_input, bool):
                     raise CxfImportError(
                         f"{label} placeholder availability parameters must be Boolean"
                     )
@@ -1249,6 +1249,30 @@ class CxfImporter:
                 config = {
                     "sample_period_seconds": float(period),
                     "semantic_contract": "CDL.Discrete.Sampler",
+                }
+            elif class_name == "Buildings.Controls.OBC.CDL.Discrete.FirstOrderHold":
+                kind = BlockKind.NUMERIC_FIRST_ORDER_HOLD
+                slot_map = {"u": "in"}
+                period = parameters.get("samplePeriod")
+                if isinstance(period, bool) or not isinstance(period, (int, float)):
+                    raise CxfImportError(f"{label} requires numeric samplePeriod parameter")
+                config = {
+                    "sample_period_seconds": float(period),
+                    "semantic_contract": "CDL.Discrete.FirstOrderHold",
+                }
+            elif class_name == "Buildings.Controls.OBC.CDL.Logical.Sources.SampleTrigger":
+                kind = BlockKind.BOOLEAN_SAMPLE_TRIGGER
+                slot_map = {}
+                period = parameters.get("period")
+                shift = parameters.get("shift", 0.0)
+                if isinstance(period, bool) or not isinstance(period, (int, float)):
+                    raise CxfImportError(f"{label} requires numeric period parameter")
+                if isinstance(shift, bool) or not isinstance(shift, (int, float)):
+                    raise CxfImportError(f"{label} requires numeric shift parameter")
+                config = {
+                    "period_seconds": float(period),
+                    "shift_seconds": float(shift),
+                    "semantic_contract": "CDL.Logical.Sources.SampleTrigger",
                 }
             elif class_name == "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler":
                 kind = BlockKind.NUMERIC_LATCH
@@ -1497,9 +1521,7 @@ class CxfImporter:
                     # to preserve the source-level output contract as well.
                     rising_id = unique_id(f"{block_id}_enable_edge", "EnableEdge")
                     reset_id = unique_id(f"{block_id}_reset_value", "ResetValue")
-                    reset_switch_id = unique_id(
-                        f"{block_id}_reset_switch", "ResetOutputSwitch"
-                    )
+                    reset_switch_id = unique_id(f"{block_id}_reset_switch", "ResetOutputSwitch")
                     blocks.extend(
                         [
                             Block(
@@ -1566,9 +1588,7 @@ class CxfImporter:
                 if not isinstance(hold_enabled, bool):
                     raise CxfImportError(f"{label} have_hol must be Boolean")
                 kind = (
-                    BlockKind.TRIM_AND_RESPOND_HOLD
-                    if hold_enabled
-                    else BlockKind.TRIM_AND_RESPOND
+                    BlockKind.TRIM_AND_RESPOND_HOLD if hold_enabled else BlockKind.TRIM_AND_RESPOND
                 )
                 slot_map = {
                     "numOfReq": "request_count",

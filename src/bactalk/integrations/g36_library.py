@@ -15,6 +15,10 @@ from typing import Any
 
 from bactalk.domain import BlockKind, ControlGraph
 from bactalk.integrations.cdl import CdlTranslator
+from bactalk.integrations.cxf_composites import (
+    assemble_cxf_composites,
+    flatten_cxf_topology,
+)
 from bactalk.integrations.cxf_connections import normalize_connection_sets
 from bactalk.integrations.cxf_importer import (
     CxfImporter,
@@ -82,6 +86,8 @@ _PROGRAM_GENERATOR_CLASSES = frozenset(
         "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
         "Utilities.TimerWithReset",
         "Buildings.Controls.OBC.CDL.Discrete.Sampler",
+        "Buildings.Controls.OBC.CDL.Discrete.FirstOrderHold",
+        "Buildings.Controls.OBC.CDL.Logical.Sources.SampleTrigger",
         "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler",
         "Buildings.Controls.OBC.CDL.Discrete.UnitDelay",
         "Buildings.Controls.OBC.CDL.Integers.Change",
@@ -91,44 +97,17 @@ _PROGRAM_GENERATOR_CLASSES = frozenset(
         "Buildings.Controls.OBC.CDL.Reals.MovingAverage",
         "Buildings.Controls.OBC.CDL.Utilities.Assert",
         "Buildings.Controls.OBC.ASHRAE.G36.Generic.TrimAndRespond",
-        (
-            "Buildings.Templates.Plants.Controls.StagingRotation."
-            "EquipmentAvailability"
-        ),
-        (
-            "Buildings.Templates.Plants.Controls.StagingRotation."
-            "EquipmentEnable"
-        ),
+        ("Buildings.Templates.Plants.Controls.StagingRotation.EquipmentAvailability"),
+        ("Buildings.Templates.Plants.Controls.StagingRotation.EquipmentEnable"),
         "Buildings.Templates.Plants.Controls.Enabling.Enable",
-        (
-            "Buildings.Templates.Plants.Controls.HeatRecoveryChillers."
-            "Controller"
-        ),
-        (
-            "Buildings.Templates.Plants.Controls.HeatRecoveryChillers."
-            "Enable"
-        ),
-        (
-            "Buildings.Templates.Plants.Controls.HeatRecoveryChillers."
-            "ModeControl"
-        ),
-        (
-            "Buildings.Templates.Plants.Controls.StagingRotation."
-            "StageCompletion"
-        ),
+        ("Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller"),
+        ("Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable"),
+        ("Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl"),
+        ("Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion"),
         "Buildings.Templates.Plants.Controls.Utilities.StageIndex",
-        (
-            "Buildings.Templates.Plants.Controls.StagingRotation."
-            "SortRuntime"
-        ),
-        (
-            "Buildings.Templates.Plants.Controls.Pumps.Generic."
-            "StagingHeaderedDeltaP"
-        ),
-        (
-            "Buildings.Templates.Plants.Controls.StagingRotation."
-            "StageChangeCommand"
-        ),
+        ("Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime"),
+        ("Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP"),
+        ("Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand"),
         "Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeadered",
         "Buildings.Templates.Plants.Controls.Pumps.Primary.VariableSpeed",
         "Buildings.Templates.Plants.Controls.HeatPumps.AirToWater",
@@ -141,6 +120,8 @@ _STATEFUL_KINDS = frozenset(
         BlockKind.BOOLEAN_FALLING_EDGE,
         BlockKind.MOVING_AVERAGE,
         BlockKind.NUMERIC_SAMPLER,
+        BlockKind.NUMERIC_FIRST_ORDER_HOLD,
+        BlockKind.BOOLEAN_SAMPLE_TRIGGER,
         BlockKind.NUMERIC_UNIT_DELAY,
         BlockKind.NUMERIC_CHANGED,
         BlockKind.NUMERIC_INCREASED,
@@ -1124,14 +1105,31 @@ class G36Library:
         self,
         controller_id: str,
     ) -> tuple[dict[str, Any], dict[str, Any]]:
+        controller, document, _ = self._source_bundle(controller_id)
+        return controller, document
+
+    def _source_bundle(
+        self,
+        controller_id: str,
+    ) -> tuple[dict[str, Any], dict[str, Any], dict[str, dict[str, Any]]]:
+        """Translate one controller and retain every emitted composite class.
+
+        modelica-json writes referenced non-primitive classes as adjacent CXF
+        documents. Keeping those documents is required to instantiate a concrete
+        hierarchy before independent runtime validation; selecting only the root
+        silently discards the implementation of every nested controller.
+        """
+
         controller = self._controllers().get(controller_id)
         if controller is None:
             raise KeyError(controller_id)
         source = self.g36_root / controller["relative_path"]
         with tempfile.TemporaryDirectory(prefix="bactalk-g36-") as directory:
-            artifacts = self.translator.translate(source, Path(directory))
+            output = Path(directory).resolve()
+            artifacts = self.translator.translate(source, output)
             relative_source = source.relative_to(self.modelica_root).with_suffix(".jsonld")
-            expected = Path(directory).resolve() / "cxf" / relative_source
+            cxf_root = output / "cxf"
+            expected = cxf_root / relative_source
             exact = [path for path in artifacts if path.resolve() == expected]
             if len(exact) != 1:
                 names = ", ".join(path.name for path in artifacts[:20])
@@ -1140,12 +1138,49 @@ class G36Library:
                     f"{relative_source.as_posix()}; "
                     f"generated: {names}"
                 )
-            document = json.loads(exact[0].read_text(encoding="utf-8"))
-        self._recover_root_parameter_metadata(
-            document,
-            source.read_text(encoding="utf-8"),
-        )
-        return controller, document
+            documents: dict[str, dict[str, Any]] = {}
+            selected_id: str | None = None
+            for path in artifacts:
+                if path.suffix != ".jsonld" or not path.resolve().is_relative_to(cxf_root):
+                    continue
+                translated = json.loads(path.read_text(encoding="utf-8"))
+                graph = translated.get("@graph")
+                if not isinstance(graph, list):
+                    if path.resolve() == expected:
+                        raise RuntimeError(f"translated root CXF class has no graph: {path}")
+                    # modelica-json emits enum/type documents alongside class
+                    # documents. They intentionally have no instantiable graph.
+                    continue
+                roots = [
+                    node
+                    for node in graph
+                    if isinstance(node, dict) and node.get("S231:containsBlock")
+                ]
+                if len(roots) != 1 or not isinstance(roots[0].get("@id"), str):
+                    if path.resolve() == expected:
+                        raise RuntimeError(
+                            f"translated root CXF has no unique composite root: {path}"
+                        )
+                    # modelica-json also emits enum/type CXF documents. They are
+                    # dependencies, but not instantiable composite classes.
+                    continue
+                class_id = roots[0]["@id"]
+                if class_id in documents:
+                    raise RuntimeError(f"duplicate translated CXF class: {class_id}")
+                relative = path.resolve().relative_to(cxf_root).with_suffix(".mo")
+                modelica_source = self.modelica_root / relative
+                if modelica_source.is_file():
+                    self._recover_root_parameter_metadata(
+                        translated,
+                        modelica_source.read_text(encoding="utf-8"),
+                    )
+                documents[class_id] = translated
+                if path.resolve() == expected:
+                    selected_id = class_id
+            if selected_id is None:
+                raise RuntimeError("translated root CXF was not retained in the class bundle")
+            document = documents.pop(selected_id)
+        return controller, document, documents
 
     @staticmethod
     def _ground_compile_time_enum_parameters(
@@ -1264,9 +1299,10 @@ class G36Library:
             if not isinstance(value, str):
                 continue
             for enum in enum_parameters.values():
-                if re.search(rf"\b{re.escape(enum['label'])}\b", value) or enum[
-                    "data_type"
-                ] in value:
+                if (
+                    re.search(rf"\b{re.escape(enum['label'])}\b", value)
+                    or enum["data_type"] in value
+                ):
                     raise ValueError(
                         "compile-time enum grounding left an unresolved dependency in "
                         f"{node.get('@id')}: {enum['label']}"
@@ -1286,9 +1322,7 @@ class G36Library:
         else:
             root.pop("S231:hasParameter", None)
         graph[:] = [
-            node
-            for node in graph
-            if not (isinstance(node, dict) and node.get("@id") in enum_ids)
+            node for node in graph if not (isinstance(node, dict) and node.get("@id") in enum_ids)
         ]
         return {
             "applied": True,
@@ -1324,6 +1358,19 @@ class G36Library:
             match.group("name"): match.group("data_type")
             for match in _PARAMETER_DECLARATION.finditer(source_text)
         }
+
+        def qualify_type(data_type: str) -> str:
+            # G36 sources frequently spell the shared enum package as ``Types.*`` from
+            # deep AHU/terminal namespaces. CXF omitted the declaration metadata that
+            # would normally preserve Modelica's resolved absolute type. Recover that
+            # exact library namespace here so validated job values and conditional guards
+            # use the same enum identity.
+            if data_type.startswith("Types.") and (
+                "within Buildings.Controls.OBC.ASHRAE.G36" in source_text
+            ):
+                return f"Buildings.Controls.OBC.ASHRAE.G36.{data_type}"
+            return data_type
+
         nodes = {
             node.get("@id"): node
             for node in graph
@@ -1346,7 +1393,8 @@ class G36Library:
                 continue
             label = node.get("S231:label")
             name = label if isinstance(label, str) else identifier.rsplit(".", 1)[-1]
-            data_type = declarations.get(name)
+            declared_type = declarations.get(name)
+            data_type = qualify_type(declared_type) if declared_type is not None else None
             if data_type is None:
                 continue
             node["@type"] = "S231:Parameter"
@@ -1366,7 +1414,7 @@ class G36Library:
         dict[str, Any],
         dict[str, Any],
     ]:
-        controller, translated = self._source_document(controller_id)
+        controller, translated, class_documents = self._source_bundle(controller_id)
         parameterized, parameterization = self._apply_parameter_overrides(
             translated,
             parameters or {},
@@ -1376,6 +1424,47 @@ class G36Library:
         document, normalization = normalize_connection_sets(parameterized)
         parameter_grounding = self._ground_compile_time_enum_parameters(document)
         normalization["compile_time_enum_grounding"] = parameter_grounding
+        if class_documents:
+            assembled, composite_assembly = assemble_cxf_composites(
+                document,
+                class_documents,
+            )
+            if not composite_assembly["complete"]:
+                normalized_missing = {
+                    item.removeprefix("ex:") for item in composite_assembly["missing_classes"]
+                }
+                if not normalized_missing <= _REVIEWED_COMPOSITE_CLASSES:
+                    raise RuntimeError(
+                        "CXF composite assembly is incomplete; missing classes: "
+                        + ", ".join(composite_assembly["missing_classes"])
+                    )
+                normalization["composite_assembly"] = composite_assembly
+            else:
+                resolved = self.engine.inspect_document(assembled)
+                try:
+                    engine_flattening = self.engine.flatten_document(assembled)
+                except RuntimeError as exc:
+                    if "CXF flattening was incomplete" not in str(exc):
+                        raise
+                    engine_flattening = {
+                        "schema": "bactalk.oce-resolved-topology/v1",
+                        "engine": resolved["engine"],
+                        "source_model_id": resolved["model_id"],
+                        "source_block_count": resolved["block_count"],
+                        "source_warning_count": resolved["warning_count"],
+                        "export_deferred": True,
+                    }
+                else:
+                    engine_flattening.pop("document")
+                    engine_flattening["export_deferred"] = False
+                document, topology_flattening = flatten_cxf_topology(
+                    assembled,
+                    resolved,
+                    root_id=composite_assembly["root_id"],
+                )
+                engine_flattening["topology_projection"] = topology_flattening
+                normalization["composite_assembly"] = composite_assembly
+                normalization["composite_flattening"] = engine_flattening
         try:
             engine_report = self.engine.inspect_document(document)
         except RuntimeError as exc:

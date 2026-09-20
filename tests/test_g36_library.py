@@ -11,6 +11,7 @@ from fastapi.testclient import TestClient
 from bactalk.api import create_app
 from bactalk.compiler import NiagaraCompiler
 from bactalk.domain import BlockKind, ControlGraph
+from bactalk.integrations.cxf_connections import normalize_connection_sets
 from bactalk.integrations.environment_pack import EnvironmentPackManifest
 from bactalk.integrations.g36_library import G36Library
 from bactalk.simulator import GraphInterpreter
@@ -435,6 +436,33 @@ def test_g36_missing_enum_metadata_is_recovered_and_complex_guards_are_grounded(
     assert library.assess_niagara_source_target(result)["generated_program_count"] == 3
 
 
+def test_full_ahu_relative_ventilation_enum_recovers_absolute_identity() -> None:
+    library = G36Library()
+    controller_id = "AHUs.MultiZone.VAV.Controller"
+    schema = library.parameter_schema(controller_id)["parameterization"]
+    ventilation = next(item for item in schema["parameters"] if item["name"] == "venStd")
+
+    assert ventilation["data_type"] == (
+        "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard"
+    )
+    _, document = library._source_document(controller_id)
+    parameterized, _ = library._apply_parameter_overrides(
+        document,
+        {
+            "eneStd": ("Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1"),
+            "venStd": ("Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"),
+        },
+    )
+    _, normalization = normalize_connection_sets(parameterized)
+    guards = {
+        item["component"]: item["active"]
+        for item in normalization["conditional_pruning"]["evaluated_guards"]
+    }
+    prefix = "ex:Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller."
+    assert guards[prefix + "ashOutAirSet"] is True
+    assert guards[prefix + "tit24OutAirSet"] is False
+
+
 def test_g36_alarm_assertions_are_oce_validated_and_preserved_in_typed_ir() -> None:
     library = G36Library()
     parameters = {
@@ -684,30 +712,23 @@ def test_g36_pre_semantics_are_profiled_and_match_oce_host_ticks() -> None:
     ]
 
 
-def test_g36_supply_temperature_uses_reviewed_composite_lowering(
-    tmp_path: Path,
-) -> None:
+def test_g36_supply_temperature_uses_independently_resolved_composite_lowering() -> None:
     library = G36Library()
     controller_id = "AHUs.MultiZone.VAV.SetPoints.SupplyTemperature"
     result = library.translate(controller_id)
 
     assert result["lowering"]["translatable"] is True
-    assert result["engine_report"]["oce_validation_succeeded"] is False
-    assert result["engine_report"]["oce_missing_classes"] == ["ASHRAE.G36.Generic.TrimAndRespond"]
+    assert result["engine_report"]["engine"] == "open-control-engine"
+    assert result["engine_report"]["warning_count"] == 0
+    assembly = result["connection_normalization"]["composite_assembly"]
+    assert assembly["complete"] is True
+    assert assembly["expanded_instance_count"] == 1
     graph = ControlGraph.model_validate(result["typed_ir"])
-    reset = next(block for block in graph.blocks if block.kind == BlockKind.TRIM_AND_RESPOND)
-    assert reset.config == {
-        "initial_setpoint": 291.15,
-        "minimum_setpoint": 285.15,
-        "maximum_setpoint": 291.15,
-        "delay_seconds": 600.0,
-        "sample_period_seconds": 120.0,
-        "ignored_requests": 2.0,
-        "trim_amount": 0.1,
-        "respond_amount": -0.2,
-        "maximum_response": -0.6,
-        "hold_enabled": False,
-    }
+    assert all(block.kind != BlockKind.TRIM_AND_RESPOND for block in graph.blocks)
+    assert sum(block.kind == BlockKind.BOOLEAN_SAMPLE_TRIGGER for block in graph.blocks) == 1
+    assessment = library.assess_niagara_source_target(result)
+    assert assessment["complete"] is True
+    assert assessment["generated_program_count"] == 7
     execution = library.execute(
         controller_id,
         samples=[
@@ -723,21 +744,159 @@ def test_g36_supply_temperature_uses_reviewed_composite_lowering(
         ],
         collect=["TAirSupSet"],
     )
-    assert execution["runtime"] == "BACTalk typed-IR interpreter"
-    assert execution["execution_profile"] == "typed_ir_scan_v1"
+    assert execution["runtime"] == "Open Control Engine"
+    assert execution["execution_profile"] == "host_tick_v1"
     output = execution["trace"]["trace"][0]["outputs"]
     assert abs(next(iter(output.values()))["value"] - 285.15) < 1e-9
 
-    destination = NiagaraCompiler().compile(
-        graph,
-        tmp_path / "supply-temperature.bog",
-        environment=_trim_respond_environment(),
+    package, filename = library.niagara_program_package(controller_id)
+    assert filename.endswith("-niagara-programs.zip")
+    with zipfile.ZipFile(io.BytesIO(package)) as archive:
+        manifest = json.loads(archive.read("manifest.json"))
+    behaviors = {item["behavior_kind"] for item in manifest["programs"]}
+    assert "boolean_sample_trigger" in behaviors
+    assert "numeric_sampler" in behaviors
+
+
+def test_g36_supply_fan_composite_matches_oce_and_has_complete_niagara_source_target() -> None:
+    library = G36Library()
+    controller_id = "AHUs.MultiZone.VAV.SetPoints.SupplyFan"
+    result = library.translate(
+        controller_id,
+        parameters={"maxSet": 500.0},
+        execution_profile="host_tick_v1",
     )
-    with zipfile.ZipFile(destination) as archive:
-        xml = archive.read("file.xml").decode()
-    assert 't="g36:TrimAndRespond"' in xml
-    assert '<p n="iniSet" v="291.15"' in xml
-    assert '<p n="samplePeriod" v="120"' in xml
+    graph = ControlGraph.model_validate(result["typed_ir"])
+    interface = result["interface"]
+    assert result["engine_report"]["block_count"] == 65
+    assert result["engine_report"]["warning_count"] == 0
+    assert result["connection_normalization"]["composite_assembly"]["expanded_instance_count"] == 1
+    assert sum(block.kind == BlockKind.NUMERIC_FIRST_ORDER_HOLD for block in graph.blocks) == 1
+    assessment = library.assess_niagara_source_target(result)
+    assert assessment["complete"] is True
+    assert assessment["generated_program_count"] == 9
+
+    rows = [
+        (0.0, 100.0, 1, 0),
+        (60.0, 100.0, 1, 0),
+        (120.0, 100.0, 1, 4),
+        (180.0, 100.0, 1, 4),
+        (240.0, 100.0, 1, 4),
+        (300.0, 450.0, 1, 0),
+        (360.0, 450.0, 1, 0),
+        (420.0, 450.0, 7, 0),
+        (480.0, 450.0, 7, 0),
+    ]
+    samples = [
+        {
+            "time": timestamp,
+            "inputs": {
+                "dpDuc": pressure,
+                "uOpeMod": mode,
+                "uZonPreResReq": requests,
+            },
+        }
+        for timestamp, pressure, mode, requests in rows
+    ]
+    input_ids = {port["label"]: port["id"] for port in interface["inputs"]}
+    output_ids = [port["id"] for port in interface["outputs"]]
+    oce = library.engine.simulate_document(
+        result["cxf_document"],
+        samples=[
+            {
+                "time": sample["time"],
+                "inputs": {input_ids[name]: value for name, value in sample["inputs"].items()},
+            }
+            for sample in samples
+        ],
+        collect=output_ids,
+    )
+    typed = library._simulate_typed_graph(
+        graph,
+        interface=interface,
+        samples=samples,
+        collect=[port["label"] for port in interface["outputs"]],
+    )
+    for typed_row, oce_row in zip(typed["trace"], oce["trace"], strict=True):
+        for output_id in output_ids:
+            assert typed_row["outputs"][output_id]["value"] == pytest.approx(
+                oce_row["outputs"][output_id]["value"],
+                rel=0.0,
+                abs=1e-14,
+            )
+
+
+def test_full_multizone_ahu_composite_lowers_and_matches_all_public_outputs() -> None:
+    library = G36Library()
+    parameters = {
+        "eneStd": ("Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1"),
+        "venStd": ("Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"),
+    }
+    result = library.translate(
+        "AHUs.MultiZone.VAV.Controller",
+        parameters=parameters,
+        execution_profile="host_tick_v1",
+    )
+    assembly = result["connection_normalization"]["composite_assembly"]
+    assert assembly["complete"] is True
+    assert assembly["available_class_count"] == 20
+    assert assembly["expanded_instance_count"] == 14
+    assert assembly["expanded_class_count"] == 13
+    assert assembly["maximum_depth"] == 2
+    assert assembly["pruned_node_count"] == 310
+    assert result["engine_report"]["block_count"] == 407
+    assert result["engine_report"]["warning_count"] == 0
+    assert result["lowering"]["translatable"] is True
+    assert result["lowering"]["unsupported_classes"] == []
+    graph = ControlGraph.model_validate(result["typed_ir"])
+    assert len(graph.blocks) == 566
+    assert library.assess_niagara_source_target(result) == {
+        "complete": True,
+        "delivery_mode": "generated_program_source",
+        "generated_program_count": 55,
+        "blocker": None,
+        "runtime_qualified": False,
+        "licensed_workbench_compile_required": True,
+    }
+
+    interface = result["interface"]
+    inputs = {
+        port["label"]: (
+            False
+            if "Boolean" in str(port["type"])
+            else 1
+            if "Integer" in str(port["type"])
+            else 0.0
+        )
+        for port in interface["inputs"]
+    }
+    sample = {"time": 0.0, "inputs": inputs}
+    input_ids = {port["label"]: port["id"] for port in interface["inputs"]}
+    output_ids = [port["id"] for port in interface["outputs"]]
+    oce = library.engine.simulate_document(
+        result["cxf_document"],
+        samples=[
+            {
+                "time": 0.0,
+                "inputs": {input_ids[name]: value for name, value in inputs.items()},
+            }
+        ],
+        collect=output_ids,
+    )
+    typed = library._simulate_typed_graph(
+        graph,
+        interface=interface,
+        samples=[sample],
+        collect=[port["label"] for port in interface["outputs"]],
+    )
+    assert len(interface["inputs"]) == 15
+    assert len(interface["outputs"]) == 19
+    for output_id in output_ids:
+        assert typed["trace"][0]["outputs"][output_id]["value"] == pytest.approx(
+            oce["trace"][0]["outputs"][output_id]["value"],
+            rel=0.0,
+            abs=1e-12,
+        )
 
 
 def test_g36_execution_api_accepts_only_public_named_ports(tmp_path: Path) -> None:

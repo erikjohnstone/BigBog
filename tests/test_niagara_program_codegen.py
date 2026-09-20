@@ -44,8 +44,7 @@ def _plant_equipment_availability_graph() -> ControlGraph:
                     "have_heating": True,
                     "have_cooling": True,
                     "semantic_contract": (
-                        "Buildings.Templates.Plants.Controls.StagingRotation."
-                        "EquipmentAvailability"
+                        "Buildings.Templates.Plants.Controls.StagingRotation.EquipmentAvailability"
                     ),
                 },
             ),
@@ -92,9 +91,7 @@ def _plant_enable_graph() -> ControlGraph:
                     "ignored_requests": 0,
                     "minimum_state_time_seconds": 2.0,
                     "low_request_time_seconds": 2.0,
-                    "semantic_contract": (
-                        "Buildings.Templates.Plants.Controls.Enabling.Enable"
-                    ),
+                    "semantic_contract": ("Buildings.Templates.Plants.Controls.Enabling.Enable"),
                 },
             ),
             Block(id="Out", kind=BlockKind.BOOLEAN_OUTPUT, label="Out"),
@@ -124,8 +121,7 @@ def _plant_hrc_mode_graph() -> ControlGraph:
                 config={
                     "heating_cop": 4.0,
                     "semantic_contract": (
-                        "Buildings.Templates.Plants.Controls."
-                        "HeatRecoveryChillers.ModeControl"
+                        "Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl"
                     ),
                 },
             ),
@@ -183,8 +179,7 @@ def _plant_hrc_enable_graph() -> ControlGraph:
                     "temperature_limit_1_time_seconds": 2.0,
                     "temperature_limit_2_time_seconds": 1.0,
                     "semantic_contract": (
-                        "Buildings.Templates.Plants.Controls."
-                        "HeatRecoveryChillers.Enable"
+                        "Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable"
                     ),
                 },
             ),
@@ -226,8 +221,7 @@ def _plant_stage_completion_graph() -> ControlGraph:
                 config={
                     "equipment_count": 3,
                     "semantic_contract": (
-                        "Buildings.Templates.Plants.Controls.StagingRotation."
-                        "StageCompletion"
+                        "Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion"
                     ),
                 },
             ),
@@ -584,9 +578,7 @@ def _accumulating_timer_graph() -> ControlGraph:
                 label="Accumulating timer",
                 config={
                     "threshold_seconds": 3.0,
-                    "semantic_contract": (
-                        "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating"
-                    ),
+                    "semantic_contract": ("Buildings.Controls.OBC.CDL.Logical.TimerAccumulating"),
                 },
             ),
             Block(id="Elapsed", kind=BlockKind.NUMERIC_OUTPUT, label="Elapsed"),
@@ -735,6 +727,49 @@ def _numeric_sampler_graph() -> ControlGraph:
             Link(source="Input", target="Sampler", target_slot="in"),
             Link(source="Sampler", target="Output", target_slot="in"),
         ],
+    )
+
+
+def _numeric_first_order_hold_graph() -> ControlGraph:
+    return ControlGraph(
+        name="Numeric_First_Order_Hold_Golden",
+        blocks=[
+            Block(id="Input", kind=BlockKind.NUMERIC_INPUT, label="Input"),
+            Block(
+                id="Hold",
+                kind=BlockKind.NUMERIC_FIRST_ORDER_HOLD,
+                label="First order hold",
+                config={
+                    "sample_period_seconds": 2.0,
+                    "semantic_contract": "CDL.Discrete.FirstOrderHold",
+                },
+            ),
+            Block(id="Output", kind=BlockKind.NUMERIC_OUTPUT, label="Output"),
+        ],
+        links=[
+            Link(source="Input", target="Hold", target_slot="in"),
+            Link(source="Hold", target="Output", target_slot="in"),
+        ],
+    )
+
+
+def _boolean_sample_trigger_graph() -> ControlGraph:
+    return ControlGraph(
+        name="Boolean_Sample_Trigger_Golden",
+        blocks=[
+            Block(
+                id="Trigger",
+                kind=BlockKind.BOOLEAN_SAMPLE_TRIGGER,
+                label="Sample trigger",
+                config={
+                    "period_seconds": 2.0,
+                    "shift_seconds": 0.5,
+                    "semantic_contract": "CDL.Logical.Sources.SampleTrigger",
+                },
+            ),
+            Block(id="Output", kind=BlockKind.BOOLEAN_OUTPUT, label="Output"),
+        ],
+        links=[Link(source="Trigger", target="Output", target_slot="in")],
     )
 
 
@@ -898,9 +933,7 @@ def test_generated_java_kernel_matches_independent_oce_golden(tmp_path: Path) ->
 def test_equipment_availability_java_kernel_matches_stategraph_trajectory(
     tmp_path: Path,
 ) -> None:
-    content = NiagaraProgramPackageBuilder().build(
-        _plant_equipment_availability_graph()
-    )
+    content = NiagaraProgramPackageBuilder().build(_plant_equipment_availability_graph())
     with zipfile.ZipFile(BytesIO(content)) as archive:
         manifest = json.loads(archive.read("manifest.json"))
         program = manifest["programs"][0]
@@ -960,9 +993,7 @@ def test_equipment_availability_java_kernel_matches_stategraph_trajectory(
         "heatingAvailable",
         "coolingAvailable",
     ]
-    assert program["source_contract"]["standard"].endswith(
-        "StagingRotation.EquipmentAvailability"
-    )
+    assert program["source_contract"]["standard"].endswith("StagingRotation.EquipmentAvailability")
 
 
 @pytest.mark.skipif(shutil.which("javac") is None, reason="javac is not installed")
@@ -1087,9 +1118,7 @@ def test_stage_completion_java_kernel_matches_change_latch_trajectory(
         "false,true",
     ]
     assert program["behavior_kind"] == "plant_stage_completion"
-    assert program["source_contract"]["vector_encoding"] == (
-        "lossless integer bitmask"
-    )
+    assert program["source_contract"]["vector_encoding"] == ("lossless integer bitmask")
 
 
 @pytest.mark.skipif(shutil.which("javac") is None, reason="javac is not installed")
@@ -1197,10 +1226,7 @@ def test_hrc_enable_java_kernel_matches_timer_latch_and_delay_trajectory(
         capture_output=True,
         text=True,
     )
-    rows = [
-        (time, 1, 1, 0, 20, 20, 285, 320, 0)
-        for time in range(12)
-    ]
+    rows = [(time, 1, 1, 0, 20, 20, 285, 320, 0) for time in range(12)]
     result = subprocess.run(
         [
             "java",
@@ -1229,9 +1255,7 @@ def test_hrc_enable_java_kernel_matches_timer_latch_and_delay_trajectory(
         "true,false",
     ]
     assert program["behavior_kind"] == "plant_hrc_enable"
-    assert program["source_contract"]["standard"].endswith(
-        "HeatRecoveryChillers.Enable"
-    )
+    assert program["source_contract"]["standard"].endswith("HeatRecoveryChillers.Enable")
     assert [slot["name"] for slot in slots["slots"]] == [
         "coolingPlantEnable",
         "heatingPlantEnable",
@@ -1549,6 +1573,20 @@ def test_boolean_java_kernels_match_independent_oce_goldens(
             "Buildings.Controls.OBC.CDL.Discrete.Sampler",
         ),
         (
+            _numeric_first_order_hold_graph(),
+            ["0", "0", "1", "1", "2", "2", "3", "3", "4", "4", "5", "5"],
+            ["0.0", "0.0", "0.0", "1.0", "2.0", "3.0"],
+            ["in", "out"],
+            "Buildings.Controls.OBC.CDL.Discrete.FirstOrderHold",
+        ),
+        (
+            _boolean_sample_trigger_graph(),
+            ["0", "0.5", "1", "2.5", "2.6", "4.5"],
+            ["false", "true", "false", "true", "false", "true"],
+            ["out"],
+            "Buildings.Controls.OBC.CDL.Logical.Sources.SampleTrigger",
+        ),
+        (
             _triggered_sampler_graph(),
             ["10", "0", "11", "1", "12", "1", "13", "0", "14", "1"],
             ["-1.0", "11.0", "11.0", "11.0", "14.0"],
@@ -1681,14 +1719,30 @@ def test_timer_with_reset_java_kernel_matches_source_recurrence(tmp_path: Path) 
             "-cp",
             str(tmp_path),
             class_name,
-            "0", "1", "0",
-            "1", "1", "0",
-            "3", "1", "0",
-            "4", "1", "1",
-            "5", "1", "1",
-            "7", "1", "0",
-            "8", "0", "0",
-            "9", "1", "0",
+            "0",
+            "1",
+            "0",
+            "1",
+            "1",
+            "0",
+            "3",
+            "1",
+            "0",
+            "4",
+            "1",
+            "1",
+            "5",
+            "1",
+            "1",
+            "7",
+            "1",
+            "0",
+            "8",
+            "0",
+            "0",
+            "9",
+            "1",
+            "0",
         ],
         check=True,
         capture_output=True,
@@ -1740,14 +1794,30 @@ def test_accumulating_timer_java_kernel_matches_pinned_limiting_case(
             "-cp",
             str(tmp_path),
             class_name,
-            "0", "0", "0",
-            "1", "1", "0",
-            "3", "1", "0",
-            "4", "0", "0",
-            "5", "1", "0",
-            "6", "1", "1",
-            "7", "1", "1",
-            "8", "0", "1",
+            "0",
+            "0",
+            "0",
+            "1",
+            "1",
+            "0",
+            "3",
+            "1",
+            "0",
+            "4",
+            "0",
+            "0",
+            "5",
+            "1",
+            "0",
+            "6",
+            "1",
+            "1",
+            "7",
+            "1",
+            "1",
+            "8",
+            "0",
+            "1",
         ],
         check=True,
         capture_output=True,
@@ -1868,7 +1938,9 @@ def test_g36_api_downloads_reviewable_program_package(tmp_path: Path) -> None:
     assert manifest["runtime_qualified"] is False
 
 
-def test_g36_api_downloads_trim_and_respond_program_package(tmp_path: Path) -> None:
+def test_g36_api_downloads_expanded_supply_temperature_program_package(
+    tmp_path: Path,
+) -> None:
     client = TestClient(create_app(tmp_path / "runs"))
 
     response = client.post(
@@ -1878,11 +1950,15 @@ def test_g36_api_downloads_trim_and_respond_program_package(tmp_path: Path) -> N
     assert response.status_code == 200, response.text
     with zipfile.ZipFile(BytesIO(response.content)) as archive:
         manifest = json.loads(archive.read("manifest.json"))
-        program = manifest["programs"][0]
+        program = next(
+            item
+            for item in manifest["programs"]
+            if item["behavior_kind"] == "boolean_sample_trigger"
+        )
         source = archive.read(program["paths"]["program_source"]).decode()
     assert manifest["controller_id"] == TRIM_CONTROLLER
-    assert program["behavior_kind"] == "trim_and_respond"
-    assert "double trueDelay = DELAY_SECONDS + SAMPLE_PERIOD_SECONDS;" in source
+    assert all(item["behavior_kind"] != "trim_and_respond" for item in manifest["programs"])
+    assert "pinned CDL.Logical.Sources.SampleTrigger contract" in source
     assert manifest["licensed_workbench_compile_required"] is True
     assert manifest["runtime_qualified"] is False
 
@@ -1948,7 +2024,13 @@ def test_plant_timer_with_reset_requires_explicit_source_contract() -> None:
 
 @pytest.mark.parametrize(
     "graph",
-    [_numeric_sampler_graph(), _triggered_sampler_graph(), _numeric_unit_delay_graph()],
+    [
+        _numeric_sampler_graph(),
+        _numeric_first_order_hold_graph(),
+        _boolean_sample_trigger_graph(),
+        _triggered_sampler_graph(),
+        _numeric_unit_delay_graph(),
+    ],
 )
 def test_discrete_numeric_programs_require_explicit_cdl_contract(
     graph: ControlGraph,
@@ -1959,13 +2041,15 @@ def test_discrete_numeric_programs_require_explicit_cdl_contract(
         if block.kind
         in {
             BlockKind.NUMERIC_SAMPLER,
+            BlockKind.NUMERIC_FIRST_ORDER_HOLD,
+            BlockKind.BOOLEAN_SAMPLE_TRIGGER,
             BlockKind.NUMERIC_LATCH,
             BlockKind.NUMERIC_UNIT_DELAY,
         }
     )
     stateful.config.pop("semantic_contract")
 
-    with pytest.raises(ValueError, match="explicit CDL.Discrete"):
+    with pytest.raises(ValueError, match="explicit CDL"):
         NiagaraProgramPackageBuilder().build(graph)
 
 

@@ -396,9 +396,7 @@ class PlantControlsLibrary(G36Library):
             modelica_json_root=modelica_json_root,
             engine=engine,
         )
-        self.g36_root = (
-            self.modelica_root / "Buildings/Templates/Plants/Controls"
-        ).resolve()
+        self.g36_root = (self.modelica_root / "Buildings/Templates/Plants/Controls").resolve()
 
     def catalog(self) -> dict[str, Any]:
         controllers = []
@@ -421,9 +419,7 @@ class PlantControlsLibrary(G36Library):
             "license": "Revised BSD-3-Clause",
             "source_model_count": len(controllers),
             "production_control_model_count": len(production_models),
-            "validation_fixture_count": sum(
-                item["validation_fixture"] for item in controllers
-            ),
+            "validation_fixture_count": sum(item["validation_fixture"] for item in controllers),
             "proven_controller_count": sum(
                 item["product_status"] != "source_catalog_only" for item in production_models
             ),
@@ -436,6 +432,33 @@ class PlantControlsLibrary(G36Library):
             ),
             "licensed_niagara_runtime_qualified": False,
         }
+
+    def _source_bundle(
+        self,
+        controller_id: str,
+    ) -> tuple[dict[str, Any], dict[str, Any], dict[str, dict[str, Any]]]:
+        controller, document, class_documents = super()._source_bundle(controller_id)
+        # These plant utilities already have source-bound, trajectory-qualified
+        # exact adapters in CxfImporter. Expanding their class boundary as well
+        # duplicates parent and child connector drives in modelica-json CXF.
+        # Keep them opaque here so the established adapter remains authoritative;
+        # unrelated plant composites and all G36 composites still use the general
+        # hierarchy assembler.
+        exact_adapter_suffixes = (
+            ".Utilities.Initialization",
+            ".Utilities.TimerWithReset",
+            ".Utilities.PlaceholderLogical",
+            ".Utilities.PlaceholderReal",
+            ".Utilities.PlaceholderInteger",
+            ".Utilities.PIDWithEnable",
+            ".ASHRAE.G36.Generic.TrimAndRespond",
+        )
+        retained = {
+            class_id: value
+            for class_id, value in class_documents.items()
+            if not class_id.removeprefix("ex:").endswith(exact_adapter_suffixes)
+        }
+        return controller, document, retained
 
     def parameter_schema(self, controller_id: str) -> dict[str, Any]:
         if controller_id in _SOURCE_EQUATION_CONTROLLERS:
@@ -462,9 +485,7 @@ class PlantControlsLibrary(G36Library):
         result["schema"] = "bactalk.plant-controls-translation/v1"
         result["library"] = "LBNL Modelica Buildings Templates.Plants.Controls"
         proof = _PROVEN_CONTROLLERS.get(controller_id)
-        result["product_status"] = (
-            proof["status"] if proof is not None else "source_catalog_only"
-        )
+        result["product_status"] = proof["status"] if proof is not None else "source_catalog_only"
         return result
 
     def execute(
@@ -612,9 +633,7 @@ class PlantControlsLibrary(G36Library):
                     or not math.isfinite(float(raw))
                     or float(raw) < minimum
                 ):
-                    raise ValueError(
-                        f"plant parameter {name} must be finite and >= {minimum}"
-                    )
+                    raise ValueError(f"plant parameter {name} must be finite and >= {minimum}")
                 values[name] = float(raw)
             remaining = sorted(name for name in required if values[name] is None)
             descriptions = {
@@ -711,10 +730,15 @@ class PlantControlsLibrary(G36Library):
             values: dict[str, float | None] = {}
             for name in ordered_names:
                 raw = parameters.get(name, defaults.get(name))
-                minimum = 273.15 if name in {
-                    "TChiWatSup_min",
-                    "THeaWatSup_max",
-                } else 0.0
+                minimum = (
+                    273.15
+                    if name
+                    in {
+                        "TChiWatSup_min",
+                        "THeaWatSup_max",
+                    }
+                    else 0.0
+                )
                 if raw is None:
                     values[name] = None
                     continue
@@ -724,9 +748,7 @@ class PlantControlsLibrary(G36Library):
                     or not math.isfinite(float(raw))
                     or float(raw) < minimum
                 ):
-                    raise ValueError(
-                        f"plant parameter {name} must be finite and >= {minimum}"
-                    )
+                    raise ValueError(f"plant parameter {name} must be finite and >= {minimum}")
                 values[name] = float(raw)
             remaining = sorted(name for name in required if values[name] is None)
             descriptions = {
@@ -795,17 +817,13 @@ class PlantControlsLibrary(G36Library):
                     or not math.isfinite(float(raw_cop))
                     or float(raw_cop) < 1.1
                 ):
-                    raise ValueError(
-                        "plant parameter COPHea_nominal must be finite and >= 1.1"
-                    )
+                    raise ValueError("plant parameter COPHea_nominal must be finite and >= 1.1")
                 cop = float(raw_cop)
             parameterization = {
                 "schema": "bactalk.g36-parameterization/v2",
                 "available_parameters": ["COPHea_nominal"],
                 "required_parameters": ["COPHea_nominal"],
-                "remaining_required_parameters": (
-                    [] if cop is not None else ["COPHea_nominal"]
-                ),
+                "remaining_required_parameters": ([] if cop is not None else ["COPHea_nominal"]),
                 "parameters": [
                     {
                         "name": "COPHea_nominal",
@@ -949,9 +967,7 @@ class PlantControlsLibrary(G36Library):
                         "data_type": data_types[name],
                         "is_array": name == "sch",
                         "number_dimensions": 2 if name == "sch" else None,
-                        "size_of_dimensions": (
-                            f"({len(schedule)},2)" if name == "sch" else None
-                        ),
+                        "size_of_dimensions": (f"({len(schedule)},2)" if name == "sch" else None),
                         "required": name == "typ",
                         "value": values[name],
                         "description": descriptions[name],
@@ -1038,14 +1054,9 @@ class PlantControlsLibrary(G36Library):
             if have_heating is False and have_cooling is False:
                 raise ValueError("Pumps.Primary.VariableSpeed requires a heating or cooling loop")
             headered = booleans["have_pumPriHdr"]
-            separate_chilled = bool(
-                have_cooling
-                and (headered or booleans["have_pumChiWatPriDed"])
-            )
+            separate_chilled = bool(have_cooling and (headered or booleans["have_pumChiWatPriDed"]))
             if have_cooling is True and not separate_chilled and have_heating is False:
-                raise ValueError(
-                    "cooling with common primary pumps requires the heating loop"
-                )
+                raise ValueError("cooling with common primary pumps requires the heating loop")
             required = {
                 "have_heaWat",
                 "have_chiWat",
@@ -1061,13 +1072,9 @@ class PlantControlsLibrary(G36Library):
             for name in ("nEqu", "nPumHeaWatPri", "nPumChiWatPri"):
                 raw = parameters.get(name)
                 if raw is not None and (
-                    isinstance(raw, bool)
-                    or not isinstance(raw, int)
-                    or not 1 <= raw <= 52
+                    isinstance(raw, bool) or not isinstance(raw, int) or not 1 <= raw <= 52
                 ):
-                    raise ValueError(
-                        f"plant parameter {name} must be an integer from 1 through 52"
-                    )
+                    raise ValueError(f"plant parameter {name} must be an integer from 1 through 52")
                 counts[name] = raw
             if (
                 have_heating is True
@@ -1077,9 +1084,7 @@ class PlantControlsLibrary(G36Library):
                 and counts["nPumHeaWatPri"] is not None
                 and counts["nEqu"] != counts["nPumHeaWatPri"]
             ):
-                raise ValueError(
-                    "shared reversible dedicated pumps require nEqu=nPumHeaWatPri"
-                )
+                raise ValueError("shared reversible dedicated pumps require nEqu=nPumHeaWatPri")
             control_dp = booleans["have_pumPriCtlDp"] is True
             numerics: dict[str, float | None] = {}
             for loop in ("HeaWat", "ChiWat"):
@@ -1129,11 +1134,7 @@ class PlantControlsLibrary(G36Library):
             values: dict[str, Any] = {**booleans, **counts, **numerics}
             data_types = {
                 name: (
-                    "Boolean"
-                    if name in booleans
-                    else "Integer"
-                    if name.startswith("n")
-                    else "Real"
+                    "Boolean" if name in booleans else "Integer" if name.startswith("n") else "Real"
                 )
                 for name in order
             }
@@ -1246,13 +1247,9 @@ class PlantControlsLibrary(G36Library):
             for name in ("nEqu", "nPum"):
                 raw = parameters.get(name)
                 if raw is not None and (
-                    isinstance(raw, bool)
-                    or not isinstance(raw, int)
-                    or not 1 <= raw <= 52
+                    isinstance(raw, bool) or not isinstance(raw, int) or not 1 <= raw <= 52
                 ):
-                    raise ValueError(
-                        f"plant parameter {name} must be an integer from 1 through 52"
-                    )
+                    raise ValueError(f"plant parameter {name} must be an integer from 1 through 52")
                 counts[name] = raw
             dp_control = booleans["is_ctlDp"] is True
             if dp_control:
@@ -1263,21 +1260,15 @@ class PlantControlsLibrary(G36Library):
                 or not isinstance(sensor_count, int)
                 or not 1 <= sensor_count <= 52
             ):
-                raise ValueError(
-                    "plant parameter nSenDp must be an integer from 1 through 52"
-                )
-            flow = parameters.get(
-                "V_flow_nominal", 1e-6 if not dp_control else None
-            )
+                raise ValueError("plant parameter nSenDp must be an integer from 1 through 52")
+            flow = parameters.get("V_flow_nominal", 1e-6 if not dp_control else None)
             if flow is not None and (
                 isinstance(flow, bool)
                 or not isinstance(flow, (int, float))
                 or not math.isfinite(float(flow))
                 or float(flow) < 1e-6
             ):
-                raise ValueError(
-                    "plant parameter V_flow_nominal must be finite and at least 1e-6"
-                )
+                raise ValueError("plant parameter V_flow_nominal must be finite and at least 1e-6")
             defaults = {
                 "dtRun": 600.0,
                 "dtRunFaiSaf": 300.0,
@@ -1318,9 +1309,7 @@ class PlantControlsLibrary(G36Library):
                 or not math.isfinite(float(low_speed_time))
                 or float(low_speed_time) < 0
             ):
-                raise ValueError(
-                    "plant parameter dtRunFaiSafLowY must be non-negative finite"
-                )
+                raise ValueError("plant parameter dtRunFaiSafLowY must be non-negative finite")
             numerics["dtRunFaiSafLowY"] = float(low_speed_time)
             values: dict[str, Any] = {
                 **booleans,
@@ -1442,9 +1431,7 @@ class PlantControlsLibrary(G36Library):
                         or not math.isfinite(float(item))
                         or float(item) <= 0
                     ):
-                        raise ValueError(
-                            f"plant parameter capEqu[{index}] must be positive finite"
-                        )
+                        raise ValueError(f"plant parameter capEqu[{index}] must be positive finite")
                     capacities.append(float(item))
                 if matrix is not None and len(capacities) != len(matrix[0]):
                     raise ValueError(
@@ -1597,13 +1584,9 @@ class PlantControlsLibrary(G36Library):
             for name in ("nPum", "nSenDp"):
                 raw = parameters.get(name)
                 if raw is not None and (
-                    isinstance(raw, bool)
-                    or not isinstance(raw, int)
-                    or not 1 <= raw <= 52
+                    isinstance(raw, bool) or not isinstance(raw, int) or not 1 <= raw <= 52
                 ):
-                    raise ValueError(
-                        f"plant parameter {name} must be an integer from 1 through 52"
-                    )
+                    raise ValueError(f"plant parameter {name} must be an integer from 1 through 52")
                 counts[name] = raw
             defaults = {
                 "dtRun": 600.0,
@@ -1621,9 +1604,7 @@ class PlantControlsLibrary(G36Library):
                 or not math.isfinite(float(flow))
                 or float(flow) < 1e-6
             ):
-                raise ValueError(
-                    "plant parameter V_flow_nominal must be finite and at least 1e-6"
-                )
+                raise ValueError("plant parameter V_flow_nominal must be finite and at least 1e-6")
             numerics["V_flow_nominal"] = float(flow) if flow is not None else None
             for name, default in defaults.items():
                 raw = parameters.get(name, default)
@@ -1634,9 +1615,7 @@ class PlantControlsLibrary(G36Library):
                     or float(raw) < 0
                     or (name in {"dVOffUp"} and float(raw) > 1)
                 ):
-                    raise ValueError(
-                        f"plant parameter {name} must be non-negative finite"
-                    )
+                    raise ValueError(f"plant parameter {name} must be non-negative finite")
                 numerics[name] = float(raw)
             down_offset = parameters.get("dVOffDow", numerics["dVOffUp"])
             if (
@@ -1654,15 +1633,11 @@ class PlantControlsLibrary(G36Library):
                 or not math.isfinite(float(low_speed_time))
                 or float(low_speed_time) < 0
             ):
-                raise ValueError(
-                    "plant parameter dtRunFaiSafLowY must be non-negative finite"
-                )
+                raise ValueError("plant parameter dtRunFaiSafLowY must be non-negative finite")
             numerics["dtRunFaiSafLowY"] = float(low_speed_time)
             values: dict[str, Any] = {**counts, **numerics}
             required = {"nPum", "nSenDp", "V_flow_nominal"}
-            data_types = {
-                name: "Integer" if name in counts else "Real" for name in allowed
-            }
+            data_types = {name: "Integer" if name in counts else "Real" for name in allowed}
             order = (
                 "nPum",
                 "nSenDp",
@@ -1740,8 +1715,8 @@ class PlantControlsLibrary(G36Library):
             raw_indices = parameters.get("idxEquAlt")
             indices: list[int] | None = None
             if input_count is not None:
-                raw_indices = raw_indices if raw_indices is not None else list(
-                    range(1, input_count + 1)
+                raw_indices = (
+                    raw_indices if raw_indices is not None else list(range(1, input_count + 1))
                 )
                 if (
                     not isinstance(raw_indices, list)
@@ -1764,9 +1739,11 @@ class PlantControlsLibrary(G36Library):
             raw_starts = parameters.get("runTim_start")
             starts: list[float] | None = None
             if indices is not None:
-                raw_starts = raw_starts if raw_starts is not None else [
-                    float(60 + position) for position in range(1, len(indices) + 1)
-                ]
+                raw_starts = (
+                    raw_starts
+                    if raw_starts is not None
+                    else [float(60 + position) for position in range(1, len(indices) + 1)]
+                )
                 if (
                     not isinstance(raw_starts, list)
                     or len(raw_starts) != len(indices)
@@ -1783,12 +1760,8 @@ class PlantControlsLibrary(G36Library):
                         "value per alternate equipment"
                     )
                 starts = [float(value) for value in raw_starts]
-                if any(
-                    right <= left for left, right in zip(starts, starts[1:], strict=False)
-                ):
-                    raise ValueError(
-                        "plant parameter runTim_start must be strictly increasing"
-                    )
+                if any(right <= left for left, right in zip(starts, starts[1:], strict=False)):
+                    raise ValueError("plant parameter runTim_start must be strictly increasing")
             elif raw_starts is not None:
                 raise ValueError("plant parameter runTim_start requires nin")
             values = {
@@ -1813,9 +1786,7 @@ class PlantControlsLibrary(G36Library):
                         "is_array": name != "nin",
                         "number_dimensions": 1 if name != "nin" else None,
                         "size_of_dimensions": (
-                            f"({len(indices)},)"
-                            if name != "nin" and indices is not None
-                            else None
+                            f"({len(indices)},)" if name != "nin" and indices is not None else None
                         ),
                         "required": name == "nin",
                         "value": values[name],
@@ -1948,10 +1919,7 @@ class PlantControlsLibrary(G36Library):
                 derived_alternates = (
                     1
                     if equipment_count == 1
-                    else max(
-                        sum(0.0 < coefficient < 1.0 for coefficient in row)
-                        for row in matrix
-                    )
+                    else max(sum(0.0 < coefficient < 1.0 for coefficient in row) for row in matrix)
                 )
             raw_alternates = parameters.get("nEquAlt", derived_alternates)
             if raw_alternates is not None and (
@@ -1987,9 +1955,7 @@ class PlantControlsLibrary(G36Library):
                         "is_array": True,
                         "number_dimensions": 2,
                         "size_of_dimensions": (
-                            f"({len(matrix)},{len(matrix[0])})"
-                            if matrix is not None
-                            else None
+                            f"({len(matrix)},{len(matrix[0])})" if matrix is not None else None
                         ),
                         "required": True,
                         "value": matrix,
@@ -2039,9 +2005,7 @@ class PlantControlsLibrary(G36Library):
                 )
             count = parameters.get("nin")
             if count is not None and (
-                isinstance(count, bool)
-                or not isinstance(count, int)
-                or not 1 <= count <= 52
+                isinstance(count, bool) or not isinstance(count, int) or not 1 <= count <= 52
             ):
                 raise ValueError("plant parameter nin must be an integer from 1 through 52")
             parameterization = {
@@ -2091,9 +2055,7 @@ class PlantControlsLibrary(G36Library):
             have_heating = parameters.get("have_heaWat")
             have_cooling = parameters.get("have_chiWat")
             if have_heating is False and have_cooling is False:
-                raise ValueError(
-                    "StagingRotation.EquipmentAvailability requires at least one loop"
-                )
+                raise ValueError("StagingRotation.EquipmentAvailability requires at least one loop")
             duration = parameters.get("dtOff", 900.0)
             if (
                 isinstance(duration, bool)
@@ -2165,9 +2127,7 @@ class PlantControlsLibrary(G36Library):
                 if "staEqu" in parameters
                 else None
             )
-            dimensions = (
-                f"({len(matrix)},{len(matrix[0])})" if matrix is not None else None
-            )
+            dimensions = f"({len(matrix)},{len(matrix[0])})" if matrix is not None else None
             parameterization = {
                 "schema": "bactalk.g36-parameterization/v2",
                 "available_parameters": ["staEqu"],
@@ -2253,13 +2213,9 @@ class PlantControlsLibrary(G36Library):
             for name in ("nEqu", "nEnaHeaWat", "nEnaChiWat"):
                 value = parameters.get(name)
                 if value is not None and (
-                    isinstance(value, bool)
-                    or not isinstance(value, int)
-                    or not 0 <= value <= 64
+                    isinstance(value, bool) or not isinstance(value, int) or not 0 <= value <= 64
                 ):
-                    raise ValueError(
-                        f"plant parameter {name} must be an integer from 0 through 64"
-                    )
+                    raise ValueError(f"plant parameter {name} must be an integer from 0 through 64")
                 sizes[name] = value
             if sizes["nEqu"] == 0:
                 raise ValueError("plant parameter nEqu must be an integer from 1 through 64")
@@ -2294,9 +2250,7 @@ class PlantControlsLibrary(G36Library):
                         or not isinstance(item, (int, float))
                         or not math.isfinite(float(item))
                     ):
-                        raise ValueError(
-                            f"plant parameter {name}[{index}] requires finite Real"
-                        )
+                        raise ValueError(f"plant parameter {name}[{index}] requires finite Real")
                     normalized.append(float(item))
                 if sizes["nEqu"] is not None and len(normalized) != sizes["nEqu"]:
                     raise ValueError(
@@ -2494,13 +2448,9 @@ class PlantControlsLibrary(G36Library):
             for name in ("nEqu", "nEna"):
                 value = parameters.get(name)
                 if value is not None and (
-                    isinstance(value, bool)
-                    or not isinstance(value, int)
-                    or not 1 <= value <= 64
+                    isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 64
                 ):
-                    raise ValueError(
-                        f"plant parameter {name} must be an integer from 1 through 64"
-                    )
+                    raise ValueError(f"plant parameter {name} must be an integer from 1 through 64")
                 sizes[name] = value
             arrays: dict[str, list[float] | None] = {}
             for name in ("V_flow_nominal", "V_flow_min"):
@@ -2517,9 +2467,7 @@ class PlantControlsLibrary(G36Library):
                         or not isinstance(item, (int, float))
                         or not math.isfinite(float(item))
                     ):
-                        raise ValueError(
-                            f"plant parameter {name}[{index}] requires finite Real"
-                        )
+                        raise ValueError(f"plant parameter {name}[{index}] requires finite Real")
                     normalized.append(float(item))
                 if sizes["nEqu"] is not None and len(normalized) != sizes["nEqu"]:
                     raise ValueError(
@@ -2756,9 +2704,7 @@ class PlantControlsLibrary(G36Library):
                 if isinstance(value, bool) or not isinstance(value, int):
                     raise ValueError(f"plant parameter {name} requires Integer")
                 if supplied and not 1 <= value <= 64:
-                    raise ValueError(
-                        f"plant parameter {name} must be an integer from 1 through 64"
-                    )
+                    raise ValueError(f"plant parameter {name} must be an integer from 1 through 64")
                 return value
 
             nin = bounded_size("nin", parameters.get("nin", 0), supplied="nin" in parameters)
@@ -2768,9 +2714,7 @@ class PlantControlsLibrary(G36Library):
                 supplied="nout" in parameters,
             )
             if nin > 0 and nout > 0 and nin * nout > 4096:
-                raise ValueError(
-                    "TrueArrayConditional product nin*nout must not exceed 4096"
-                )
+                raise ValueError("TrueArrayConditional product nin*nout must not exceed 4096")
             parameterization = {
                 "schema": "bactalk.g36-parameterization/v2",
                 "available_parameters": ["nin", "nout"],
@@ -3095,9 +3039,7 @@ class PlantControlsLibrary(G36Library):
             upper = 24 if name.startswith("nPum") else 52
             lower = 0 if name.startswith("nReq") else 1
             if raw is not None and (
-                isinstance(raw, bool)
-                or not isinstance(raw, int)
-                or not lower <= raw <= upper
+                isinstance(raw, bool) or not isinstance(raw, int) or not lower <= raw <= upper
             ):
                 raise ValueError(
                     f"plant parameter {name} must be an integer from {lower} through {upper}"
@@ -3106,16 +3048,12 @@ class PlantControlsLibrary(G36Library):
         if n_hp is not None and values["have_pumPriHdr"] is False:
             if have_heating and values["nPumHeaWatPri"] != n_hp:
                 raise ValueError("dedicated heating primary pumps require nPumHeaWatPri=nHp")
-            separate_cooling = bool(
-                have_cooling and values["have_pumChiWatPriDed_select"]
-            )
+            separate_cooling = bool(have_cooling and values["have_pumChiWatPriDed_select"])
             if separate_cooling and values["nPumChiWatPri"] != n_hp:
                 raise ValueError("dedicated chilled-water primary pumps require nPumChiWatPri=nHp")
 
         matrix = (
-            self._validated_staging_matrix(parameters["staEqu"])
-            if "staEqu" in parameters
-            else None
+            self._validated_staging_matrix(parameters["staEqu"]) if "staEqu" in parameters else None
         )
         if matrix is not None and n_hp is not None and len(matrix[0]) != n_hp:
             raise ValueError("plant parameter staEqu width must equal nHp")
@@ -3200,23 +3138,19 @@ class PlantControlsLibrary(G36Library):
                     isinstance(item, bool)
                     or not isinstance(item, (int, float))
                     or not math.isfinite(float(item))
-                    or (
-                        float(item) <= 0
-                        if name in positive_arrays
-                        else float(item) < 0
-                    )
+                    or (float(item) <= 0 if name in positive_arrays else float(item) < 0)
                 ):
                     relation = "positive" if name in positive_arrays else "non-negative"
-                    raise ValueError(
-                        f"plant parameter {name}[{index}] must be {relation} finite"
-                    )
+                    raise ValueError(f"plant parameter {name}[{index}] must be {relation} finite")
                 normalized.append(float(item))
             values[name] = normalized
         for water in ("HeaWat", "ChiWat"):
             nominal = values[f"V{water}Hp_flow_nominal"]
             minimum = values[f"V{water}Hp_flow_min"]
-            if nominal is not None and minimum is not None and any(
-                low > design for low, design in zip(minimum, nominal, strict=True)
+            if (
+                nominal is not None
+                and minimum is not None
+                and any(low > design for low, design in zip(minimum, nominal, strict=True))
             ):
                 raise ValueError(f"V{water}Hp_flow_min cannot exceed nominal flow")
 
@@ -3378,9 +3312,7 @@ class PlantControlsLibrary(G36Library):
             raise ValueError("pump staging yDowPumSta cannot exceed yUpPumSta")
         for water in ("HeaWat", "ChiWat"):
             if values[f"dp{water}RemSet_min"] > min(values[f"dp{water}RemSet_max"]):
-                raise ValueError(
-                    f"dp{water}RemSet_min cannot exceed any remote setpoint maximum"
-                )
+                raise ValueError(f"dp{water}RemSet_min cannot exceed any remote setpoint maximum")
         if values["THeaWatSupSet_min"] > values["THeaWatSup_nominal"]:
             raise ValueError("THeaWatSupSet_min cannot exceed THeaWatSup_nominal")
         if values["TChiWatSupSet_max"] < values["TChiWatSup_nominal"]:
@@ -3480,9 +3412,7 @@ class PlantControlsLibrary(G36Library):
         parameterization = parameter_schema["parameterization"]
         if parameterization["remaining_required_parameters"]:
             raise G36RequiredParametersError(controller_id, parameterization)
-        parameter_values = {
-            item["name"]: item["value"] for item in parameterization["parameters"]
-        }
+        parameter_values = {item["name"]: item["value"] for item in parameterization["parameters"]}
         value = parameterization["parameters"][0]["value"]
         if controller_id == "Utilities.Initialization":
             graph = ControlGraph(
@@ -3544,18 +3474,14 @@ class PlantControlsLibrary(G36Library):
             is_integer = controller_id == "Utilities.PlaceholderInteger"
             have_input = bool(parameter_values["have_inp"])
             have_placeholder_input = bool(parameter_values["have_inpPh"])
-            output_kind = (
-                BlockKind.BOOLEAN_OUTPUT if is_boolean else BlockKind.NUMERIC_OUTPUT
-            )
+            output_kind = BlockKind.BOOLEAN_OUTPUT if is_boolean else BlockKind.NUMERIC_OUTPUT
             blocks: list[Block]
             links: list[Link]
             if have_input:
                 blocks = [
                     Block(
                         id="u",
-                        kind=(
-                            BlockKind.BOOLEAN_INPUT if is_boolean else BlockKind.NUMERIC_INPUT
-                        ),
+                        kind=(BlockKind.BOOLEAN_INPUT if is_boolean else BlockKind.NUMERIC_INPUT),
                         label="u",
                     ),
                     Block(id="y", kind=output_kind, label="y"),
@@ -3565,9 +3491,7 @@ class PlantControlsLibrary(G36Library):
                 blocks = [
                     Block(
                         id="uPh",
-                        kind=(
-                            BlockKind.BOOLEAN_INPUT if is_boolean else BlockKind.NUMERIC_INPUT
-                        ),
+                        kind=(BlockKind.BOOLEAN_INPUT if is_boolean else BlockKind.NUMERIC_INPUT),
                         label="uPh",
                     ),
                     Block(id="y", kind=output_kind, label="y"),
@@ -3578,9 +3502,7 @@ class PlantControlsLibrary(G36Library):
                 blocks = [
                     Block(
                         id="ph",
-                        kind=(
-                            BlockKind.BOOLEAN_CONST if is_boolean else BlockKind.NUMERIC_CONST
-                        ),
+                        kind=(BlockKind.BOOLEAN_CONST if is_boolean else BlockKind.NUMERIC_CONST),
                         label="Internal placeholder",
                         config={"value": internal},
                     ),
@@ -3684,11 +3606,7 @@ class PlantControlsLibrary(G36Library):
         primary_only = bool(parameters["is_priOnl"])
         headered_primary = bool(parameters["have_pumPriHdr"])
         separate_chilled = bool(
-            have_cooling
-            and (
-                headered_primary
-                or bool(parameters["have_pumChiWatPriDed_select"])
-            )
+            have_cooling and (headered_primary or bool(parameters["have_pumChiWatPriDed_select"]))
         )
         have_hrc = bool(parameters["have_hrc_select"])
         n_hp = int(parameters["nHp"])
@@ -3875,15 +3793,11 @@ class PlantControlsLibrary(G36Library):
             external(f"u1Hp_actual__{equipment}", boolean=True)
 
         mode_names = [
-            name
-            for name, active in (("HeaWat", have_heating), ("ChiWat", have_cooling))
-            if active
+            name for name, active in (("HeaWat", have_heating), ("ChiWat", have_cooling)) if active
         ]
         mode_enabled: dict[str, tuple[str, str]] = {}
         equipment_command_relay: dict[str, list[tuple[str, str]]] = {}
-        equipment_available: dict[str, list[tuple[str, str]]] = {
-            mode: [] for mode in mode_names
-        }
+        equipment_available: dict[str, list[tuple[str, str]]] = {mode: [] for mode in mode_names}
         stage_available: dict[str, list[tuple[str, str]]] = {}
         stage_index: dict[str, tuple[str, str]] = {}
         stage_complete: dict[str, tuple[str, str]] = {}
@@ -3910,9 +3824,7 @@ class PlantControlsLibrary(G36Library):
                 "nReqPla": external(f"nReqPla{water}", boolean=False),
             }
             if bool(parameters["have_inpSch"]):
-                mapping["u1Sch"] = external(
-                    "u1SchHea" if heating else "u1SchCoo", boolean=True
-                )
+                mapping["u1Sch"] = external("u1SchHea" if heating else "u1SchCoo", boolean=True)
             outputs = merge_graph(child, f"enable_{water}", mapping)
             mode_enabled[water] = outputs["y1"]
             equipment_command_relay[water] = [
@@ -3960,8 +3872,7 @@ class PlantControlsLibrary(G36Library):
                 availability_map,
             )
             stage_available[water] = [
-                availability_outputs[f"y1__{index}"]
-                for index in range(1, n_stage + 1)
+                availability_outputs[f"y1__{index}"] for index in range(1, n_stage + 1)
             ]
             stage_up_relays[water] = boolean_relay(f"{water}_stage_up_relay")
             stage_down_relays[water] = boolean_relay(f"{water}_stage_down_relay")
@@ -3999,15 +3910,12 @@ class PlantControlsLibrary(G36Library):
                     )
                 sort_outputs = merge_graph(sort_graph, f"runtime_{water}", sort_map)
                 runtime_order[water] = [
-                    sort_outputs[f"yIdx__{rank}"]
-                    for rank in range(1, len(alternate_indices) + 1)
+                    sort_outputs[f"yIdx__{rank}"] for rank in range(1, len(alternate_indices) + 1)
                 ]
             else:
                 runtime_order[water] = []
 
-            enable_graph = child_graph(
-                "StagingRotation.EquipmentEnable", {"staEqu": matrix}
-            )
+            enable_graph = child_graph("StagingRotation.EquipmentEnable", {"staEqu": matrix})
             enable_map = {
                 "uSta": stage_index[water],
                 **{
@@ -4019,9 +3927,7 @@ class PlantControlsLibrary(G36Library):
                     for rank in range(1, len(alternate_indices) + 1)
                 },
             }
-            enable_outputs = merge_graph(
-                enable_graph, f"equipment_enable_{water}", enable_map
-            )
+            enable_outputs = merge_graph(enable_graph, f"equipment_enable_{water}", enable_map)
             equipment_commands[water] = [
                 enable_outputs[f"y1__{index}"] for index in range(1, n_hp + 1)
             ]
@@ -4076,9 +3982,7 @@ class PlantControlsLibrary(G36Library):
                     mapping["u1PumChiWatSec_actual"] = event_pump_status_relays[
                         (equipment, "ChiWat", "Sec")
                     ]
-            event_outputs[equipment] = merge_graph(
-                child, f"event_hp_{equipment}", mapping
-            )
+            event_outputs[equipment] = merge_graph(child, f"event_hp_{equipment}", mapping)
             expose(f"y1Hp__{equipment}", event_outputs[equipment]["y1"], boolean=True)
             if have_heating and have_cooling:
                 expose(
@@ -4100,9 +4004,7 @@ class PlantControlsLibrary(G36Library):
         # Stage-completion feedback closes the command/status transaction.
         completion_outputs: dict[str, dict[str, tuple[str, str]]] = {}
         for water in mode_names:
-            child = child_graph(
-                "StagingRotation.StageCompletion", {"nin": n_hp}
-            )
+            child = child_graph("StagingRotation.StageCompletion", {"nin": n_hp})
             mapping = {"uSta": stage_index[water]}
             for equipment in range(1, n_hp + 1):
                 mapping[f"u1__{equipment}"] = event_outputs[equipment]["y1"]
@@ -4110,9 +4012,7 @@ class PlantControlsLibrary(G36Library):
                     f"u1Hp_actual__{equipment}",
                     "out",
                 )
-            completion_outputs[water] = merge_graph(
-                child, f"stage_completion_{water}", mapping
-            )
+            completion_outputs[water] = merge_graph(child, f"stage_completion_{water}", mapping)
             stage_complete[water] = completion_outputs[water]["y1"]
 
         reset_outputs: dict[str, dict[str, tuple[str, str]]] = {}
@@ -4175,9 +4075,7 @@ class PlantControlsLibrary(G36Library):
                     "have_inpPlrSta": False,
                     "plrSta": parameters["plrSta"],
                     "staEqu": matrix,
-                    "capEqu": parameters[
-                        "capHeaHp_nominal" if heating else "capCooHp_nominal"
-                    ],
+                    "capEqu": parameters["capHeaHp_nominal" if heating else "capCooHp_nominal"],
                     "dtRun": parameters["dtRunSta"],
                     "cp_default": parameters["cp_default"],
                     "rho_default": parameters["rho_default"],
@@ -4189,9 +4087,7 @@ class PlantControlsLibrary(G36Library):
             mapping = {
                 "uSta": stage_index[water],
                 "u1StaPro": stage_complete[water],
-                "TRet": external(
-                    f"T{water}{'Pri' if primary_only else 'Sec'}Ret", boolean=False
-                ),
+                "TRet": external(f"T{water}{'Pri' if primary_only else 'Sec'}Ret", boolean=False),
                 "TSupSet": supply_setpoint[water],
                 "V_flow": external(
                     f"V{water}{'Pri' if primary_only else 'Sec'}_flow", boolean=False
@@ -4219,19 +4115,15 @@ class PlantControlsLibrary(G36Library):
             count = int(parameters[f"nPum{water}Pri"])
             actual_root = f"u1Pum{water}Pri_actual"
             primary_status[water] = [
-                external(f"{actual_root}__{pump}", boolean=True)
-                for pump in range(1, count + 1)
+                external(f"{actual_root}__{pump}", boolean=True) for pump in range(1, count + 1)
             ]
             event_request_name = f"y1Pum{water}Pri"
             requests = [
-                event_outputs[equipment][event_request_name]
-                for equipment in range(1, n_hp + 1)
+                event_outputs[equipment][event_request_name] for equipment in range(1, n_hp + 1)
             ]
             if headered_primary:
                 if primary_only:
-                    primary_speed_relays[water] = numeric_relay(
-                        f"{water}_primary_speed_relay"
-                    )
+                    primary_speed_relays[water] = numeric_relay(f"{water}_primary_speed_relay")
                     if not bool(parameters[f"have_senDp{water}RemWir"]):
                         primary_local_setpoint_relays[water] = numeric_relay(
                             f"{water}_primary_local_dp_setpoint_relay"
@@ -4304,9 +4196,7 @@ class PlantControlsLibrary(G36Library):
                             else primary_local_setpoint_relays[water]
                         )
                 outputs = merge_graph(child, f"primary_pumps_{water}", mapping)
-                primary_commands[water] = [
-                    outputs[f"y1__{pump}"] for pump in range(1, count + 1)
-                ]
+                primary_commands[water] = [outputs[f"y1__{pump}"] for pump in range(1, count + 1)]
                 for equipment in range(1, n_hp + 1):
                     feed(
                         outputs[f"y1_actual__{equipment}"],
@@ -4315,11 +4205,7 @@ class PlantControlsLibrary(G36Library):
             else:
                 primary_commands[water] = requests
                 for equipment in range(1, n_hp + 1):
-                    status_water = (
-                        water
-                        if water == "HeaWat" or separate_chilled
-                        else "HeaWat"
-                    )
+                    status_water = water if water == "HeaWat" or separate_chilled else "HeaWat"
                     status = primary_status[status_water][equipment - 1]
                     feed(
                         status,
@@ -4353,9 +4239,7 @@ class PlantControlsLibrary(G36Library):
         variable_graph = child_graph("Pumps.Primary.VariableSpeed", variable_parameters)
         variable_map: dict[str, tuple[str, str]] = {}
         for water in mode_names:
-            command_water = (
-                water if water == "HeaWat" or separate_chilled else "HeaWat"
-            )
+            command_water = water if water == "HeaWat" or separate_chilled else "HeaWat"
             for pump, command in enumerate(primary_commands[command_water], start=1):
                 child_name = f"u1Pum{water}Pri__{pump}"
                 if any(block.id == child_name for block in variable_graph.blocks):
@@ -4378,9 +4262,7 @@ class PlantControlsLibrary(G36Library):
                             f"dpSet__{sensor}"
                         ]
                 else:
-                    variable_map[f"dp{water}Loc"] = external(
-                        f"dp{water}Loc", boolean=False
-                    )
+                    variable_map[f"dp{water}Loc"] = external(f"dp{water}Loc", boolean=False)
                     for sensor in range(1, int(parameters[f"nSenDp{water}Rem"]) + 1):
                         variable_map[f"dp{water}LocSet__{sensor}"] = external(
                             f"dp{water}LocSet__{sensor}", boolean=False
@@ -4394,11 +4276,7 @@ class PlantControlsLibrary(G36Library):
             if water == "ChiWat" and not separate_chilled:
                 continue
             if primary_only:
-                speed_name = (
-                    f"yPum{water}PriHdr"
-                    if headered_primary
-                    else f"yPum{water}PriDed__1"
-                )
+                speed_name = f"yPum{water}PriHdr" if headered_primary else f"yPum{water}PriDed__1"
                 speed_ref = variable_outputs[speed_name]
                 if water in primary_speed_relays:
                     feed(speed_ref, f"{water}_primary_speed_relay")
@@ -4408,13 +4286,16 @@ class PlantControlsLibrary(G36Library):
                         variable_outputs[local_name],
                         f"{water}_primary_local_dp_setpoint_relay",
                     )
-            variable_selected = bool(
-                parameters[
-                    "have_pumHeaWatPriVar_select"
-                    if water == "HeaWat"
-                    else "have_pumChiWatPriVar_select"
-                ]
-            ) or primary_only
+            variable_selected = (
+                bool(
+                    parameters[
+                        "have_pumHeaWatPriVar_select"
+                        if water == "HeaWat"
+                        else "have_pumChiWatPriVar_select"
+                    ]
+                )
+                or primary_only
+            )
             if not variable_selected:
                 continue
             if headered_primary:
@@ -4453,8 +4334,7 @@ class PlantControlsLibrary(G36Library):
                     },
                 )
                 control_map = {
-                    f"y1_actual__{pump}": statuses[pump - 1]
-                    for pump in range(1, count + 1)
+                    f"y1_actual__{pump}": statuses[pump - 1] for pump in range(1, count + 1)
                 }
                 if remote:
                     for sensor in range(1, sensor_count + 1):
@@ -4470,9 +4350,7 @@ class PlantControlsLibrary(G36Library):
                         control_map[f"dpLocSet__{sensor}"] = external(
                             f"dp{water}LocSet__{sensor}", boolean=False
                         )
-                control_outputs = merge_graph(
-                    control_graph, f"secondary_dp_{water}", control_map
-                )
+                control_outputs = merge_graph(control_graph, f"secondary_dp_{water}", control_map)
                 stage_sensor_count = sensor_count if remote else 1
                 stage_graph = child_graph(
                     "Pumps.Generic.StagingHeadered",
@@ -4500,10 +4378,7 @@ class PlantControlsLibrary(G36Library):
                     "u1Pla": mode_enabled[water],
                     "V_flow": external(f"V{water}Sec_flow", boolean=False),
                     "y": control_outputs["y"],
-                    **{
-                        f"u1Pum_actual__{pump}": statuses[pump - 1]
-                        for pump in range(1, count + 1)
-                    },
+                    **{f"u1Pum_actual__{pump}": statuses[pump - 1] for pump in range(1, count + 1)},
                 }
                 for sensor in range(1, stage_sensor_count + 1):
                     stage_map[f"dp__{sensor}"] = external(
@@ -4515,9 +4390,7 @@ class PlantControlsLibrary(G36Library):
                         if remote
                         else control_outputs["dpLocSetMax"]
                     )
-                stage_outputs = merge_graph(
-                    stage_graph, f"secondary_pumps_{water}", stage_map
-                )
+                stage_outputs = merge_graph(stage_graph, f"secondary_pumps_{water}", stage_map)
                 secondary_commands[water] = [
                     stage_outputs[f"y1__{pump}"] for pump in range(1, count + 1)
                 ]
@@ -4547,9 +4420,7 @@ class PlantControlsLibrary(G36Library):
                 "k": parameters["kValMinByp"],
                 "Ti": parameters["TiValMinByp"],
             }
-            minimum_graph = child_graph(
-                "MinimumFlow.ControllerDualMode", minimum_parameters
-            )
+            minimum_graph = child_graph("MinimumFlow.ControllerDualMode", minimum_parameters)
             minimum_map: dict[str, tuple[str, str]] = {}
             for equipment in range(1, n_hp + 1):
                 minimum_map[f"u1Equ__{equipment}"] = event_outputs[equipment]["y1"]
@@ -4563,9 +4434,7 @@ class PlantControlsLibrary(G36Library):
                                 f"y1Val{water}{suffix}"
                             ]
             for water in mode_names:
-                minimum_map[f"V{water}Pri_flow"] = external(
-                    f"V{water}Pri_flow", boolean=False
-                )
+                minimum_map[f"V{water}Pri_flow"] = external(f"V{water}Pri_flow", boolean=False)
                 status_water = water if water == "HeaWat" or separate_chilled else "HeaWat"
                 for pump, status in enumerate(primary_status[status_water], start=1):
                     child_name = f"u1Pum{water}Pri_actual__{pump}"
@@ -4641,9 +4510,7 @@ class PlantControlsLibrary(G36Library):
             blocks=blocks,
             links=links,
             metadata={
-                "semantic_contract": (
-                    "Buildings.Templates.Plants.Controls.HeatPumps.AirToWater"
-                ),
+                "semantic_contract": ("Buildings.Templates.Plants.Controls.HeatPumps.AirToWater"),
                 "source_composition": [
                     "Enabling.Enable",
                     "StagingRotation.EquipmentAvailability",
@@ -4672,20 +4539,13 @@ class PlantControlsLibrary(G36Library):
         control_dp = bool(parameters["have_pumPriCtlDp"])
         headered = bool(parameters["have_pumPriHdr"])
         separate_chilled = bool(
-            have_cooling
-            and (headered or bool(parameters["have_pumChiWatPriDed"]))
+            have_cooling and (headered or bool(parameters["have_pumChiWatPriDed"]))
         )
         common_reversible = have_heating and have_cooling and not separate_chilled
         heating_count = (
-            int(parameters["nPumHeaWatPri"])
-            if parameters["nPumHeaWatPri"] is not None
-            else 0
+            int(parameters["nPumHeaWatPri"]) if parameters["nPumHeaWatPri"] is not None else 0
         )
-        cooling_count = (
-            int(parameters["nPumChiWatPri"])
-            if separate_chilled
-            else heating_count
-        )
+        cooling_count = int(parameters["nPumChiWatPri"]) if separate_chilled else heating_count
         blocks: list[Block] = [
             Block(
                 id="zero",
@@ -4772,17 +4632,13 @@ class PlantControlsLibrary(G36Library):
         if have_heating or common_reversible:
             for pump in range(1, heating_count + 1):
                 identifier = f"u1PumHeaWatPri__{pump}"
-                blocks.append(
-                    Block(id=identifier, kind=BlockKind.BOOLEAN_INPUT, label=identifier)
-                )
+                blocks.append(Block(id=identifier, kind=BlockKind.BOOLEAN_INPUT, label=identifier))
                 heating_commands.append(identifier)
         cooling_commands: list[str] = []
         if separate_chilled:
             for pump in range(1, cooling_count + 1):
                 identifier = f"u1PumChiWatPri__{pump}"
-                blocks.append(
-                    Block(id=identifier, kind=BlockKind.BOOLEAN_INPUT, label=identifier)
-                )
+                blocks.append(Block(id=identifier, kind=BlockKind.BOOLEAN_INPUT, label=identifier))
                 cooling_commands.append(identifier)
 
         heating_status: list[tuple[str, str]] = []
@@ -4972,8 +4828,7 @@ class PlantControlsLibrary(G36Library):
             )
             child = ControlGraph.model_validate(child_translation["typed_ir"])
             input_map = {
-                f"y1_actual__{index}": statuses[index - 1]
-                for index in range(1, count + 1)
+                f"y1_actual__{index}": statuses[index - 1] for index in range(1, count + 1)
             }
             if remote:
                 for sensor in range(1, sensor_count + 1):
@@ -4993,9 +4848,7 @@ class PlantControlsLibrary(G36Library):
                         input_map[child_id] = (parent_id, "out")
             else:
                 local = f"dp{water}Loc"
-                blocks.append(
-                    Block(id=local, kind=BlockKind.NUMERIC_INPUT, label=local)
-                )
+                blocks.append(Block(id=local, kind=BlockKind.NUMERIC_INPUT, label=local))
                 input_map["dpLoc"] = (local, "out")
                 for sensor in range(1, sensor_count + 1):
                     child_id = f"dpLocSet__{sensor}"
@@ -5011,9 +4864,7 @@ class PlantControlsLibrary(G36Library):
             outputs = merge_graph(child, prefix, input_map)
             if not remote:
                 output_id = f"dp{water}LocSetMax"
-                blocks.append(
-                    Block(id=output_id, kind=BlockKind.NUMERIC_OUTPUT, label=output_id)
-                )
+                blocks.append(Block(id=output_id, kind=BlockKind.NUMERIC_OUTPUT, label=output_id))
                 source, source_slot = outputs["dpLocSetMax"]
                 links.append(
                     Link(
@@ -5287,8 +5138,7 @@ class PlantControlsLibrary(G36Library):
             if set(output_refs) != output_ids:
                 missing_outputs = sorted(output_ids - set(output_refs))
                 raise ValueError(
-                    f"internal {prefix} composition omitted outputs: "
-                    + ", ".join(missing_outputs)
+                    f"internal {prefix} composition omitted outputs: " + ", ".join(missing_outputs)
                 )
             return output_refs
 
@@ -5393,9 +5243,7 @@ class PlantControlsLibrary(G36Library):
                 blocks.append(Block(id=closed, kind=BlockKind.NOT, label=closed))
                 links.append(Link(source=source, target=closed, target_slot="in"))
                 closed_sources.append(closed)
-            all_valves_closed = fold(
-                closed_sources, BlockKind.AND, "all_valves_closed"
-            )
+            all_valves_closed = fold(closed_sources, BlockKind.AND, "all_valves_closed")
             blocks.append(
                 Block(
                     id="lead_enable_latch",
@@ -5461,9 +5309,7 @@ class PlantControlsLibrary(G36Library):
                 "u1Dow": delta_outputs["y1Dow"],
             }
             stage_outputs = merge_graph(
-                cls._stage_index_graph(
-                    {"have_inpAva": False, "nSta": pump_count, "dtRun": 0.0}
-                ),
+                cls._stage_index_graph({"have_inpAva": False, "nSta": pump_count, "dtRun": 0.0}),
                 "pump_stage_index",
                 stage_inputs,
             )
@@ -5827,12 +5673,8 @@ class PlantControlsLibrary(G36Library):
 
         high_flow_timer = timer("high_flow_timer", "high_flow", parameters["dtRun"])
         low_flow_timer = timer("low_flow_timer", "low_flow", parameters["dtRun"])
-        high_speed_timer = timer(
-            "high_speed_timer", "high_speed", parameters["dtRunFaiSaf"]
-        )
-        low_speed_timer = timer(
-            "low_speed_timer", "low_speed", parameters["dtRunFaiSafLowY"]
-        )
+        high_speed_timer = timer("high_speed_timer", "high_speed", parameters["dtRunFaiSaf"])
+        low_speed_timer = timer("low_speed_timer", "low_speed", parameters["dtRunFaiSafLowY"])
         low_pressure_timers: list[str] = []
         high_pressure_timers: list[str] = []
         for sensor in range(1, sensor_count + 1):
@@ -6088,8 +5930,7 @@ class PlantControlsLibrary(G36Library):
             links=links,
             metadata={
                 "semantic_contract": (
-                    "Buildings.Templates.Plants.Controls.Pumps.Generic."
-                    "StagingHeaderedDeltaP"
+                    "Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP"
                 ),
                 "pump_count": pump_count,
                 "sensor_count": sensor_count,
@@ -6139,13 +5980,9 @@ class PlantControlsLibrary(G36Library):
         ]
         links: list[Link] = []
         if have_secondary:
-            blocks.append(
-                Block(id="TSecSup", kind=BlockKind.NUMERIC_INPUT, label="TSecSup")
-            )
+            blocks.append(Block(id="TSecSup", kind=BlockKind.NUMERIC_INPUT, label="TSecSup"))
         if have_plr_input:
-            blocks.append(
-                Block(id="uPlrSta", kind=BlockKind.NUMERIC_INPUT, label="uPlrSta")
-            )
+            blocks.append(Block(id="uPlrSta", kind=BlockKind.NUMERIC_INPUT, label="uPlrSta"))
             plr_source = "uPlrSta"
         else:
             blocks.append(
@@ -6189,8 +6026,7 @@ class PlantControlsLibrary(G36Library):
                     kind=BlockKind.NUMERIC_CONST,
                     label="Fluid capacity factor",
                     config={
-                        "value": float(parameters["rho_default"])
-                        * float(parameters["cp_default"])
+                        "value": float(parameters["rho_default"]) * float(parameters["cp_default"])
                     },
                 ),
                 Block(
@@ -6292,9 +6128,7 @@ class PlantControlsLibrary(G36Library):
             ]
         )
 
-        blocks.append(
-            Block(id="active_stage", kind=BlockKind.MAXIMUM, label="Active stage or one")
-        )
+        blocks.append(Block(id="active_stage", kind=BlockKind.MAXIMUM, label="Active stage or one"))
         links.extend(
             [
                 Link(source="uSta", target="active_stage", target_slot="a"),
@@ -6348,9 +6182,7 @@ class PlantControlsLibrary(G36Library):
             )
             links.extend(
                 [
-                    Link(
-                        source=f"stage_index_{stage}", target=below, target_slot="a"
-                    ),
+                    Link(source=f"stage_index_{stage}", target=below, target_slot="a"),
                     Link(source="uSta", target=below, target_slot="b"),
                     Link(source=below, target=available_below, target_slot="a"),
                     Link(
@@ -6390,9 +6222,7 @@ class PlantControlsLibrary(G36Library):
                 Link(source="one", target="lower_stage_present", target_slot="b"),
             ]
         )
-        lower_capacity_base = select_stage_capacity(
-            "lower", "lower_stage_or_one"
-        )
+        lower_capacity_base = select_stage_capacity("lower", "lower_stage_or_one")
         blocks.append(
             Block(
                 id="lower_stage_capacity",
@@ -6470,9 +6300,7 @@ class PlantControlsLibrary(G36Library):
 
         def add_strict_hysteresis(identifier: str, margin: str) -> str:
             if comparison_hysteresis < 1e-10:
-                blocks.append(
-                    Block(id=identifier, kind=BlockKind.GREATER_THAN, label=identifier)
-                )
+                blocks.append(Block(id=identifier, kind=BlockKind.GREATER_THAN, label=identifier))
                 links.extend(
                     [
                         Link(source=margin, target=identifier, target_slot="a"),
@@ -6486,9 +6314,7 @@ class PlantControlsLibrary(G36Library):
                         kind=BlockKind.HYSTERESIS,
                         label=identifier,
                         config={
-                            "u_low": math.nextafter(
-                                -comparison_hysteresis, math.inf
-                            ),
+                            "u_low": math.nextafter(-comparison_hysteresis, math.inf),
                             "u_high": 0.0,
                             "initial": False,
                             "semantic_contract": "CDL.Reals.Greater",
@@ -6499,9 +6325,7 @@ class PlantControlsLibrary(G36Library):
             return identifier
 
         efficiency_up = add_strict_hysteresis("efficiency_up", "up_capacity_margin")
-        efficiency_down = add_strict_hysteresis(
-            "efficiency_down", "down_capacity_margin"
-        )
+        efficiency_down = add_strict_hysteresis("efficiency_down", "down_capacity_margin")
         blocks.extend(
             [
                 Block(
@@ -6603,8 +6427,7 @@ class PlantControlsLibrary(G36Library):
                         config={
                             "threshold_seconds": float(duration),
                             "semantic_contract": (
-                                "Buildings.Templates.Plants.Controls.Utilities."
-                                "TimerWithReset"
+                                "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset"
                             ),
                         },
                     ),
@@ -6738,23 +6561,17 @@ class PlantControlsLibrary(G36Library):
             ]
         )
         return ControlGraph(
-            name=(
-                f"PlantStageChangeCommand_{application}_{stage_count}_"
-                f"{int(have_secondary)}"
-            ),
+            name=(f"PlantStageChangeCommand_{application}_{stage_count}_{int(have_secondary)}"),
             blocks=blocks,
             links=links,
             metadata={
                 "semantic_contract": (
-                    "Buildings.Templates.Plants.Controls.StagingRotation."
-                    "StageChangeCommand"
+                    "Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand"
                 ),
                 "stage_count": stage_count,
                 "equipment_count": len(capacities),
                 "comparison_hysteresis": comparison_hysteresis,
-                "strict_binary64_lower_boundary": math.nextafter(
-                    -comparison_hysteresis, math.inf
-                ),
+                "strict_binary64_lower_boundary": math.nextafter(-comparison_hysteresis, math.inf),
             },
         )
 
@@ -7217,9 +7034,7 @@ class PlantControlsLibrary(G36Library):
 
         for rank, index_source in enumerate(indices, start=1):
             output_id = f"yIdx__{rank}"
-            blocks.append(
-                Block(id=output_id, kind=BlockKind.NUMERIC_OUTPUT, label=output_id)
-            )
+            blocks.append(Block(id=output_id, kind=BlockKind.NUMERIC_OUTPUT, label=output_id))
             links.append(Link(source=index_source, target=output_id, target_slot="in"))
         return ControlGraph(
             name=f"PlantSortRuntime_{input_count}_{len(alternate_indices)}",
@@ -7429,9 +7244,7 @@ class PlantControlsLibrary(G36Library):
                 },
             ),
         ]
-        links: list[Link] = [
-            Link(source="uSta", target="stage_changed", target_slot="in")
-        ]
+        links: list[Link] = [Link(source="uSta", target="stage_changed", target_slot="in")]
         for rank in range(1, alternate_count + 1):
             blocks.append(
                 Block(
@@ -7635,9 +7448,7 @@ class PlantControlsLibrary(G36Library):
             numeric_sources: list[str] = []
             for index, source in enumerate(sources, start=1):
                 selection = f"{prefix}_select_{index}"
-                blocks.append(
-                    Block(id=selection, kind=BlockKind.NUMERIC_SWITCH, label=selection)
-                )
+                blocks.append(Block(id=selection, kind=BlockKind.NUMERIC_SWITCH, label=selection))
                 links.extend(
                     [
                         Link(source=source, target=selection, target_slot="selector"),
@@ -7965,9 +7776,7 @@ class PlantControlsLibrary(G36Library):
             previous = selections[0]
             for index, selection_id in enumerate(selections[1:], start=2):
                 add_id = f"{prefix}_add_{index}"
-                blocks.append(
-                    Block(id=add_id, kind=BlockKind.ADD, label=f"{prefix} mask sum")
-                )
+                blocks.append(Block(id=add_id, kind=BlockKind.ADD, label=f"{prefix} mask sum"))
                 links.extend(
                     [
                         Link(source=previous, target=add_id, target_slot="a"),
@@ -7988,8 +7797,7 @@ class PlantControlsLibrary(G36Library):
                     config={
                         "equipment_count": equipment_count,
                         "semantic_contract": (
-                            "Buildings.Templates.Plants.Controls.StagingRotation."
-                            "StageCompletion"
+                            "Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion"
                         ),
                     },
                 ),
@@ -8057,10 +7865,7 @@ class PlantControlsLibrary(G36Library):
                     ("u1ReqFloConWat", BlockKind.BOOLEAN_INPUT),
                 ]
             )
-        blocks = [
-            Block(id=name, kind=kind, label=name)
-            for name, kind in input_definitions
-        ]
+        blocks = [Block(id=name, kind=kind, label=name) for name, kind in input_definitions]
         links: list[Link] = []
 
         def add_load_average(
@@ -8070,9 +7875,7 @@ class PlantControlsLibrary(G36Library):
             flow: str,
             polarity: float,
         ) -> str:
-            capacity = float(parameters["rho_default"]) * float(
-                parameters["cp_default"]
-            )
+            capacity = float(parameters["rho_default"]) * float(parameters["cp_default"])
             blocks.extend(
                 [
                     Block(
@@ -8186,12 +7989,8 @@ class PlantControlsLibrary(G36Library):
                     kind=BlockKind.PLANT_HRC_ENABLE,
                     label="Heat-recovery chiller enable",
                     config={
-                        "minimum_chilled_supply_temperature": parameters[
-                            "TChiWatSup_min"
-                        ],
-                        "maximum_heating_supply_temperature": parameters[
-                            "THeaWatSup_max"
-                        ],
+                        "minimum_chilled_supply_temperature": parameters["TChiWatSup_min"],
+                        "maximum_heating_supply_temperature": parameters["THeaWatSup_max"],
                         "minimum_cooling_capacity": parameters["capCoo_min"],
                         "minimum_heating_capacity": parameters["capHea_min"],
                         "minimum_state_time_seconds": parameters["dtRun"],
@@ -8199,8 +7998,7 @@ class PlantControlsLibrary(G36Library):
                         "temperature_limit_1_time_seconds": parameters["dtTem1"],
                         "temperature_limit_2_time_seconds": parameters["dtTem2"],
                         "semantic_contract": (
-                            "Buildings.Templates.Plants.Controls."
-                            "HeatRecoveryChillers.Enable"
+                            "Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable"
                         ),
                     },
                 ),
@@ -8211,8 +8009,7 @@ class PlantControlsLibrary(G36Library):
                     config={
                         "heating_cop": parameters["COPHea_nominal"],
                         "semantic_contract": (
-                            "Buildings.Templates.Plants.Controls."
-                            "HeatRecoveryChillers.ModeControl"
+                            "Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl"
                         ),
                     },
                 ),
@@ -8343,8 +8140,7 @@ class PlantControlsLibrary(G36Library):
                         config={
                             "initial": False,
                             "semantic_contract": (
-                                "Buildings.Templates.Plants.Controls.Utilities."
-                                "Initialization"
+                                "Buildings.Templates.Plants.Controls.Utilities.Initialization"
                             ),
                         },
                     ),
@@ -8368,12 +8164,8 @@ class PlantControlsLibrary(G36Library):
                 )
             else:
                 request_source = f"{prefix}_no_request"
-                blocks.append(
-                    Block(id=request_source, kind=BlockKind.NOT, label="No request")
-                )
-                links.append(
-                    Link(source=request_input, target=request_source, target_slot="in")
-                )
+                blocks.append(Block(id=request_source, kind=BlockKind.NOT, label="No request"))
+                links.append(Link(source=request_input, target=request_source, target_slot="in"))
             links.extend(
                 [
                     Link(
@@ -8519,12 +8311,8 @@ class PlantControlsLibrary(G36Library):
                     kind=BlockKind.PLANT_HRC_ENABLE,
                     label="Heat-recovery chiller enable",
                     config={
-                        "minimum_chilled_supply_temperature": parameters[
-                            "TChiWatSup_min"
-                        ],
-                        "maximum_heating_supply_temperature": parameters[
-                            "THeaWatSup_max"
-                        ],
+                        "minimum_chilled_supply_temperature": parameters["TChiWatSup_min"],
+                        "maximum_heating_supply_temperature": parameters["THeaWatSup_max"],
                         "minimum_cooling_capacity": parameters["capCoo_min"],
                         "minimum_heating_capacity": parameters["capHea_min"],
                         "minimum_state_time_seconds": parameters["dtRun"],
@@ -8532,8 +8320,7 @@ class PlantControlsLibrary(G36Library):
                         "temperature_limit_1_time_seconds": parameters["dtTem1"],
                         "temperature_limit_2_time_seconds": parameters["dtTem2"],
                         "semantic_contract": (
-                            "Buildings.Templates.Plants.Controls."
-                            "HeatRecoveryChillers.Enable"
+                            "Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable"
                         ),
                     },
                 ),
@@ -8589,8 +8376,7 @@ class PlantControlsLibrary(G36Library):
                     config={
                         "heating_cop": parameters["COPHea_nominal"],
                         "semantic_contract": (
-                            "Buildings.Templates.Plants.Controls."
-                            "HeatRecoveryChillers.ModeControl"
+                            "Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl"
                         ),
                     },
                 ),
@@ -8643,11 +8429,7 @@ class PlantControlsLibrary(G36Library):
             Block(id="TOut", kind=BlockKind.NUMERIC_INPUT, label="TOut"),
             Block(
                 id=schedule_source,
-                kind=(
-                    BlockKind.BOOLEAN_INPUT
-                    if have_input_schedule
-                    else BlockKind.BOOLEAN_CONST
-                ),
+                kind=(BlockKind.BOOLEAN_INPUT if have_input_schedule else BlockKind.BOOLEAN_CONST),
                 label=schedule_source,
                 config={} if have_input_schedule else {"value": True},
             ),
@@ -8664,9 +8446,7 @@ class PlantControlsLibrary(G36Library):
                     "ignored_requests": parameters["nReqIgn"],
                     "minimum_state_time_seconds": parameters["dtRun"],
                     "low_request_time_seconds": parameters["dtReq"],
-                    "semantic_contract": (
-                        "Buildings.Templates.Plants.Controls.Enabling.Enable"
-                    ),
+                    "semantic_contract": ("Buildings.Templates.Plants.Controls.Enabling.Enable"),
                 },
             ),
             Block(id="y1", kind=BlockKind.BOOLEAN_OUTPUT, label="y1"),
@@ -8709,8 +8489,7 @@ class PlantControlsLibrary(G36Library):
                     "have_heating": have_heating,
                     "have_cooling": have_cooling,
                     "semantic_contract": (
-                        "Buildings.Templates.Plants.Controls.StagingRotation."
-                        "EquipmentAvailability"
+                        "Buildings.Templates.Plants.Controls.StagingRotation.EquipmentAvailability"
                     ),
                 },
             ),
@@ -8784,10 +8563,7 @@ class PlantControlsLibrary(G36Library):
                     )
                 )
         return ControlGraph(
-            name=(
-                "PlantEquipmentAvailability_"
-                f"{int(have_heating)}{int(have_cooling)}"
-            ),
+            name=(f"PlantEquipmentAvailability_{int(have_heating)}{int(have_cooling)}"),
             blocks=blocks,
             links=links,
         )
@@ -8945,9 +8721,7 @@ class PlantControlsLibrary(G36Library):
                 continue
             for index in range(1, n_enable + 1):
                 identifier = f"{prefix}__{index}"
-                blocks.append(
-                    Block(id=identifier, kind=BlockKind.BOOLEAN_INPUT, label=identifier)
-                )
+                blocks.append(Block(id=identifier, kind=BlockKind.BOOLEAN_INPUT, label=identifier))
                 enable_sources.append(identifier)
         enable = fold(enable_sources, BlockKind.OR, "enable_any")
 
@@ -9120,18 +8894,14 @@ class PlantControlsLibrary(G36Library):
         def merge_loop(*, heating: bool) -> None:
             prefix = "heating" if heating else "cooling"
             water = "HeaWat" if heating else "ChiWat"
-            enable_count = int(
-                parameters["nEnaHeaWat" if heating else "nEnaChiWat"]
-            )
+            enable_count = int(parameters["nEnaHeaWat" if heating else "nEnaChiWat"])
             child_parameters = {
                 "nEqu": n_equipment,
                 "nEna": enable_count,
                 "V_flow_nominal": parameters[
                     "VHeaWat_flow_nominal" if heating else "VChiWat_flow_nominal"
                 ],
-                "V_flow_min": parameters[
-                    "VHeaWat_flow_min" if heating else "VChiWat_flow_min"
-                ],
+                "V_flow_min": parameters["VHeaWat_flow_min" if heating else "VChiWat_flow_min"],
                 "have_valInlIso": have_inlet,
                 "have_valOutIso": have_outlet,
                 "k": parameters["k"],
@@ -9162,9 +8932,7 @@ class PlantControlsLibrary(G36Library):
                         identifier = f"{prefix}_pump_enabled__{index}"
                         common_pump_enable[index] = identifier
                     else:
-                        identifier = block.id.replace(
-                            "u1PumPri_actual", f"u1Pum{water}Pri_actual"
-                        )
+                        identifier = block.id.replace("u1PumPri_actual", f"u1Pum{water}Pri_actual")
                 else:
                     identifier = f"{prefix}__{block.id}"
                 id_map[block.id] = identifier
@@ -9231,8 +8999,10 @@ class PlantControlsLibrary(G36Library):
 
     @staticmethod
     def _validated_staging_matrix(value: Any) -> list[list[float]]:
-        if not isinstance(value, list) or not value or not all(
-            isinstance(row, list) and row for row in value
+        if (
+            not isinstance(value, list)
+            or not value
+            or not all(isinstance(row, list) and row for row in value)
         ):
             raise ValueError("plant parameter staEqu requires a non-empty two-dimensional array")
         width = len(value[0])
@@ -9259,9 +9029,7 @@ class PlantControlsLibrary(G36Library):
             row_sum = sum(normalized)
             rounded = round(row_sum)
             if not math.isclose(row_sum, rounded, abs_tol=1e-9):
-                raise ValueError(
-                    f"plant parameter staEqu row {row_index} must sum to an integer"
-                )
+                raise ValueError(f"plant parameter staEqu row {row_index} must sum to an integer")
             matrix.append(normalized)
             required_counts.append(int(rounded))
         if required_counts != sorted(required_counts):
@@ -9431,9 +9199,7 @@ class PlantControlsLibrary(G36Library):
             for position in range(1, nin + 1)
         )
         links: list[Link] = []
-        selected_by_output: dict[int, list[str]] = {
-            index: [] for index in range(1, nout + 1)
-        }
+        selected_by_output: dict[int, list[str]] = {index: [] for index in range(1, nout + 1)}
         prefix = "zero"
         for position in range(1, nin + 1):
             input_id = f"uIdx__{position}"
@@ -9590,20 +9356,13 @@ class PlantControlsLibrary(G36Library):
                         "Utilities.PlaceholderInteger",
                     }
                     or (controller_id == "Enabling.Enable" and block.id == "nReqPla")
-                    or (
-                        controller_id == "StagingRotation.StageCompletion"
-                        and block.id == "uSta"
-                    )
+                    or (controller_id == "StagingRotation.StageCompletion" and block.id == "uSta")
                     or (
                         controller_id == "StagingRotation.EquipmentEnable"
-                        and (
-                            block.id == "uSta"
-                            or block.id.startswith("uIdxAltSor__")
-                        )
+                        and (block.id == "uSta" or block.id.startswith("uIdxAltSor__"))
                     )
                     or (
-                        controller_id == "StagingRotation.StageChangeCommand"
-                        and block.id == "uSta"
+                        controller_id == "StagingRotation.StageChangeCommand" and block.id == "uSta"
                     )
                 )
                 inputs.append(
@@ -9627,8 +9386,7 @@ class PlantControlsLibrary(G36Library):
                     "Utilities.PlaceholderInteger",
                     "Utilities.StageIndex",
                 } or (
-                    controller_id == "StagingRotation.SortRuntime"
-                    and block.id.startswith("yIdx__")
+                    controller_id == "StagingRotation.SortRuntime" and block.id.startswith("yIdx__")
                 )
                 outputs.append(
                     {
@@ -9690,20 +9448,11 @@ class PlantControlsLibrary(G36Library):
         class_name = (
             "Buildings.Templates.Plants.Controls.Enabling.Enable"
             if controller_id == "Enabling.Enable"
-            else (
-                "Buildings.Templates.Plants.Controls.HeatRecoveryChillers."
-                "Controller"
-            )
+            else ("Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller")
             if controller_id == "HeatRecoveryChillers.Controller"
-            else (
-                "Buildings.Templates.Plants.Controls.HeatRecoveryChillers."
-                "Enable"
-            )
+            else ("Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable")
             if controller_id == "HeatRecoveryChillers.Enable"
-            else (
-                "Buildings.Templates.Plants.Controls.HeatRecoveryChillers."
-                "ModeControl"
-            )
+            else ("Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl")
             if controller_id == "HeatRecoveryChillers.ModeControl"
             else "Buildings.Templates.Plants.Controls.Utilities.Initialization"
             if controller_id == "Utilities.Initialization"
@@ -9719,40 +9468,21 @@ class PlantControlsLibrary(G36Library):
             if controller_id == "MinimumFlow.Controller"
             else "Buildings.Templates.Plants.Controls.MinimumFlow.ControllerDualMode"
             if controller_id == "MinimumFlow.ControllerDualMode"
-            else (
-                "Buildings.Templates.Plants.Controls.StagingRotation."
-                "EquipmentAvailability"
-            )
+            else ("Buildings.Templates.Plants.Controls.StagingRotation.EquipmentAvailability")
             if controller_id == "StagingRotation.EquipmentAvailability"
-            else (
-                "Buildings.Templates.Plants.Controls.StagingRotation."
-                "EquipmentEnable"
-            )
+            else ("Buildings.Templates.Plants.Controls.StagingRotation.EquipmentEnable")
             if controller_id == "StagingRotation.EquipmentEnable"
-            else (
-                "Buildings.Templates.Plants.Controls.StagingRotation."
-                "StageCompletion"
-            )
+            else ("Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion")
             if controller_id == "StagingRotation.StageCompletion"
             else "Buildings.Templates.Plants.Controls.Utilities.StageIndex"
             if controller_id == "Utilities.StageIndex"
-            else (
-                "Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime"
-            )
+            else ("Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime")
             if controller_id == "StagingRotation.SortRuntime"
-            else (
-                "Buildings.Templates.Plants.Controls.Pumps.Generic."
-                "StagingHeaderedDeltaP"
-            )
+            else ("Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP")
             if controller_id == "Pumps.Generic.StagingHeaderedDeltaP"
-            else (
-                "Buildings.Templates.Plants.Controls.StagingRotation."
-                "StageChangeCommand"
-            )
+            else ("Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand")
             if controller_id == "StagingRotation.StageChangeCommand"
-            else (
-                "Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeadered"
-            )
+            else ("Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeadered")
             if controller_id == "Pumps.Generic.StagingHeadered"
             else "Buildings.Templates.Plants.Controls.Pumps.Primary.VariableSpeed"
             if controller_id == "Pumps.Primary.VariableSpeed"
@@ -9762,9 +9492,7 @@ class PlantControlsLibrary(G36Library):
             if controller_id == "Utilities.MultiMaxInteger"
             else "Buildings.Controls.OBC.CDL.Integers.Min"
         )
-        internal_count = len(graph.blocks) - len(interface["inputs"]) - len(
-            interface["outputs"]
-        )
+        internal_count = len(graph.blocks) - len(interface["inputs"]) - len(interface["outputs"])
         coverage = {
             "schema": "bactalk-cxf-lowering/v4",
             "execution_profile": "modelica_exact",
@@ -9812,8 +9540,7 @@ class PlantControlsLibrary(G36Library):
                 "stateful_blocks": sum(
                     block.kind == BlockKind.PID_WITH_RESET for block in graph.blocks
                 )
-                if controller_id
-                in {"MinimumFlow.Controller", "MinimumFlow.ControllerDualMode"}
+                if controller_id in {"MinimumFlow.Controller", "MinimumFlow.ControllerDualMode"}
                 else int(generated),
                 "point_count": len(interface["inputs"]) + len(interface["outputs"]),
                 "warning_count": 0,
@@ -9861,8 +9588,7 @@ class PlantControlsLibrary(G36Library):
             unknown = sorted(set(raw_inputs) - input_labels)
             if unknown:
                 raise ValueError(
-                    f"sample {index} contains non-public controller inputs: "
-                    + ", ".join(unknown)
+                    f"sample {index} contains non-public controller inputs: " + ", ".join(unknown)
                 )
             invalid_boolean = sorted(
                 name
@@ -9871,8 +9597,7 @@ class PlantControlsLibrary(G36Library):
             )
             if invalid_boolean:
                 raise ValueError(
-                    "Boolean source-algorithm inputs must be Boolean: "
-                    + ", ".join(invalid_boolean)
+                    "Boolean source-algorithm inputs must be Boolean: " + ", ".join(invalid_boolean)
                 )
             invalid_integer = sorted(
                 name
@@ -9908,21 +9633,11 @@ class PlantControlsLibrary(G36Library):
                 if "uSta" in effective_inputs and not (
                     0 <= int(effective_inputs["uSta"]) <= stage_count
                 ):
-                    raise ValueError(
-                        f"sample {index} uSta must be from 0 through {stage_count}"
-                    )
-                alternate_names = [
-                    f"uIdxAltSor__{rank}"
-                    for rank in range(1, alternate_count + 1)
-                ]
+                    raise ValueError(f"sample {index} uSta must be from 0 through {stage_count}")
+                alternate_names = [f"uIdxAltSor__{rank}" for rank in range(1, alternate_count + 1)]
                 if all(name in effective_inputs for name in alternate_names):
-                    alternate_indices = [
-                        int(effective_inputs[name]) for name in alternate_names
-                    ]
-                    if any(
-                        not 1 <= value <= equipment_count
-                        for value in alternate_indices
-                    ):
+                    alternate_indices = [int(effective_inputs[name]) for name in alternate_names]
+                    if any(not 1 <= value <= equipment_count for value in alternate_indices):
                         raise ValueError(
                             f"sample {index} alternate equipment indices must be from "
                             f"1 through {equipment_count}"

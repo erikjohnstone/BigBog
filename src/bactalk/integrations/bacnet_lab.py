@@ -22,8 +22,10 @@ from bactalk.domain import (
     JobSpec,
     ScenarioResult,
     TestReport,
+    VirtualActuatorSpec,
     canonical_json,
 )
+from bactalk.integrations.virtual_actuator import VirtualActuator, VirtualActuatorFault
 
 SUPPORTED_OBJECT_TYPES = {
     "analog-input",
@@ -130,6 +132,7 @@ class BacnetLabManifest(BaseModel):
     mode: Literal["isolated-loopback"]
     devices: list[dict[str, Any]]
     point_index: dict[str, dict[str, Any]]
+    actuator_models: list[VirtualActuatorSpec] = Field(default_factory=list)
     scenario_file: str
 
 
@@ -386,6 +389,51 @@ def build_bacnet_lab_export(job: JobSpec, *, base_port: int = 47_820) -> BacnetL
             }
         )
 
+    actuator_models: list[dict[str, Any]] = []
+    for actuator in job.virtual_actuators:
+        bindings = {
+            "command": point_index.get(actuator.command_point),
+            "position": point_index.get(actuator.position_point),
+            "open proof": (
+                point_index.get(actuator.open_proof_point)
+                if actuator.open_proof_point is not None
+                else None
+            ),
+            "closed proof": (
+                point_index.get(actuator.closed_proof_point)
+                if actuator.closed_proof_point is not None
+                else None
+            ),
+        }
+        required = {"command", "position"}
+        if actuator.open_proof_point is not None:
+            required.add("open proof")
+        if actuator.closed_proof_point is not None:
+            required.add("closed proof")
+        missing = sorted(label for label in required if bindings[label] is None)
+        if missing:
+            raise ValueError(
+                f"virtual actuator {actuator.id} has unmapped BACnet bindings: "
+                + ", ".join(missing)
+            )
+        command = bindings["command"]
+        position = bindings["position"]
+        if command is None or not command["command_capture"]:
+            raise ValueError(
+                f"virtual actuator {actuator.id} command point must map to a writable output/value"
+            )
+        if position is None or not position["scenario_injectable"]:
+            raise ValueError(
+                f"virtual actuator {actuator.id} position point must map to an input object"
+            )
+        for label in ("open proof", "closed proof"):
+            mapping = bindings[label]
+            if mapping is not None and not mapping["scenario_injectable"]:
+                raise ValueError(
+                    f"virtual actuator {actuator.id} {label} point must map to an input object"
+                )
+        actuator_models.append(actuator.model_dump(mode="json"))
+
     scenario = _scenario_contract(job, point_index)
     artifacts.append(
         BacnetLabArtifact(
@@ -485,6 +533,7 @@ def build_bacnet_lab_export(job: JobSpec, *, base_port: int = 47_820) -> BacnetL
         "bacpypes3_version": bacpypes_version,
         "devices": devices,
         "point_index": point_index,
+        "actuator_models": actuator_models,
         "scenario_file": "acceptance-scenarios.json",
         "launcher": "run-lab.py",
         "launch_command": "python run-lab.py manifest.json",
@@ -540,6 +589,9 @@ class VirtualBacnetLab:
         self.manifest = manifest
         self.apps: list[Any] = []
         self.objects: dict[tuple[int, str], Any] = {}
+        self.actuators: dict[str, VirtualActuator] = {}
+        self.actuator_faults: dict[str, VirtualActuatorFault] = {}
+        self._actuator_task: asyncio.Task[None] | None = None
 
     @classmethod
     def load(cls, manifest_path: Path) -> VirtualBacnetLab:
@@ -683,16 +735,93 @@ class VirtualBacnetLab:
                     obj = self._object(object_config)
                     app.add_object(obj)
                     self.objects[(config.device_instance, object_config.object_identifier)] = obj
+            for spec in self.manifest.actuator_models:
+                initial = self.get_present_value(spec.position_point)
+                if isinstance(initial, bool):
+                    raise ValueError(
+                        f"virtual actuator {spec.id} position feedback is unexpectedly Boolean"
+                    )
+                self.actuators[spec.id] = VirtualActuator(
+                    spec,
+                    initial_position=float(initial),
+                )
+            if self.actuators:
+                self._actuator_task = asyncio.create_task(self._run_actuators())
             await asyncio.sleep(0)
         except BaseException:
             self.close()
             raise
 
     def close(self) -> None:
+        if self._actuator_task is not None:
+            self._actuator_task.cancel()
+            self._actuator_task = None
         for app in reversed(self.apps):
             app.close()
         self.apps.clear()
         self.objects.clear()
+        self.actuators.clear()
+        self.actuator_faults.clear()
+
+    async def _run_actuators(self) -> None:
+        loop = asyncio.get_running_loop()
+        previous = loop.time()
+        try:
+            while True:
+                await asyncio.sleep(0.05)
+                now = loop.time()
+                self.advance_actuators(now - previous)
+                previous = now
+        except asyncio.CancelledError:
+            return
+
+    def advance_actuators(self, step_seconds: float) -> dict[str, dict[str, Any]]:
+        """Advance every physical actuator and publish feedback into BACnet inputs."""
+
+        snapshots: dict[str, dict[str, Any]] = {}
+        for actuator_id, actuator in self.actuators.items():
+            command = self.get_present_value(actuator.spec.command_point)
+            if isinstance(command, bool):
+                raise ValueError(f"virtual actuator {actuator_id} command is unexpectedly Boolean")
+            sample = actuator.step(
+                float(command),
+                step_seconds=step_seconds,
+                fault=self.actuator_faults.get(actuator_id),
+            )
+            self.set_present_value(actuator.spec.position_point, sample.feedback_position)
+            if actuator.spec.open_proof_point is not None:
+                self.set_present_value(actuator.spec.open_proof_point, sample.open_proof)
+            if actuator.spec.closed_proof_point is not None:
+                self.set_present_value(actuator.spec.closed_proof_point, sample.closed_proof)
+            snapshots[actuator_id] = sample.model_dump(mode="json")
+        return snapshots
+
+    def set_actuator_fault(self, actuator_id: str, fault: VirtualActuatorFault) -> None:
+        if actuator_id not in self.actuators:
+            raise KeyError(actuator_id)
+        self.actuator_faults[actuator_id] = fault
+
+    def clear_actuator_fault(self, actuator_id: str) -> None:
+        if actuator_id not in self.actuators:
+            raise KeyError(actuator_id)
+        self.actuator_faults.pop(actuator_id, None)
+
+    def actuator_snapshot(self, actuator_id: str) -> dict[str, Any]:
+        actuator = self.actuators.get(actuator_id)
+        if actuator is None:
+            raise KeyError(actuator_id)
+        if actuator.last_sample is None:
+            command = self.get_present_value(actuator.spec.command_point)
+            if isinstance(command, bool):
+                raise ValueError(f"virtual actuator {actuator_id} command is unexpectedly Boolean")
+            sample = actuator.step(
+                float(command),
+                step_seconds=0.0,
+                fault=self.actuator_faults.get(actuator_id),
+            )
+        else:
+            sample = actuator.last_sample
+        return sample.model_dump(mode="json")
 
     def set_present_value(self, point_name: str, value: float | bool) -> None:
         mapping = self.manifest.point_index.get(point_name)

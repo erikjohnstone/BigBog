@@ -380,6 +380,49 @@ class GraphInterpreter:
                 state["held"] = value
                 state["last_index"] = index
             return float(state["held"])
+        if kind == BlockKind.NUMERIC_FIRST_ORDER_HOLD:
+            value = self._number(args["in"])
+            period = float(block.config["sample_period_seconds"])
+            state = self.state.get(block.id)
+            if state is None:
+                t0 = round(math.floor(self.time / period) * period, 6)
+                index = math.floor((self.time - t0) / period + 1e-9)
+                self.state[block.id] = {
+                    "t0": t0,
+                    "last_index": index,
+                    "t_sample": t0,
+                    "u_sample": value,
+                    "pre_u_sample": value,
+                    "slope": 0.0,
+                }
+                return value
+            t0 = float(state["t0"])
+            index = math.floor((self.time - t0) / period + 1e-9)
+            due = index > int(state["last_index"])
+            if due:
+                output = float(state["u_sample"])
+                previous = float(state["u_sample"])
+                state["last_index"] = index
+                state["t_sample"] = self.time
+                state["u_sample"] = value
+                state["pre_u_sample"] = previous
+                state["slope"] = (
+                    0.0 if self.time <= t0 + period / 2.0 else (value - previous) / period
+                )
+                return output
+            return float(state["pre_u_sample"]) + float(state["slope"]) * (
+                self.time - float(state["t_sample"])
+            )
+        if kind == BlockKind.BOOLEAN_SAMPLE_TRIGGER:
+            period = float(block.config["period_seconds"])
+            shift = float(block.config["shift_seconds"])
+            phase = shift - math.floor(shift / period) * period
+            index = math.floor((self.time - phase) / period + 1e-9)
+            state = self.state.setdefault(block.id, {"last_index": -1})
+            fired = index > int(state["last_index"])
+            if fired:
+                state["last_index"] = index
+            return fired
         if kind == BlockKind.NUMERIC_UNIT_DELAY:
             initial = float(block.config.get("initial", 0.0))
             state = self.state.get(block.id)

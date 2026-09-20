@@ -48,7 +48,7 @@ class OpenControlEngine:
         operation: str = "inspect",
         scenario_path: Path | None = None,
     ) -> list[str]:
-        if operation not in {"inspect", "simulate"}:
+        if operation not in {"inspect", "flatten", "simulate"}:
             raise ValueError(f"unsupported Open Control Engine operation: {operation}")
         command = [*self._base_command(), operation, str(cxf_path.resolve())]
         if operation == "simulate":
@@ -56,7 +56,7 @@ class OpenControlEngine:
                 raise ValueError("simulate requires a scenario path")
             command.append(str(scenario_path.resolve()))
         elif scenario_path is not None:
-            raise ValueError("inspect does not accept a scenario path")
+            raise ValueError(f"{operation} does not accept a scenario path")
         return command
 
     def _run(self, command: list[str], *, timeout: float) -> dict[str, Any]:
@@ -108,6 +108,34 @@ class OpenControlEngine:
             handle.flush()
             return self.inspect(Path(handle.name), timeout=timeout)
 
+    def flatten(self, cxf_path: Path, *, timeout: float = 120.0) -> dict[str, Any]:
+        """Validate and flatten a complete composite CXF document."""
+
+        size = cxf_path.stat().st_size
+        if size > self.MAX_CXF_BYTES:
+            raise ValueError(f"CXF exceeds the {self.MAX_CXF_BYTES}-byte admission limit")
+        return self._run(self.build_command(cxf_path, operation="flatten"), timeout=timeout)
+
+    def flatten_document(
+        self,
+        document: dict[str, Any],
+        *,
+        timeout: float = 120.0,
+    ) -> dict[str, Any]:
+        """Flatten in-memory composite CXF without admitting an arbitrary host path."""
+
+        encoded = json.dumps(
+            document,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+        if len(encoded) > self.MAX_CXF_BYTES:
+            raise ValueError(f"CXF exceeds the {self.MAX_CXF_BYTES}-byte admission limit")
+        with tempfile.NamedTemporaryFile(suffix=".jsonld") as handle:
+            handle.write(encoded)
+            handle.flush()
+            return self.flatten(Path(handle.name), timeout=timeout)
+
     def simulate(
         self,
         cxf_path: Path,
@@ -127,9 +155,7 @@ class OpenControlEngine:
             allow_nan=False,
         ).encode("utf-8")
         if len(scenario) > self.MAX_SCENARIO_BYTES:
-            raise ValueError(
-                f"scenario exceeds the {self.MAX_SCENARIO_BYTES}-byte admission limit"
-            )
+            raise ValueError(f"scenario exceeds the {self.MAX_SCENARIO_BYTES}-byte admission limit")
         with tempfile.NamedTemporaryFile(suffix=".json") as handle:
             handle.write(scenario)
             handle.flush()
