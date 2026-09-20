@@ -127,6 +127,51 @@ def test_topic_like_words_do_not_count_as_life_safety_behavior() -> None:
     assert fire_smoke["mentioned_facet_count"] == 0
 
 
+def test_life_safety_words_do_not_satisfy_unrelated_generic_facets() -> None:
+    document = parse_sequence_document(
+        (
+            b"On smoke alarm, shut down the AHU, close the outdoor air damper, and keep "
+            b"the alarm active until manual reset."
+        ),
+        "smoke-only.txt",
+        "text/plain",
+    )
+    result = CtrlFlowLibrary().reconcile_sequence(AHU_TEMPLATE, {}, document)
+    by_id = {scenario["id"]: scenario for scenario in result["scenarios"]}
+
+    assert by_id["fire-smoke"]["coverage_status"] == "partial"
+    assert by_id["unoccupied-shutdown"]["mentioned_facet_count"] == 0
+    assert by_id["sensor-invalid"]["mentioned_facet_count"] == 0
+    assert by_id["actuator-failure"]["mentioned_facet_count"] == 0
+
+
+def test_context_scoping_skips_earlier_unrelated_match_and_keeps_real_one() -> None:
+    document = parse_sequence_document(
+        (
+            b"On fire alarm, issue an alarm. If the sensor is invalid, select a fallback "
+            b"and issue an operator-visible alarm."
+        ),
+        "scoped-evidence.txt",
+        "text/plain",
+    )
+    result = CtrlFlowLibrary().reconcile_sequence(AHU_TEMPLATE, {}, document)
+    sensor_invalid = next(
+        scenario for scenario in result["scenarios"] if scenario["id"] == "sensor-invalid"
+    )
+    by_facet = {facet["id"]: facet for facet in sensor_invalid["facets"]}
+
+    assert by_facet["invalid-detection"]["mentioned"] is True
+    assert by_facet["fallback"]["mentioned"] is True
+    assert by_facet["operator-visibility"]["mentioned"] is True
+    assert by_facet["operator-visibility"]["evidence"][0]["start"] > document.text.index(
+        "sensor is invalid"
+    )
+    assert (
+        by_facet["operator-visibility"]["evidence"][0]["scope_evidence"]["matched_text"]
+        == "invalid"
+    )
+
+
 def test_temporal_math_and_actions_are_extracted_as_review_candidates() -> None:
     sequence = """
 If mixed-air temperature falls below 38 °F for 5 minutes, limit the outdoor-air
@@ -167,9 +212,7 @@ After a short delay, restart the system as required.
     assert all(item["point_binding_status"] == "not-applicable" for item in durations.values())
     assert all(item["condition_quantity_candidate_id"] for item in durations.values())
 
-    command_values = [
-        item for item in candidates["quantities"] if item["kind"] == "command-value"
-    ]
+    command_values = [item for item in candidates["quantities"] if item["kind"] == "command-value"]
     assert {(item["canonical"]["value"], item["canonical"]["unit"]) for item in command_values} == {
         (20.0, "%"),
         (100.0, "%"),

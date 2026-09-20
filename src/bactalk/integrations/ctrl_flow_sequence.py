@@ -16,26 +16,36 @@ class _Facet:
     id: str
     label: str
     patterns: tuple[str, ...]
+    context_patterns: tuple[str, ...] = ()
 
 
-def _facet(facet_id: str, label: str, *patterns: str) -> _Facet:
-    return _Facet(facet_id, label, patterns)
+def _facet(
+    facet_id: str,
+    label: str,
+    *patterns: str,
+    context: tuple[str, ...] = (),
+) -> _Facet:
+    return _Facet(facet_id, label, patterns, context)
 
 
 # These rules deliberately look for observable engineering language, not generic topic words.
 # A match proves only that a facet was mentioned. It never proves the sequence is correct.
 _COMMON: dict[str, tuple[_Facet, ...]] = {
     "normal-operation": (
-        _facet("occupied-mode", "occupied operating mode", r"\boccupied (?:mode|operation|period)\b"),
+        _facet(
+            "occupied-mode", "occupied operating mode", r"\boccupied (?:mode|operation|period)\b"
+        ),
         _facet(
             "controlled-response",
             "closed-loop or modulating response",
             r"\b(?:modulat(?:e|es|ing)|pid|control loop)\b",
+            context=(r"\boccupied (?:mode|operation|period)\b",),
         ),
         _facet(
             "bounded-command",
             "minimum and maximum output bounds",
             r"\b(?:minimum|maximum|min(?:imum)? and max(?:imum)?|upper limit|lower limit)\b",
+            context=(r"\boccupied (?:mode|operation|period)\b",),
         ),
     ),
     "unoccupied-shutdown": (
@@ -44,16 +54,19 @@ _COMMON: dict[str, tuple[_Facet, ...]] = {
             "shutdown-state",
             "declared shutdown output state",
             r"\b(?:shut ?down|shut off|de-energiz(?:e|ed)|command(?:ed)? off|safe state)\b",
+            context=(r"\b(?:unoccupied|disabled)\b",),
         ),
         _facet(
             "ventilation-policy",
             "unoccupied ventilation policy",
             r"\b(?:minimum ventilation|outdoor air|outside air|ventilation)\b",
+            context=(r"\b(?:unoccupied|disabled)\b",),
         ),
         _facet(
             "alarm-policy",
             "unoccupied alarm policy",
             r"\b(?:suppress(?:ed|ion)?|inhibit(?:ed|ion)?|alarm delay|alarms? remain)\b",
+            context=(r"\b(?:unoccupied|disabled)\b",),
         ),
     ),
     "sensor-invalid": (
@@ -62,11 +75,17 @@ _COMMON: dict[str, tuple[_Facet, ...]] = {
             "invalid-quality detection",
             r"\b(?:invalid|bad quality|unreliable|sensor fault|out of range)\b",
         ),
-        _facet("fallback", "declared fallback", r"\b(?:fallback|fail[- ]safe|substitute value)\b"),
+        _facet(
+            "fallback",
+            "declared fallback",
+            r"\b(?:fallback|fail[- ]safe|substitute value)\b",
+            context=(r"\b(?:invalid|bad quality|unreliable|sensor fault|out of range)\b",),
+        ),
         _facet(
             "operator-visibility",
             "operator-visible cause or alarm",
             r"\b(?:alarm|notify|operator visible|diagnostic)\b",
+            context=(r"\b(?:invalid|bad quality|unreliable|sensor fault|out of range)\b",),
         ),
     ),
     "sensor-stale": (
@@ -80,8 +99,18 @@ _COMMON: dict[str, tuple[_Facet, ...]] = {
             "staleness timer",
             r"\b(?:stale|unchanged|no change)[^.\n]{0,100}\b(?:timer|minutes?|seconds?|timeout)\b",
         ),
-        _facet("fallback", "declared stale-data fallback", r"\b(?:fallback|fail[- ]safe|substitute value)\b"),
-        _facet("recovery", "fresh-data recovery", r"\b(?:fresh data|valid data|recover(?:y|ed)?|restor(?:e|ed))\b"),
+        _facet(
+            "fallback",
+            "declared stale-data fallback",
+            r"\b(?:fallback|fail[- ]safe|substitute value)\b",
+            context=(r"\b(?:stale|frozen value|unchanged value|no change in (?:value|reading))\b",),
+        ),
+        _facet(
+            "recovery",
+            "fresh-data recovery",
+            r"\b(?:fresh data|valid data|recover(?:y|ed)?|restor(?:e|ed))\b",
+            context=(r"\b(?:stale|frozen value|unchanged value|no change in (?:value|reading))\b",),
+        ),
     ),
     "communications-loss": (
         _facet(
@@ -94,9 +123,21 @@ _COMMON: dict[str, tuple[_Facet, ...]] = {
             "local-fallback",
             "safe local fallback",
             r"\b(?:local control|local mode|last known|fallback|fail[- ]safe)\b",
+            context=(
+                r"\b(?:communications?|bacnet|network|peer controller)[ -](?:loss|failure|fault|timeout)\b",
+                r"\b(?:offline|heartbeat timeout)\b",
+            ),
         ),
-        _facet("alarm", "communications alarm", r"\b(?:communications?|network|offline)[^.\n]{0,100}\balarm\b"),
-        _facet("recovery", "communications recovery", r"\b(?:communications?|network|bacnet)[^.\n]{0,120}\b(?:recover|restore|reconnect|return)\w*\b"),
+        _facet(
+            "alarm",
+            "communications alarm",
+            r"\b(?:communications?|network|offline)[^.\n]{0,100}\balarm\b",
+        ),
+        _facet(
+            "recovery",
+            "communications recovery",
+            r"\b(?:communications?|network|bacnet)[^.\n]{0,120}\b(?:recover|restore|reconnect|return)\w*\b",
+        ),
     ),
     "manual-override": (
         _facet(
@@ -108,6 +149,9 @@ _COMMON: dict[str, tuple[_Facet, ...]] = {
             "priority",
             "command priority or arbitration",
             r"\b(?:priority|precedence|arbitrat(?:e|ion)|highest command)\b",
+            context=(
+                r"\b(?:manual override|operator override|hand[- /]off[- /]auto|hoa switch|hand mode)\b",
+            ),
         ),
         _facet(
             "indication",
@@ -135,6 +179,9 @@ _COMMON: dict[str, tuple[_Facet, ...]] = {
             "timer-state",
             "timer/state restoration policy",
             r"\b(?:timer|state)[^.\n]{0,120}\b(?:restore|retain|reset|restart|initialize)\w*\b",
+            context=(
+                r"\b(?:power cycle|power failure|warm restart|controller restart|reboot|restart|startup)\b",
+            ),
         ),
         _facet(
             "controlled-restart",
@@ -149,10 +196,34 @@ _COMMON: dict[str, tuple[_Facet, ...]] = {
             r"\bcommand(?:ed)?[^.\n]{0,100}\b(?:feedback|position|status|proof)[^.\n]{0,80}\b(?:disagree|fail|not|loss|mismatch)\w*\b",
             r"\b(?:actuator|valve|damper)[ -](?:failure|fault)\b",
         ),
-        _facet("proof-timeout", "proof timeout", r"\b(?:proof|feedback)[^.\n]{0,100}\b(?:delay|timer|timeout|seconds?|minutes?)\b"),
-        _facet("fallback", "failure fallback", r"\b(?:fallback|fail[- ]safe|safe position|safe state)\b"),
-        _facet("alarm", "actuator alarm", r"\b(?:actuator|feedback|proof|position)[^.\n]{0,100}\balarm\b"),
-        _facet("recovery", "actuator recovery", r"\b(?:feedback|proof|actuator)[^.\n]{0,120}\b(?:recover|restore|reset|return)\w*\b"),
+        _facet(
+            "proof-timeout",
+            "proof timeout",
+            r"\b(?:proof|feedback)[^.\n]{0,100}\b(?:delay|timer|timeout|seconds?|minutes?)\b",
+            context=(
+                r"\bcommand(?:ed)?[^.\n]{0,100}\b(?:feedback|position|status|proof)[^.\n]{0,80}\b(?:disagree|fail|not|loss|mismatch)\w*\b",
+                r"\b(?:actuator|valve|damper)[ -](?:failure|fault)\b",
+            ),
+        ),
+        _facet(
+            "fallback",
+            "failure fallback",
+            r"\b(?:fallback|fail[- ]safe|safe position|safe state)\b",
+            context=(
+                r"\bcommand(?:ed)?[^.\n]{0,100}\b(?:feedback|position|status|proof)[^.\n]{0,80}\b(?:disagree|fail|not|loss|mismatch)\w*\b",
+                r"\b(?:actuator|valve|damper)[ -](?:failure|fault)\b",
+            ),
+        ),
+        _facet(
+            "alarm",
+            "actuator alarm",
+            r"\b(?:actuator|feedback|proof|position)[^.\n]{0,100}\balarm\b",
+        ),
+        _facet(
+            "recovery",
+            "actuator recovery",
+            r"\b(?:feedback|proof|actuator)[^.\n]{0,120}\b(?:recover|restore|reset|return)\w*\b",
+        ),
     ),
     "recovery": (
         _facet(
@@ -164,11 +235,13 @@ _COMMON: dict[str, tuple[_Facet, ...]] = {
             "reset-policy",
             "latch and reset policy",
             r"\b(?:manual reset|automatic reset|auto reset|latch(?:ed|ing)?|reset required)\b",
+            context=(r"\b(?:faults?|alarms?)\b",),
         ),
         _facet(
             "bumpless-resume",
             "controlled or bumpless resume",
             r"\b(?:bumpless|controlled|ramp(?:ed)?)\b[^.\n]{0,80}\b(?:resume|restart|recovery|return)\b",
+            context=(r"\b(?:faults?|alarms?)\b",),
         ),
     ),
 }
@@ -176,119 +249,406 @@ _COMMON: dict[str, tuple[_Facet, ...]] = {
 
 _EQUIPMENT: dict[str, tuple[_Facet, ...]] = {
     "airflow-proof": (
-        _facet("flow-failure", "airflow proof or tracking failure", r"\b(?:airflow|flow)[ -](?:proof|tracking|failure|fault|loss)\b"),
-        _facet("damper-limit", "bounded damper response", r"\bdamper[^.\n]{0,100}\b(?:limit|minimum|maximum|bounded|close)\w*\b"),
-        _facet("delayed-alarm", "delayed airflow alarm", r"\b(?:airflow|flow)[^.\n]{0,100}\b(?:alarm delay|delayed alarm|alarm after|timer)\b"),
-        _facet("sensor-fallback", "airflow-sensor fallback", r"\b(?:airflow|flow) sensor[^.\n]{0,120}\b(?:fallback|fail[- ]safe|default)\b"),
+        _facet(
+            "flow-failure",
+            "airflow proof or tracking failure",
+            r"\b(?:airflow|flow)[ -](?:proof|tracking|failure|fault|loss)\b",
+        ),
+        _facet(
+            "damper-limit",
+            "bounded damper response",
+            r"\bdamper[^.\n]{0,100}\b(?:limit|minimum|maximum|bounded|close)\w*\b",
+        ),
+        _facet(
+            "delayed-alarm",
+            "delayed airflow alarm",
+            r"\b(?:airflow|flow)[^.\n]{0,100}\b(?:alarm delay|delayed alarm|alarm after|timer)\b",
+        ),
+        _facet(
+            "sensor-fallback",
+            "airflow-sensor fallback",
+            r"\b(?:airflow|flow) sensor[^.\n]{0,120}\b(?:fallback|fail[- ]safe|default)\b",
+        ),
     ),
     "zone-mode-transitions": (
-        _facet("modes", "heating, deadband, and cooling modes", r"\bheating\b[^.\n]{0,160}\bdeadband\b[^.\n]{0,160}\bcooling\b", r"\bcooling\b[^.\n]{0,160}\bdeadband\b[^.\n]{0,160}\bheating\b"),
-        _facet("hysteresis", "transition hysteresis", r"\b(?:hysteresis|deadband timer|minimum mode time)\b"),
-        _facet("airflow-bounds", "bounded airflow", r"\bairflow[^.\n]{0,100}\b(?:minimum|maximum|limit|bounded)\b"),
-        _facet("requests", "system requests", r"\b(?:heating|cooling|static pressure|temperature)[ -]request\b"),
+        _facet(
+            "modes",
+            "heating, deadband, and cooling modes",
+            r"\bheating\b[^.\n]{0,160}\bdeadband\b[^.\n]{0,160}\bcooling\b",
+            r"\bcooling\b[^.\n]{0,160}\bdeadband\b[^.\n]{0,160}\bheating\b",
+        ),
+        _facet(
+            "hysteresis",
+            "transition hysteresis",
+            r"\b(?:hysteresis|deadband timer|minimum mode time)\b",
+        ),
+        _facet(
+            "airflow-bounds",
+            "bounded airflow",
+            r"\bairflow[^.\n]{0,100}\b(?:minimum|maximum|limit|bounded)\b",
+        ),
+        _facet(
+            "requests",
+            "system requests",
+            r"\b(?:heating|cooling|static pressure|temperature)[ -]request\b",
+        ),
     ),
     "ahu-unavailable": (
-        _facet("availability", "upstream AHU availability", r"\b(?:ahu|air handler)[^.\n]{0,100}\b(?:unavailable|disabled|off|failure)\b"),
-        _facet("damper-state", "declared damper state", r"\bdamper[^.\n]{0,100}\b(?:close|closed|minimum|position|state)\b"),
-        _facet("alarm-policy", "alarm suppression or qualification", r"\b(?:suppress|inhibit|qualif)\w*[^.\n]{0,100}\balarm\b", r"\balarm[^.\n]{0,100}\b(?:suppress|inhibit|qualif)\w*\b"),
-        _facet("recovery", "AHU availability recovery", r"\b(?:ahu|air handler)[^.\n]{0,120}\b(?:available|recover|restart|returns?)\w*\b"),
+        _facet(
+            "availability",
+            "upstream AHU availability",
+            r"\b(?:ahu|air handler)[^.\n]{0,100}\b(?:unavailable|disabled|off|failure)\b",
+        ),
+        _facet(
+            "damper-state",
+            "declared damper state",
+            r"\bdamper[^.\n]{0,100}\b(?:close|closed|minimum|position|state)\b",
+        ),
+        _facet(
+            "alarm-policy",
+            "alarm suppression or qualification",
+            r"\b(?:suppress|inhibit|qualif)\w*[^.\n]{0,100}\balarm\b",
+            r"\balarm[^.\n]{0,100}\b(?:suppress|inhibit|qualif)\w*\b",
+        ),
+        _facet(
+            "recovery",
+            "AHU availability recovery",
+            r"\b(?:ahu|air handler)[^.\n]{0,120}\b(?:available|recover|restart|returns?)\w*\b",
+        ),
     ),
     "reheat-failure": (
-        _facet("failure-proof", "reheat command proof", r"\breheat[^.\n]{0,120}\b(?:failure|fault|proof|feedback)\b"),
-        _facet("proof-timer", "reheat proof timer", r"\breheat[^.\n]{0,120}\b(?:timer|delay|timeout|minutes?|seconds?)\b"),
+        _facet(
+            "failure-proof",
+            "reheat command proof",
+            r"\breheat[^.\n]{0,120}\b(?:failure|fault|proof|feedback)\b",
+        ),
+        _facet(
+            "proof-timer",
+            "reheat proof timer",
+            r"\breheat[^.\n]{0,120}\b(?:timer|delay|timeout|minutes?|seconds?)\b",
+        ),
         _facet("alarm", "reheat failure alarm", r"\breheat[^.\n]{0,120}\balarm\b"),
-        _facet("temperature-bound", "bounded discharge temperature", r"\bdischarge(?: air)? temperature[^.\n]{0,100}\b(?:limit|maximum|high)\b"),
+        _facet(
+            "temperature-bound",
+            "bounded discharge temperature",
+            r"\bdischarge(?: air)? temperature[^.\n]{0,100}\b(?:limit|maximum|high)\b",
+        ),
     ),
     "plant-unavailable": (
-        _facet("availability", "plant availability", r"\b(?:heating|cooling|hot water|chilled water|plant)[ -](?:plant )?(?:is )?(?:unavailable|available|failure|disabled)\b"),
-        _facet("request", "plant request", r"\b(?:heating|cooling|hot water|chilled water|plant)[ -]request\b"),
-        _facet("fallback", "plant-loss command policy", r"\bplant[^.\n]{0,120}\b(?:fallback|disable|close|limit|command policy)\b"),
-        _facet("alarm-policy", "plant-qualified alarm", r"\bplant[^.\n]{0,120}\balarm\b", r"\balarm[^.\n]{0,120}\bplant\b"),
-        _facet("recovery", "plant recovery", r"\bplant[^.\n]{0,120}\b(?:recover|available|restore|return)\w*\b"),
+        _facet(
+            "availability",
+            "plant availability",
+            r"\b(?:heating|cooling|hot water|chilled water|plant)[ -](?:plant )?(?:is )?(?:unavailable|available|failure|disabled)\b",
+        ),
+        _facet(
+            "request",
+            "plant request",
+            r"\b(?:heating|cooling|hot water|chilled water|plant)[ -]request\b",
+        ),
+        _facet(
+            "fallback",
+            "plant-loss command policy",
+            r"\bplant[^.\n]{0,120}\b(?:fallback|disable|close|limit|command policy)\b",
+        ),
+        _facet(
+            "alarm-policy",
+            "plant-qualified alarm",
+            r"\bplant[^.\n]{0,120}\balarm\b",
+            r"\balarm[^.\n]{0,120}\bplant\b",
+        ),
+        _facet(
+            "recovery",
+            "plant recovery",
+            r"\bplant[^.\n]{0,120}\b(?:recover|available|restore|return)\w*\b",
+        ),
     ),
     "discharge-high-limit": (
-        _facet("high-limit", "discharge-air high limit", r"\bdischarge(?: air)? temperature[^.\n]{0,100}\b(?:high limit|maximum|exceeds?)\b"),
-        _facet("limit-action", "command limiting action", r"\b(?:high limit|maximum)[^.\n]{0,120}\b(?:limit|close|reduce|disable)\w*\b"),
-        _facet("alarm", "high-temperature alarm", r"\b(?:discharge|high temperature)[^.\n]{0,100}\balarm\b"),
-        _facet("recovery", "automatic high-limit recovery", r"\b(?:discharge|high limit)[^.\n]{0,120}\b(?:automatic(?:ally)?|recover|reset|clear)\w*\b"),
+        _facet(
+            "high-limit",
+            "discharge-air high limit",
+            r"\bdischarge(?: air)? temperature[^.\n]{0,100}\b(?:high limit|maximum|exceeds?)\b",
+        ),
+        _facet(
+            "limit-action",
+            "command limiting action",
+            r"\b(?:high limit|maximum)[^.\n]{0,120}\b(?:limit|close|reduce|disable)\w*\b",
+        ),
+        _facet(
+            "alarm",
+            "high-temperature alarm",
+            r"\b(?:discharge|high temperature)[^.\n]{0,100}\balarm\b",
+        ),
+        _facet(
+            "recovery",
+            "automatic high-limit recovery",
+            r"\b(?:discharge|high limit)[^.\n]{0,120}\b(?:automatic(?:ally)?|recover|reset|clear)\w*\b",
+        ),
     ),
     "co2-failure": (
-        _facet("detection", "CO2 invalid/stale detection", r"\bco2[^.\n]{0,100}\b(?:invalid|stale|failure|fault)\b"),
-        _facet("default", "CO2 failure default", r"\bco2[^.\n]{0,120}\b(?:default|fallback|substitute|fail[- ]safe)\b"),
+        _facet(
+            "detection",
+            "CO2 invalid/stale detection",
+            r"\bco2[^.\n]{0,100}\b(?:invalid|stale|failure|fault)\b",
+        ),
+        _facet(
+            "default",
+            "CO2 failure default",
+            r"\bco2[^.\n]{0,120}\b(?:default|fallback|substitute|fail[- ]safe)\b",
+        ),
         _facet("alarm", "CO2 sensor alarm", r"\bco2[^.\n]{0,100}\balarm\b"),
-        _facet("recovery", "CO2 recovery", r"\bco2[^.\n]{0,120}\b(?:recover|valid|restore|return)\w*\b"),
+        _facet(
+            "recovery", "CO2 recovery", r"\bco2[^.\n]{0,120}\b(?:recover|valid|restore|return)\w*\b"
+        ),
     ),
     "occupancy-sensor-failure": (
-        _facet("detection", "occupancy sensor invalid/stale detection", r"\boccupancy sensor[^.\n]{0,100}\b(?:invalid|stale|failure|fault)\b"),
-        _facet("default", "occupancy failure default", r"\boccupancy sensor[^.\n]{0,120}\b(?:default|fallback|substitute|schedule)\b"),
+        _facet(
+            "detection",
+            "occupancy sensor invalid/stale detection",
+            r"\boccupancy sensor[^.\n]{0,100}\b(?:invalid|stale|failure|fault)\b",
+        ),
+        _facet(
+            "default",
+            "occupancy failure default",
+            r"\boccupancy sensor[^.\n]{0,120}\b(?:default|fallback|substitute|schedule)\b",
+        ),
         _facet("alarm", "occupancy sensor alarm", r"\boccupancy sensor[^.\n]{0,100}\balarm\b"),
-        _facet("recovery", "occupancy sensor recovery", r"\boccupancy sensor[^.\n]{0,120}\b(?:recover|valid|restore|return)\w*\b"),
+        _facet(
+            "recovery",
+            "occupancy sensor recovery",
+            r"\boccupancy sensor[^.\n]{0,120}\b(?:recover|valid|restore|return)\w*\b",
+        ),
     ),
     "window-sensor-failure": (
-        _facet("detection", "window sensor invalid/stale detection", r"\bwindow sensor[^.\n]{0,100}\b(?:invalid|stale|failure|fault)\b"),
-        _facet("default", "window failure default", r"\bwindow sensor[^.\n]{0,120}\b(?:default|fallback|substitute|closed)\b"),
+        _facet(
+            "detection",
+            "window sensor invalid/stale detection",
+            r"\bwindow sensor[^.\n]{0,100}\b(?:invalid|stale|failure|fault)\b",
+        ),
+        _facet(
+            "default",
+            "window failure default",
+            r"\bwindow sensor[^.\n]{0,120}\b(?:default|fallback|substitute|closed)\b",
+        ),
         _facet("alarm", "window sensor alarm", r"\bwindow sensor[^.\n]{0,100}\balarm\b"),
-        _facet("recovery", "window sensor recovery", r"\bwindow sensor[^.\n]{0,120}\b(?:recover|valid|restore|return)\w*\b"),
+        _facet(
+            "recovery",
+            "window sensor recovery",
+            r"\bwindow sensor[^.\n]{0,120}\b(?:recover|valid|restore|return)\w*\b",
+        ),
     ),
     "fire-smoke": (
-        _facet("life-safety-input", "fire/smoke input or alarm", r"\b(?:fire alarm|smoke detector|smoke alarm|fire[- ]smoke)\b"),
-        _facet("priority", "life-safety priority", r"\b(?:fire|smoke)[^.\n]{0,120}\b(?:override|highest priority|priority)\b"),
-        _facet("output-state", "declared fan and damper state", r"\b(?:fire|smoke)[^.\n]{0,180}\b(?:fan|damper)[^.\n]{0,120}\b(?:off|stop|close|open|state)\b"),
-        _facet("reset", "manual-reset boundary", r"\b(?:fire|smoke)[^.\n]{0,150}\bmanual reset\b", r"\bmanual reset[^.\n]{0,150}\b(?:fire|smoke)\b"),
+        _facet(
+            "life-safety-input",
+            "fire/smoke input or alarm",
+            r"\b(?:fire alarm|smoke detector|smoke alarm|fire[- ]smoke)\b",
+        ),
+        _facet(
+            "priority",
+            "life-safety priority",
+            r"\b(?:fire|smoke)[^.\n]{0,120}\b(?:override|highest priority|priority)\b",
+        ),
+        _facet(
+            "output-state",
+            "declared fan and damper state",
+            r"\b(?:fire|smoke)[^.\n]{0,180}\b(?:fan|damper)[^.\n]{0,120}\b(?:off|stop|close|open|state)\b",
+        ),
+        _facet(
+            "reset",
+            "manual-reset boundary",
+            r"\b(?:fire|smoke)[^.\n]{0,150}\bmanual reset\b",
+            r"\bmanual reset[^.\n]{0,150}\b(?:fire|smoke)\b",
+        ),
     ),
     "duct-high-pressure": (
-        _facet("trip", "duct high-pressure trip", r"\bduct high[- ]pressure\b", r"\bhigh duct (?:static )?pressure\b"),
-        _facet("shutdown", "immediate fan shutdown", r"\b(?:duct high[- ]pressure|high duct (?:static )?pressure)[^.\n]{0,150}\b(?:immediate|stop|shut ?down|off)\w*\b"),
-        _facet("latch", "latched alarm/reset policy", r"\b(?:duct high[- ]pressure|high duct (?:static )?pressure)[^.\n]{0,150}\b(?:latch|manual reset|alarm)\w*\b"),
-        _facet("restart", "safe restart", r"\b(?:duct high[- ]pressure|high duct (?:static )?pressure)[^.\n]{0,180}\b(?:restart|reset|recover)\w*\b"),
+        _facet(
+            "trip",
+            "duct high-pressure trip",
+            r"\bduct high[- ]pressure\b",
+            r"\bhigh duct (?:static )?pressure\b",
+        ),
+        _facet(
+            "shutdown",
+            "immediate fan shutdown",
+            r"\b(?:duct high[- ]pressure|high duct (?:static )?pressure)[^.\n]{0,150}\b(?:immediate|stop|shut ?down|off)\w*\b",
+        ),
+        _facet(
+            "latch",
+            "latched alarm/reset policy",
+            r"\b(?:duct high[- ]pressure|high duct (?:static )?pressure)[^.\n]{0,150}\b(?:latch|manual reset|alarm)\w*\b",
+        ),
+        _facet(
+            "restart",
+            "safe restart",
+            r"\b(?:duct high[- ]pressure|high duct (?:static )?pressure)[^.\n]{0,180}\b(?:restart|reset|recover)\w*\b",
+        ),
     ),
     "supply-fan-proof": (
-        _facet("proof-loss", "supply fan proof loss", r"\bsupply fan[^.\n]{0,100}\b(?:proof|status)[^.\n]{0,80}\b(?:fail|loss|not|off)\w*\b"),
-        _facet("delay", "fan proof delay", r"\bsupply fan[^.\n]{0,120}\b(?:proof delay|timeout|timer|seconds?|minutes?)\b"),
-        _facet("dependent-outputs", "dependent coil/damper fallback", r"\bsupply fan[^.\n]{0,200}\b(?:coil|damper)[^.\n]{0,100}\b(?:close|disable|fallback|safe)\w*\b"),
+        _facet(
+            "proof-loss",
+            "supply fan proof loss",
+            r"\bsupply fan[^.\n]{0,100}\b(?:proof|status)[^.\n]{0,80}\b(?:fail|loss|not|off)\w*\b",
+        ),
+        _facet(
+            "delay",
+            "fan proof delay",
+            r"\bsupply fan[^.\n]{0,120}\b(?:proof delay|timeout|timer|seconds?|minutes?)\b",
+        ),
+        _facet(
+            "dependent-outputs",
+            "dependent coil/damper fallback",
+            r"\bsupply fan[^.\n]{0,200}\b(?:coil|damper)[^.\n]{0,100}\b(?:close|disable|fallback|safe)\w*\b",
+        ),
         _facet("alarm", "fan proof alarm", r"\bsupply fan[^.\n]{0,120}\balarm\b"),
-        _facet("recovery", "fan proof recovery", r"\bsupply fan[^.\n]{0,150}\b(?:proof returns|recover|restart|reset)\w*\b"),
+        _facet(
+            "recovery",
+            "fan proof recovery",
+            r"\bsupply fan[^.\n]{0,150}\b(?:proof returns|recover|restart|reset)\w*\b",
+        ),
     ),
     "economizer-limits": (
-        _facet("enable-disable", "economizer enable/disable criteria", r"\beconomizer[^.\n]{0,120}\b(?:enable|disable)\w*\b"),
-        _facet("high-limit", "economizer high limit", r"\beconomizer[^.\n]{0,120}\bhigh limit\b", r"\bhigh limit[^.\n]{0,120}\beconomizer\b"),
-        _facet("minimum-ventilation", "minimum ventilation", r"\bminimum (?:outdoor air|outside air|ventilation)\b"),
-        _facet("integrated-cooling", "integrated cooling", r"\bintegrated (?:cooling|economizer)\b"),
-        _facet("sensor-fallback", "economizer sensor fallback", r"\beconomizer[^.\n]{0,160}\b(?:sensor|temperature|enthalpy)[^.\n]{0,100}\b(?:fallback|failure|invalid)\w*\b"),
+        _facet(
+            "enable-disable",
+            "economizer enable/disable criteria",
+            r"\beconomizer[^.\n]{0,120}\b(?:enable|disable)\w*\b",
+        ),
+        _facet(
+            "high-limit",
+            "economizer high limit",
+            r"\beconomizer[^.\n]{0,120}\bhigh limit\b",
+            r"\bhigh limit[^.\n]{0,120}\beconomizer\b",
+        ),
+        _facet(
+            "minimum-ventilation",
+            "minimum ventilation",
+            r"\bminimum (?:outdoor air|outside air|ventilation)\b",
+        ),
+        _facet(
+            "integrated-cooling", "integrated cooling", r"\bintegrated (?:cooling|economizer)\b"
+        ),
+        _facet(
+            "sensor-fallback",
+            "economizer sensor fallback",
+            r"\beconomizer[^.\n]{0,160}\b(?:sensor|temperature|enthalpy)[^.\n]{0,100}\b(?:fallback|failure|invalid)\w*\b",
+        ),
     ),
     "mixed-air-low-limit": (
-        _facet("low-limit", "mixed-air low limit", r"\bmixed[- ]air[^.\n]{0,80}\b(?:low limit|minimum|freeze)\b"),
-        _facet("damper-action", "outdoor-air damper limiting", r"\b(?:mixed[- ]air|low limit)[^.\n]{0,160}\b(?:outdoor|outside)[- ]air damper[^.\n]{0,80}\b(?:limit|close|reduce|modulat)\w*\b"),
-        _facet("heating-action", "heating response", r"\b(?:mixed[- ]air|low limit)[^.\n]{0,160}\b(?:heating|preheat|coil|valve)\b"),
-        _facet("escalation", "low-limit escalation", r"\b(?:mixed[- ]air|low limit)[^.\n]{0,180}\b(?:escalat|stage|alarm|freeze)\w*\b"),
+        _facet(
+            "low-limit",
+            "mixed-air low limit",
+            r"\bmixed[- ]air[^.\n]{0,80}\b(?:low limit|minimum|freeze)\b",
+        ),
+        _facet(
+            "damper-action",
+            "outdoor-air damper limiting",
+            r"\b(?:mixed[- ]air|low limit)[^.\n]{0,160}\b(?:outdoor|outside)[- ]air damper[^.\n]{0,80}\b(?:limit|close|reduce|modulat)\w*\b",
+        ),
+        _facet(
+            "heating-action",
+            "heating response",
+            r"\b(?:mixed[- ]air|low limit)[^.\n]{0,160}\b(?:heating|preheat|coil|valve)\b",
+        ),
+        _facet(
+            "escalation",
+            "low-limit escalation",
+            r"\b(?:mixed[- ]air|low limit)[^.\n]{0,180}\b(?:escalat|stage|alarm|freeze)\w*\b",
+        ),
     ),
     "simultaneous-heat-cool": (
-        _facet("exclusion", "simultaneous heating/cooling exclusion", r"\b(?:simultaneous|concurrent)[ -](?:heating and cooling|heat and cool)\b", r"\bprevent[^.\n]{0,100}\bheating[^.\n]{0,80}\bcooling\b"),
-        _facet("deadband", "heating/cooling deadband or sequencing", r"\b(?:heating|cooling)[^.\n]{0,120}\b(?:deadband|sequence|interlock)\b"),
-        _facet("bounded-commands", "bounded coil commands", r"\b(?:heating|cooling) (?:coil|valve)[^.\n]{0,120}\b(?:limit|maximum|minimum|bounded)\b"),
+        _facet(
+            "exclusion",
+            "simultaneous heating/cooling exclusion",
+            r"\b(?:simultaneous|concurrent)[ -](?:heating and cooling|heat and cool)\b",
+            r"\bprevent[^.\n]{0,100}\bheating[^.\n]{0,80}\bcooling\b",
+        ),
+        _facet(
+            "deadband",
+            "heating/cooling deadband or sequencing",
+            r"\b(?:heating|cooling)[^.\n]{0,120}\b(?:deadband|sequence|interlock)\b",
+        ),
+        _facet(
+            "bounded-commands",
+            "bounded coil commands",
+            r"\b(?:heating|cooling) (?:coil|valve)[^.\n]{0,120}\b(?:limit|maximum|minimum|bounded)\b",
+        ),
     ),
     "freeze-protection": (
-        _facet("stages", "every freeze-protection stage/threshold", r"\bfreeze(?:stat| protection)?[^.\n]{0,150}\b(?:stage|threshold|setpoint|temperature)\b"),
-        _facet("fan-damper", "freeze fan/damper action", r"\bfreeze(?:stat| protection)?[^.\n]{0,180}\b(?:fan|damper)[^.\n]{0,100}\b(?:stop|off|close|open|command)\w*\b"),
-        _facet("coil", "freeze coil/valve action", r"\bfreeze(?:stat| protection)?[^.\n]{0,180}\b(?:coil|valve|heating)[^.\n]{0,100}\b(?:open|enable|command|maximum)\w*\b"),
-        _facet("latch-reset", "freeze latch/reset policy", r"\bfreeze(?:stat| protection)?[^.\n]{0,160}\b(?:latch|manual reset|automatic reset)\w*\b"),
-        _facet("recovery", "freeze recovery", r"\bfreeze(?:stat| protection)?[^.\n]{0,180}\b(?:recover|restart|reset|clear)\w*\b"),
+        _facet(
+            "stages",
+            "every freeze-protection stage/threshold",
+            r"\bfreeze(?:stat| protection)?[^.\n]{0,150}\b(?:stage|threshold|setpoint|temperature)\b",
+        ),
+        _facet(
+            "fan-damper",
+            "freeze fan/damper action",
+            r"\bfreeze(?:stat| protection)?[^.\n]{0,180}\b(?:fan|damper)[^.\n]{0,100}\b(?:stop|off|close|open|command)\w*\b",
+        ),
+        _facet(
+            "coil",
+            "freeze coil/valve action",
+            r"\bfreeze(?:stat| protection)?[^.\n]{0,180}\b(?:coil|valve|heating)[^.\n]{0,100}\b(?:open|enable|command|maximum)\w*\b",
+        ),
+        _facet(
+            "latch-reset",
+            "freeze latch/reset policy",
+            r"\bfreeze(?:stat| protection)?[^.\n]{0,160}\b(?:latch|manual reset|automatic reset)\w*\b",
+        ),
+        _facet(
+            "recovery",
+            "freeze recovery",
+            r"\bfreeze(?:stat| protection)?[^.\n]{0,180}\b(?:recover|restart|reset|clear)\w*\b",
+        ),
     ),
     "return-relief-failure": (
-        _facet("proof", "return/relief proof or feedback failure", r"\b(?:return|relief) (?:fan|damper)[^.\n]{0,120}\b(?:proof|feedback|failure|fault)\b"),
-        _facet("pressure-fallback", "building-pressure fallback", r"\b(?:return|relief|building pressure)[^.\n]{0,160}\b(?:fallback|safe|default)\b"),
-        _facet("alarm", "return/relief alarm", r"\b(?:return|relief) (?:fan|damper)[^.\n]{0,120}\balarm\b"),
-        _facet("recovery", "return/relief recovery", r"\b(?:return|relief) (?:fan|damper)[^.\n]{0,150}\b(?:recover|reset|restore|return)\w*\b"),
+        _facet(
+            "proof",
+            "return/relief proof or feedback failure",
+            r"\b(?:return|relief) (?:fan|damper)[^.\n]{0,120}\b(?:proof|feedback|failure|fault)\b",
+        ),
+        _facet(
+            "pressure-fallback",
+            "building-pressure fallback",
+            r"\b(?:return|relief|building pressure)[^.\n]{0,160}\b(?:fallback|safe|default)\b",
+        ),
+        _facet(
+            "alarm",
+            "return/relief alarm",
+            r"\b(?:return|relief) (?:fan|damper)[^.\n]{0,120}\balarm\b",
+        ),
+        _facet(
+            "recovery",
+            "return/relief recovery",
+            r"\b(?:return|relief) (?:fan|damper)[^.\n]{0,150}\b(?:recover|reset|restore|return)\w*\b",
+        ),
     ),
     "airflow-station-failure": (
-        _facet("invalid-stale", "airflow-station invalid/stale detection", r"\bairflow station[^.\n]{0,120}\b(?:invalid|stale|failure|fault)\b"),
-        _facet("fallback", "airflow tracking fallback", r"\bairflow station[^.\n]{0,160}\b(?:fallback|static pressure|default speed|safe speed)\b"),
+        _facet(
+            "invalid-stale",
+            "airflow-station invalid/stale detection",
+            r"\bairflow station[^.\n]{0,120}\b(?:invalid|stale|failure|fault)\b",
+        ),
+        _facet(
+            "fallback",
+            "airflow tracking fallback",
+            r"\bairflow station[^.\n]{0,160}\b(?:fallback|static pressure|default speed|safe speed)\b",
+        ),
         _facet("alarm", "airflow-station alarm", r"\bairflow station[^.\n]{0,100}\balarm\b"),
     ),
     "building-pressure-failure": (
-        _facet("sensor-failure", "building-pressure sensor failure", r"\bbuilding[- ]pressure sensor[^.\n]{0,100}\b(?:invalid|stale|failure|fault)\b"),
-        _facet("fallback", "building-pressure fallback", r"\bbuilding[- ]pressure[^.\n]{0,140}\b(?:fallback|default|safe)\b"),
-        _facet("bounded-output", "bounded return/relief output", r"\bbuilding[- ]pressure[^.\n]{0,180}\b(?:fan|damper)[^.\n]{0,100}\b(?:limit|bounded|minimum|maximum)\b"),
+        _facet(
+            "sensor-failure",
+            "building-pressure sensor failure",
+            r"\bbuilding[- ]pressure sensor[^.\n]{0,100}\b(?:invalid|stale|failure|fault)\b",
+        ),
+        _facet(
+            "fallback",
+            "building-pressure fallback",
+            r"\bbuilding[- ]pressure[^.\n]{0,140}\b(?:fallback|default|safe)\b",
+        ),
+        _facet(
+            "bounded-output",
+            "bounded return/relief output",
+            r"\bbuilding[- ]pressure[^.\n]{0,180}\b(?:fan|damper)[^.\n]{0,100}\b(?:limit|bounded|minimum|maximum)\b",
+        ),
         _facet("alarm", "building-pressure alarm", r"\bbuilding[- ]pressure[^.\n]{0,100}\balarm\b"),
     ),
 }
@@ -305,25 +665,66 @@ def _excerpt(text: str, start: int, end: int, *, radius: int = 150) -> str:
     return snippet
 
 
+_SENTENCE_BOUNDARY = re.compile(r"[!?](?=\s|$)|\.(?=\s+[A-Z]|\s*$)")
+
+
+def _clause_bounds(text: str, start: int, end: int) -> tuple[int, int]:
+    left = 0
+    right = len(text)
+    for boundary in _SENTENCE_BOUNDARY.finditer(text):
+        if boundary.end() <= start:
+            left = boundary.end()
+            continue
+        if boundary.start() >= end:
+            right = boundary.end()
+            break
+    return max(left, start - 500), min(right, end + 500)
+
+
 def _match_facet(text: str, searchable_text: str, facet: _Facet) -> list[dict[str, Any]]:
     evidence: list[dict[str, Any]] = []
     occupied: list[tuple[int, int]] = []
     for pattern in facet.patterns:
-        match = re.search(pattern, searchable_text, flags=re.IGNORECASE)
-        if match is None:
-            continue
-        span = match.span()
-        if any(abs(span[0] - prior[0]) < 20 for prior in occupied):
-            continue
-        occupied.append(span)
-        evidence.append(
-            {
-                "matched_text": re.sub(r"\s+", " ", text[span[0] : span[1]]).strip(),
-                "start": span[0],
-                "end": span[1],
-                "excerpt": _excerpt(text, *span),
-            }
-        )
+        for match in re.finditer(pattern, searchable_text, flags=re.IGNORECASE):
+            span = match.span()
+            scope_evidence: dict[str, Any] | None = None
+            if facet.context_patterns:
+                clause_start, clause_end = _clause_bounds(searchable_text, *span)
+                clause = searchable_text[clause_start:clause_end]
+                context_match = next(
+                    (
+                        match
+                        for context in facet.context_patterns
+                        if (match := re.search(context, clause, flags=re.IGNORECASE))
+                    ),
+                    None,
+                )
+                if context_match is None:
+                    continue
+                context_span = (
+                    clause_start + context_match.start(),
+                    clause_start + context_match.end(),
+                )
+                scope_evidence = {
+                    "matched_text": re.sub(
+                        r"\s+", " ", text[context_span[0] : context_span[1]]
+                    ).strip(),
+                    "start": context_span[0],
+                    "end": context_span[1],
+                }
+            if any(abs(span[0] - prior[0]) < 20 for prior in occupied):
+                continue
+            occupied.append(span)
+            evidence.append(
+                {
+                    "matched_text": re.sub(r"\s+", " ", text[span[0] : span[1]]).strip(),
+                    "start": span[0],
+                    "end": span[1],
+                    "excerpt": _excerpt(text, *span),
+                    "scope_evidence": scope_evidence,
+                }
+            )
+            break
         if len(evidence) == 2:
             break
     return evidence
@@ -339,7 +740,9 @@ class CtrlFlowSequenceReconciler:
     ) -> dict[str, Any]:
         scenarios: list[dict[str, Any]] = programming_brief["qualification_plan"]["scenarios"]
         # Preserve character offsets while making hard-wrapped PDF/DOCX prose searchable.
-        searchable_text = "".join(" " if character.isspace() else character for character in document.text)
+        searchable_text = "".join(
+            " " if character.isspace() else character for character in document.text
+        )
         results: list[dict[str, Any]] = []
         for scenario in scenarios:
             facets = _COMMON.get(scenario["id"]) or _EQUIPMENT.get(scenario["id"])
@@ -403,14 +806,10 @@ class CtrlFlowSequenceReconciler:
                 }
             )
 
-        all_mentioned = sum(
-            item["coverage_status"] == "all-facets-mentioned" for item in results
-        )
+        all_mentioned = sum(item["coverage_status"] == "all-facets-mentioned" for item in results)
         partial = sum(item["coverage_status"] == "partial" for item in results)
         not_mentioned = sum(item["coverage_status"] == "not-mentioned" for item in results)
-        rules_missing = sum(
-            item["coverage_status"] == "coverage-rule-missing" for item in results
-        )
+        rules_missing = sum(item["coverage_status"] == "coverage-rule-missing" for item in results)
         missing_facet_count = sum(len(item["missing_facets"]) for item in results)
         language_complete = all_mentioned == len(results) and bool(results)
         requirement_candidates = extract_sequence_requirement_candidates(
