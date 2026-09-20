@@ -588,6 +588,8 @@ class VirtualBacnetLab:
         self.root = root.resolve()
         self.manifest = manifest
         self.apps: list[Any] = []
+        self.device_apps: dict[int, Any] = {}
+        self.device_configs: dict[int, LabDeviceConfig] = {}
         self.objects: dict[tuple[int, str], Any] = {}
         self.actuators: dict[str, VirtualActuator] = {}
         self.actuator_faults: dict[str, VirtualActuatorFault] = {}
@@ -715,9 +717,7 @@ class VirtualBacnetLab:
         return classes[object_type](**common)
 
     async def start(self) -> None:
-        from bacpypes3.app import Application
-
-        if self.apps:
+        if self.apps or self.device_apps:
             raise RuntimeError("BACnet lab is already running")
         try:
             for summary in self.manifest.devices:
@@ -729,12 +729,13 @@ class VirtualBacnetLab:
                 )
                 if not config.bind_address.startswith("127.0.0.1/32:"):
                     raise ValueError("BACnet lab refuses non-loopback bind addresses")
-                app = Application.from_args(self._application_args(config))
-                self.apps.append(app)
-                for object_config in config.objects:
-                    obj = self._object(object_config)
-                    app.add_object(obj)
-                    self.objects[(config.device_instance, object_config.object_identifier)] = obj
+                if config.device_instance in self.device_configs:
+                    raise ValueError(
+                        f"duplicate BACnet lab device instance: {config.device_instance}"
+                    )
+                self.device_configs[config.device_instance] = config
+            for device_instance in self.device_configs:
+                await self.start_device(device_instance)
             for spec in self.manifest.actuator_models:
                 initial = self.get_present_value(spec.position_point)
                 if isinstance(initial, bool):
@@ -752,6 +753,42 @@ class VirtualBacnetLab:
             self.close()
             raise
 
+    async def start_device(self, device_instance: int) -> None:
+        """Start or recover one configured virtual device on its original address."""
+
+        from bacpypes3.app import Application
+
+        if device_instance in self.device_apps:
+            raise RuntimeError(f"BACnet lab device is already running: {device_instance}")
+        config = self.device_configs.get(device_instance)
+        if config is None:
+            raise KeyError(device_instance)
+        app = Application.from_args(self._application_args(config))
+        try:
+            for object_config in config.objects:
+                obj = self._object(object_config)
+                app.add_object(obj)
+                self.objects[(device_instance, object_config.object_identifier)] = obj
+        except BaseException:
+            app.close()
+            for key in [key for key in self.objects if key[0] == device_instance]:
+                self.objects.pop(key, None)
+            raise
+        self.apps.append(app)
+        self.device_apps[device_instance] = app
+        await asyncio.sleep(0)
+
+    def stop_device(self, device_instance: int) -> None:
+        """Take one virtual device offline without affecting its peers."""
+
+        app = self.device_apps.pop(device_instance, None)
+        if app is None:
+            raise KeyError(device_instance)
+        app.close()
+        self.apps.remove(app)
+        for key in [key for key in self.objects if key[0] == device_instance]:
+            self.objects.pop(key, None)
+
     def close(self) -> None:
         if self._actuator_task is not None:
             self._actuator_task.cancel()
@@ -759,6 +796,8 @@ class VirtualBacnetLab:
         for app in reversed(self.apps):
             app.close()
         self.apps.clear()
+        self.device_apps.clear()
+        self.device_configs.clear()
         self.objects.clear()
         self.actuators.clear()
         self.actuator_faults.clear()

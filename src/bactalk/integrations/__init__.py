@@ -1,5 +1,6 @@
 """Adapters for external controls and simulation systems."""
 
+from .bacnet_scale import BacnetScaleProfile, BacnetScaleRunner
 from .boptest import BoptestClient, BoptestError
 from .boptest_graph import (
     BoptestActuatorBinding,
@@ -20,6 +21,8 @@ __all__ = [
     "BoptestError",
     "BoptestScaleProfile",
     "BoptestScaleRunner",
+    "BacnetScaleProfile",
+    "BacnetScaleRunner",
     "BoptestActuatorBinding",
     "BoptestGraphMap",
     "BoptestGraphRunner",
