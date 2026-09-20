@@ -7,9 +7,11 @@ from pathlib import Path
 from typing import Any
 
 from bactalk.domain import PointSpec
+from bactalk.intake import parse_sequence_document
 from bactalk.integrations.ctrl_flow import CtrlFlowLibrary
 from bactalk.integrations.ctrl_flow_planning import AHU_TEMPLATE
 from bactalk.integrations.ctrl_flow_reconciliation import CtrlFlowPointReconciler
+from bactalk.integrations.ctrl_flow_sequence import CtrlFlowSequenceReconciler
 
 ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE_PATH = ROOT / ".bactalk/ctrl-flow-planning-evidence.json"
@@ -39,6 +41,12 @@ def _validate_brief(brief: dict[str, Any]) -> None:
 def main() -> int:
     library = CtrlFlowLibrary(ROOT)
     reconciler = CtrlFlowPointReconciler()
+    sequence_reconciler = CtrlFlowSequenceReconciler()
+    blank_sequence = parse_sequence_document(
+        b"No project sequence language was supplied for this contract audit.",
+        "coverage-audit.txt",
+        "text/plain",
+    )
     per_template: dict[str, dict[str, Any]] = defaultdict(
         lambda: {
             "variant_count": 0,
@@ -51,6 +59,7 @@ def main() -> int:
     total_variants = 0
     point_contracts_proved = 0
     total_required_point_obligations = 0
+    scenario_contracts_proved = 0
     for template in library.catalog()["templates"]:
         template_id = template["id"]
         for field in library.schema(template_id)["fields"]:
@@ -81,6 +90,14 @@ def main() -> int:
                         "an exact generated point contract failed reconciliation: "
                         f"{reconciliation['blocking_issues']}"
                     )
+                sequence_reconciliation = sequence_reconciler.reconcile(
+                    brief,
+                    blank_sequence,
+                )
+                if sequence_reconciliation["coverage_rule_missing_count"]:
+                    raise RuntimeError(
+                        "a generated scenario has no deterministic sequence-coverage rule"
+                    )
                 required_points = brief["point_requirements"]["required_count"]
                 scenarios = brief["qualification_plan"]["scenario_count"]
                 stats = per_template[template_id]
@@ -102,6 +119,7 @@ def main() -> int:
                 total_variants += 1
                 point_contracts_proved += 1
                 total_required_point_obligations += required_points
+                scenario_contracts_proved += scenarios
 
     # The fan-position selectors form a reciprocal upstream dependency. Prove
     # that both request key orders produce the same valid blow-through design.
@@ -131,6 +149,7 @@ def main() -> int:
         "first_order_variant_count": total_variants,
         "point_contracts_proved": point_contracts_proved,
         "required_point_obligations_proved": total_required_point_obligations,
+        "sequence_scenario_contracts_proved": scenario_contracts_proved,
         "reciprocal_fan_dependency_orders_proved": 2,
         "templates": dict(sorted(per_template.items())),
         "complete_niagara_job_ready": False,

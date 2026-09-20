@@ -558,6 +558,28 @@ def create_app(
         except (IntakeError, ValueError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
+    @app.post("/api/library/ctrl-flow/templates/{template_id:path}/inspect-sequence")
+    async def inspect_ctrl_flow_sequence_file(
+        template_id: str,
+        sequence_document: Annotated[UploadFile, File()],
+        selections: Annotated[str, Form(max_length=50_000)] = "{}",
+    ) -> dict:
+        try:
+            parsed_selections = _form_json_object(selections, "ctrl-flow selections")
+            document = parse_sequence_document(
+                await sequence_document.read(),
+                sequence_document.filename or "sequence.txt",
+                sequence_document.content_type,
+            )
+            return ctrl_flow.reconcile_sequence(template_id, parsed_selections, document)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except CtrlFlowError as exc:
+            status = 404 if "unknown ctrl-flow template" in str(exc) else 422
+            raise HTTPException(status_code=status, detail=str(exc)) from exc
+        except (IntakeError, ValueError) as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
     @app.post("/api/library/g36/controllers/{controller_id}/translate")
     def translate_g36_controller(
         controller_id: str,

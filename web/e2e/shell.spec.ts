@@ -260,13 +260,21 @@ test('installed controls libraries and contractor environments are transparent',
       'true',
     ].join(',')),
   ].join('\n');
-  await page.locator('.ctrl-flow-upload input[type="file"]').setInputFiles({
+  await page.locator('.ctrl-flow-upload:not(.ctrl-flow-sequence-upload) input[type="file"]').setInputFiles({
     name: 'ahu-points.csv',
     mimeType: 'text/csv',
     buffer: Buffer.from(pointsCsv),
   });
   await page.getByRole('button', { name: 'Check points' }).click();
   await expect(page.getByText('Point contract satisfied')).toBeVisible({ timeout: 30_000 });
+  await page.locator('.ctrl-flow-sequence-upload input[type="file"]').setInputFiles({
+    name: 'thin-sequence.txt',
+    mimeType: 'text/plain',
+    buffer: Buffer.from('During occupied operation, the supply fan shall run.'),
+  });
+  await page.getByRole('button', { name: 'Check sequence' }).click();
+  await expect(page.getByText('Sequence gaps found')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText(/Phrase coverage only/)).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.goto('/next/environments');

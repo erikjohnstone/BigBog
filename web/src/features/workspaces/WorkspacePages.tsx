@@ -14,6 +14,7 @@ import {
   Cpu,
   FileArchive,
   FileSpreadsheet,
+  FileText,
   FlaskConical,
   Layers3,
   Library,
@@ -106,6 +107,7 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
   const [templateId, setTemplateId] = useState(() => stringValue(templates[0]?.id));
   const [selections, setSelections] = useState<Record<string, unknown>>({});
   const [pointsFile, setPointsFile] = useState<File | null>(null);
+  const [sequenceFile, setSequenceFile] = useState<File | null>(null);
   const configuration = useQuery({
     queryKey: ['ctrl-flow-configuration', templateId, selections],
     queryFn: () => api.ctrlFlowConfigure(templateId, selections),
@@ -117,17 +119,24 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
     if (!pointsFile) throw new Error('Choose a points CSV or XLSX file first.');
     return api.inspectCtrlFlowPoints(templateId, effectiveSelections, pointsFile);
   } });
+  const sequenceReconciliation = useMutation({ mutationFn: () => {
+    if (!sequenceFile) throw new Error('Choose a sequence document first.');
+    return api.inspectCtrlFlowSequence(templateId, effectiveSelections, sequenceFile);
+  } });
   const chooseTemplate = (value: string) => {
     setTemplateId(value);
     setSelections({});
     setPointsFile(null);
+    setSequenceFile(null);
     brief.reset();
     reconciliation.reset();
+    sequenceReconciliation.reset();
   };
   const chooseValue = (path: string, value: unknown) => {
     setSelections({ ...(configuration.data?.selections ?? selections), [path]: value });
     brief.reset();
     reconciliation.reset();
+    sequenceReconciliation.reset();
   };
   return <div className="ctrl-flow-configurator">
     <aside className="ctrl-flow-controls">
@@ -140,6 +149,7 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
       </div>
       <button className="ctrl-flow-primary" disabled={brief.isPending || configuration.isFetching} onClick={() => brief.mutate()} type="button">{brief.isPending ? 'Building engineering brief…' : 'Generate programming brief'}<ChevronRight size={15} /></button>
       <div className="ctrl-flow-upload"><FileSpreadsheet size={18} /><label><strong>{pointsFile?.name || 'Contractor points list'}</strong><small>CSV or XLSX · checked against this design</small><input accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={(event) => { setPointsFile(event.target.files?.[0] ?? null); reconciliation.reset(); }} type="file" /></label><button disabled={!pointsFile || reconciliation.isPending} onClick={() => reconciliation.mutate()} type="button">{reconciliation.isPending ? 'Checking…' : 'Check points'}</button></div>
+      <div className="ctrl-flow-upload ctrl-flow-sequence-upload"><FileText size={18} /><label><strong>{sequenceFile?.name || 'Sequence of operations'}</strong><small>TXT, MD, JSON, DOCX, or PDF · scenario coverage</small><input accept=".txt,.md,.json,.docx,.pdf,text/plain,text/markdown,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(event) => { setSequenceFile(event.target.files?.[0] ?? null); sequenceReconciliation.reset(); }} type="file" /></label><button disabled={!sequenceFile || sequenceReconciliation.isPending} onClick={() => sequenceReconciliation.mutate()} type="button">{sequenceReconciliation.isPending ? 'Checking…' : 'Check sequence'}</button></div>
     </aside>
     <section className="ctrl-flow-results">
       {!brief.data && !brief.isError && <div className="ctrl-flow-empty"><Network size={28} /><strong>Configure the physical system</strong><p>Generate a traceable component, point, controller, and qualification contract before any code is proposed.</p></div>}
@@ -153,6 +163,12 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
       </>}
       {reconciliation.data && <div className={`ctrl-flow-reconciliation ${reconciliation.data.ready_for_sequence_reconciliation ? 'ready' : 'blocked'}`}><header>{reconciliation.data.ready_for_sequence_reconciliation ? <CheckCircle2 size={18} /> : <CircleAlert size={18} />}<div><strong>{reconciliation.data.ready_for_sequence_reconciliation ? 'Point contract satisfied' : 'Point contract blocked'}</strong><span>{reconciliation.data.matched_requirement_count}/{reconciliation.data.required_point_count} required points matched · {reconciliation.data.blocking_issues.length} blocking issues</span></div></header>{reconciliation.data.missing_required.length > 0 && <p>Missing: {reconciliation.data.missing_required.join(' · ')}</p>}{reconciliation.data.unit_conversions.length > 0 && <p>{reconciliation.data.unit_conversions.length} explicit unit converter(s) required.</p>}</div>}
       {reconciliation.isError && <div className="ctrl-flow-reconciliation blocked"><header><CircleAlert size={18} /><div><strong>Points inspection stopped</strong><span>{reconciliation.error.message}</span></div></header></div>}
+      {sequenceReconciliation.data && <div className={`ctrl-flow-sequence-result ${sequenceReconciliation.data.language_coverage_complete ? 'ready' : 'blocked'}`}>
+        <header>{sequenceReconciliation.data.language_coverage_complete ? <CheckCircle2 size={18} /> : <CircleAlert size={18} />}<div><strong>{sequenceReconciliation.data.language_coverage_complete ? 'All required scenario facets mentioned' : 'Sequence gaps found'}</strong><span>{sequenceReconciliation.data.all_facets_mentioned_count}/{sequenceReconciliation.data.scenario_count} scenarios mention every required facet · {sequenceReconciliation.data.missing_facet_count} missing facets</span></div></header>
+        <p><b>{sequenceReconciliation.data.source_document.filename}</b> · Phrase coverage only. Semantic validation and engineer review are still required.</p>
+        <div aria-label="Sequence scenario coverage" className="ctrl-flow-sequence-matrix" tabIndex={0}>{sequenceReconciliation.data.scenarios.map((scenario) => <details key={scenario.id}><summary><span>{scenario.title}</span><b className={scenario.coverage_status}>{scenario.coverage_status.replaceAll('-', ' ')}</b></summary><div><small>{scenario.mentioned_facet_count}/{scenario.facet_count} facets mentioned</small>{scenario.missing_facets.length > 0 ? <p>Missing: {scenario.missing_facets.join(' · ')}</p> : <p>Every deterministic phrase facet has evidence; engineering meaning is not yet approved.</p>}</div></details>)}</div>
+      </div>}
+      {sequenceReconciliation.isError && <div className="ctrl-flow-sequence-result blocked"><header><CircleAlert size={18} /><div><strong>Sequence inspection stopped</strong><span>{sequenceReconciliation.error.message}</span></div></header></div>}
     </section>
   </div>;
 }

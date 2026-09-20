@@ -613,6 +613,48 @@ const ctrlFlowReconciliationSchema = z.object({
   complete_niagara_job_ready: z.boolean(),
 }).passthrough();
 
+const ctrlFlowSequenceReconciliationSchema = z.object({
+  schema: z.literal('bactalk.ctrl-flow-sequence-reconciliation/v1'),
+  source_document: z.object({
+    filename: z.string(),
+    media_type: z.string(),
+    sha256: z.string(),
+    character_count: z.number(),
+  }).passthrough(),
+  scenario_count: z.number(),
+  all_facets_mentioned_count: z.number(),
+  partial_count: z.number(),
+  not_mentioned_count: z.number(),
+  coverage_rule_missing_count: z.number(),
+  missing_facet_count: z.number(),
+  language_coverage_complete: z.boolean(),
+  scenarios: z.array(z.object({
+    id: z.string(),
+    title: z.string(),
+    level: z.string(),
+    coverage_status: z.enum(['all-facets-mentioned', 'partial', 'not-mentioned', 'coverage-rule-missing']),
+    facet_count: z.number(),
+    mentioned_facet_count: z.number(),
+    missing_facets: z.array(z.string()),
+    facets: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+      mentioned: z.boolean(),
+      evidence: z.array(z.object({
+        matched_text: z.string(),
+        start: z.number(),
+        end: z.number(),
+        excerpt: z.string(),
+      })),
+    })),
+  })),
+  gate: z.enum(['engineer-review-required', 'blocked-missing-or-partial-sequence-language']),
+  ready_for_code_generation: z.literal(false),
+  semantic_validation_complete: z.literal(false),
+  engineer_review_required: z.literal(true),
+  limitations: z.array(z.string()),
+}).passthrough();
+
 const graphicsModelSchema = z.object({
   schema: z.string(),
   equipment_name: z.string(),
@@ -853,6 +895,15 @@ export const api = {
     body.append('points_file', file);
     return ctrlFlowReconciliationSchema.parse(await postForm(
       `/api/library/ctrl-flow/templates/${encodeURIComponent(templateId)}/inspect-points`,
+      body,
+    ));
+  },
+  async inspectCtrlFlowSequence(templateId: string, selections: Record<string, unknown>, file: File) {
+    const body = new FormData();
+    body.append('selections', JSON.stringify(selections));
+    body.append('sequence_document', file);
+    return ctrlFlowSequenceReconciliationSchema.parse(await postForm(
+      `/api/library/ctrl-flow/templates/${encodeURIComponent(templateId)}/inspect-sequence`,
       body,
     ));
   },

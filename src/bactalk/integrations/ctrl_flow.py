@@ -8,8 +8,10 @@ from pathlib import Path
 from typing import Any
 
 from bactalk.domain import PointSpec
+from bactalk.intake import SequenceDocument
 from bactalk.integrations.ctrl_flow_planning import CtrlFlowProgrammingPlanner
 from bactalk.integrations.ctrl_flow_reconciliation import CtrlFlowPointReconciler
+from bactalk.integrations.ctrl_flow_sequence import CtrlFlowSequenceReconciler
 
 
 class CtrlFlowError(RuntimeError):
@@ -148,6 +150,17 @@ class CtrlFlowLibrary:
 
         brief = self.programming_brief(template_id, selections)
         return CtrlFlowPointReconciler().reconcile(brief, points)
+
+    def reconcile_sequence(
+        self,
+        template_id: str,
+        selections: dict[str, Any],
+        document: SequenceDocument,
+    ) -> dict[str, Any]:
+        """Triage contractor sequence language against every selected-system scenario."""
+
+        brief = self.programming_brief(template_id, selections)
+        return CtrlFlowSequenceReconciler().reconcile(brief, document)
 
     def _decorate_configuration(
         self,

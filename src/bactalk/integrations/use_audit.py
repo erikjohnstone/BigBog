@@ -61,7 +61,8 @@ _BINDINGS: dict[str, dict[str, str]] = {
             "GET /api/library/ctrl-flow/templates plus schema/configure endpoints; pinned "
             "Linkage Schema -> upstream conditional-option interpreter -> configuration digest "
             "-> exact controller, point, scenario, capability, and release-gate programming "
-            "brief -> fail-closed contractor point reconciliation"
+            "brief -> fail-closed contractor point reconciliation -> source-hashed sequence "
+            "facet coverage with excerpt evidence and mandatory engineer review"
         ),
         "proof": "make ctrl-flow-contract",
     },

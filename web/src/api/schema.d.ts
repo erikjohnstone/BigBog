@@ -211,6 +211,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/library/ctrl-flow/templates/{template_id}/inspect-sequence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Inspect Ctrl Flow Sequence File */
+        post: operations["inspect_ctrl_flow_sequence_file_api_library_ctrl_flow_templates__template_id__inspect_sequence_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/library/ctrl-flow/templates/{template_id}/programming-brief": {
         parameters: {
             query?: never;
@@ -1611,6 +1628,16 @@ export interface components {
              */
             selections: string;
         };
+        /** Body_inspect_ctrl_flow_sequence_file_api_library_ctrl_flow_templates__template_id__inspect_sequence_post */
+        Body_inspect_ctrl_flow_sequence_file_api_library_ctrl_flow_templates__template_id__inspect_sequence_post: {
+            /**
+             * Selections
+             * @default {}
+             */
+            selections: string;
+            /** Sequence Document */
+            sequence_document: string;
+        };
         /** BoptestActuatorBinding */
         BoptestActuatorBinding: {
             /** Activation Actuator */
@@ -2649,6 +2676,43 @@ export interface operations {
         requestBody: {
             content: {
                 "multipart/form-data": components["schemas"]["Body_inspect_ctrl_flow_points_file_api_library_ctrl_flow_templates__template_id__inspect_points_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    inspect_ctrl_flow_sequence_file_api_library_ctrl_flow_templates__template_id__inspect_sequence_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                template_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_inspect_ctrl_flow_sequence_file_api_library_ctrl_flow_templates__template_id__inspect_sequence_post"];
             };
         };
         responses: {

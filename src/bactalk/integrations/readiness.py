@@ -238,14 +238,15 @@ class IntegrationReadiness:
                     "Schema interpreter; the programming-brief API binds approved choices to "
                     "components, points, scenarios, exact G36 controllers, and release gates; "
                     "point reconciliation blocks missing, ambiguous, duplicate, mistyped, or "
-                    "unit-invalid contractor I/O"
+                    "unit-invalid contractor I/O; sequence reconciliation maps every selected "
+                    "scenario to deterministic facet evidence and exposes omitted language"
                 ),
                 evidence_command="make ctrl-flow-contract",
                 blocker=(
                     "The current upstream snapshot has three templates (multizone VAV AHU, "
                     "cooling-only VAV, and VAV reheat). The generated brief still requires the "
-                    "contractor sequence/point reconciliation, target completion, and licensed "
-                    "Niagara qualification."
+                    "phrase evidence to be converted into approved executable requirements, "
+                    "target completion, and licensed Niagara qualification."
                 ),
             ),
             _component(
