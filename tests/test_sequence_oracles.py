@@ -400,6 +400,29 @@ def test_oracle_approval_api_persists_and_retrieves_exact_gate(tmp_path: Path) -
     assert fetched.json()["result"]["oracle_digest"] == approved["oracle_digest"]
     listing = client.get("/api/sequence-oracle-approvals")
     assert listing.json()["approvals"][0]["id"] == approved["oracle_approval_id"]
+    preflight = client.post(
+        f"/api/sequence-oracle-approvals/{approved['oracle_approval_id']}/candidate-preflight",
+        json={
+            "oracle_artifact_digest": approved["retention"]["artifact_digest"],
+            "controller_parameters": {},
+            "point_bindings": {},
+        },
+    )
+    assert preflight.status_code == 200, preflight.text
+    preflight_payload = preflight.json()
+    assert preflight_payload["ready_for_candidate_generation"] is False
+    assert {item["code"] for item in preflight_payload["blockers"]} == {
+        "controller-parameters-missing",
+        "sequence-oracle-coverage-incomplete",
+    }
+    assert preflight_payload["translation"]["attempted"] is False
+    assert (
+        required_role(
+            "POST",
+            f"/api/sequence-oracle-approvals/{approved['oracle_approval_id']}/candidate-preflight",
+        )
+        is Role.PROGRAMMER
+    )
 
 
 def test_retained_oracle_detects_manifest_tampering(tmp_path: Path) -> None:

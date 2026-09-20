@@ -1310,6 +1310,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sequence-oracle-approvals/{approval_id}/candidate-preflight": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Preflight Sequence Candidate */
+        post: operations["preflight_sequence_candidate_api_sequence_oracle_approvals__approval_id__candidate_preflight_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sequence-requirement-reviews": {
         parameters: {
             query?: never;
@@ -2392,6 +2409,25 @@ export interface components {
             timezone: string;
             /** Weekly Periods */
             weekly_periods?: components["schemas"]["WeeklySchedulePeriod"][];
+        };
+        /** SequenceCandidatePreflightRequest */
+        SequenceCandidatePreflightRequest: {
+            /** Controller Parameters */
+            controller_parameters?: {
+                [key: string]: unknown;
+            };
+            /**
+             * Execution Profile
+             * @default modelica_exact
+             * @enum {string}
+             */
+            execution_profile: "modelica_exact" | "host_tick_v1";
+            /** Oracle Artifact Digest */
+            oracle_artifact_digest: string;
+            /** Point Bindings */
+            point_bindings?: {
+                [key: string]: string;
+            };
         };
         /**
          * SequenceFacetOracleAuthoring
@@ -5040,6 +5076,43 @@ export interface operations {
             cookie?: never;
         };
         requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preflight_sequence_candidate_api_sequence_oracle_approvals__approval_id__candidate_preflight_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                approval_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SequenceCandidatePreflightRequest"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
