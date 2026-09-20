@@ -34,6 +34,8 @@ def test_real_udp_scale_runner_reads_writes_and_recovers(tmp_path: Path) -> None
         analog_outputs_per_device=1,
         binary_outputs_per_device=1,
         poll_rounds=2,
+        cov_subscriptions=3,
+        cov_burst_rounds=2,
         concurrency=2,
         base_port=_free_udp_range(4),
         request_timeout_seconds=2.0,
@@ -47,6 +49,8 @@ def test_real_udp_scale_runner_reads_writes_and_recovers(tmp_path: Path) -> None
     assert evidence["results"]["read_requests_passed"] == 6
     assert evidence["results"]["properties_read"] == 30
     assert evidence["results"]["writes_verified"] == 3
+    assert evidence["results"]["cov_subscriptions_verified"] == 3
+    assert evidence["results"]["cov_notifications_verified"] == 6
     assert evidence["results"]["outage_detected"] is True
     assert evidence["results"]["recovery_verified"] is True
     assert not evidence["errors"]

@@ -19,6 +19,8 @@ def main() -> None:
     parser.add_argument("--analog-outputs", type=int, default=1)
     parser.add_argument("--binary-outputs", type=int, default=1)
     parser.add_argument("--poll-rounds", type=int, default=2)
+    parser.add_argument("--cov-subscriptions", type=int, default=None)
+    parser.add_argument("--cov-burst-rounds", type=int, default=2)
     parser.add_argument("--concurrency", type=int, default=50)
     parser.add_argument("--base-port", type=int, default=40_000)
     parser.add_argument("--request-timeout", type=float, default=3.0)
@@ -41,6 +43,8 @@ def main() -> None:
         analog_outputs_per_device=arguments.analog_outputs,
         binary_outputs_per_device=arguments.binary_outputs,
         poll_rounds=arguments.poll_rounds,
+        cov_subscriptions=arguments.cov_subscriptions,
+        cov_burst_rounds=arguments.cov_burst_rounds,
         concurrency=arguments.concurrency,
         base_port=arguments.base_port,
         request_timeout_seconds=arguments.request_timeout,

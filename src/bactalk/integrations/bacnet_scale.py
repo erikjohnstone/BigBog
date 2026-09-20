@@ -26,6 +26,8 @@ class BacnetScaleProfile:
     analog_outputs_per_device: int = 1
     binary_outputs_per_device: int = 1
     poll_rounds: int = 2
+    cov_subscriptions: int | None = None
+    cov_burst_rounds: int = 2
     concurrency: int = 50
     base_port: int = 40_000
     request_timeout_seconds: float = 3.0
@@ -48,6 +50,12 @@ class BacnetScaleProfile:
             raise ValueError("at least one analog output is required for write qualification")
         if not 1 <= self.poll_rounds <= 100_000:
             raise ValueError("poll_rounds must be from 1 through 100000")
+        if self.cov_subscriptions is not None and not 0 <= self.cov_subscriptions <= self.devices:
+            raise ValueError("cov_subscriptions must be from 0 through devices")
+        if not 1 <= self.cov_burst_rounds <= 10_000:
+            raise ValueError("cov_burst_rounds must be from 1 through 10000")
+        if self.cov_subscription_count and self.analog_inputs_per_device < 1:
+            raise ValueError("COV qualification requires at least one analog input per device")
         if not 1 <= self.concurrency <= 10_000:
             raise ValueError("concurrency must be from 1 through 10000")
         if self.base_port < 1024 or self.base_port + self.devices > 65_534:
@@ -71,6 +79,12 @@ class BacnetScaleProfile:
     @property
     def total_points(self) -> int:
         return self.devices * self.points_per_device
+
+    @property
+    def cov_subscription_count(self) -> int:
+        if self.cov_subscriptions is None:
+            return min(self.devices, 100)
+        return self.cov_subscriptions
 
 
 def _percentile(values: list[float], percentile: float) -> float | None:
@@ -222,10 +236,14 @@ class BacnetScaleRunner:
         discovery_latencies: list[float] = []
         read_latencies: list[float] = []
         write_latencies: list[float] = []
+        cov_setup_latencies: list[float] = []
+        cov_notification_latencies: list[float] = []
         discovered = 0
         read_requests = 0
         properties_read = 0
         writes_verified = 0
+        cov_subscriptions_verified = 0
+        cov_notifications_verified = 0
         outage_detected = False
         recovery_verified = False
         devices_started = 0
@@ -369,6 +387,103 @@ class BacnetScaleRunner:
             write_results = await self._bounded_map(write_device, manifest.devices)
             writes_verified = sum(bool(result) for result in write_results)
 
+            cov_contexts: list[tuple[int, Any]] = []
+            cov_summaries = manifest.devices[: self.profile.cov_subscription_count]
+
+            async def subscribe_cov(summary: dict[str, Any]) -> tuple[int, Any] | None:
+                from bacpypes3.primitivedata import ObjectIdentifier
+
+                device_instance = int(summary["device_instance"])
+                request_started = time.perf_counter()
+                context = client.change_of_value(
+                    Address(str(summary["network_address"])),
+                    ObjectIdentifier("analogInput,1"),
+                    lifetime=60,
+                )
+                try:
+                    subscription = await asyncio.wait_for(
+                        context.__aenter__(),
+                        timeout=self.profile.request_timeout_seconds,
+                    )
+                    return device_instance, subscription
+                except Exception as exc:
+                    failure("cov_subscribe", device_instance, exc)
+                    return None
+                finally:
+                    cov_setup_latencies.append(time.perf_counter() - request_started)
+
+            async def next_cov_value(
+                item: tuple[int, Any],
+                *,
+                stage: str,
+                expected: float,
+            ) -> bool:
+                device_instance, subscription = item
+                request_started = time.perf_counter()
+
+                async def consume() -> Any:
+                    while True:
+                        prop, value = await subscription.get_value()
+                        if str(prop) == "present-value":
+                            return value
+
+                try:
+                    observed = await asyncio.wait_for(
+                        consume(),
+                        timeout=self.profile.request_timeout_seconds,
+                    )
+                    if not math.isclose(float(observed), expected, abs_tol=1e-6):
+                        raise ValueError(f"COV value was {observed}; expected {expected}")
+                    return True
+                except Exception as exc:
+                    failure(stage, device_instance, exc)
+                    return False
+                finally:
+                    cov_notification_latencies.append(time.perf_counter() - request_started)
+
+            if cov_summaries:
+                entered = await self._bounded_map(subscribe_cov, cov_summaries)
+                cov_contexts = [item for item in entered if item is not None]
+                initial_results = await self._bounded_map(
+                    lambda item: next_cov_value(item, stage="cov_initial", expected=70.0),
+                    cov_contexts,
+                )
+                cov_subscriptions_verified = sum(bool(result) for result in initial_results)
+                try:
+                    for round_index in range(1, self.profile.cov_burst_rounds + 1):
+                        expected = 70.0 + round_index
+                        for device_instance, _subscription in cov_contexts:
+                            lab.set_object_present_value(
+                                device_instance,
+                                "analog-input,1",
+                                expected,
+                            )
+                        notification_results = await self._bounded_map(
+                            lambda item, current_round=round_index, current_expected=expected: (
+                                next_cov_value(
+                                    item,
+                                    stage=f"cov_burst_{current_round}",
+                                    expected=current_expected,
+                                )
+                            ),
+                            cov_contexts,
+                        )
+                        cov_notifications_verified += sum(
+                            bool(result) for result in notification_results
+                        )
+                finally:
+                    async def unsubscribe(item: tuple[int, Any]) -> None:
+                        device_instance, subscription = item
+                        try:
+                            await asyncio.wait_for(
+                                subscription.__aexit__(None, None, None),
+                                timeout=self.profile.request_timeout_seconds,
+                            )
+                        except Exception as exc:
+                            failure("cov_unsubscribe", device_instance, exc)
+
+                    await self._bounded_map(unsubscribe, cov_contexts)
+
             fault_device = int(manifest.devices[0]["device_instance"])
             fault_address = str(manifest.devices[0]["network_address"])
             lab.stop_device(fault_device)
@@ -405,12 +520,17 @@ class BacnetScaleRunner:
         wall_seconds = time.perf_counter() - started
         cpu_seconds = time.process_time() - cpu_started
         expected_reads = self.profile.devices * self.profile.poll_rounds
+        expected_cov_notifications = (
+            self.profile.cov_subscription_count * self.profile.cov_burst_rounds
+        )
         passed = (
             not errors
             and discovered == self.profile.devices
             and read_requests == expected_reads
             and properties_read == expected_reads * self.profile.points_per_device
             and writes_verified == self.profile.devices
+            and cov_subscriptions_verified == self.profile.cov_subscription_count
+            and cov_notifications_verified == expected_cov_notifications
             and outage_detected
             and recovery_verified
         )
@@ -428,12 +548,14 @@ class BacnetScaleRunner:
                 "targeted Who-Is/I-Am identity verification",
                 "ReadPropertyMultiple polling",
                 "priority-8 writes with present-value readback",
+                "confirmed COV subscriptions and burst notifications",
                 "single-device outage detection and restart recovery",
             ],
             "not_proven": [
                 "broadcast discovery across routed BACnet networks",
                 "BBMD, foreign-device, or BACnet/SC behavior",
-                "COV storm, alarm, or history throughput",
+                "COV load beyond the configured subscription/burst profile",
+                "alarm or history throughput",
                 "MS/TP token, baud, router, or electrical behavior",
                 "licensed Niagara runtime capacity",
                 "physical controller or field-equipment capacity",
@@ -444,6 +566,8 @@ class BacnetScaleRunner:
                 "points_per_device": self.profile.points_per_device,
                 "total_points": self.profile.total_points,
                 "poll_rounds": self.profile.poll_rounds,
+                "cov_subscriptions": self.profile.cov_subscription_count,
+                "cov_burst_rounds": self.profile.cov_burst_rounds,
                 "concurrency": self.profile.concurrency,
                 "base_port": self.profile.base_port,
                 "request_timeout_seconds": self.profile.request_timeout_seconds,
@@ -471,6 +595,10 @@ class BacnetScaleRunner:
                 "properties_read": properties_read,
                 "writes_expected": self.profile.devices,
                 "writes_verified": writes_verified,
+                "cov_subscriptions_expected": self.profile.cov_subscription_count,
+                "cov_subscriptions_verified": cov_subscriptions_verified,
+                "cov_notifications_expected": expected_cov_notifications,
+                "cov_notifications_verified": cov_notifications_verified,
                 "outage_detected": outage_detected,
                 "recovery_verified": recovery_verified,
                 "request_throughput_per_second": (
@@ -482,6 +610,8 @@ class BacnetScaleRunner:
                 "targeted_discovery": _latency_summary(discovery_latencies),
                 "read_property_multiple": _latency_summary(read_latencies),
                 "priority_write_and_readback": _latency_summary(write_latencies),
+                "cov_subscription_setup": _latency_summary(cov_setup_latencies),
+                "cov_notification": _latency_summary(cov_notification_latencies),
             },
             "errors": errors,
         }

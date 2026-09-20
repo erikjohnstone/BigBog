@@ -881,6 +881,19 @@ class VirtualBacnetLab:
             return str(value) == "active"
         return float(value)
 
+    def set_object_present_value(
+        self,
+        device_instance: int,
+        object_identifier: str,
+        value: float | bool,
+    ) -> None:
+        """Inject a physical value by exact device/object identity for lab tooling."""
+
+        obj = self.objects.get((device_instance, object_identifier))
+        if obj is None:
+            raise KeyError((device_instance, object_identifier))
+        obj.presentValue = "active" if value is True else "inactive" if value is False else value
+
     @staticmethod
     def _expectation_passes(observed: float | bool, expectation: dict[str, Any]) -> bool:
         operator = ComparisonOperator(expectation["operator"])
