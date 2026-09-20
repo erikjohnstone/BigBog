@@ -650,6 +650,7 @@ const ctrlFlowSequenceReconciliationSchema = z.object({
   })),
   requirement_candidates: z.object({
     schema: z.literal('bactalk.sequence-requirement-candidates/v1'),
+    candidate_digest: z.string(),
     quantity_count: z.number(),
     duration_count: z.number(),
     threshold_count: z.number(),
@@ -657,6 +658,13 @@ const ctrlFlowSequenceReconciliationSchema = z.object({
     policy_count: z.number(),
     unresolved_count: z.number(),
     single_candidate_binding_count: z.number(),
+    available_review_points: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+      role: z.string(),
+      data_type: z.string(),
+      units: z.string().nullable(),
+    })),
     quantities: z.array(z.object({
       id: z.string(),
       kind: z.string(),
@@ -704,6 +712,36 @@ const ctrlFlowSequenceReconciliationSchema = z.object({
   semantic_validation_complete: z.literal(false),
   engineer_review_required: z.literal(true),
   limitations: z.array(z.string()),
+}).passthrough();
+
+const ctrlFlowSequenceReviewSchema = z.object({
+  schema: z.literal('bactalk.sequence-requirement-review/v1'),
+  candidate_digest: z.string(),
+  review_digest: z.string(),
+  configuration_digest: z.string(),
+  source_sha256: z.string(),
+  review: z.object({
+    reviewer: z.string(),
+    authentication: z.string(),
+    reviewed_at: z.string(),
+    decision_count: z.number(),
+    decisions: z.array(z.record(z.string(), z.unknown())),
+  }).passthrough(),
+  oracle_draft_count: z.number(),
+  oracle_drafts: z.array(z.object({
+    id: z.string(),
+    conditions: z.array(z.record(z.string(), z.unknown())),
+    durations: z.array(z.record(z.string(), z.unknown())),
+    expectations: z.array(z.record(z.string(), z.unknown())),
+    status: z.literal('draft-independent-oracle-required'),
+    executable: z.literal(false),
+  }).passthrough()),
+  skipped_relationships: z.array(z.record(z.string(), z.unknown())),
+  blockers: z.array(z.string()),
+  ready_for_independent_oracle_authoring: z.boolean(),
+  ready_for_graph_generation: z.literal(false),
+  ready_for_deployment: z.literal(false),
+  next_gate: z.string(),
 }).passthrough();
 
 const graphicsModelSchema = z.object({
@@ -955,6 +993,16 @@ export const api = {
     body.append('sequence_document', file);
     return ctrlFlowSequenceReconciliationSchema.parse(await postForm(
       `/api/library/ctrl-flow/templates/${encodeURIComponent(templateId)}/inspect-sequence`,
+      body,
+    ));
+  },
+  async approveCtrlFlowSequenceRequirements(templateId: string, selections: Record<string, unknown>, file: File, review: Record<string, unknown>) {
+    const body = new FormData();
+    body.append('selections', JSON.stringify(selections));
+    body.append('review', JSON.stringify(review));
+    body.append('sequence_document', file);
+    return ctrlFlowSequenceReviewSchema.parse(await postForm(
+      `/api/library/ctrl-flow/templates/${encodeURIComponent(templateId)}/review-requirements/approve`,
       body,
     ));
   },

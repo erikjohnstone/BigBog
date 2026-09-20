@@ -63,7 +63,8 @@ _BINDINGS: dict[str, dict[str, str]] = {
             "-> exact controller, point, scenario, capability, and release-gate programming "
             "brief -> fail-closed contractor point reconciliation -> source-hashed sequence "
             "facet coverage with excerpt evidence -> unapproved temporal/math/action candidates "
-            "with ambiguity retention and mandatory engineer review"
+            "with ambiguity retention -> approver-only exhaustive review -> source-bound, "
+            "non-executable oracle drafts"
         ),
         "proof": "make ctrl-flow-contract",
     },

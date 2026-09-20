@@ -277,6 +277,27 @@ test('installed controls libraries and contractor environments are transparent',
   await expect(page.getByText(/Phrase coverage only/)).toBeVisible();
   await expect(page.getByText('Structured requirement candidates')).toBeVisible();
   await expect(page.getByText('Unapproved · never executable from text alone')).toBeVisible();
+  const reviewableSequence = [
+    'If mixed-air temperature falls below 38 °F for 5 minutes, close the outdoor-air damper.',
+    'If duct static pressure exceeds 1.5 in. w.c. for 10 seconds, stop the supply fan.',
+  ].join('\n');
+  await page.locator('.ctrl-flow-sequence-upload input[type="file"]').setInputFiles({
+    name: 'reviewable-sequence.txt',
+    mimeType: 'text/plain',
+    buffer: Buffer.from(reviewableSequence),
+  });
+  await page.getByRole('button', { name: 'Check sequence' }).click();
+  await expect(page.getByText('Engineer requirement review')).toBeVisible({ timeout: 30_000 });
+  await page.getByLabel('Requirement reviewer').fill('E2E Controls Engineer');
+  const reviewCards = page.locator('.ctrl-flow-review-list article');
+  await expect(reviewCards).toHaveCount(6);
+  for (let index = 0; index < 6; index += 1) {
+    await reviewCards.nth(index).locator('select').first().selectOption('approve');
+  }
+  await reviewCards.filter({ hasText: 'stop supply fan' }).locator('select').nth(1).selectOption('SupplyFanCommand');
+  await page.getByRole('button', { name: 'Submit 6 decisions' }).click();
+  await expect(page.getByText('2 oracle drafts ready for independent authoring')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText(/graph generation remains disabled/)).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.goto('/next/environments');

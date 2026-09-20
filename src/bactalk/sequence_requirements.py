@@ -1,10 +1,52 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import re
-from typing import Any
+from datetime import UTC, datetime
+from typing import Any, Literal
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from bactalk.intake import SequenceDocument
+
+
+class SequenceCandidateDecision(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    candidate_id: str = Field(pattern=r"^seqreq-[0-9a-f]{16}$")
+    disposition: Literal["approve", "reject", "resolve"]
+    selected_point: str | None = Field(
+        default=None,
+        pattern=r"^[A-Za-z_][A-Za-z0-9_]*$",
+    )
+    replacement_text: str | None = Field(default=None, min_length=1, max_length=2_000)
+    note: str | None = Field(default=None, min_length=2, max_length=2_000)
+
+    @model_validator(mode="after")
+    def disposition_fields_are_coherent(self) -> SequenceCandidateDecision:
+        if self.disposition == "resolve" and self.replacement_text is None:
+            raise ValueError("resolve decisions require replacement_text")
+        if self.disposition == "reject" and self.note is None:
+            raise ValueError("reject decisions require an engineering note")
+        if self.disposition != "resolve" and self.replacement_text is not None:
+            raise ValueError("replacement_text is only valid for resolve decisions")
+        return self
+
+
+class SequenceRequirementReviewRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    candidate_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+    reviewer: str | None = Field(default=None, min_length=2, max_length=120)
+    decisions: list[SequenceCandidateDecision] = Field(min_length=1, max_length=10_000)
+
+    @model_validator(mode="after")
+    def candidate_decisions_are_unique(self) -> SequenceRequirementReviewRequest:
+        candidate_ids = [decision.candidate_id for decision in self.decisions]
+        if len(candidate_ids) != len(set(candidate_ids)):
+            raise ValueError("sequence requirement decisions contain duplicate candidate IDs")
+        return self
 
 _QUANTITY = re.compile(
     r"(?<![\w.])(?P<value>[+-]?\d+(?:,\d{3})*(?:\.\d+)?)\s*"
@@ -566,7 +608,7 @@ def extract_sequence_requirement_candidates(
     bound_action_count = sum(
         item["point_binding_status"] == "single-candidate" for item in actions
     )
-    return {
+    result = {
         "schema": "bactalk.sequence-requirement-candidates/v1",
         "source_sha256": document.sha256,
         "quantity_count": len(quantities),
@@ -577,6 +619,16 @@ def extract_sequence_requirement_candidates(
         "unresolved_count": len(unresolved),
         "relationship_count": len(relationships),
         "single_candidate_binding_count": bound_quantity_count + bound_action_count,
+        "available_review_points": [
+            {
+                "id": point["id"],
+                "label": point["label"],
+                "role": point["role"],
+                "data_type": point["data_type"],
+                "units": point.get("units"),
+            }
+            for point in programming_brief["point_requirements"]["points"]
+        ],
         "quantities": quantities,
         "actions": actions,
         "policies": policies,
@@ -588,4 +640,341 @@ def extract_sequence_requirement_candidates(
             "Resolve every ambiguous/unbound point, vague phrase, condition, and action order; "
             "then approve the normalized requirements and generate independent test oracles."
         ),
+    }
+    result["candidate_digest"] = hashlib.sha256(
+        json.dumps(result, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    return result
+
+
+def _reviewable_candidates(candidates: dict[str, Any]) -> dict[str, tuple[str, dict[str, Any]]]:
+    return {
+        item["id"]: (group, item)
+        for group in ("quantities", "actions", "policies", "unresolved")
+        for item in candidates[group]
+    }
+
+
+def _point_role_allowed(group: str, item: dict[str, Any], role: str) -> bool:
+    if group == "actions":
+        return role in {"command", "alarm"}
+    if group == "quantities" and item["kind"] in {"threshold", "parameter"}:
+        return role in {"sensor", "status", "setpoint"}
+    return True
+
+
+def _resolve_point(
+    group: str,
+    item: dict[str, Any],
+    decision: SequenceCandidateDecision,
+    point_by_id: dict[str, dict[str, Any]],
+) -> tuple[str | None, str | None]:
+    candidate_field = "point_candidates" if group == "actions" else "input_point_candidates"
+    point_candidates = item.get(candidate_field, [])
+    selected = decision.selected_point
+    if selected is not None:
+        point = point_by_id.get(selected)
+        if point is None:
+            return None, f"{item['id']} selected unknown design point {selected}"
+        if not _point_role_allowed(group, item, point["role"]):
+            return (
+                None,
+                f"{item['id']} selected {selected} with incompatible role {point['role']}",
+            )
+        if point_candidates and selected not in point_candidates:
+            return (
+                None,
+                f"{item['id']} selected {selected} outside its audited point candidates",
+            )
+        return selected, None
+    if len(point_candidates) == 1:
+        return point_candidates[0], None
+    if len(point_candidates) > 1:
+        return None, f"{item['id']} requires one explicit selected_point"
+    return None, f"{item['id']} has no point binding"
+
+
+def _expected_action_value(
+    action: dict[str, Any],
+    point: dict[str, Any],
+    command_value: dict[str, Any] | None,
+) -> tuple[float | bool | None, str | None]:
+    verb = action["verb"]
+    numeric = point["data_type"] == "numeric"
+    if verb in {"stop", "disable", "close", "de-energize", "reset"}:
+        return (0.0 if numeric else False), None
+    if verb in {"start", "restart", "enable", "open", "energize", "latch"}:
+        return (100.0 if numeric else True), None
+    if verb in {"limit", "modulate", "command"}:
+        if command_value is None:
+            return None, f"{action['id']} requires an approved numeric command value"
+        value = float(command_value["canonical"]["value"])
+        if not numeric:
+            if value not in {0.0, 100.0}:
+                return None, f"{action['id']} cannot apply {value}% to a Boolean point"
+            return value == 100.0, None
+        return value, None
+    return None, f"{action['id']} uses unsupported action verb {verb}"
+
+
+def compile_sequence_requirement_review(
+    programming_brief: dict[str, Any],
+    reconciliation: dict[str, Any],
+    request: SequenceRequirementReviewRequest,
+    *,
+    reviewer: str,
+    actor_id: str | None,
+    tenant_id: str | None,
+    authentication: str,
+) -> dict[str, Any]:
+    """Validate exhaustive human decisions and emit non-executable oracle drafts."""
+
+    candidates = reconciliation["requirement_candidates"]
+    if request.candidate_digest != candidates["candidate_digest"]:
+        raise ValueError("sequence candidate digest changed; inspect the source again")
+    reviewable = _reviewable_candidates(candidates)
+    decisions = {decision.candidate_id: decision for decision in request.decisions}
+    unknown = sorted(set(decisions) - set(reviewable))
+    missing = sorted(set(reviewable) - set(decisions))
+    if unknown:
+        raise ValueError(f"sequence review contains unknown candidate IDs: {', '.join(unknown)}")
+    if missing:
+        raise ValueError(
+            "sequence review must decide every candidate; missing: " + ", ".join(missing)
+        )
+
+    point_by_id = {
+        point["id"]: point for point in programming_brief["point_requirements"]["points"]
+    }
+    reviewed: list[dict[str, Any]] = []
+    blockers: list[str] = []
+    approved_items: dict[str, dict[str, Any]] = {}
+    for candidate_id in sorted(reviewable):
+        group, item = reviewable[candidate_id]
+        decision = decisions[candidate_id]
+        if group == "unresolved":
+            if decision.disposition != "resolve":
+                blockers.append(f"{candidate_id} vague language must be resolved, not accepted")
+            else:
+                blockers.append(
+                    f"{candidate_id} resolution requires a revised source document and reinspection"
+                )
+            reviewed.append(
+                {
+                    "candidate_id": candidate_id,
+                    "group": group,
+                    **decision.model_dump(mode="json"),
+                    "effective_point": None,
+                }
+            )
+            continue
+        if decision.disposition == "resolve":
+            blockers.append(f"{candidate_id} is structured and cannot use resolve disposition")
+            effective_point = None
+        elif decision.disposition == "reject":
+            effective_point = None
+        else:
+            needs_point = group == "actions" or (
+                group == "quantities" and item["kind"] in {"threshold", "parameter"}
+            )
+            if needs_point:
+                effective_point, point_error = _resolve_point(
+                    group,
+                    item,
+                    decision,
+                    point_by_id,
+                )
+                if point_error is not None:
+                    blockers.append(point_error)
+            else:
+                effective_point = None
+                if decision.selected_point is not None:
+                    blockers.append(f"{candidate_id} does not accept a selected_point")
+            approved_items[candidate_id] = {
+                **item,
+                "effective_point": effective_point,
+            }
+        reviewed.append(
+            {
+                "candidate_id": candidate_id,
+                "group": group,
+                **decision.model_dump(mode="json"),
+                "effective_point": effective_point,
+            }
+        )
+
+    oracle_drafts: list[dict[str, Any]] = []
+    skipped_relationships: list[dict[str, Any]] = []
+    for relationship in candidates["relationships"]:
+        if relationship["shape"] != "numeric-condition-to-actions":
+            skipped_relationships.append(
+                {
+                    "relationship_id": relationship["id"],
+                    "reason": "relationship is not a numeric condition with observable actions",
+                }
+            )
+            continue
+        required_ids = (
+            relationship["threshold_candidate_ids"]
+            + relationship["duration_candidate_ids"]
+            + relationship["action_candidate_ids"]
+            + relationship["command_value_candidate_ids"]
+            + relationship["policy_candidate_ids"]
+            + relationship["unresolved_candidate_ids"]
+        )
+        rejected = [
+            candidate_id
+            for candidate_id in required_ids
+            if decisions[candidate_id].disposition != "approve"
+        ]
+        if rejected:
+            message = (
+                f"{relationship['id']} has rejected or unresolved candidates: "
+                + ", ".join(rejected)
+            )
+            blockers.append(message)
+            skipped_relationships.append(
+                {"relationship_id": relationship["id"], "reason": message}
+            )
+            continue
+
+        conditions = []
+        relation_blockers: list[str] = []
+        for candidate_id in relationship["threshold_candidate_ids"]:
+            item = approved_items[candidate_id]
+            point_id = item.get("effective_point")
+            if point_id is None:
+                relation_blockers.append(f"{candidate_id} has no approved condition point")
+                continue
+            point = point_by_id[point_id]
+            conditions.append(
+                {
+                    "point": point_id,
+                    "operator": item["comparison"],
+                    "value": item["canonical"]["value"],
+                    "unit": item["canonical"]["unit"],
+                    "point_unit": point.get("units"),
+                    "unit_conversion_required": (
+                        point.get("units") is not None
+                        and point.get("units") != item["canonical"]["unit"]
+                    ),
+                    "candidate_id": candidate_id,
+                }
+            )
+        durations = [
+            {
+                "seconds": approved_items[candidate_id]["canonical"]["value"],
+                "relation": approved_items[candidate_id]["timing_relation"],
+                "condition_candidate_id": approved_items[candidate_id].get(
+                    "condition_quantity_candidate_id"
+                ),
+                "candidate_id": candidate_id,
+            }
+            for candidate_id in relationship["duration_candidate_ids"]
+        ]
+        expectations = []
+        for action_id in relationship["action_candidate_ids"]:
+            action = approved_items[action_id]
+            point_id = action.get("effective_point")
+            if point_id is None:
+                relation_blockers.append(f"{action_id} has no approved action point")
+                continue
+            command_value = next(
+                (
+                    approved_items[candidate_id]
+                    for candidate_id in relationship["command_value_candidate_ids"]
+                    if approved_items[candidate_id].get("action_candidate_id") == action_id
+                ),
+                None,
+            )
+            value, action_error = _expected_action_value(
+                action,
+                point_by_id[point_id],
+                command_value,
+            )
+            if action_error is not None:
+                relation_blockers.append(action_error)
+                continue
+            expectations.append(
+                {
+                    "point": point_id,
+                    "operator": "eq",
+                    "value": value,
+                    "verb": action["verb"],
+                    "action_candidate_id": action_id,
+                    "command_value_candidate_id": (
+                        command_value["id"] if command_value is not None else None
+                    ),
+                }
+            )
+        if relation_blockers or not conditions or not expectations:
+            blockers.extend(relation_blockers)
+            skipped_relationships.append(
+                {
+                    "relationship_id": relationship["id"],
+                    "reason": "; ".join(relation_blockers)
+                    or "condition or expectation set is empty",
+                }
+            )
+            continue
+        oracle_drafts.append(
+            {
+                "id": f"oracle-{relationship['id'].removeprefix('seqreq-')}",
+                "relationship_id": relationship["id"],
+                "conditions": conditions,
+                "durations": durations,
+                "expectations": expectations,
+                "policies": [
+                    approved_items[candidate_id]["policy"]
+                    for candidate_id in relationship["policy_candidate_ids"]
+                ],
+                "source": relationship["source"],
+                "status": "draft-independent-oracle-required",
+                "executable": False,
+            }
+        )
+
+    review_payload = {
+        "candidate_digest": candidates["candidate_digest"],
+        "configuration_digest": reconciliation["configuration_digest"],
+        "reviewer": reviewer,
+        "actor_id": actor_id,
+        "tenant_id": tenant_id,
+        "authentication": authentication,
+        "decisions": [decision.model_dump(mode="json") for decision in request.decisions],
+    }
+    review_digest = hashlib.sha256(
+        json.dumps(review_payload, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+    return {
+        "schema": "bactalk.sequence-requirement-review/v1",
+        "candidate_digest": candidates["candidate_digest"],
+        "review_digest": review_digest,
+        "configuration_digest": reconciliation["configuration_digest"],
+        "source_sha256": candidates["source_sha256"],
+        "review": {
+            "reviewer": reviewer,
+            "actor_id": actor_id,
+            "tenant_id": tenant_id,
+            "authentication": authentication,
+            "reviewed_at": datetime.now(UTC).isoformat(),
+            "decision_count": len(reviewed),
+            "decisions": reviewed,
+        },
+        "oracle_draft_count": len(oracle_drafts),
+        "oracle_drafts": oracle_drafts,
+        "skipped_relationships": skipped_relationships,
+        "blockers": sorted(set(blockers)),
+        "ready_for_independent_oracle_authoring": bool(oracle_drafts) and not blockers,
+        "ready_for_graph_generation": False,
+        "ready_for_deployment": False,
+        "next_gate": (
+            "An engineer must turn each draft into an independent acceptance trajectory, "
+            "approve that immutable oracle, and only then permit graph generation."
+        ),
+        "safety": {
+            "live_writes_enabled": False,
+            "text_approval_authorizes_deployment": False,
+            "independent_test_oracle_required": True,
+        },
     }

@@ -12,6 +12,10 @@ from bactalk.intake import SequenceDocument
 from bactalk.integrations.ctrl_flow_planning import CtrlFlowProgrammingPlanner
 from bactalk.integrations.ctrl_flow_reconciliation import CtrlFlowPointReconciler
 from bactalk.integrations.ctrl_flow_sequence import CtrlFlowSequenceReconciler
+from bactalk.sequence_requirements import (
+    SequenceRequirementReviewRequest,
+    compile_sequence_requirement_review,
+)
 
 
 class CtrlFlowError(RuntimeError):
@@ -161,6 +165,32 @@ class CtrlFlowLibrary:
 
         brief = self.programming_brief(template_id, selections)
         return CtrlFlowSequenceReconciler().reconcile(brief, document)
+
+    def review_sequence_requirements(
+        self,
+        template_id: str,
+        selections: dict[str, Any],
+        document: SequenceDocument,
+        request: SequenceRequirementReviewRequest,
+        *,
+        reviewer: str,
+        actor_id: str | None,
+        tenant_id: str | None,
+        authentication: str,
+    ) -> dict[str, Any]:
+        """Re-derive and review every sequence candidate against immutable source evidence."""
+
+        brief = self.programming_brief(template_id, selections)
+        reconciliation = CtrlFlowSequenceReconciler().reconcile(brief, document)
+        return compile_sequence_requirement_review(
+            brief,
+            reconciliation,
+            request,
+            reviewer=reviewer,
+            actor_id=actor_id,
+            tenant_id=tenant_id,
+            authentication=authentication,
+        )
 
     def _decorate_configuration(
         self,

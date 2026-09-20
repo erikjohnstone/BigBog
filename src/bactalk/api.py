@@ -83,6 +83,7 @@ from bactalk.projects import (
 )
 from bactalk.repository import RunRepository
 from bactalk.security import AuditLog, Principal, SecurityConfig, required_role
+from bactalk.sequence_requirements import SequenceRequirementReviewRequest
 from bactalk.service import (
     ApprovalRequiredError,
     ArtifactChangedError,
@@ -572,6 +573,48 @@ def create_app(
                 sequence_document.content_type,
             )
             return ctrl_flow.reconcile_sequence(template_id, parsed_selections, document)
+        except FileNotFoundError as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+        except CtrlFlowError as exc:
+            status = 404 if "unknown ctrl-flow template" in str(exc) else 422
+            raise HTTPException(status_code=status, detail=str(exc)) from exc
+        except (IntakeError, ValueError) as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/library/ctrl-flow/templates/{template_id:path}/review-requirements/approve"
+    )
+    async def approve_ctrl_flow_sequence_requirements(
+        template_id: str,
+        http_request: Request,
+        sequence_document: Annotated[UploadFile, File()],
+        review: Annotated[str, Form(min_length=2, max_length=5_000_000)],
+        selections: Annotated[str, Form(max_length=50_000)] = "{}",
+    ) -> dict:
+        try:
+            parsed_selections = _form_json_object(selections, "ctrl-flow selections")
+            parsed_review = SequenceRequirementReviewRequest.model_validate(
+                _form_json_object(review, "sequence requirement review")
+            )
+            reviewer, actor_id, tenant_id, authentication = review_identity(
+                http_request,
+                parsed_review.reviewer,
+            )
+            document = parse_sequence_document(
+                await sequence_document.read(),
+                sequence_document.filename or "sequence.txt",
+                sequence_document.content_type,
+            )
+            return ctrl_flow.review_sequence_requirements(
+                template_id,
+                parsed_selections,
+                document,
+                parsed_review,
+                reviewer=reviewer,
+                actor_id=actor_id,
+                tenant_id=tenant_id,
+                authentication=authentication,
+            )
         except FileNotFoundError as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
         except CtrlFlowError as exc:

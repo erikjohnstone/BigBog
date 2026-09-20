@@ -262,6 +262,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/library/ctrl-flow/templates/{template_id}/review-requirements/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve Ctrl Flow Sequence Requirements */
+        post: operations["approve_ctrl_flow_sequence_requirements_api_library_ctrl_flow_templates__template_id__review_requirements_approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/library/ctrl-flow/templates/{template_id}/schema": {
         parameters: {
             query?: never;
@@ -1538,6 +1555,18 @@ export interface components {
          * @enum {string}
          */
         BlockKind: "numeric_input" | "boolean_input" | "numeric_output" | "boolean_output" | "numeric_const" | "boolean_const" | "add" | "subtract" | "multiply" | "divide" | "minimum" | "maximum" | "average" | "greater_than" | "greater_than_or_equal" | "less_than" | "less_than_or_equal" | "equal" | "not_equal" | "and" | "or" | "xor" | "not" | "numeric_switch" | "boolean_switch" | "boolean_delay" | "one_shot" | "boolean_falling_edge" | "moving_average" | "numeric_sampler" | "numeric_unit_delay" | "numeric_changed" | "numeric_increased" | "numeric_decreased" | "numeric_latch" | "boolean_latch" | "boolean_pre_host_tick" | "boolean_initialization" | "boolean_set_reset" | "boolean_true_false_hold" | "hysteresis" | "timer" | "timer_with_reset" | "timer_accumulating" | "boolean_assert_warning" | "trim_and_respond" | "trim_and_respond_hold" | "reset" | "pi_loop" | "pid_with_reset" | "plant_equipment_availability" | "plant_enable" | "plant_hrc_enable" | "plant_hrc_mode_control" | "plant_stage_completion" | "plant_stage_index";
+        /** Body_approve_ctrl_flow_sequence_requirements_api_library_ctrl_flow_templates__template_id__review_requirements_approve_post */
+        Body_approve_ctrl_flow_sequence_requirements_api_library_ctrl_flow_templates__template_id__review_requirements_approve_post: {
+            /** Review */
+            review: string;
+            /**
+             * Selections
+             * @default {}
+             */
+            selections: string;
+            /** Sequence Document */
+            sequence_document: string;
+        };
         /** Body_build_project_import_api_projects_build_import_post */
         Body_build_project_import_api_projects_build_import_post: {
             /** Project Json */
@@ -2787,6 +2816,43 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["CtrlFlowPointReconciliationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_ctrl_flow_sequence_requirements_api_library_ctrl_flow_templates__template_id__review_requirements_approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                template_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_approve_ctrl_flow_sequence_requirements_api_library_ctrl_flow_templates__template_id__review_requirements_approve_post"];
             };
         };
         responses: {

@@ -108,6 +108,8 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
   const [selections, setSelections] = useState<Record<string, unknown>>({});
   const [pointsFile, setPointsFile] = useState<File | null>(null);
   const [sequenceFile, setSequenceFile] = useState<File | null>(null);
+  const [reviewer, setReviewer] = useState('');
+  const [reviewDecisions, setReviewDecisions] = useState<Record<string, { disposition: 'approve' | 'reject' | 'resolve'; selected_point?: string; replacement_text?: string; note?: string }>>({});
   const configuration = useQuery({
     queryKey: ['ctrl-flow-configuration', templateId, selections],
     queryFn: () => api.ctrlFlowConfigure(templateId, selections),
@@ -123,20 +125,49 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
     if (!sequenceFile) throw new Error('Choose a sequence document first.');
     return api.inspectCtrlFlowSequence(templateId, effectiveSelections, sequenceFile);
   } });
+  const candidates = sequenceReconciliation.data?.requirement_candidates;
+  const reviewItems = candidates ? [
+    ...candidates.quantities.map((item) => ({ id: item.id, group: 'quantity' as const, label: `${item.kind.replaceAll('-', ' ')} · ${item.canonical.value} ${item.canonical.unit}`, clause: item.source.clause, pointCandidates: item.input_point_candidates, needsPoint: ['threshold', 'parameter'].includes(item.kind), unresolved: false })),
+    ...candidates.actions.map((item) => ({ id: item.id, group: 'action' as const, label: `${item.verb} ${item.subject}`, clause: item.source.clause, pointCandidates: item.point_candidates, needsPoint: true, unresolved: false })),
+    ...candidates.policies.map((item) => ({ id: item.id, group: 'policy' as const, label: item.policy.replaceAll('-', ' '), clause: item.source.clause, pointCandidates: [] as string[], needsPoint: false, unresolved: false })),
+    ...candidates.unresolved.map((item) => ({ id: item.id, group: 'unresolved' as const, label: `${item.kind.replaceAll('-', ' ')} · “${item.text}”`, clause: item.source.clause, pointCandidates: [] as string[], needsPoint: false, unresolved: true })),
+  ] : [];
+  const sequenceReview = useMutation({ mutationFn: () => {
+    if (!sequenceFile || !candidates) throw new Error('Inspect a sequence before review.');
+    return api.approveCtrlFlowSequenceRequirements(templateId, effectiveSelections, sequenceFile, {
+      candidate_digest: candidates.candidate_digest,
+      reviewer,
+      decisions: reviewItems.map((item) => ({ candidate_id: item.id, ...reviewDecisions[item.id] })),
+    });
+  } });
+  const updateReview = (id: string, patch: Partial<(typeof reviewDecisions)[string]>) => setReviewDecisions((current) => ({ ...current, [id]: { ...current[id], ...patch } as (typeof reviewDecisions)[string] }));
+  const reviewComplete = reviewer.trim().length >= 2 && reviewItems.length > 0 && reviewItems.every((item) => {
+    const decision = reviewDecisions[item.id];
+    if (!decision) return false;
+    if (item.unresolved) return decision.disposition === 'resolve' && Boolean(decision.replacement_text?.trim());
+    if (decision.disposition === 'reject') return Boolean(decision.note?.trim());
+    if (decision.disposition !== 'approve') return false;
+    return !item.needsPoint || item.pointCandidates.length === 1 || Boolean(decision.selected_point);
+  });
   const chooseTemplate = (value: string) => {
     setTemplateId(value);
     setSelections({});
     setPointsFile(null);
     setSequenceFile(null);
+    setReviewer('');
+    setReviewDecisions({});
     brief.reset();
     reconciliation.reset();
     sequenceReconciliation.reset();
+    sequenceReview.reset();
   };
   const chooseValue = (path: string, value: unknown) => {
     setSelections({ ...(configuration.data?.selections ?? selections), [path]: value });
     brief.reset();
     reconciliation.reset();
     sequenceReconciliation.reset();
+    setReviewDecisions({});
+    sequenceReview.reset();
   };
   return <div className="ctrl-flow-configurator">
     <aside className="ctrl-flow-controls">
@@ -149,7 +180,7 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
       </div>
       <button className="ctrl-flow-primary" disabled={brief.isPending || configuration.isFetching} onClick={() => brief.mutate()} type="button">{brief.isPending ? 'Building engineering brief…' : 'Generate programming brief'}<ChevronRight size={15} /></button>
       <div className="ctrl-flow-upload"><FileSpreadsheet size={18} /><label><strong>{pointsFile?.name || 'Contractor points list'}</strong><small>CSV or XLSX · checked against this design</small><input accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={(event) => { setPointsFile(event.target.files?.[0] ?? null); reconciliation.reset(); }} type="file" /></label><button disabled={!pointsFile || reconciliation.isPending} onClick={() => reconciliation.mutate()} type="button">{reconciliation.isPending ? 'Checking…' : 'Check points'}</button></div>
-      <div className="ctrl-flow-upload ctrl-flow-sequence-upload"><FileText size={18} /><label><strong>{sequenceFile?.name || 'Sequence of operations'}</strong><small>TXT, MD, JSON, DOCX, or PDF · scenario coverage</small><input accept=".txt,.md,.json,.docx,.pdf,text/plain,text/markdown,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(event) => { setSequenceFile(event.target.files?.[0] ?? null); sequenceReconciliation.reset(); }} type="file" /></label><button disabled={!sequenceFile || sequenceReconciliation.isPending} onClick={() => sequenceReconciliation.mutate()} type="button">{sequenceReconciliation.isPending ? 'Checking…' : 'Check sequence'}</button></div>
+      <div className="ctrl-flow-upload ctrl-flow-sequence-upload"><FileText size={18} /><label><strong>{sequenceFile?.name || 'Sequence of operations'}</strong><small>TXT, MD, JSON, DOCX, or PDF · scenario coverage</small><input accept=".txt,.md,.json,.docx,.pdf,text/plain,text/markdown,application/json,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(event) => { setSequenceFile(event.target.files?.[0] ?? null); setReviewDecisions({}); sequenceReconciliation.reset(); sequenceReview.reset(); }} type="file" /></label><button disabled={!sequenceFile || sequenceReconciliation.isPending} onClick={() => sequenceReconciliation.mutate()} type="button">{sequenceReconciliation.isPending ? 'Checking…' : 'Check sequence'}</button></div>
     </aside>
     <section className="ctrl-flow-results">
       {!brief.data && !brief.isError && <div className="ctrl-flow-empty"><Network size={28} /><strong>Configure the physical system</strong><p>Generate a traceable component, point, controller, and qualification contract before any code is proposed.</p></div>}
@@ -173,6 +204,14 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
           {(sequenceReconciliation.data.requirement_candidates.quantities.length > 0 || sequenceReconciliation.data.requirement_candidates.actions.length > 0) && <details><summary>Review normalized math and actions</summary><ul>{sequenceReconciliation.data.requirement_candidates.quantities.map((candidate) => <li key={candidate.id}><span><b>{candidate.kind.replaceAll('-', ' ')}</b>{candidate.comparison ? `${candidate.comparison} ` : ''}{candidate.canonical.value} {candidate.canonical.unit}{candidate.timing_relation ? ` · ${candidate.timing_relation}` : ''}</span><small>{candidate.input_point_candidates.join(' / ') || candidate.point_binding_status}</small></li>)}{sequenceReconciliation.data.requirement_candidates.actions.map((candidate) => <li key={candidate.id}><span><b>action</b>{candidate.verb} {candidate.subject}</span><small>{candidate.point_candidates.join(' / ') || candidate.point_binding_status}</small></li>)}</ul></details>}
           {sequenceReconciliation.data.requirement_candidates.unresolved.length > 0 && <details open><summary>Resolve vague or external language</summary><ul>{sequenceReconciliation.data.requirement_candidates.unresolved.map((item) => <li key={item.id}><span><b>{item.kind.replaceAll('-', ' ')}</b>“{item.text}”</span><small>{item.blocking_reason}</small></li>)}</ul></details>}
         </section>
+        {reviewItems.length > 0 && <section className="ctrl-flow-review" aria-label="Engineer requirement review">
+          <header><div><strong>Engineer requirement review</strong><span>Every candidate needs an explicit decision. Nothing is pre-approved.</span></div><ShieldCheck size={17} /></header>
+          <label><span>Reviewer</span><input aria-label="Requirement reviewer" onChange={(event) => setReviewer(event.target.value)} placeholder="Name or authenticated identity" value={reviewer} /></label>
+          <div className="ctrl-flow-review-list">{reviewItems.map((item) => { const decision = reviewDecisions[item.id]; const availablePoints = sequenceReconciliation.data.requirement_candidates.available_review_points; const compatiblePoints = item.pointCandidates.length > 0 ? availablePoints.filter((point) => item.pointCandidates.includes(point.id)) : availablePoints.filter((point) => item.group === 'action' ? ['command', 'alarm'].includes(point.role) : ['sensor', 'status', 'setpoint'].includes(point.role)); return <article key={item.id}><div><b>{item.group}</b><strong>{item.label}</strong><small>{item.clause}</small></div><select aria-label={`Decision for ${item.label}`} value={decision?.disposition ?? ''} onChange={(event) => { const disposition = event.target.value as 'approve' | 'reject' | 'resolve'; updateReview(item.id, { disposition, selected_point: undefined, replacement_text: undefined, note: undefined }); }}><option value="">Choose…</option>{item.unresolved ? <option value="resolve">Resolve in revised source</option> : <><option value="approve">Approve candidate</option><option value="reject">Reject candidate</option></>}</select>{decision?.disposition === 'approve' && item.needsPoint && item.pointCandidates.length !== 1 && <select aria-label={`Point for ${item.label}`} value={decision.selected_point ?? ''} onChange={(event) => updateReview(item.id, { selected_point: event.target.value || undefined })}><option value="">Select point…</option>{compatiblePoints.map((point) => <option key={point.id} value={point.id}>{point.id} · {point.role}</option>)}</select>}{decision?.disposition === 'reject' && <input aria-label={`Rejection note for ${item.label}`} onChange={(event) => updateReview(item.id, { note: event.target.value })} placeholder="Engineering reason required" value={decision.note ?? ''} />}{decision?.disposition === 'resolve' && <textarea aria-label={`Resolution for ${item.label}`} onChange={(event) => updateReview(item.id, { replacement_text: event.target.value })} placeholder="Exact replacement language for the revised source" value={decision.replacement_text ?? ''} />}</article>; })}</div>
+          <button className="ctrl-flow-review-submit" disabled={!reviewComplete || sequenceReview.isPending} onClick={() => sequenceReview.mutate()} type="button">{sequenceReview.isPending ? 'Re-deriving and validating…' : `Submit ${reviewItems.length} decisions`}<ChevronRight size={15} /></button>
+          {sequenceReview.data && <div className={`ctrl-flow-review-outcome ${sequenceReview.data.ready_for_independent_oracle_authoring ? 'ready' : 'blocked'}`}><strong>{sequenceReview.data.ready_for_independent_oracle_authoring ? `${sequenceReview.data.oracle_draft_count} oracle drafts ready for independent authoring` : 'Requirement review remains blocked'}</strong><span>Review {sequenceReview.data.review_digest.slice(0, 12)} · graph generation remains disabled</span>{sequenceReview.data.blockers.length > 0 && <ul>{sequenceReview.data.blockers.map((blocker) => <li key={blocker}>{blocker}</li>)}</ul>}</div>}
+          {sequenceReview.isError && <div className="ctrl-flow-review-outcome blocked"><strong>Review rejected</strong><span>{sequenceReview.error.message}</span></div>}
+        </section>}
       </div>}
       {sequenceReconciliation.isError && <div className="ctrl-flow-sequence-result blocked"><header><CircleAlert size={18} /><div><strong>Sequence inspection stopped</strong><span>{sequenceReconciliation.error.message}</span></div></header></div>}
     </section>

@@ -240,14 +240,16 @@ class IntegrationReadiness:
                     "point reconciliation blocks missing, ambiguous, duplicate, mistyped, or "
                     "unit-invalid contractor I/O; sequence reconciliation maps every selected "
                     "scenario to deterministic facet evidence, exposes omitted language, and "
-                    "extracts unapproved thresholds, timing, actions, policies, and bindings"
+                    "extracts unapproved thresholds, timing, actions, policies, and bindings; "
+                    "approver review re-derives source/digests and emits non-executable oracles"
                 ),
                 evidence_command="make ctrl-flow-contract",
                 blocker=(
                     "The current upstream snapshot has three templates (multizone VAV AHU, "
                     "cooling-only VAV, and VAV reheat). The generated brief still requires the "
                     "phrase evidence to be converted into approved executable requirements, "
-                    "target completion, and licensed Niagara qualification."
+                    "independent oracle approval, target completion, and licensed Niagara "
+                    "qualification."
                 ),
             ),
             _component(
