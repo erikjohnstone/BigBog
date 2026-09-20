@@ -296,7 +296,7 @@ test('installed controls libraries and contractor environments are transparent',
   }
   await reviewCards.filter({ hasText: 'stop supply fan' }).locator('select').nth(1).selectOption('SupplyFanCommand');
   await page.getByRole('button', { name: 'Submit 6 decisions' }).click();
-  await expect(page.getByText('2 oracle drafts ready for independent authoring')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText('2 local oracle drafts ready for independent authoring')).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText(/graph generation remains disabled/)).toBeVisible();
   await expect(page.getByText('Independent acceptance trajectories')).toBeVisible();
   await page.getByLabel('Independent oracle author').fill('E2E Test Engineer');
@@ -316,8 +316,8 @@ test('installed controls libraries and contractor environments are transparent',
     await select.selectOption('true');
   }
   await page.getByRole('button', { name: 'Approve 2 test trajectories' }).click();
-  await expect(page.getByText('Sequence requirement gate passed')).toBeVisible({ timeout: 30_000 });
-  await expect(page.getByText(/graph generation may begin · deployment remains blocked/)).toBeVisible();
+  await expect(page.getByText('Local oracles approved; whole-system coverage still blocked')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText(/scenario facets still lack executable oracles · deployment remains blocked/)).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.goto('/next/environments');

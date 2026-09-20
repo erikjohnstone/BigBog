@@ -946,6 +946,42 @@ def compile_sequence_requirement_review(
     review_digest = hashlib.sha256(
         json.dumps(review_payload, sort_keys=True, separators=(",", ":")).encode()
     ).hexdigest()
+    scenario_oracle_coverage = []
+    for scenario in reconciliation["scenarios"]:
+        facet_coverage = []
+        for facet in scenario["facets"]:
+            oracle_ids = sorted(
+                draft["id"]
+                for draft in oracle_drafts
+                if any(
+                    draft["source"]["clause_start"] < evidence["end"]
+                    and evidence["start"] < draft["source"]["clause_end"]
+                    for evidence in facet["evidence"]
+                )
+            )
+            facet_coverage.append(
+                {
+                    "id": facet["id"],
+                    "label": facet["label"],
+                    "phrase_mentioned": facet["mentioned"],
+                    "oracle_draft_ids": oracle_ids,
+                    "executable_oracle_draft_present": bool(oracle_ids),
+                }
+            )
+        scenario_oracle_coverage.append(
+            {
+                "id": scenario["id"],
+                "title": scenario["title"],
+                "level": scenario["level"],
+                "phrase_coverage_status": scenario["coverage_status"],
+                "facets": facet_coverage,
+                "all_facets_have_oracle_drafts": bool(facet_coverage)
+                and all(item["executable_oracle_draft_present"] for item in facet_coverage),
+            }
+        )
+    all_scenario_facets_have_oracle_drafts = bool(scenario_oracle_coverage) and all(
+        item["all_facets_have_oracle_drafts"] for item in scenario_oracle_coverage
+    )
     return {
         "schema": "bactalk.sequence-requirement-review/v1",
         "candidate_digest": candidates["candidate_digest"],
@@ -983,14 +1019,22 @@ def compile_sequence_requirement_review(
         },
         "oracle_draft_count": len(oracle_drafts),
         "oracle_drafts": oracle_drafts,
+        "scenario_oracle_coverage": scenario_oracle_coverage,
+        "all_scenario_facets_have_oracle_drafts": all_scenario_facets_have_oracle_drafts,
+        "scenario_oracle_gap_count": sum(
+            not facet["executable_oracle_draft_present"]
+            for scenario in scenario_oracle_coverage
+            for facet in scenario["facets"]
+        ),
         "skipped_relationships": skipped_relationships,
         "blockers": sorted(set(blockers)),
         "ready_for_independent_oracle_authoring": bool(oracle_drafts) and not blockers,
         "ready_for_graph_generation": False,
         "ready_for_deployment": False,
         "next_gate": (
-            "An engineer must turn each draft into an independent acceptance trajectory, "
-            "approve that immutable oracle, and only then permit graph generation."
+            "An engineer must turn each local draft into an independent acceptance trajectory. "
+            "Whole-system graph generation additionally requires an executable oracle for every "
+            "selected scenario facet."
         ),
         "safety": {
             "live_writes_enabled": False,

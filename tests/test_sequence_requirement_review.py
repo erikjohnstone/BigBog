@@ -84,6 +84,8 @@ def test_exhaustive_review_emits_source_bound_non_executable_oracle_drafts() -> 
     assert review["ready_for_graph_generation"] is False
     assert review["ready_for_deployment"] is False
     assert review["oracle_draft_count"] == 2
+    assert review["all_scenario_facets_have_oracle_drafts"] is False
+    assert review["scenario_oracle_gap_count"] > 0
     assert len(review["review_digest"]) == 64
     assert review["source_sha256"] == document.sha256
     assert review["safety"]["text_approval_authorizes_deployment"] is False

@@ -189,8 +189,9 @@ def test_independent_oracle_approval_emits_timed_acceptance_cases(tmp_path: Path
         authentication="self-asserted-local",
     )
 
-    assert result["sequence_requirement_gate_passed"] is True
-    assert result["ready_for_graph_generation"] is True
+    assert result["approved_oracle_gate_passed"] is True
+    assert result["sequence_requirement_gate_passed"] is False
+    assert result["ready_for_graph_generation"] is False
     assert result["ready_for_deployment"] is False
     assert result["case_count"] == 2
     assert len(result["oracle_digest"]) == 64
@@ -318,7 +319,8 @@ def test_oracle_approval_api_persists_and_retrieves_exact_gate(tmp_path: Path) -
 
     assert response.status_code == 200, response.text
     approved = response.json()
-    assert approved["ready_for_graph_generation"] is True
+    assert approved["approved_oracle_gate_passed"] is True
+    assert approved["ready_for_graph_generation"] is False
     assert approved["ready_for_deployment"] is False
     assert len(approved["oracle_approval_id"]) == 32
     assert (

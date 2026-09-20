@@ -474,6 +474,9 @@ def compile_sequence_oracle_approval(
         "acceptance_cases": [case.model_dump(mode="json") for case in acceptance_cases],
     }
     oracle_digest = _digest(approval_payload)
+    scenario_coverage_complete = bool(
+        review.get("all_scenario_facets_have_oracle_drafts", False)
+    )
     return {
         "schema": "bactalk.sequence-oracle-approval/v1",
         "review_id": review_id,
@@ -492,12 +495,18 @@ def compile_sequence_oracle_approval(
         "case_count": len(acceptance_cases),
         "acceptance_cases": [case.model_dump(mode="json") for case in acceptance_cases],
         "validation_evidence": evidence,
-        "sequence_requirement_gate_passed": True,
-        "ready_for_graph_generation": True,
+        "approved_oracle_gate_passed": True,
+        "sequence_requirement_gate_passed": scenario_coverage_complete,
+        "ready_for_graph_generation": scenario_coverage_complete,
         "ready_for_deployment": False,
+        "scenario_oracle_gap_count": review.get("scenario_oracle_gap_count"),
         "next_gate": (
-            "A planner may generate a new candidate graph against these immutable acceptance "
-            "cases; that graph must pass every test and all target/runtime release gates."
+            "A planner may generate a new whole-system candidate graph against these immutable "
+            "acceptance cases; that graph must pass every test and all target/runtime release "
+            "gates."
+            if scenario_coverage_complete
+            else "Author and independently approve executable oracles for every remaining "
+            "selected scenario facet before whole-system graph generation."
         ),
         "safety": {
             "live_writes_enabled": False,
