@@ -1233,6 +1233,8 @@ export interface components {
         AcceptanceCase: {
             /** Expectations */
             expectations: components["schemas"]["OutputExpectation"][];
+            /** Faults */
+            faults?: components["schemas"]["FaultInjection"][];
             /** Inputs */
             inputs?: {
                 [key: string]: number | boolean;
@@ -1259,6 +1261,8 @@ export interface components {
         AcceptancePhase: {
             /** Expectations */
             expectations?: components["schemas"]["OutputExpectation"][];
+            /** Faults */
+            faults?: components["schemas"]["FaultInjection"][];
             /** Inputs */
             inputs?: {
                 [key: string]: number | boolean;
@@ -1714,6 +1718,32 @@ export interface components {
             /** Target */
             target: string;
         };
+        /**
+         * FaultInjection
+         * @description A reviewable fault applied to a graph input during an acceptance case.
+         *
+         *     ``quality_target`` names an optional Boolean input that is forced false while
+         *     the fault is active. This lets sequences prove explicit invalid/stale-sensor
+         *     fallback behavior without pretending that a numeric value carries BACnet
+         *     reliability metadata by itself.
+         */
+        FaultInjection: {
+            /** Id */
+            id: string;
+            kind: components["schemas"]["FaultKind"];
+            /** Quality Target */
+            quality_target?: string | null;
+            /** Target */
+            target: string;
+            /** Value */
+            value?: number | boolean | null;
+        };
+        /**
+         * FaultKind
+         * @description Deterministic input faults supported by the Tier-1 qualification harness.
+         * @enum {string}
+         */
+        FaultKind: "force" | "bias" | "scale" | "drift" | "stuck" | "stale" | "dropout" | "invert";
         /** G36ExecutionRequest */
         G36ExecutionRequest: {
             /** Collect */

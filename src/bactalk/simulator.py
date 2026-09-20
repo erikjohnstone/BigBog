@@ -12,11 +12,121 @@ from bactalk.domain import (
     BlockKind,
     ComparisonOperator,
     ControlGraph,
+    DataType,
+    FaultInjection,
+    FaultKind,
     JobSpec,
     OutputExpectation,
     ScenarioResult,
     TestReport,
 )
+
+
+class FaultInjector:
+    """Apply typed, deterministic input faults and retain scan-level evidence."""
+
+    def __init__(self, graph: ControlGraph):
+        self.input_types: dict[str, DataType] = {}
+        self.defaults: dict[str, float | bool] = {}
+        for block in graph.blocks:
+            if block.kind == BlockKind.NUMERIC_INPUT:
+                self.input_types[block.id] = DataType.NUMERIC
+                self.defaults[block.id] = float(block.config.get("default", 0.0))
+            elif block.kind == BlockKind.BOOLEAN_INPUT:
+                self.input_types[block.id] = DataType.BOOLEAN
+                self.defaults[block.id] = bool(block.config.get("default", False))
+        self.state: dict[str, dict[str, Any]] = {}
+
+    def _validate(self, faults: list[FaultInjection]) -> None:
+        targets: set[str] = set()
+        for fault in faults:
+            data_type = self.input_types.get(fault.target)
+            if data_type is None:
+                raise ValueError(
+                    f"fault {fault.id!r} target {fault.target!r} is not a graph input"
+                )
+            if fault.target in targets:
+                raise ValueError(f"multiple active faults target input {fault.target!r}")
+            targets.add(fault.target)
+            if fault.kind in {FaultKind.BIAS, FaultKind.SCALE, FaultKind.DRIFT} and (
+                data_type != DataType.NUMERIC
+            ):
+                raise ValueError(f"fault {fault.id!r} requires a numeric target")
+            if fault.kind == FaultKind.INVERT and data_type != DataType.BOOLEAN:
+                raise ValueError(f"fault {fault.id!r} requires a boolean target")
+            if fault.kind in {FaultKind.FORCE, FaultKind.DROPOUT}:
+                value_is_boolean = isinstance(fault.value, bool)
+                if value_is_boolean != (data_type == DataType.BOOLEAN):
+                    raise ValueError(
+                        f"fault {fault.id!r} value type does not match target {fault.target!r}"
+                    )
+            if fault.quality_target is not None:
+                if self.input_types.get(fault.quality_target) != DataType.BOOLEAN:
+                    raise ValueError(
+                        f"fault {fault.id!r} quality_target must be a Boolean graph input"
+                    )
+
+    def apply(
+        self,
+        inputs: dict[str, float | bool],
+        faults: list[FaultInjection],
+        *,
+        step_seconds: float,
+    ) -> tuple[dict[str, float | bool], dict[str, float | bool]]:
+        self._validate(faults)
+        active_ids = {fault.id for fault in faults}
+        for fault_id in set(self.state) - active_ids:
+            del self.state[fault_id]
+
+        effective = dict(inputs)
+        evidence: dict[str, float | bool] = {}
+        for fault in faults:
+            raw = inputs.get(fault.target, self.defaults[fault.target])
+            signature = (
+                fault.target,
+                fault.kind.value,
+                fault.value,
+                fault.quality_target,
+            )
+            state = self.state.get(fault.id)
+            if state is None or state["signature"] != signature:
+                state = {
+                    "signature": signature,
+                    "captured": raw,
+                    "elapsed": 0.0,
+                }
+                self.state[fault.id] = state
+            state["elapsed"] = float(state["elapsed"]) + step_seconds
+
+            if fault.kind in {FaultKind.STUCK, FaultKind.STALE}:
+                applied: float | bool = state["captured"]
+            elif fault.kind in {FaultKind.FORCE, FaultKind.DROPOUT}:
+                if fault.value is None:
+                    raise AssertionError("validated fault value is missing")
+                applied = fault.value
+            elif fault.kind == FaultKind.INVERT:
+                applied = not bool(raw)
+            elif fault.kind == FaultKind.BIAS:
+                applied = float(raw) + float(fault.value)
+            elif fault.kind == FaultKind.SCALE:
+                applied = float(raw) * float(fault.value)
+            elif fault.kind == FaultKind.DRIFT:
+                applied = float(raw) + float(fault.value) * float(state["elapsed"])
+            else:  # pragma: no cover - enum exhaustiveness guard
+                raise ValueError(f"unsupported fault kind: {fault.kind}")
+
+            effective[fault.target] = applied
+            if fault.quality_target is not None:
+                effective[fault.quality_target] = False
+            prefix = f"fault.{fault.id}"
+            evidence[f"{prefix}.active"] = True
+            evidence[f"{prefix}.elapsed_seconds"] = float(state["elapsed"])
+            evidence[f"{prefix}.raw"] = raw
+            evidence[f"{prefix}.applied"] = applied
+            if fault.quality_target is not None:
+                evidence[f"effective.{fault.quality_target}"] = False
+            evidence[f"effective.{fault.target}"] = applied
+        return effective, evidence
 
 
 class GraphInterpreter:
@@ -1359,11 +1469,74 @@ def _evaluate_expectations(
     return assertions
 
 
+def _fault_coverage(
+    cases: list[AcceptanceCase],
+    results: list[ScenarioResult],
+) -> dict[str, Any]:
+    declarations: list[dict[str, Any]] = []
+    recovery_phases: list[str] = []
+    for case in cases:
+        if case.timeline:
+            previous_had_fault = False
+            for phase in case.timeline:
+                if previous_had_fault and not phase.faults:
+                    recovery_phases.append(f"{case.name} / {phase.name}")
+                for fault in phase.faults:
+                    declarations.append(
+                        {
+                            "case": case.name,
+                            "phase": phase.name,
+                            "id": fault.id,
+                            "kind": fault.kind.value,
+                            "target": fault.target,
+                            "quality_target": fault.quality_target,
+                        }
+                    )
+                previous_had_fault = bool(phase.faults)
+        else:
+            for fault in case.faults:
+                declarations.append(
+                    {
+                        "case": case.name,
+                        "phase": None,
+                        "id": fault.id,
+                        "kind": fault.kind.value,
+                        "target": fault.target,
+                        "quality_target": fault.quality_target,
+                    }
+                )
+    fault_case_names = {item["case"] for item in declarations}
+    scenario_status = {result.name: result.passed for result in results}
+    return {
+        "schema": "bactalk-fault-injection-coverage/v1",
+        "activation_count": len(declarations),
+        "fault_case_count": len(fault_case_names),
+        "fault_cases_passed": sum(bool(scenario_status.get(name)) for name in fault_case_names),
+        "kinds": sorted({str(item["kind"]) for item in declarations}),
+        "targets": sorted({str(item["target"]) for item in declarations}),
+        "quality_targets": sorted(
+            {
+                str(item["quality_target"])
+                for item in declarations
+                if item["quality_target"] is not None
+            }
+        ),
+        "recovery_phases": recovery_phases,
+        "declarations": declarations,
+        "interpretation": (
+            "Declared faults were injected into the signed acceptance trajectories."
+            if declarations
+            else "No fault behavior was exercised by this acceptance suite."
+        ),
+    }
+
+
 def run_generic_acceptance_suite(graph: ControlGraph, cases: list[AcceptanceCase]) -> TestReport:
     block_ids = {block.id for block in graph.blocks}
     results: list[ScenarioResult] = []
     for case in cases:
         interpreter = GraphInterpreter(graph)
+        fault_injector = FaultInjector(graph)
         samples: list[dict[str, float | bool]] = []
         values: dict[str, float | bool] = {}
         assertions: list[AssertionResult] = []
@@ -1372,11 +1545,21 @@ def run_generic_acceptance_suite(graph: ControlGraph, cases: list[AcceptanceCase
             scan = 0
             for phase_index, phase in enumerate(case.timeline, start=1):
                 current_inputs.update(phase.inputs)
-                interpreter.evaluate(current_inputs, step_seconds=0.0)
+                primed_inputs, _ = fault_injector.apply(
+                    current_inputs,
+                    phase.faults,
+                    step_seconds=0.0,
+                )
+                interpreter.evaluate(primed_inputs, step_seconds=0.0)
                 for phase_step in range(1, phase.repeat + 1):
                     scan += 1
-                    values = interpreter.evaluate(
+                    effective_inputs, fault_evidence = fault_injector.apply(
                         current_inputs,
+                        phase.faults,
+                        step_seconds=phase.step_seconds,
+                    )
+                    values = interpreter.evaluate(
+                        effective_inputs,
                         step_seconds=phase.step_seconds,
                     )
                     samples.append(
@@ -1385,6 +1568,7 @@ def run_generic_acceptance_suite(graph: ControlGraph, cases: list[AcceptanceCase
                             "phase": float(phase_index),
                             "phase_step": float(phase_step),
                             **current_inputs,
+                            **fault_evidence,
                             **values,
                         }
                     )
@@ -1397,10 +1581,30 @@ def run_generic_acceptance_suite(graph: ControlGraph, cases: list[AcceptanceCase
                     )
                 )
         else:
-            interpreter.evaluate(case.inputs, step_seconds=0.0)
+            primed_inputs, _ = fault_injector.apply(
+                case.inputs,
+                case.faults,
+                step_seconds=0.0,
+            )
+            interpreter.evaluate(primed_inputs, step_seconds=0.0)
             for index in range(case.repeat):
-                values = interpreter.evaluate(case.inputs, step_seconds=case.step_seconds)
-                samples.append({"step": float(index + 1), **case.inputs, **values})
+                effective_inputs, fault_evidence = fault_injector.apply(
+                    case.inputs,
+                    case.faults,
+                    step_seconds=case.step_seconds,
+                )
+                values = interpreter.evaluate(
+                    effective_inputs,
+                    step_seconds=case.step_seconds,
+                )
+                samples.append(
+                    {
+                        "step": float(index + 1),
+                        **case.inputs,
+                        **fault_evidence,
+                        **values,
+                    }
+                )
         assertions.extend(
             _evaluate_expectations(
                 case.name,
@@ -1417,11 +1621,13 @@ def run_generic_acceptance_suite(graph: ControlGraph, cases: list[AcceptanceCase
                 samples=samples,
             )
         )
+    coverage = _decision_coverage(graph, results)
+    coverage["fault_injection"] = _fault_coverage(cases, results)
     return TestReport(
         passed=all(scenario.passed for scenario in results),
         scenarios=results,
-        engine="BACTalk equipment-neutral truth-table simulator (Tier 1)",
-        coverage=_decision_coverage(graph, results),
+        engine="BACTalk equipment-neutral stateful and fault-injection simulator (Tier 1)",
+        coverage=coverage,
     )
 
 

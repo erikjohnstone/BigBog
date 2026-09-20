@@ -23,6 +23,13 @@ def test_capability_registry_is_truthful_and_matches_installed_ahu_pack() -> Non
     assert "verification.field_qualified" in release["blocking_gate_ids"]
     assert release["passed_gates"] < release["total_gates"]
 
+    exhaust = registry.get("exhaust-fan-proof-v1")
+    assert exhaust.verification_coverage.fault_injection is True
+    assert exhaust.verification_coverage.recovery is True
+    pump = registry.get("two-pump-selector-v1")
+    assert pump.verification_coverage.fault_injection is True
+    assert pump.verification_coverage.recovery is False
+
 
 def test_every_catalogued_family_exposes_its_blocker() -> None:
     families = CapabilityRegistry().inventory()["families"]

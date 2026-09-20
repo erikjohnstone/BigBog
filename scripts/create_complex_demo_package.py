@@ -15,6 +15,8 @@ from bactalk.domain import (
     AcceptancePhase,
     ComparisonOperator,
     DataType,
+    FaultInjection,
+    FaultKind,
     JobSpec,
     OutputExpectation,
     PointRole,
@@ -85,13 +87,29 @@ def exhaust_job() -> JobSpec:
                 timeline=[
                     AcceptancePhase(
                         name="startup grace",
-                        inputs={"Enable": True, "FanStatus": False},
+                        inputs={"Enable": True, "FanStatus": True},
                         repeat=2,
+                        faults=[
+                            FaultInjection(
+                                id="lost_fan_proof",
+                                target="FanStatus",
+                                kind=FaultKind.FORCE,
+                                value=False,
+                            )
+                        ],
                         expectations=[OutputExpectation(target="FanProofAlarm", value=False)],
                     ),
                     AcceptancePhase(
                         name="proof timeout",
                         repeat=1,
+                        faults=[
+                            FaultInjection(
+                                id="lost_fan_proof",
+                                target="FanStatus",
+                                kind=FaultKind.FORCE,
+                                value=False,
+                            )
+                        ],
                         expectations=[OutputExpectation(target="FanProofAlarm", value=True)],
                     ),
                     AcceptancePhase(
@@ -246,17 +264,34 @@ def pump_job() -> JobSpec:
             ),
             AcceptanceCase(
                 name="lead failure selects standby",
-                inputs={**common, "SystemEnable": True, "Pump1Available": False},
+                inputs={**common, "SystemEnable": True},
+                faults=[
+                    FaultInjection(
+                        id="pump_1_unavailable",
+                        target="Pump1Available",
+                        kind=FaultKind.FORCE,
+                        value=False,
+                    )
+                ],
                 expectations=expected(False, True, False),
             ),
             AcceptanceCase(
                 name="no available pump fails closed",
-                inputs={
-                    **common,
-                    "SystemEnable": True,
-                    "Pump1Available": False,
-                    "Pump2Available": False,
-                },
+                inputs={**common, "SystemEnable": True},
+                faults=[
+                    FaultInjection(
+                        id="pump_1_unavailable",
+                        target="Pump1Available",
+                        kind=FaultKind.FORCE,
+                        value=False,
+                    ),
+                    FaultInjection(
+                        id="pump_2_unavailable",
+                        target="Pump2Available",
+                        kind=FaultKind.FORCE,
+                        value=False,
+                    ),
+                ],
                 expectations=expected(False, False, True),
             ),
         ],

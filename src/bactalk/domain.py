@@ -181,6 +181,65 @@ class OutputExpectation(BaseModel):
         return self
 
 
+class FaultKind(StrEnum):
+    """Deterministic input faults supported by the Tier-1 qualification harness."""
+
+    FORCE = "force"
+    BIAS = "bias"
+    SCALE = "scale"
+    DRIFT = "drift"
+    STUCK = "stuck"
+    STALE = "stale"
+    DROPOUT = "dropout"
+    INVERT = "invert"
+
+
+class FaultInjection(BaseModel):
+    """A reviewable fault applied to a graph input during an acceptance case.
+
+    ``quality_target`` names an optional Boolean input that is forced false while
+    the fault is active. This lets sequences prove explicit invalid/stale-sensor
+    fallback behavior without pretending that a numeric value carries BACnet
+    reliability metadata by itself.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$", max_length=120)
+    target: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$", max_length=120)
+    kind: FaultKind
+    value: float | bool | None = None
+    quality_target: str | None = Field(
+        default=None,
+        pattern=r"^[A-Za-z_][A-Za-z0-9_]*$",
+        max_length=120,
+    )
+
+    @model_validator(mode="after")
+    def parameters_match_kind(self) -> FaultInjection:
+        value_required = self.kind in {
+            FaultKind.FORCE,
+            FaultKind.BIAS,
+            FaultKind.SCALE,
+            FaultKind.DRIFT,
+            FaultKind.DROPOUT,
+        }
+        if value_required and self.value is None:
+            raise ValueError(f"{self.kind.value} fault requires value")
+        if not value_required and self.value is not None:
+            raise ValueError(f"{self.kind.value} fault does not accept value")
+        if self.kind in {FaultKind.BIAS, FaultKind.SCALE, FaultKind.DRIFT}:
+            if (
+                isinstance(self.value, bool)
+                or not isinstance(self.value, (int, float))
+                or not math.isfinite(float(self.value))
+            ):
+                raise ValueError(f"{self.kind.value} fault value must be finite numeric")
+        if self.quality_target == self.target:
+            raise ValueError("fault quality_target must differ from target")
+        return self
+
+
 class AcceptancePhase(BaseModel):
     """One input regime in a stateful acceptance-test timeline."""
 
@@ -190,7 +249,15 @@ class AcceptancePhase(BaseModel):
     inputs: dict[str, float | bool] = Field(default_factory=dict)
     repeat: int = Field(default=1, ge=1, le=1_000_000)
     step_seconds: float = Field(default=1.0, gt=0.0, le=86_400.0)
+    faults: list[FaultInjection] = Field(default_factory=list, max_length=1_000)
     expectations: list[OutputExpectation] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def fault_ids_are_unique(self) -> AcceptancePhase:
+        ids = [fault.id for fault in self.faults]
+        if len(ids) != len(set(ids)):
+            raise ValueError("fault ids must be unique within an acceptance phase")
+        return self
 
 
 class AcceptanceCase(BaseModel):
@@ -201,17 +268,23 @@ class AcceptanceCase(BaseModel):
     expectations: list[OutputExpectation] = Field(min_length=1)
     repeat: int = Field(default=1, ge=1, le=1_000_000)
     step_seconds: float = Field(default=1.0, gt=0.0, le=86_400.0)
+    faults: list[FaultInjection] = Field(default_factory=list, max_length=1_000)
     timeline: list[AcceptancePhase] = Field(default_factory=list, max_length=10_000)
 
     @model_validator(mode="after")
     def validate_timeline_mode(self) -> AcceptanceCase:
         if self.timeline and self.inputs:
             raise ValueError("timeline acceptance cases cannot also declare top-level inputs")
+        if self.timeline and self.faults:
+            raise ValueError("timeline acceptance cases declare faults on individual phases")
         if self.timeline and (self.repeat != 1 or self.step_seconds != 1.0):
             raise ValueError("timeline acceptance cases set repeat and step_seconds on each phase")
         phase_names = [phase.name for phase in self.timeline]
         if len(phase_names) != len(set(phase_names)):
             raise ValueError("acceptance phase names must be unique within a case")
+        fault_ids = [fault.id for fault in self.faults]
+        if len(fault_ids) != len(set(fault_ids)):
+            raise ValueError("fault ids must be unique within an acceptance case")
         return self
 
 

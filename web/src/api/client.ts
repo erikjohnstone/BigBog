@@ -122,6 +122,26 @@ const assertionSchema = z.object({
   passed: z.boolean(),
 }).passthrough();
 
+const faultCoverageSchema = z.object({
+  schema: z.string(),
+  activation_count: z.number(),
+  fault_case_count: z.number(),
+  fault_cases_passed: z.number(),
+  kinds: z.array(z.string()),
+  targets: z.array(z.string()),
+  quality_targets: z.array(z.string()),
+  recovery_phases: z.array(z.string()),
+  declarations: z.array(z.object({
+    case: z.string(),
+    phase: z.string().nullable(),
+    id: z.string(),
+    kind: z.string(),
+    target: z.string(),
+    quality_target: z.string().nullable(),
+  })),
+  interpretation: z.string(),
+}).passthrough();
+
 const reportSchema = z.object({
   engine: z.string(),
   passed: z.boolean(),
@@ -132,6 +152,7 @@ const reportSchema = z.object({
     outcomes_observed: z.number().optional(),
     outcomes_possible: z.number().optional(),
     gaps: z.array(z.string()).optional(),
+    fault_injection: faultCoverageSchema.optional(),
   }).passthrough().nullable().optional(),
   scenarios: z.array(z.object({
     name: z.string(),

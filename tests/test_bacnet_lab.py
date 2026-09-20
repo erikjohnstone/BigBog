@@ -186,7 +186,9 @@ def test_acceptance_runner_drives_inputs_and_captures_controller_output(
 
         controller = asyncio.create_task(emulate_external_controller())
         try:
-            report = await lab.run_acceptance_scenarios(time_scale=0.01)
+            # Leave enough wall-clock time for the real UDP write to traverse the
+            # local BACnet stack even when the complete integration suite is busy.
+            report = await lab.run_acceptance_scenarios(time_scale=0.05)
             await controller
         finally:
             client.close()

@@ -210,6 +210,18 @@ test('contractor can upload, preflight, compile, and assemble a complex building
   await expect(page.getByText('assembled-station.bog retained in this release')).toBeVisible();
   await expect(page.getByRole('button', { name: /approve entire building candidate/i })).toBeDisabled();
   expect((await new AxeBuilder({ page }).exclude('[data-sonner-toaster]').analyze()).violations).toEqual([]);
+
+  const projectId = page.url().split('/').at(-1);
+  const project = await (await page.request.get(`/api/projects/${projectId}`)).json() as {
+    equipment_runs: Array<{ equipment_name: string; run_id: string }>;
+  };
+  const exhaust = project.equipment_runs.find((item) => item.equipment_name === 'EF_1');
+  expect(exhaust).toBeTruthy();
+  await page.goto(`/next/studio/${exhaust?.run_id}/tests`);
+  await expect(page.getByText('2 injected fault activations')).toBeVisible();
+  await expect(page.getByText('lost_fan_proof').first()).toBeVisible();
+  await expect(page.getByText('Raw → effective → response')).toBeVisible();
+  expect((await new AxeBuilder({ page }).exclude('[data-sonner-toaster]').analyze()).violations).toEqual([]);
 });
 
 test('installed controls libraries and contractor environments are transparent', async ({ page }) => {

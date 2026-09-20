@@ -12,7 +12,9 @@ def test_equipment_neutral_ahu_graph_passes_and_compiles(tmp_path: Path) -> None
     result = ProgrammingAgent(SequencePackPlanner()).run(job)
 
     assert result.report.passed
-    assert result.report.engine == "BACTalk equipment-neutral truth-table simulator (Tier 1)"
+    assert result.report.engine == (
+        "BACTalk equipment-neutral stateful and fault-injection simulator (Tier 1)"
+    )
     assert result.graph.metadata["sequence_family"] == "CUSTOM_AHU_SAFETY_COOLING"
     assert {block.kind for block in result.graph.blocks} >= {
         BlockKind.GREATER_THAN_OR_EQUAL,

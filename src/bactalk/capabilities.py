@@ -35,6 +35,8 @@ class VerificationCoverage(BaseModel):
     deterministic: bool = False
     independent_rules: bool = False
     trajectory: bool = False
+    fault_injection: bool = False
+    recovery: bool = False
     dynamic_building: bool = False
     niagara_runtime: bool = False
     field_qualified: bool = False
@@ -178,6 +180,8 @@ class CapabilityRegistry:
                 verification_coverage=VerificationCoverage(
                     structural=True,
                     deterministic=True,
+                    fault_injection=True,
+                    recovery=True,
                 ),
                 source_basis=[
                     "BuildingMOTIF G36 exhaust-fan topology",
@@ -243,6 +247,7 @@ class CapabilityRegistry:
                 verification_coverage=VerificationCoverage(
                     structural=True,
                     deterministic=True,
+                    fault_injection=True,
                 ),
                 source_basis=[
                     "pybog two-pump rotator pattern",
@@ -489,6 +494,8 @@ class CapabilityRegistry:
             "verification.deterministic": pack.verification_coverage.deterministic,
             "verification.independent_rules": (pack.verification_coverage.independent_rules),
             "verification.trajectory": pack.verification_coverage.trajectory,
+            "verification.fault_injection": pack.verification_coverage.fault_injection,
+            "verification.recovery": pack.verification_coverage.recovery,
             "verification.dynamic_building": (pack.verification_coverage.dynamic_building),
             "verification.niagara_runtime": pack.verification_coverage.niagara_runtime,
             "verification.field_qualified": pack.verification_coverage.field_qualified,
