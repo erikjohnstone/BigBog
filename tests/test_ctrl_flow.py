@@ -136,6 +136,23 @@ def test_ahu_programming_brief_expands_design_into_points_scenarios_and_gates() 
     } <= point_ids
     scenario_ids = {scenario["id"] for scenario in brief["qualification_plan"]["scenarios"]}
     assert {"fire-smoke", "freeze-protection", "duct-high-pressure", "recovery"} <= (scenario_ids)
+    for scenario in brief["qualification_plan"]["scenarios"]:
+        io_contract = scenario["io_contract"]
+        assert io_contract["status"] == "ready"
+        assert io_contract["input_point_candidates"]
+        assert io_contract["output_point_candidates"]
+        assert set(io_contract["input_point_candidates"]) <= point_ids
+        assert set(io_contract["output_point_candidates"]) <= point_ids
+    fire_smoke = next(
+        scenario
+        for scenario in brief["qualification_plan"]["scenarios"]
+        if scenario["id"] == "fire-smoke"
+    )
+    assert fire_smoke["io_contract"]["input_point_candidates"] == ["FireSmokeShutdown"]
+    assert fire_smoke["io_contract"]["output_point_candidates"] == [
+        "SupplyFanCommand",
+        "OutdoorDamperCommand",
+    ]
     assert brief["qualification_plan"]["execution_status"] == "not-run"
     assert brief["capability_alignment"]["reference_controller_available"] is True
     assert brief["capability_alignment"]["complete_niagara_job_ready"] is False
@@ -152,6 +169,21 @@ def test_terminal_briefs_are_equipment_specific_and_optional_sensors_are_conditi
     assert {"ZoneCO2", "ZoneCO2Setpoint"} <= cooling_points
     assert "ValveCommand" not in cooling_points
     assert {"ValveCommand", "DischargeAirTemp", "HotWaterRequest"} <= reheat_points
+    assert {
+        "SensorQualityValid",
+        "CommunicationsHealthy",
+        "ManualOverrideActive",
+        "PowerRestart",
+        "ActuatorProof",
+        "FaultReset",
+    } <= cooling_points
+    for brief in (cooling, reheat):
+        point_ids = {point["id"] for point in brief["point_requirements"]["points"]}
+        for scenario in brief["qualification_plan"]["scenarios"]:
+            io_contract = scenario["io_contract"]
+            assert io_contract["status"] == "ready"
+            assert set(io_contract["input_point_candidates"]) <= point_ids
+            assert set(io_contract["output_point_candidates"]) <= point_ids
     assert cooling["design_binding"]["controller_id"] == ("TerminalUnits.CoolingOnly.Controller")
     assert reheat["design_binding"]["controller_id"] == "TerminalUnits.Reheat.Controller"
 

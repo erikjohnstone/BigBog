@@ -430,6 +430,9 @@ def test_source_bound_boolean_facet_oracle_adds_an_executable_recovery_case(
                     "excerpt": "On smoke alarm, the supply fan is commanded off.",
                 }
             ],
+            "input_point_candidates": ["FireSmokeShutdown"],
+            "output_point_candidates": ["SupplyFanCommand", "OutdoorDamperCommand"],
+            "io_contract_status": "ready",
             "authoring_allowed": True,
             "blocking_reason": "Author an independent trajectory.",
         }
@@ -492,6 +495,9 @@ def test_manual_facet_oracle_is_exhaustive_and_rejects_non_recovery(tmp_path: Pa
             "facet_label": "communications loss detection",
             "phrase_mentioned": True,
             "source_evidence": [{"start": 0, "end": 10, "excerpt": "communications loss"}],
+            "input_point_candidates": ["CommunicationsHealthy"],
+            "output_point_candidates": ["CommunicationsAlarm"],
+            "io_contract_status": "ready",
             "authoring_allowed": True,
             "blocking_reason": "Author an independent trajectory.",
         }
@@ -514,22 +520,57 @@ def test_manual_facet_oracle_is_exhaustive_and_rejects_non_recovery(tmp_path: Pa
             "scenario_id": "communications-loss",
             "facet_id": "loss-detection",
             "name": "Communications fallback",
-            "baseline_inputs": {"FireSmokeShutdown": False},
-            "trigger_inputs": {"FireSmokeShutdown": True},
-            "recovery_inputs": {"FireSmokeShutdown": True},
+            "baseline_inputs": {"CommunicationsHealthy": True},
+            "trigger_inputs": {"CommunicationsHealthy": False},
+            "recovery_inputs": {"CommunicationsHealthy": False},
             "step_seconds": 1.0,
             "baseline_expectations": [
-                {"target": "SupplyFanCommand", "operator": "eq", "value": True}
+                {"target": "CommunicationsAlarm", "operator": "eq", "value": False}
             ],
             "trigger_expectations": [
-                {"target": "SupplyFanCommand", "operator": "eq", "value": False}
+                {"target": "CommunicationsAlarm", "operator": "eq", "value": True}
             ],
             "recovery_expectations": [
-                {"target": "SupplyFanCommand", "operator": "eq", "value": True}
+                {"target": "CommunicationsAlarm", "operator": "eq", "value": False}
             ],
         }
     ]
     with pytest.raises(ValueError, match="return it to baseline"):
+        compile_sequence_oracle_approval(
+            record.id,
+            retained,
+            SequenceOracleApprovalRequest.model_validate(payload),
+            author="Independent Test Engineer",
+            actor_id=None,
+            tenant_id=None,
+            authentication="self-asserted-local",
+        )
+
+    case = payload["facet_cases"][0]
+    case["baseline_inputs"] = {"FireSmokeShutdown": False}
+    case["trigger_inputs"] = {"FireSmokeShutdown": True}
+    case["recovery_inputs"] = {"FireSmokeShutdown": False}
+    with pytest.raises(ValueError, match="outside the audited scenario I/O contract"):
+        compile_sequence_oracle_approval(
+            record.id,
+            retained,
+            SequenceOracleApprovalRequest.model_validate(payload),
+            author="Independent Test Engineer",
+            actor_id=None,
+            tenant_id=None,
+            authentication="self-asserted-local",
+        )
+
+    case["baseline_inputs"] = {"CommunicationsHealthy": True}
+    case["trigger_inputs"] = {"CommunicationsHealthy": False}
+    case["recovery_inputs"] = {"CommunicationsHealthy": True}
+    for phase in (
+        "baseline_expectations",
+        "trigger_expectations",
+        "recovery_expectations",
+    ):
+        case[phase][0]["target"] = "SupplyFanCommand"
+    with pytest.raises(ValueError, match="outside the audited scenario I/O contract"):
         compile_sequence_oracle_approval(
             record.id,
             retained,

@@ -32,6 +32,134 @@ TEMPLATE_BINDINGS: dict[str, dict[str, str]] = {
 }
 
 
+SCENARIO_IO_CANDIDATES: dict[str, dict[str, tuple[str, ...]]] = {
+    "normal-operation": {
+        "inputs": ("Occupied", "OperationMode"),
+        "outputs": ("OperationMode", "SupplyFanCommand", "DamperCommand"),
+    },
+    "unoccupied-shutdown": {
+        "inputs": ("Occupied",),
+        "outputs": ("OperationMode", "SupplyFanCommand", "DamperCommand"),
+    },
+    "sensor-invalid": {
+        "inputs": ("SensorQualityValid",),
+        "outputs": ("SensorFailureAlarm",),
+    },
+    "sensor-stale": {
+        "inputs": ("SensorStale",),
+        "outputs": ("SensorFailureAlarm",),
+    },
+    "communications-loss": {
+        "inputs": ("CommunicationsHealthy",),
+        "outputs": ("CommunicationsAlarm",),
+    },
+    "manual-override": {
+        "inputs": ("ManualOverrideActive",),
+        "outputs": ("ManualOverrideIndicator",),
+    },
+    "power-cycle": {
+        "inputs": ("PowerRestart",),
+        "outputs": ("ControllerReady",),
+    },
+    "actuator-failure": {
+        "inputs": ("ActuatorProof",),
+        "outputs": ("ActuatorFailureAlarm",),
+    },
+    "recovery": {
+        "inputs": ("FaultReset",),
+        "outputs": ("FaultLatched",),
+    },
+    "airflow-proof": {
+        "inputs": ("PrimaryAirflow", "ActuatorProof"),
+        "outputs": ("AirflowAlarm",),
+    },
+    "zone-mode-transitions": {
+        "inputs": ("ZoneTemp", "OperationMode"),
+        "outputs": ("DamperCommand", "ValveCommand"),
+    },
+    "ahu-unavailable": {
+        "inputs": ("AHUAvailable",),
+        "outputs": ("DamperCommand",),
+    },
+    "reheat-failure": {
+        "inputs": ("ActuatorProof", "ValvePosition"),
+        "outputs": ("ReheatFailureAlarm",),
+    },
+    "plant-unavailable": {
+        "inputs": ("HeatingPlantAvailable", "CoolingPlantAvailable"),
+        "outputs": ("PlantUnavailableAlarm",),
+    },
+    "discharge-high-limit": {
+        "inputs": ("DischargeAirTemp",),
+        "outputs": ("DischargeHighLimitAlarm",),
+    },
+    "co2-failure": {
+        "inputs": ("ZoneCO2", "SensorQualityValid"),
+        "outputs": ("SensorFailureAlarm",),
+    },
+    "occupancy-sensor-failure": {
+        "inputs": ("OccupancySensor", "SensorQualityValid"),
+        "outputs": ("SensorFailureAlarm",),
+    },
+    "window-sensor-failure": {
+        "inputs": ("WindowOpen", "SensorQualityValid"),
+        "outputs": ("SensorFailureAlarm",),
+    },
+    "fire-smoke": {
+        "inputs": ("FireSmokeShutdown",),
+        "outputs": ("SupplyFanCommand", "OutdoorDamperCommand"),
+    },
+    "duct-high-pressure": {
+        "inputs": ("DuctHighPressure", "DuctStatic"),
+        "outputs": ("SupplyFanCommand", "DuctPressureAlarm"),
+    },
+    "supply-fan-proof": {
+        "inputs": ("SupplyFanStatus",),
+        "outputs": ("SupplyFanFailureAlarm",),
+    },
+    "economizer-limits": {
+        "inputs": ("OutdoorAirTemp", "ReturnAirTemp", "SensorQualityValid"),
+        "outputs": ("OutdoorDamperCommand", "EconomizerFailureAlarm"),
+    },
+    "mixed-air-low-limit": {
+        "inputs": ("MixedAirTemp",),
+        "outputs": (
+            "OutdoorDamperCommand",
+            "PreheatCommand",
+            "MixedAirLowLimitAlarm",
+        ),
+    },
+    "simultaneous-heat-cool": {
+        "inputs": ("DischargeAirTemp", "OperationMode"),
+        "outputs": (
+            "PreheatCommand",
+            "CoolingValveCommand",
+            "SimultaneousHeatCoolAlarm",
+        ),
+    },
+    "freeze-protection": {
+        "inputs": ("FreezeStat", "MixedAirTemp", "FaultReset"),
+        "outputs": (
+            "FreezeProtectionStage",
+            "FreezeProtectionAlarm",
+            "SupplyFanCommand",
+        ),
+    },
+    "return-relief-failure": {
+        "inputs": ("ReturnFanStatus", "ReliefFanStatus", "BuildingPressure"),
+        "outputs": ("ReturnReliefFailureAlarm",),
+    },
+    "airflow-station-failure": {
+        "inputs": ("SupplyAirflow", "ReturnAirflow", "SensorQualityValid"),
+        "outputs": ("AirflowStationFailureAlarm",),
+    },
+    "building-pressure-failure": {
+        "inputs": ("BuildingPressure", "SensorQualityValid"),
+        "outputs": ("BuildingPressureFailureAlarm",),
+    },
+}
+
+
 def _suffix(value: Any) -> str:
     return str(value).rsplit(".", 1)[-1]
 
@@ -180,8 +308,103 @@ def _base_scenarios() -> list[dict[str, Any]]:
     ]
 
 
+def _resilience_points() -> list[dict[str, Any]]:
+    definitions = (
+        (
+            "SensorQualityValid",
+            "Selected control-sensor quality valid",
+            "status",
+            "Bad-quality fallback qualification.",
+        ),
+        (
+            "SensorStale",
+            "Selected control sensor stale",
+            "status",
+            "Frozen-value detection and recovery qualification.",
+        ),
+        (
+            "CommunicationsHealthy",
+            "Required peer communications healthy",
+            "status",
+            "Communications timeout, fallback, and recovery qualification.",
+        ),
+        (
+            "ManualOverrideActive",
+            "Manual override active",
+            "status",
+            "Override arbitration and release qualification.",
+        ),
+        (
+            "PowerRestart",
+            "Controller power or warm restart event",
+            "status",
+            "Safe initialization and controlled restart qualification.",
+        ),
+        (
+            "ActuatorProof",
+            "Selected actuator command proof",
+            "status",
+            "Command/feedback disagreement qualification.",
+        ),
+        (
+            "FaultReset",
+            "Operator fault reset",
+            "status",
+            "Manual reset and controlled recovery qualification.",
+        ),
+        (
+            "SensorFailureAlarm",
+            "Sensor invalid or stale alarm",
+            "alarm",
+            "Operator-visible sensor failure cause.",
+        ),
+        (
+            "CommunicationsAlarm",
+            "Required peer communications alarm",
+            "alarm",
+            "Operator-visible communications timeout.",
+        ),
+        (
+            "ManualOverrideIndicator",
+            "Manual override indication",
+            "status",
+            "Visible override ownership evidence.",
+        ),
+        (
+            "ControllerReady",
+            "Controller initialized and ready",
+            "status",
+            "Startup hold and restart evidence.",
+        ),
+        (
+            "ActuatorFailureAlarm",
+            "Actuator proof failure alarm",
+            "alarm",
+            "Operator-visible actuator proof failure.",
+        ),
+        (
+            "FaultLatched",
+            "Latched fault active",
+            "status",
+            "Fault clear, reset, and recovery evidence.",
+        ),
+    )
+    return [
+        _point(
+            point_id,
+            label,
+            role,
+            "boolean",
+            reason=reason,
+            subsystem="resilience",
+        )
+        for point_id, label, role, reason in definitions
+    ]
+
+
 def _terminal_points(*, reheat: bool, values: dict[str, Any]) -> list[dict[str, Any]]:
     points = [
+        *_resilience_points(),
         _point(
             "ZoneTemp",
             "Zone temperature",
@@ -339,6 +562,14 @@ def _terminal_points(*, reheat: bool, values: dict[str, Any]) -> list[dict[str, 
             reason="Terminal-to-AHU temperature reset request.",
             subsystem="system-requests",
         ),
+        _point(
+            "AHUAvailable",
+            "Upstream AHU available",
+            "status",
+            "boolean",
+            reason="Upstream air-source failure and recovery qualification.",
+            subsystem="coordination",
+        ),
     ]
     if reheat:
         points.extend(
@@ -389,6 +620,30 @@ def _terminal_points(*, reheat: bool, values: dict[str, Any]) -> list[dict[str, 
                     "numeric",
                     reason="Terminal-to-plant request for reheat availability.",
                     subsystem="system-requests",
+                ),
+                _point(
+                    "ReheatFailureAlarm",
+                    "Reheat proof failure alarm",
+                    "alarm",
+                    "boolean",
+                    reason="Reheat valve/coil command proof qualification.",
+                    subsystem="alarms",
+                ),
+                _point(
+                    "PlantUnavailableAlarm",
+                    "Heating plant unavailable alarm",
+                    "alarm",
+                    "boolean",
+                    reason="Upstream heating availability qualification.",
+                    subsystem="alarms",
+                ),
+                _point(
+                    "DischargeHighLimitAlarm",
+                    "High discharge-air temperature alarm",
+                    "alarm",
+                    "boolean",
+                    reason="Reheat high-limit and recovery qualification.",
+                    subsystem="alarms",
                 ),
             ]
         )
@@ -519,6 +774,7 @@ def _terminal_scenarios(*, reheat: bool, values: dict[str, Any]) -> list[dict[st
 
 def _ahu_points(values: dict[str, Any]) -> list[dict[str, Any]]:
     points = [
+        *_resilience_points(),
         _point(
             "Occupied",
             "Effective occupancy",
@@ -726,6 +982,78 @@ def _ahu_points(values: dict[str, Any]) -> list[dict[str, Any]]:
             "boolean",
             reason="Freeze-risk indication.",
             subsystem="alarms",
+        ),
+        _point(
+            "EconomizerFailureAlarm",
+            "Economizer sensor or control failure alarm",
+            "alarm",
+            "boolean",
+            reason="Economizer high-limit and sensor-fallback qualification.",
+            subsystem="alarms",
+        ),
+        _point(
+            "MixedAirLowLimitAlarm",
+            "Mixed-air low-limit alarm",
+            "alarm",
+            "boolean",
+            reason="Mixed-air low-limit escalation qualification.",
+            subsystem="alarms",
+        ),
+        _point(
+            "PlantUnavailableAlarm",
+            "Heating or cooling plant unavailable alarm",
+            "alarm",
+            "boolean",
+            reason="Upstream plant availability and recovery qualification.",
+            subsystem="alarms",
+        ),
+        _point(
+            "SimultaneousHeatCoolAlarm",
+            "Simultaneous heating and cooling alarm",
+            "alarm",
+            "boolean",
+            reason="Heating/cooling mutual-exclusion qualification.",
+            subsystem="alarms",
+        ),
+        _point(
+            "ReturnReliefFailureAlarm",
+            "Return or relief path failure alarm",
+            "alarm",
+            "boolean",
+            reason="Return/relief proof and pressure-fallback qualification.",
+            subsystem="alarms",
+        ),
+        _point(
+            "AirflowStationFailureAlarm",
+            "Supply/return airflow station failure alarm",
+            "alarm",
+            "boolean",
+            reason="Airflow-station invalid/stale fallback qualification.",
+            subsystem="alarms",
+        ),
+        _point(
+            "BuildingPressureFailureAlarm",
+            "Building-pressure sensor failure alarm",
+            "alarm",
+            "boolean",
+            reason="Building-pressure invalid/stale fallback qualification.",
+            subsystem="alarms",
+        ),
+        _point(
+            "HeatingPlantAvailable",
+            "Heating plant available",
+            "status",
+            "boolean",
+            reason="Heating-coil plant failure and recovery qualification.",
+            subsystem="plant-requests",
+        ),
+        _point(
+            "CoolingPlantAvailable",
+            "Cooling plant available",
+            "status",
+            "boolean",
+            reason="Cooling-coil plant failure and recovery qualification.",
+            subsystem="plant-requests",
         ),
     ]
 
@@ -954,15 +1282,25 @@ def _ahu_points(values: dict[str, Any]) -> list[dict[str, Any]]:
         )
 
     if _enabled(values.get("ctl.have_frePro")):
-        points.append(
-            _point(
-                "FreezeProtectionStage",
-                "Freeze-protection stage",
-                "status",
-                "numeric",
-                reason="Selected software freeze-protection sequence.",
-                subsystem="safeties",
-            )
+        points.extend(
+            [
+                _point(
+                    "FreezeProtectionStage",
+                    "Freeze-protection stage",
+                    "status",
+                    "numeric",
+                    reason="Selected software freeze-protection sequence.",
+                    subsystem="safeties",
+                ),
+                _point(
+                    "FreezeProtectionAlarm",
+                    "Freeze-protection alarm",
+                    "alarm",
+                    "boolean",
+                    reason="Freeze stage, latch/reset, and recovery qualification.",
+                    subsystem="alarms",
+                ),
+            ]
         )
         if _suffix(values.get("ctl.typFreSta")) == "Hardwired_to_BAS":
             points.append(
@@ -1028,6 +1366,51 @@ def _deduplicate_points(points: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if existing is None or (point["required"] and not existing["required"]):
             unique[point["id"]] = point
     return list(unique.values())
+
+
+def _bind_scenario_io(
+    scenarios: list[dict[str, Any]],
+    points: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    point_ids = {point["id"] for point in points}
+    bound = []
+    for scenario in scenarios:
+        candidates = SCENARIO_IO_CANDIDATES.get(scenario["id"])
+        input_points = (
+            [point for point in candidates["inputs"] if point in point_ids]
+            if candidates is not None
+            else []
+        )
+        output_points = (
+            [point for point in candidates["outputs"] if point in point_ids]
+            if candidates is not None
+            else []
+        )
+        blockers = []
+        if candidates is None:
+            blockers.append("scenario has no audited I/O binding rule")
+        if not input_points:
+            blockers.append("scenario has no available trigger/input point")
+        if not output_points:
+            blockers.append("scenario has no available observed/output point")
+        bound.append(
+            {
+                **scenario,
+                "io_contract": {
+                    "status": "ready" if not blockers else "blocked",
+                    "input_point_candidates": input_points,
+                    "output_point_candidates": output_points,
+                    "audited_input_candidates": (
+                        list(candidates["inputs"]) if candidates is not None else []
+                    ),
+                    "audited_output_candidates": (
+                        list(candidates["outputs"]) if candidates is not None else []
+                    ),
+                    "blockers": blockers,
+                },
+            }
+        )
+    return bound
 
 
 def _ahu_scenarios(values: dict[str, Any]) -> list[dict[str, Any]]:
@@ -1227,6 +1610,7 @@ class CtrlFlowProgrammingPlanner:
             if template_id == AHU_TEMPLATE
             else _terminal_scenarios(reheat=reheat, values=values)
         )
+        scenarios = _bind_scenario_io(scenarios, points)
         family = binding["equipment_family"]
         packs = [pack for pack in self.capabilities.packs if family in pack.equipment_families]
         bounded_family = binding.get("bounded_sequence_family")
@@ -1235,6 +1619,14 @@ class CtrlFlowProgrammingPlanner:
         blockers = []
         if rejected:
             blockers.append("Resolve every rejected or hidden ctrl-flow selection.")
+        missing_scenario_io = [
+            scenario["id"] for scenario in scenarios if scenario["io_contract"]["status"] != "ready"
+        ]
+        if missing_scenario_io:
+            blockers.append(
+                "Define trigger and observed points for scenarios with incomplete I/O "
+                "contracts: " + ", ".join(missing_scenario_io)
+            )
         blockers.extend(
             [
                 "Upload and approve the project sequence of operations; ctrl-flow defines "

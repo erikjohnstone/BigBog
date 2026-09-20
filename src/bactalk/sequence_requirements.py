@@ -974,6 +974,7 @@ def compile_sequence_requirement_review(
                 "title": scenario["title"],
                 "level": scenario["level"],
                 "phrase_coverage_status": scenario["coverage_status"],
+                "io_contract": scenario["io_contract"],
                 "facets": facet_coverage,
                 "all_facets_have_oracle_drafts": bool(facet_coverage)
                 and all(item["executable_oracle_draft_present"] for item in facet_coverage),
@@ -997,10 +998,22 @@ def compile_sequence_requirement_review(
                 if source_facet["id"] == facet["id"]
                 for evidence in source_facet["evidence"]
             ],
-            "authoring_allowed": facet["phrase_mentioned"],
+            "input_point_candidates": scenario["io_contract"][
+                "input_point_candidates"
+            ],
+            "output_point_candidates": scenario["io_contract"][
+                "output_point_candidates"
+            ],
+            "io_contract_status": scenario["io_contract"]["status"],
+            "authoring_allowed": facet["phrase_mentioned"]
+            and scenario["io_contract"]["status"] == "ready",
             "blocking_reason": (
                 "Author an independent baseline/trigger/recovery trajectory using the "
                 "retained point contract."
+                if facet["phrase_mentioned"]
+                and scenario["io_contract"]["status"] == "ready"
+                else "The selected scenario has no complete audited trigger/output point "
+                "contract; extend the programming brief before authoring a test."
                 if facet["phrase_mentioned"]
                 else "The contractor sequence does not mention this required facet; revise "
                 "and re-upload the source before authoring a test."

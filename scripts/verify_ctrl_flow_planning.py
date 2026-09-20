@@ -32,6 +32,20 @@ def _validate_brief(brief: dict[str, Any]) -> None:
         raise RuntimeError("programming brief contains duplicate scenario requirements")
     if not point_ids or not scenario_ids:
         raise RuntimeError("programming brief must contain points and scenarios")
+    for scenario in brief["qualification_plan"]["scenarios"]:
+        io_contract = scenario.get("io_contract", {})
+        if io_contract.get("status") != "ready":
+            raise RuntimeError(f"scenario {scenario['id']} has no complete audited I/O contract")
+        inputs = io_contract.get("input_point_candidates", [])
+        outputs = io_contract.get("output_point_candidates", [])
+        if not inputs or not outputs:
+            raise RuntimeError(f"scenario {scenario['id']} must expose trigger and observed points")
+        unknown_points = (set(inputs) | set(outputs)) - set(point_ids)
+        if unknown_points:
+            raise RuntimeError(
+                f"scenario {scenario['id']} references unknown I/O points: "
+                + ", ".join(sorted(unknown_points))
+            )
     if brief["capability_alignment"]["complete_niagara_job_ready"]:
         raise RuntimeError("design configuration must not claim a complete Niagara job")
     if brief["safety"]["live_writes_enabled"]:
@@ -157,6 +171,7 @@ def main() -> int:
         "point_contracts_proved": point_contracts_proved,
         "required_point_obligations_proved": total_required_point_obligations,
         "sequence_scenario_contracts_proved": scenario_contracts_proved,
+        "scenario_io_contracts_proved": scenario_contracts_proved,
         "reciprocal_fan_dependency_orders_proved": 2,
         "templates": dict(sorted(per_template.items())),
         "complete_niagara_job_ready": False,

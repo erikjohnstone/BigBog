@@ -391,6 +391,15 @@ class CtrlFlowSequenceReconciler:
                         item["label"] for item in facet_results if not item["mentioned"]
                     ],
                     "engineering_note": scenario["reason"],
+                    "io_contract": scenario.get(
+                        "io_contract",
+                        {
+                            "status": "blocked",
+                            "input_point_candidates": [],
+                            "output_point_candidates": [],
+                            "blockers": ["scenario has no audited I/O contract"],
+                        },
+                    ),
                 }
             )
 

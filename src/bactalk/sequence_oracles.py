@@ -614,6 +614,11 @@ def compile_sequence_oracle_approval(
                     value=value,
                     context=f"{case.scenario_id}/{case.facet_id} {phase_name} input",
                 )
+                if point_id not in requirement["input_point_candidates"]:
+                    raise ValueError(
+                        f"{case.scenario_id}/{case.facet_id} input {point_id} is outside the "
+                        "audited scenario I/O contract"
+                    )
         recovered_input_transitions = [
             point_id
             for point_id in case.baseline_inputs
@@ -660,6 +665,11 @@ def compile_sequence_oracle_approval(
                         f"{case.scenario_id}/{case.facet_id} {phase_name} expectation"
                     ),
                 )
+                if expectation.target not in requirement["output_point_candidates"]:
+                    raise ValueError(
+                        f"{case.scenario_id}/{case.facet_id} output {expectation.target} is "
+                        "outside the audited scenario I/O contract"
+                    )
         baseline_outputs = _expectation_values(case.baseline_expectations)
         trigger_outputs = _expectation_values(case.trigger_expectations)
         recovery_outputs = _expectation_values(case.recovery_expectations)
