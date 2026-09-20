@@ -2445,7 +2445,7 @@ export interface components {
             /** Author */
             author?: string | null;
             /** Cases */
-            cases: components["schemas"]["SequenceOracleCaseAuthoring"][];
+            cases?: components["schemas"]["SequenceOracleCaseAuthoring"][];
             /** Facet Cases */
             facet_cases?: components["schemas"]["SequenceFacetOracleAuthoring"][];
             /** Review Artifact Digest */

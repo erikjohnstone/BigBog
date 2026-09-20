@@ -1017,6 +1017,10 @@ def compile_sequence_requirement_review(
         for facet in scenario["facets"]
         if not facet["executable_oracle_draft_present"]
     ]
+    authorable_manual_facet_count = sum(
+        requirement["authoring_allowed"]
+        for requirement in manual_facet_oracle_requirements
+    )
     return {
         "schema": "bactalk.sequence-requirement-review/v1",
         "candidate_digest": candidates["candidate_digest"],
@@ -1066,9 +1070,13 @@ def compile_sequence_requirement_review(
             for facet in scenario["facets"]
         ),
         "manual_facet_oracle_requirements": manual_facet_oracle_requirements,
+        "authorable_manual_facet_count": authorable_manual_facet_count,
         "skipped_relationships": skipped_relationships,
         "blockers": sorted(set(blockers)),
-        "ready_for_independent_oracle_authoring": bool(oracle_drafts) and not blockers,
+        "ready_for_independent_oracle_authoring": bool(
+            oracle_drafts or authorable_manual_facet_count
+        )
+        and not blockers,
         "ready_for_graph_generation": False,
         "ready_for_deployment": False,
         "next_gate": (

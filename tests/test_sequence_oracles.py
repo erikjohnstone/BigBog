@@ -552,6 +552,101 @@ def test_source_bound_boolean_facet_oracle_adds_an_executable_recovery_case(
     ]
 
 
+def test_event_only_sequence_can_author_manual_trajectories_without_fake_numeric_case(
+    tmp_path: Path,
+) -> None:
+    sequence = (
+        "When the smoke shutdown input is active, stop the supply fan and close the outdoor "
+        "air damper. When the smoke input clears, restart the supply fan and open the outdoor "
+        "air damper."
+    )
+    record = _retained_review(tmp_path, sequence)
+    assert record.result["oracle_draft_count"] == 0
+    assert record.result["authorable_manual_facet_count"] > 0
+    assert record.result["ready_for_independent_oracle_authoring"] is True
+
+    point_by_id = {
+        point["id"]: point for point in record.result["point_contract"]["points"]
+    }
+    facet_cases = []
+    for requirement in record.result["manual_facet_oracle_requirements"]:
+        if not requirement["authoring_allowed"]:
+            continue
+        input_point = requirement["input_point_candidates"][0]
+        output_point = requirement["output_point_candidates"][0]
+        input_is_boolean = point_by_id[input_point]["data_type"] == "boolean"
+        output_is_boolean = point_by_id[output_point]["data_type"] == "boolean"
+        facet_cases.append(
+            {
+                "scenario_id": requirement["scenario_id"],
+                "facet_id": requirement["facet_id"],
+                "name": f"{requirement['scenario_title']} event trajectory",
+                "baseline_inputs": {input_point: False if input_is_boolean else 0.0},
+                "trigger_inputs": {input_point: True if input_is_boolean else 1.0},
+                "recovery_inputs": {input_point: False if input_is_boolean else 0.0},
+                "step_seconds": 1.0,
+                "baseline_expectations": [
+                    {
+                        "target": output_point,
+                        "operator": "eq",
+                        "value": False if output_is_boolean else 0.0,
+                    }
+                ],
+                "trigger_expectations": [
+                    {
+                        "target": output_point,
+                        "operator": "eq",
+                        "value": True if output_is_boolean else 1.0,
+                    }
+                ],
+                "recovery_expectations": [
+                    {
+                        "target": output_point,
+                        "operator": "eq",
+                        "value": False if output_is_boolean else 0.0,
+                    }
+                ],
+            }
+        )
+    request = SequenceOracleApprovalRequest.model_validate(
+        {
+            "review_artifact_digest": record.artifact_digest,
+            "author": "Independent Event Test Engineer",
+            "cases": [],
+            "facet_cases": facet_cases,
+        }
+    )
+    result = compile_sequence_oracle_approval(
+        record.id,
+        record.model_dump(mode="json"),
+        request,
+        author="Independent Event Test Engineer",
+        actor_id=None,
+        tenant_id=None,
+        authentication="self-asserted-local",
+    )
+
+    assert result["approved_oracle_gate_passed"] is True
+    assert result["case_count"] == len(facet_cases)
+    assert result["ready_for_graph_generation"] is False
+    assert all(
+        evidence["kind"] == "manual-scenario-facet"
+        for evidence in result["validation_evidence"]
+    )
+
+
+def test_oracle_request_rejects_an_empty_approval() -> None:
+    with pytest.raises(ValueError, match="at least one executable trajectory"):
+        SequenceOracleApprovalRequest.model_validate(
+            {
+                "review_artifact_digest": "a" * 64,
+                "author": "Independent Test Engineer",
+                "cases": [],
+                "facet_cases": [],
+            }
+        )
+
+
 def test_manual_facet_oracle_is_exhaustive_and_rejects_non_recovery(tmp_path: Path) -> None:
     record = _retained_review(tmp_path)
     retained = deepcopy(record.model_dump(mode="json"))

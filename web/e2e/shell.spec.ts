@@ -296,7 +296,7 @@ test('installed controls libraries and contractor environments are transparent',
   }
   await reviewCards.filter({ hasText: 'stop supply fan' }).locator('select').nth(1).selectOption('SupplyFanCommand');
   await page.getByRole('button', { name: 'Submit 6 decisions' }).click();
-  await expect(page.getByText('2 local oracle drafts ready for independent authoring')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText('2 local test trajectories ready for independent authoring')).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText(/graph generation remains disabled/)).toBeVisible();
   await expect(page.getByText('Independent acceptance trajectories')).toBeVisible();
   await page.getByLabel('Independent oracle author').fill('E2E Test Engineer');

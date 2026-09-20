@@ -152,13 +152,17 @@ class SequenceOracleApprovalRequest(BaseModel):
 
     review_artifact_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
     author: str | None = Field(default=None, min_length=2, max_length=120)
-    cases: list[SequenceOracleCaseAuthoring] = Field(min_length=1, max_length=10_000)
+    cases: list[SequenceOracleCaseAuthoring] = Field(
+        default_factory=list, max_length=10_000
+    )
     facet_cases: list[SequenceFacetOracleAuthoring] = Field(
         default_factory=list, max_length=10_000
     )
 
     @model_validator(mode="after")
     def oracle_ids_are_unique(self) -> SequenceOracleApprovalRequest:
+        if not self.cases and not self.facet_cases:
+            raise ValueError("oracle approval must contain at least one executable trajectory")
         ids = [case.oracle_id for case in self.cases]
         if len(ids) != len(set(ids)):
             raise ValueError("sequence oracle authoring contains duplicate oracle IDs")

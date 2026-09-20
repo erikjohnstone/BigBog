@@ -748,6 +748,7 @@ const ctrlFlowSequenceReviewSchema = z.object({
     decisions: z.array(z.record(z.string(), z.unknown())),
   }).passthrough(),
   oracle_draft_count: z.number(),
+  authorable_manual_facet_count: z.number(),
   oracle_drafts: z.array(z.object({
     id: z.string(),
     conditions: z.array(z.object({
