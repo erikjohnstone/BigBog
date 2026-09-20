@@ -12,6 +12,10 @@ from bactalk.integrations.ctrl_flow import CtrlFlowLibrary
 from bactalk.integrations.ctrl_flow_planning import AHU_TEMPLATE
 from bactalk.security import Role, required_role
 from bactalk.sequence_requirements import SequenceRequirementReviewRequest
+from bactalk.sequence_review_repository import (
+    SequenceRequirementReviewRepository,
+    SequenceReviewIntegrityError,
+)
 
 REVIEWABLE_SEQUENCE = """
 If mixed-air temperature falls below 38 °F for 5 minutes, close the outdoor-air damper.
@@ -184,6 +188,17 @@ def test_review_approval_api_rederives_the_uploaded_source(tmp_path: Path) -> No
     assert payload["review"]["authentication"] == "self-asserted-local"
     assert payload["oracle_draft_count"] == 2
     assert payload["ready_for_graph_generation"] is False
+    assert len(payload["review_id"]) == 32
+    assert payload["retention"]["source_bytes_retained"] is True
+    assert payload["retention"]["external_immutable_retention"] is False
+    retained = client.get(f"/api/sequence-requirement-reviews/{payload['review_id']}")
+    assert retained.status_code == 200, retained.text
+    record = retained.json()
+    assert record["result"]["review_digest"] == payload["review_digest"]
+    assert record["source_sha256"] == document.sha256
+    listing = client.get("/api/sequence-requirement-reviews")
+    assert listing.status_code == 200, listing.text
+    assert listing.json()["reviews"][0]["id"] == payload["review_id"]
     assert (
         required_role(
             "POST",
@@ -191,3 +206,60 @@ def test_review_approval_api_rederives_the_uploaded_source(tmp_path: Path) -> No
         )
         is Role.APPROVER
     )
+
+
+def test_retained_review_detects_source_and_manifest_tampering(tmp_path: Path) -> None:
+    document, reconciliation = _inspection()
+    result = CtrlFlowLibrary().review_sequence_requirements(
+        AHU_TEMPLATE,
+        {},
+        document,
+        SequenceRequirementReviewRequest.model_validate(_review_payload(reconciliation)),
+        reviewer="Controls Engineer",
+        actor_id=None,
+        tenant_id=None,
+        authentication="self-asserted-local",
+    )
+    repository = SequenceRequirementReviewRepository(tmp_path / "reviews")
+    record = repository.save(
+        template_id=AHU_TEMPLATE,
+        selections={},
+        source_content=REVIEWABLE_SEQUENCE.encode(),
+        source_filename=document.filename,
+        source_media_type=document.media_type,
+        result=result,
+    )
+
+    assert repository.get(record.id) == record
+    assert repository.source(record.id) == REVIEWABLE_SEQUENCE.encode()
+    assert repository.list() == [record]
+
+    source = tmp_path / "reviews" / record.id / "source.bin"
+    source.write_bytes(b"changed")
+    with pytest.raises(SequenceReviewIntegrityError, match="source hash changed"):
+        repository.get(record.id)
+
+
+def test_retained_review_rejects_mismatched_source_bytes(tmp_path: Path) -> None:
+    document, reconciliation = _inspection()
+    result = CtrlFlowLibrary().review_sequence_requirements(
+        AHU_TEMPLATE,
+        {},
+        document,
+        SequenceRequirementReviewRequest.model_validate(_review_payload(reconciliation)),
+        reviewer="Controls Engineer",
+        actor_id=None,
+        tenant_id=None,
+        authentication="self-asserted-local",
+    )
+    repository = SequenceRequirementReviewRepository(tmp_path / "reviews")
+
+    with pytest.raises(SequenceReviewIntegrityError, match="source hash does not match"):
+        repository.save(
+            template_id=AHU_TEMPLATE,
+            selections={},
+            source_content=b"different source",
+            source_filename=document.filename,
+            source_media_type=document.media_type,
+            result=result,
+        )

@@ -716,6 +716,7 @@ const ctrlFlowSequenceReconciliationSchema = z.object({
 
 const ctrlFlowSequenceReviewSchema = z.object({
   schema: z.literal('bactalk.sequence-requirement-review/v1'),
+  review_id: z.string(),
   candidate_digest: z.string(),
   review_digest: z.string(),
   configuration_digest: z.string(),
@@ -742,6 +743,14 @@ const ctrlFlowSequenceReviewSchema = z.object({
   ready_for_graph_generation: z.literal(false),
   ready_for_deployment: z.literal(false),
   next_gate: z.string(),
+  retention: z.object({
+    schema: z.literal('bactalk.sequence-requirement-review-record/v1'),
+    artifact_digest: z.string(),
+    created_at: z.string(),
+    source_bytes_retained: z.literal(true),
+    storage: z.literal('append-only-local-hash-verified'),
+    external_immutable_retention: z.literal(false),
+  }),
 }).passthrough();
 
 const graphicsModelSchema = z.object({

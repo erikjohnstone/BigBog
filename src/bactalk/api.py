@@ -84,6 +84,11 @@ from bactalk.projects import (
 from bactalk.repository import RunRepository
 from bactalk.security import AuditLog, Principal, SecurityConfig, required_role
 from bactalk.sequence_requirements import SequenceRequirementReviewRequest
+from bactalk.sequence_review_repository import (
+    SequenceRequirementReviewRecord,
+    SequenceRequirementReviewRepository,
+    SequenceReviewIntegrityError,
+)
 from bactalk.service import (
     ApprovalRequiredError,
     ArtifactChangedError,
@@ -262,6 +267,9 @@ def create_app(
     capabilities = CapabilityRegistry()
     project_preflight = ProjectPreflight(capabilities)
     project_repository = ProjectBuildRepository(root.parent / "projects")
+    sequence_review_repository = SequenceRequirementReviewRepository(
+        root.parent / "sequence-requirement-reviews"
+    )
     project_builder = ProjectBuildService(project_repository, service, capabilities)
     buildingmotif = BuildingMotifAdapter()
     aixocat_library = AixocatLibrary()
@@ -308,6 +316,17 @@ def create_app(
                 detail="reviewer is required while local-development authentication is active",
             )
         return submitted_reviewer, None, None, "self-asserted-local"
+
+    def retained_review_visible(
+        http_request: Request,
+        record: SequenceRequirementReviewRecord,
+    ) -> bool:
+        if not security.enabled:
+            return True
+        principal: Principal | None = getattr(http_request.state, "principal", None)
+        return principal is not None and record.result.get("review", {}).get(
+            "tenant_id"
+        ) == principal.tenant_id
 
     @app.middleware("http")
     async def enforce_identity_and_audit(request: Request, call_next):
@@ -600,12 +619,13 @@ def create_app(
                 http_request,
                 parsed_review.reviewer,
             )
+            source_content = await sequence_document.read()
             document = parse_sequence_document(
-                await sequence_document.read(),
+                source_content,
                 sequence_document.filename or "sequence.txt",
                 sequence_document.content_type,
             )
-            return ctrl_flow.review_sequence_requirements(
+            result = ctrl_flow.review_sequence_requirements(
                 template_id,
                 parsed_selections,
                 document,
@@ -615,6 +635,26 @@ def create_app(
                 tenant_id=tenant_id,
                 authentication=authentication,
             )
+            record = sequence_review_repository.save(
+                template_id=template_id,
+                selections=parsed_selections,
+                source_content=source_content,
+                source_filename=document.filename,
+                source_media_type=document.media_type,
+                result=result,
+            )
+            return {
+                **result,
+                "review_id": record.id,
+                "retention": {
+                    "schema": record.schema,
+                    "artifact_digest": record.artifact_digest,
+                    "created_at": record.created_at.isoformat(),
+                    "source_bytes_retained": True,
+                    "storage": "append-only-local-hash-verified",
+                    "external_immutable_retention": False,
+                },
+            }
         except FileNotFoundError as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
         except CtrlFlowError as exc:
@@ -622,6 +662,56 @@ def create_app(
             raise HTTPException(status_code=status, detail=str(exc)) from exc
         except (IntakeError, ValueError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.get("/api/sequence-requirement-reviews")
+    def list_sequence_requirement_reviews(http_request: Request) -> dict:
+        try:
+            records = [
+                record
+                for record in sequence_review_repository.list()
+                if retained_review_visible(http_request, record)
+            ]
+            return {
+                "schema": "bactalk.sequence-requirement-review-list/v1",
+                "count": len(records),
+                "reviews": [
+                    {
+                        "id": record.id,
+                        "template_id": record.template_id,
+                        "created_at": record.created_at.isoformat(),
+                        "source_filename": record.source_filename,
+                        "source_sha256": record.source_sha256,
+                        "candidate_digest": record.candidate_digest,
+                        "review_digest": record.review_digest,
+                        "artifact_digest": record.artifact_digest,
+                        "reviewer": record.result["review"]["reviewer"],
+                        "blocker_count": len(record.result.get("blockers", [])),
+                        "oracle_draft_count": record.result.get("oracle_draft_count", 0),
+                        "ready_for_independent_oracle_authoring": record.result.get(
+                            "ready_for_independent_oracle_authoring", False
+                        ),
+                    }
+                    for record in records
+                ],
+            }
+        except SequenceReviewIntegrityError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+    @app.get("/api/sequence-requirement-reviews/{review_id}")
+    def get_sequence_requirement_review(review_id: str, http_request: Request) -> dict:
+        try:
+            record = sequence_review_repository.get(review_id)
+        except KeyError as exc:
+            raise HTTPException(
+                status_code=404, detail="sequence requirement review not found"
+            ) from exc
+        except (SequenceReviewIntegrityError, ValueError) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        if not retained_review_visible(http_request, record):
+            raise HTTPException(
+                status_code=404, detail="sequence requirement review not found"
+            )
+        return record.model_dump(mode="json")
 
     @app.post("/api/library/g36/controllers/{controller_id}/translate")
     def translate_g36_controller(
