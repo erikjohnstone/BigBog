@@ -1,0 +1,38 @@
+{
+  "source": "contractor export example",
+  "captured_at": "2026-09-19T12:00:00Z",
+  "devices": [
+    {
+      "device_instance": 120012,
+      "address": "192.0.2.12/24:47808",
+      "name": "VAV-12 Controller",
+      "vendor_id": 999,
+      "objects": [
+        {
+          "object_id": "analog-input,1",
+          "name": "Zone Temperature",
+          "data_type": "numeric",
+          "writable": false,
+          "units": "degF",
+          "present_value": 76.0
+        },
+        {
+          "object_id": "analog-output,1",
+          "name": "Damper Command",
+          "data_type": "numeric",
+          "writable": true,
+          "units": "%",
+          "present_value": 0.0
+        },
+        {
+          "object_id": "analog-output,2",
+          "name": "Reheat Valve Command",
+          "data_type": "numeric",
+          "writable": true,
+          "units": "%",
+          "present_value": 0.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+# Deliberately isolated from the BACTalk compiler environment.
+# The current VOLTTRON release candidate is validated on Python 3.11 only.
+poetry==2.4.3
+pydantic==2.13.5
+tzlocal==4.3.1
+volttron==11.0.0rc3
+volttron-platform-driver==2.0.0rc7
+volttron-lib-bacnet-driver==2.0.0rc3
+volttron-lib-fake-driver==2.0.0rc0
+volttron-testing==0.5.1rc4

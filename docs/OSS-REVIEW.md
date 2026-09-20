@@ -1,0 +1,46 @@
+# Open-source integration review
+
+This is an engineering screen, not legal advice. Recheck the exact commit and all transitive dependencies before a commercial release.
+
+| Project | Role | Reported license | Product treatment |
+| --- | --- | --- | --- |
+| [pybog](https://github.com/bbartling/pybog) | Niagara `.bog` compiler, analyzer, comparator | MIT | Pinned direct dependency now. Plan to fork, expand the checked slot catalog, and run Niagara-version compatibility fixtures. |
+| [n4-hvac-optimization-blocks](https://github.com/bbartling/n4-hvac-optimization-blocks) | Niagara ProgramObject and `.bog` references for G36, plant logic, scheduling, FDD, and optimization | MIT | Pinned, integrity-checked, and exposed read-only through the product. Treat compiled classes as immutable references; recompile modified/generated source in licensed Workbench and retain runtime evidence. |
+| [AixOCAT](https://github.com/RWTH-EBC/AixOCAT) | IEC 61131-3 control primitives and heat-pump/hydronic equipment implementation references | MIT | Sparse source-only checkout: bundled vendor compiled libraries are excluded. The product parses 211 typed POUs and six reviewed, source-bound adapters currently lower to behavior-verified IR and Niagara `.bog`; all other POUs fail closed at translation. |
+| [Open Control Library](https://github.com/jscott3201/open-control-library) | Executable CXF commissioning/FDD rules and scenario vectors across 14 equipment families | MIT OR Apache-2.0 | Pinned with both license files. All 137 rules pass their upstream engine and BACTalk IR vectors; 113 also compile to stock Niagara blocks. Do not represent fault routines as complete equipment sequences. |
+| [Open Control Engine](https://github.com/jscott3201/open-control-engine) | Deterministic ASHRAE 231P CXF/CDL execution oracle | MIT OR Apache-2.0 | Keep pinned as an independent pre-1.0 validation runtime. Its execution coverage does not by itself qualify a Niagara target. |
+| [LBNL modelica-json](https://github.com/lbl-srg/modelica-json) | Modelica/CDL to JSON/CXF | Modified BSD-3-Clause | Version-pinned external build component with a source-controlled null-type traversal guard. Both CDL and annotated Modelica-container extraction are contract-tested; retain notices and publish/provide the patch with distributed builds. |
+| [LBNL Buildings Library](https://github.com/lbl-srg/modelica-buildings) | CDL/Guideline 36 plus central-plant control source and building models | Revised BSD-3-Clause plus an enhancements paragraph and third-party notices | Commercial use is permitted by the project notice. The pinned sparse checkout includes OBC and `Templates/Plants`; four plant controllers now pass executable product contracts while the rest remain catalog-only. Pin a revision, retain notices, and review selected files and transitive tools. |
+| [Rumoca](https://github.com/CogniPilot/rumoca) | Modelica parse, resolve, instantiate, flatten, DAE, and simulation toolchain | Apache-2.0 | Product-wired as an isolated, allowlisted G36 build tool. It is under active development; pin source, retain notices, and keep compiler limitations in the evidence ledger. |
+| [Modelica Standard Library](https://github.com/modelica/ModelicaStandardLibrary) | Standard Modelica types and packages required by the compiler | BSD-3-Clause | Pinned to 4.1.0 as a reproducible Rumoca input; not an equipment sequence library. |
+| [BOPTEST](https://github.com/ibpsa/project1-boptest) | Building simulation service and BACnet test surface | Revised BSD-3-Clause plus an enhancements paragraph and component notices | Commercially usable with notice conditions. Run as a separately deployed service for operational isolation and preserve its component notices. |
+| [pyfunnel](https://github.com/lbl-srg/funnel) | Time-series tolerance scoring | Revised BSD-3-Clause plus an enhancements paragraph | Commercially usable with notice conditions; use as an optional scoring process. |
+| [BACpypes3](https://github.com/JoelBender/BACpypes3) | BACnet discovery and protocol | MIT reported by project/package metadata | Preferred Python BACnet boundary. Keep all write operations disabled by default and separately authorized. |
+| [BACnet Simulator](https://github.com/quentinnippert/bacnet-simulator) | Independent BACnet/IP virtual HVAC devices, priorities, COV, scenarios, and REST observation | MIT | Pinned in an isolated Python 3.11 environment. BACTalk projects every imported scan into its device format for an independent laboratory oracle; it is not BTL certification or a live-building transport. |
+| [BAC0](https://github.com/ChristianTremblay/BAC0) | BAS-oriented BACnet workflows and hardware simulation | LGPL-3.0 | Optional, dynamically linked dependency. Avoid modifying/vendoring it unless source-offer obligations are planned. |
+| [bacnet-stack](https://github.com/bacnet-stack/bacnet-stack) | Embedded/edge BACnet | GPL-2.0-or-later with linking exception in repository notices | Not needed for the Python product path. Review exception and modified-file obligations before edge use. |
+| [Brick](https://github.com/BrickSchema/Brick) | Building semantics | BSD-3-Clause | Recommended ontology and validation layer. Preserve notices. |
+| [Haxall](https://github.com/haxall/haxall) | Haystack/Xeto runtime | AFL-3.0 | Optional service/tool; confirm AFL patent/attribution requirements with counsel. |
+| [Phable](https://pypi.org/project/phable/) | Python Haystack/Xeto client and validation | MIT in current wheel metadata and bundled license | Good optional semantic-validation adapter; pin a release because it is still pre-1.0. |
+| [Open-FDD](https://github.com/bbartling/open-fdd) | Commissioning and FDD patterns | MIT | Good later integration for commissioning/FDD; pin its rapidly moving pre-stable stack. |
+| [OpenModelica](https://github.com/OpenModelica/OpenModelica) | Modelica compiler | OSMC Public License/AGPL-3.0 and component-specific terms | Keep outside the shipped application as a separately installed build tool or service pending counsel review. |
+| [Eclipse VOLTTRON](https://github.com/eclipse-volttron/volttron-core) | Optional Linux edge data plane, driver framework, message bus, historian and agent lifecycle | Apache-2.0 | Keep isolated from the compiler. Current modular packages are alpha/RC; pin Python 3.11 and exact component versions. Do not use the archived Actuator as a production safety boundary. |
+| [openpyxl](https://foss.heptapod.net/openpyxl/openpyxl) | Read contractor XLSX point schedules | MIT | Pinned direct dependency. Load workbooks read-only with links disabled; retain archive-size and XML-declaration guards. |
+| [pypdf](https://github.com/py-pdf/pypdf) | Extract contractor sequence text from PDF | BSD-3-Clause | Pinned direct dependency. Encrypted files, oversized files, excessive page counts, and extraction overrun fail closed. OCR is not yet included. |
+| [python-docx](https://github.com/python-openxml/python-docx) | Extract paragraphs and tables from contractor DOCX sequences | MIT | Pinned direct dependency behind Office ZIP path, expansion-ratio, size, and XML-declaration validation. |
+| [tzdata](https://github.com/python/tzdata) | Portable IANA timezone data for schedule requirements | Apache-2.0 | Pinned direct dependency so validation does not rely on host operating-system timezone files. |
+
+## Additional commercially useful projects to evaluate
+
+- [EnergyPlus](https://github.com/NREL/EnergyPlus) (BSD-3-Clause): additional plant/building validation and regression cases.
+- [Ladybug Tools honeybee-energy](https://github.com/ladybug-tools/honeybee-energy) (AGPL-3.0): useful workflows, but the network-copyleft license is a poor default for a proprietary hosted core; isolate or avoid absent legal guidance.
+- [Project Haystack](https://github.com/Project-Haystack/haystack-defs) definitions: validate the exact repository license before embedding definitions into distributed artifacts.
+# Added validation and test tooling
+
+| Project | Use in BACTalk | License | Commercial posture |
+|---|---|---|---|
+| RDFLib | Generate and inspect Brick RDF graphs | BSD-3-Clause | Permissive; include notices when redistributed. |
+| py-brickschema | Bundle the Brick ontology and its native validation rules | BSD-3-Clause | Permissive; include notices when redistributed. |
+| pySHACL | Validate BACTalk semantic graphs with local SHACL shapes | Apache-2.0 | Permissive; include license/notice obligations. |
+| Hypothesis | Development-only property tests for control invariants | MPL-2.0 | Commercial use permitted; keep as an unmodified test dependency. |
+| Schemathesis | Development-only OpenAPI property/fuzz tests | MIT | Permissive. |

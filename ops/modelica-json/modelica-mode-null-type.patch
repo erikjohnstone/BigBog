@@ -1,0 +1,23 @@
+diff --git a/lib/cxfExtractor.js b/lib/cxfExtractor.js
+index c9a5479..3900ef0 100644
+--- a/lib/cxfExtractor.js
++++ b/lib/cxfExtractor.js
+@@ -578,4 +578,9 @@ function getCxfGraph (instances, requiredReferences, blockName, generateElementa
+ 
+ function getInstanceNode (graph, element, newInstances, s231Ns, cxfPrefix) {
+   let node = null
++  // Modelica permits insignificant whitespace in array subscripts (for example
++  // ``outPort[nSta + 1]``), but RDF NamedNode IRIs reject raw spaces. Normalize
++  // only whitespace, which cannot be part of an unquoted Modelica identifier,
++  // before constructing or looking up the connector node.
++  element = element.replace(/\s+/g, '')
+   // TODO: uncomment to translate flatten vectors [] to _
+@@ -1027,7 +1032,7 @@ function findControlInstance (objects, directory, parentInstance = '') {
+         controlInstanceDict = instanceDict
+       }
+     }
+-    if (!found && 'type_specifier' in instanceDict && instanceDict.type_specifier !== undefined) {
++    if (!found && 'type_specifier' in instanceDict && instanceDict.type_specifier !== undefined && instanceDict.type_specifier !== null) {
+       const instanceTypeSpecifier = instanceDict.type_specifier
+       if (instanceTypeSpecifier !== 'Modelica' && !instanceTypeSpecifier.startsWith('Modelica.') && !instanceTypeSpecifier.startsWith('Buildings.Controls.OBC.CDL')) {
+         const moFiles = ut.getMoFiles(instanceTypeSpecifier, directory)

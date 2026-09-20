@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#111a1c" />
+    <title>BACTalk — Controls Workbench</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <a class="brand" href="/" aria-label="BACTalk home">
+          <span class="brand-mark"><i></i><i></i><i></i></span>
+          <span><b>BAC</b>Talk<small>controls workbench</small></span>
+        </a>
+        <nav>
+          <button class="nav-item active"><span class="nav-icon">⌁</span>Runs</button>
+          <button class="nav-item" disabled><span class="nav-icon">◇</span>Libraries</button>
+          <button class="nav-item" disabled><span class="nav-icon">◎</span>Connections</button>
+        </nav>
+        <div class="safety-card">
+          <div class="safety-title"><span class="status-dot"></span>Offline-safe</div>
+          <p>No live building writes are implemented. Export requires human approval.</p>
+        </div>
+        <div class="version">BACTalk v0.1.0</div>
+      </aside>
+
+      <main>
+        <header class="topbar">
+          <div>
+            <div class="eyebrow">ENGINEERING WORKSPACE</div>
+            <h1>Programming runs</h1>
+          </div>
+          <div class="top-actions">
+            <button id="open-chat" class="button secondary"><span>✦</span> AI programmer</button>
+            <button id="import-job" class="button secondary"><span>⇧</span> Import contractor job</button>
+            <button id="new-generalist-demo" class="button primary"><span>＋</span> Build AHU demo</button>
+          </div>
+        </header>
+
+        <section id="empty-state" class="empty-state hidden">
+          <div class="empty-icon"><span>⌁</span></div>
+          <h2>No programming runs yet</h2>
+          <p>Build the equipment-neutral AHU example to generate a typed Niagara wiresheet, run acceptance tests, and review the artifact.</p>
+          <button class="button primary generalist-demo-trigger">Build AHU demo</button>
+        </section>
+
+        <section id="workspace" class="workspace hidden">
+          <div class="run-strip">
+            <div class="run-picker">
+              <label for="run-select">RUN</label>
+              <select id="run-select"></select>
+            </div>
+            <div id="run-status" class="pill"></div>
+            <div class="hash"><span>SHA-256</span><code id="artifact-hash"></code></div>
+          </div>
+
+          <div class="summary-grid">
+            <article class="summary-card accent">
+              <div class="card-label">JOB</div>
+              <h2 id="job-name"></h2>
+              <p id="site-name"></p>
+            </article>
+            <article class="summary-card">
+              <div class="card-label">SEQUENCE</div>
+              <h3 id="sequence-name"></h3>
+              <p id="sequence-version"></p>
+            </article>
+            <article class="summary-card">
+              <div class="card-label">PROGRAM</div>
+              <div class="metric"><strong id="block-count">—</strong><span>blocks</span></div>
+              <div class="metric"><strong id="link-count">—</strong><span>links</span></div>
+            </article>
+            <article class="summary-card">
+              <div class="card-label">TESTS</div>
+              <div class="test-score"><strong id="pass-count">—</strong><span id="test-total">scenarios</span></div>
+              <p id="test-engine"></p>
+            </article>
+          </div>
+
+          <div class="tabs" role="tablist">
+            <button class="tab active" data-tab="graph">Wiresheet</button>
+            <button class="tab" data-tab="tests">Test results</button>
+            <button class="tab" data-tab="changes">Changes</button>
+            <button class="tab" data-tab="deliverables">Deliverables</button>
+            <button class="tab" data-tab="points">Point mapping</button>
+            <button class="tab" data-tab="edge">Edge runtime</button>
+            <button class="tab" data-tab="reference">Reference stack</button>
+          </div>
+
+          <section id="graph-panel" class="panel tab-panel">
+            <div class="panel-head">
+              <div><span class="panel-kicker">TYPED CONTROL GRAPH</span><h2 id="graph-title">Niagara wiresheet</h2></div>
+              <div class="canvas-toolbar">
+                <div class="legend"><span><i class="legend-dot io"></i>I/O</span><span><i class="legend-dot logic"></i>Logic</span><span><i class="legend-dot output"></i>Output</span></div>
+                <button id="zoom-out" class="canvas-button" title="Zoom out">−</button>
+                <span id="zoom-level">100%</span>
+                <button id="zoom-in" class="canvas-button" title="Zoom in">＋</button>
+                <button id="zoom-fit" class="canvas-button fit" title="Fit graph">Fit</button>
+              </div>
+            </div>
+            <div class="graph-workspace">
+              <div id="graph-canvas" class="graph-canvas">
+                <div id="graph-stage-wrap"><div id="graph-stage"><svg id="graph-svg"></svg><div id="graph-nodes"></div></div></div>
+              </div>
+              <aside id="node-inspector" class="node-inspector">
+                <span class="panel-kicker">NODE INSPECTOR</span>
+                <h3>Select a block</h3>
+                <p>Click a block to inspect its typed ports, configuration, and connections.</p>
+              </aside>
+            </div>
+          </section>
+
+          <section id="tests-panel" class="panel tab-panel hidden">
+            <div class="panel-head"><div><span class="panel-kicker">CLOSED-LOOP CHECKS</span><h2>Acceptance results</h2></div></div>
+            <div id="agent-loop-summary" class="agent-loop-summary"></div>
+            <div id="agent-attempts" class="agent-attempts"></div>
+            <div id="test-coverage" class="test-coverage"></div>
+            <div id="scenario-list" class="scenario-list"></div>
+          </section>
+
+          <section id="changes-panel" class="panel tab-panel hidden">
+            <div class="panel-head"><div><span class="panel-kicker">REVIEW SURFACE</span><h2>Proposed changes</h2></div></div>
+            <div id="change-list" class="change-list"></div>
+          </section>
+
+          <section id="deliverables-panel" class="panel tab-panel hidden">
+            <div class="panel-head"><div><span class="panel-kicker">SIGNED REVIEW PACKAGE</span><h2>Generated artifacts and target gaps</h2></div></div>
+            <div id="deliverable-summary" class="edge-summary"></div>
+            <div id="deliverable-coverage" class="reference-components"></div>
+            <div id="deliverable-blockers" class="change-list"></div>
+          </section>
+
+          <section id="points-panel" class="panel tab-panel hidden">
+            <div class="panel-head"><div><span class="panel-kicker">SEMANTIC MAPPING</span><h2>Points and BACnet objects</h2></div></div>
+            <div class="table-wrap"><table><thead><tr><th>Point</th><th>Role</th><th>Type</th><th>BACnet</th><th>Niagara binding</th><th>Brick</th></tr></thead><tbody id="points-table"></tbody></table></div>
+          </section>
+
+          <section id="edge-panel" class="panel tab-panel hidden">
+            <div class="panel-head"><div><span class="panel-kicker">EDGE + NIAGARA READBACK</span><h2>Read-only integration artifacts</h2></div><div class="panel-actions"><button id="probe-bacnet-lab" class="button secondary" hidden>Talk to virtual BACnet device</button><a id="edge-manifest" href="#" hidden>VOLTTRON manifest</a></div></div>
+            <div id="edge-summary" class="edge-summary"></div>
+            <div id="bacnet-probe-result" class="bacnet-probe-result hidden"></div>
+            <div class="table-wrap"><table><thead><tr><th>Device</th><th>Points</th><th>Registry</th><th>Config</th><th>Policy</th></tr></thead><tbody id="edge-devices"></tbody></table></div>
+            <div class="reference-divider"><span class="panel-kicker">NIAGARA SERVICE CONTRACTS</span><h3>Semantic readback and alarm installation</h3></div>
+            <div id="niagara-integrations" class="reference-components"></div>
+          </section>
+
+          <section id="reference-panel" class="panel tab-panel hidden">
+            <div class="panel-head"><div><span class="panel-kicker">CAPABILITY &amp; EVIDENCE LEDGER</span><h2>What is installed, wired, and actually qualified</h2></div></div>
+            <div id="readiness-banner" class="readiness-banner"></div>
+            <div id="integration-audit" class="edge-summary"></div>
+            <div id="integration-audit-components" class="reference-components"></div>
+            <div id="readiness-components" class="readiness-components"></div>
+            <div class="reference-divider"><span class="panel-kicker">EQUIPMENT PACKS</span><h3>Compile and qualification coverage</h3></div>
+            <div id="capability-summary" class="reference-summary"></div>
+            <div id="capability-packs" class="reference-components"></div>
+            <div id="equipment-families" class="equipment-families"></div>
+            <div class="reference-divider"><span class="panel-kicker">SEQUENCE SUPPLY CHAIN</span><h3>Reference sources and test oracles</h3></div>
+            <div id="reference-summary" class="reference-summary"></div>
+            <div id="reference-components" class="reference-components"></div>
+          </section>
+
+          <footer class="approval-bar">
+            <div class="approval-copy">
+              <span id="approval-icon" class="approval-icon">!</span>
+              <div><strong id="approval-title">Human review required</strong><p id="approval-detail">Confirm the wiresheet and test evidence before export.</p></div>
+            </div>
+            <div class="approval-actions">
+              <input id="reviewer" type="text" placeholder="Reviewer name" aria-label="Reviewer name" />
+              <button id="reject" class="button reject">Reject candidate</button>
+              <button id="approve" class="button approve">Approve artifact</button>
+              <a id="export" class="button secondary disabled" href="#" aria-disabled="true">Export .bog</a>
+              <a id="bundle" class="button secondary disabled" href="#" aria-disabled="true">Review bundle</a>
+            </div>
+          </footer>
+        </section>
+      </main>
+    </div>
+    <dialog id="import-dialog" class="import-dialog">
+      <form id="import-form">
+        <div class="dialog-head">
+          <div><span class="panel-kicker">NEW PROGRAMMING RUN</span><h2>Import contractor job</h2></div>
+          <button id="close-import" class="icon-button" type="button" aria-label="Close">×</button>
+        </div>
+        <p class="dialog-intro">Supply a contractor points list and sequence document, then optionally attach a BACnet scan, the shop’s baseline Niagara <code>.bog</code>, and a signed contractor environment pack containing declared modules, palettes, and graphics. Exact source files are retained and bound to the reviewed artifact hash.</p>
+        <div class="form-grid">
+          <label><span>Job name</span><input name="name" required maxlength="200" placeholder="North Wing VAV retrofit" /></label>
+          <label><span>Site</span><input name="site" required maxlength="200" placeholder="Example Campus" /></label>
+          <label><span>Equipment name</span><input name="equipment_name" required maxlength="120" pattern="[A-Za-z_][A-Za-z0-9_]*" placeholder="VAV_12" /></label>
+          <label><span>Sequence family</span><select name="sequence_family">
+            <option value="G36_VAV_REHEAT">G36 VAV reheat</option>
+            <option value="AUTO">Detect from sequence document</option>
+            <option value="AI_CUSTOM">AI custom · engineer-tested</option>
+            <option value="LBNL_PLANT_CONTROLLER">LBNL plant controller · 38 qualified models</option>
+            <option value="LBNL_G36_CONTROLLER">LBNL G36 controller · configured source lane</option>
+            <option value="CUSTOM_AHU_SAFETY_COOLING">AHU safety + cooling</option>
+            <option value="AHU_DUCT_STATIC_PI">AHU duct static PI</option>
+            <option value="EXHAUST_FAN_PROOF">Exhaust fan proof</option>
+            <option value="TWO_PUMP_AVAILABILITY_SELECTOR">Two-pump availability selector</option>
+          </select></label>
+          <label><span>Sequence version / source</span><input name="sequence_version" maxlength="200" value="Contractor sequence of operations" /></label>
+          <label class="controller-library-field hidden"><span>Controls library</span><select name="sequence_library"><option value="">Not selected</option><option value="plant_controls">LBNL plant controls</option><option value="g36">LBNL G36 controls</option></select></label>
+          <label class="controller-library-field hidden"><span>Controller ID</span><input name="controller_id" list="library-controller-options" maxlength="240" pattern="[A-Za-z][A-Za-z0-9_.]*" placeholder="HeatPumps.AirToWater" /><datalist id="library-controller-options"></datalist></label>
+          <label class="controller-library-field hidden"><span>Execution profile</span><select name="execution_profile"><option value="modelica_exact">Modelica exact</option><option value="host_tick_v1">Niagara host tick</option></select></label>
+          <div class="controller-library-field hidden"><span class="panel-kicker">EXACT INTERFACE</span><button id="download-controller-template" class="button secondary" type="button">Download point template</button></div>
+          <label class="wide"><span>Sequence parameters · JSON</span><textarea name="sequence_parameters" rows="3">{"loop_span_f":3,"minimum_damper_pct":20,"high_zone_temp_f":80}</textarea></label>
+          <label class="wide"><span>Alarm, schedule, history, graphics &amp; shop requirements · JSON</span><textarea name="deliverable_requirements" rows="3">{}</textarea></label>
+          <label class="wide"><span>Acceptance tests · JSON array <b>required for AI custom</b></span><textarea name="acceptance_tests" rows="4">[]</textarea></label>
+          <label class="file-field"><span>Points list · CSV or XLSX <b>required</b></span><input name="points_file" type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required /></label>
+          <label class="file-field"><span>Sequence document</span><input name="sequence_document" type="file" accept=".txt,.md,.json,.docx,.pdf,text/plain,text/markdown,application/json,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf" /></label>
+          <label class="file-field"><span>BACnet scan · JSON</span><input name="bacnet_scan" type="file" accept=".json,application/json" /></label>
+          <label class="file-field"><span>Shop template · .bog</span><input name="template_bog" type="file" accept=".bog,application/zip" /></label>
+          <label class="file-field"><span>Niagara environment pack · ZIP</span><input name="environment_pack" type="file" accept=".zip,application/zip" /></label>
+          <label class="wide"><span>Engineer notes</span><textarea name="notes" rows="2" maxlength="5000" placeholder="Scope, assumptions, and review notes"></textarea></label>
+        </div>
+        <div id="intake-preview" class="intake-preview hidden"></div>
+        <div class="dialog-safety"><span class="status-dot"></span>No live BACnet discovery or writes occur during import.</div>
+        <div class="dialog-actions"><button id="cancel-import" class="button secondary" type="button">Cancel</button><button id="inspect-intake" class="button secondary" type="button">Inspect mapping</button><button id="submit-import" class="button primary" type="submit">Build and test</button></div>
+      </form>
+    </dialog>
+    <aside id="chat-drawer" class="chat-drawer" aria-hidden="true">
+      <div class="chat-head">
+        <div><span class="panel-kicker">PROPOSAL-ONLY AGENT</span><h2>AI programmer</h2></div>
+        <button id="close-chat" class="icon-button" type="button" aria-label="Close">×</button>
+      </div>
+      <div id="ai-status" class="ai-status">Checking Cerebras configuration…</div>
+      <div class="chat-boundary"><strong>Human-gated boundary</strong><span>The model can explain or propose a complete graph. Every proposal becomes a separate run and must pass deterministic tests before review.</span></div>
+      <div id="chat-messages" class="chat-messages">
+        <div class="chat-message assistant">Ask how the selected program works, or request a change. I cannot write to a live building.</div>
+      </div>
+      <form id="chat-form" class="chat-form">
+        <textarea id="chat-input" maxlength="5000" rows="4" placeholder="Example: Add an occupied duct-pressure safety interlock and explain the test coverage."></textarea>
+        <button id="send-chat" class="button primary" type="submit">Propose and test</button>
+      </form>
+    </aside>
+    <div id="chat-scrim" class="chat-scrim hidden"></div>
+    <div id="toast" class="toast hidden" role="status"></div>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

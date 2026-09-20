@@ -1,0 +1,59 @@
+{
+  "acceptance_tests": [
+    {
+      "expectations": [
+        {
+          "operator": "eq",
+          "target": "y",
+          "tolerance": 0.0,
+          "value": 10.0
+        }
+      ],
+      "inputs": {
+        "u": 10.0,
+        "u1": false
+      },
+      "name": "passes input while hold is inactive"
+    }
+  ],
+  "equipment_brick_class": "brick:Pump",
+  "equipment_name": "PlantHold",
+  "name": "LBNL plant controller job example",
+  "points": [
+    {
+      "data_type": "numeric",
+      "default": 0.0,
+      "label": "Value",
+      "name": "u",
+      "required": true,
+      "role": "sensor"
+    },
+    {
+      "data_type": "boolean",
+      "default": false,
+      "label": "Hold trigger",
+      "name": "u1",
+      "required": true,
+      "role": "sensor"
+    },
+    {
+      "data_type": "numeric",
+      "default": 0.0,
+      "label": "Held output",
+      "name": "y",
+      "required": true,
+      "role": "command"
+    }
+  ],
+  "sequence": {
+    "controller_id": "Utilities.HoldReal",
+    "execution_profile": "modelica_exact",
+    "family": "LBNL_PLANT_CONTROLLER",
+    "library": "plant_controls",
+    "parameters": {
+      "dtHol": 3.0
+    },
+    "version": "Pinned LBNL Modelica Buildings source"
+  },
+  "site": "Qualification Lab"
+}

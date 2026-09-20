@@ -1,0 +1,180 @@
+# BACTalk
+
+BACTalk is a human-gated programming workbench for building controls: the controls-industry analogue of an AI coding agent. It turns a controls job into a typed program, emits either a Niagara `.bog` or an exact ProgramObject source-and-wiring package, tests the behavior, and exposes the proposed artifact and evidence for engineering approval.
+
+This repository is an expanding product foundation, **not yet a program-any-building product, a complete implementation of ASHRAE Guideline 36, or production-certified control logic**. Machine-readable readiness and capability ledgers make that boundary explicit.
+
+## What works now
+
+- A strict job schema for points, sequence parameters, BACnet object references, and Brick classes.
+- Contractor intake for CSV/XLSX point schedules and TXT/Markdown/JSON/DOCX/PDF sequence documents, with bounded parsing, deterministic normalization, a pre-build mapping preview, audited common-name aliases, source hashes, and exact uploaded files retained inside the immutable approval digest.
+- A provider-neutral typed control graph. It rejects bad slots, duplicate drivers, type mismatches, and combinational cycles while allowing explicit sampled loop cuts. Its deterministic interpreter covers algebra, logic, edge/change detection, delays, latches, moving-window averages, periodic samplers, unit delays, reset, and PI behavior.
+- An equipment-neutral custom-graph lane with mandatory acceptance oracles.
+- Six deterministic Niagara-targeted prototype/qualifying packs: a bounded `G36_VAV_REHEAT` subset, AHU safety/cooling, AHU duct-static PI control, exhaust-fan command/proof alarm, fail-closed two-pump duty/standby selection, and the 38-model LBNL plant-controls library.
+- Stateful acceptance timelines that verify transitions such as startup grace, proof timeout, alarm assertion, and recovery across scan cycles.
+- Decision/outcome coverage for custom programs, including boolean logic and switch selectors, so reviewers can see passing assertions that still leave one side of an interlock or branch untested.
+- A whole-building `ProjectSpec` workflow for multiple equipment jobs and explicit topology relationships. It preflights every item, builds and tests every equipment program, binds them into one project digest, requires named human approval, and exports a deterministic review bundle.
+- Typed cross-equipment signal bindings execute a complete project in topological scan order, feed exact upstream outputs into downstream inputs, require independent multi-phase project acceptance tests, and compile into exact offline Niagara station links without double-driving a target.
+- A bounded plan → test → diagnose → revise agent loop. The included sequence-pack planner passes on its first attempt; a seeded-defect regression test proves that a planner can repair and retest without bypassing graph validation.
+- Niagara `.bog` generation through pinned `pybog==0.1.6`.
+- Contractor Niagara environment packs: a ZIP can declare exact Niagara/runtime versions, proprietary or vendor `.jar` modules, palettes, typed component slot contracts, config-to-property mappings, and graphics templates. BACTalk rejects undeclared files, traversal, hash mismatches, unknown modules, and uncontracted custom types; it never executes uploaded Java. Any exact IR behavior can compile to one uniquely declared custom component with exact physical slots and parameters; ambiguous or missing implementations fail closed.
+- Exact source generation now covers CDL `PID`, `PIDWithReset`, `Hysteresis`, `TrueDelay`, `TrueFalseHold`, `Latch`, `Timer`, `MovingAverage`, `FallingEdge`, `Sampler`, `TriggeredSampler`, `UnitDelay`, warning-level `Assert`, the plant first-scan `Initialization` and resettable-timer primitives, and both common `TrimAndRespond` variants. The `have_hol=true` variant has a typed hold input, minimum hold duration, and sample-boundary release; its interpreter and generated Java match the 44-block expanded pinned LBNL source in Open Control Engine across a 17-point hold/release trajectory. An explicit `host_tick_v1` generator also covers `Pre` as a sampled Niagara scan projection without claiming Modelica same-time event iteration. Each generator emits deterministic Niagara ProgramObject source, typed slots, and a dependency-free Java qualification kernel. Imported temporal blocks carry explicit semantic contracts so similarly shaped generic blocks cannot enter this lane. A package is refused if even one target exactness blocker lacks an explicit generator/profile. Generated source still requires licensed Workbench compilation and runtime/timing parity evidence.
+- A source-bound, resumable audit of all 241 pinned G36 Modelica files. Of the 116 non-validation sequence/source models, 28 currently lower completely to exact typed IR and nine use only qualified stock Niagara targets; the other 19 produce complete deterministic ProgramObject source packages, so all 28 translated models have a source-level target path. Configured controllers with a complete target can now enter the same point-contract, independent-test, review, approval, and export workflow through `LBNL_G36_CONTROLLER`; incomplete controllers fail closed during planning. Eighty-four additional models explicitly request missing job-specific design parameters rather than being mislabeled as translator failures. Four translated models remain blocked from the exact lane only by Modelica `pre()` event-iteration semantics; each has an explicit, non-equivalent `host_tick_v1` sampled-scan package when that deployment profile is knowingly selected. There are zero current CXF/elaboration failures. Fixed component arrays, indexed boundaries, Boolean/real vector filters and replicators, reductions, matrix gains, and limiters are scalarized with strict dimension and mask checks. The audit separately identifies 31 OCE-validated models and the one model admitted by BACTalk's source-bound reviewed-composite path. Source-level target completion is not licensed Niagara runtime qualification.
+- Typed G36 job parameterization: the API exposes each controller's public parameter names, types, required/default state, units, quantities, descriptions, and override eligibility. Missing CXF enum declarations are recovered only from the exact pinned root Modelica source; enum overrides must match their declared type. Scalar, array, and matrix job values are type-checked and encoded deterministically. Translation, execution, and ProgramObject packaging accept only root declarations, reject unknown/final/type-invalid values, and bind the chosen design values before OCE validation. Controllers with intentionally required design inputs therefore remain fail-closed in the generic audit but are usable for configured jobs.
+- A product-wired LBNL plant-controls API and contractor-job lane over all 73 pinned `Buildings.Templates.Plants.Controls` source models. All 38 non-validation controls pass the retained configured product audit and can now enter the normal point-contract, acceptance-test, immutable review, approval, and export workflow through `LBNL_PLANT_CONTROLLER`. Stock-only models emit `.bog`; stateful models emit exact ProgramObject source, slots, complete graph, and wiring plan and are explicitly labeled as requiring licensed Workbench compilation. Coverage includes plant enable/disable; heat-recovery-chiller enable, mode, and parent control; plant reset and minimum-flow control; local/remote differential-pressure control; dedicated, headered, fixed-speed, variable-speed, and runtime-rotated pumps; stage availability, stage index, stage change, stage completion, equipment availability, equipment enable, event sequencing, load averaging, and failsafes; typed utility/reduction/placeholder blocks; and the complete air-to-water heat-pump plant supervisor. The air-to-water controller composes mode enabling, fixed/alternate staging, lead/lag rotation, valve and pump proof, plant reset, primary and secondary pump control, primary-only minimum-flow bypass, and optional sidestream heat recovery for heating-only, cooling-only, reversible, primary-only, primary-secondary, headered, and dedicated configurations. `make plant-job-contract` proves a real 25-point contractor job through a 480-block/715-link graph, all 12 outputs, 59 deterministic Niagara ProgramObjects, export denial before approval, and signed export after approval. A dual-loop heat-recovery topology contains about 1,200 typed blocks and 143 ProgramObjects. This is source-package completion, not licensed Niagara runtime or field qualification.
+- A pinned Apache-2.0 Rumoca compiler path exposed through the G36 API. It resolves, instantiates, and emits flattened JSON IR for selected G36 models against pinned BSD-3-Clause MSL 4.1.0; full-controller conditional elaboration and flat-IR-to-BACTalk lowering remain explicit gates.
+- Exact Niagara point binding: point schedules may supply `niagara_ord`/`station_ord` and `niagara_write_priority`. BACTalk emits a signed link plan, readback contract, and Niagara SDK installer source that wires existing proxy points to the imported program, refuses missing slots, and never overwrites a conflicting target link.
+- Boolean and numeric weekly schedules compile into real Niagara `sch:*Schedule` components and link to typed control inputs; overlapping periods and unsupported holiday/special-event lowering fail closed, while station-timezone/runtime parity remains gated.
+- Fixed-interval numeric and boolean history requirements compile into real Niagara `history:*IntervalHistoryExt` children with interval and rolling record capacity derived from retention days. COV serialization and licensed-runtime behavior remain gated.
+- A pinned Open Control Library integration: all 137 CXF fault routines across 14 equipment families import into typed IR and pass their upstream vectors; 113 also compile to non-empty stock-block Niagara `.bog` files. The other 24 remain fail-closed at the Niagara boundary pending runtime-qualified temporal lowering.
+- A pinned MIT Niagara ProgramObject library with 20 `.bog` archives and 36 inspectable ProgramObjects for G36, central plants, scheduling, FDD, and optimization. Archive integrity, source hashes, compiled-class presence, and dependencies are exposed without claiming licensed runtime qualification.
+- Tier-1 closed-loop tests for occupied cooling, occupied heating, unoccupied shutdown, limits, and alarm gating.
+- A local review UI with wiresheet visualization, test evidence, point mapping, changes, approval, and `.bog` or source-package export.
+- A signed contractor review package containing the target artifact, exact source uploads, point-map CSV, Brick/tag data, alarm and schedule requirement manifests, vendor-neutral graphics data, engineering summary, provenance, and deterministic test evidence. The package exposes target gaps rather than treating review data as deployed Niagara objects.
+- Versioned deliverable requirements for alarm class/priority/delay/routing, IANA-timezone weekly schedules, fixed-interval or COV histories, graphics views, and shop profile conventions, with cross-references validated against the job points.
+- Approval-hashed, observation-only VOLTTRON Platform Driver artifacts for every imported BACnet scan; all registry points are forced read-only.
+- An executable, loopback-only fake-building package for every imported BACnet scan. BACpypes3 hosts virtual analog, binary, and multistate devices; BAC0 independently reads them; mapped acceptance phases inject sensor values and capture controller commands over real BACnet/UDP. Every scan also projects into the pinned MIT [BACnet Simulator](https://github.com/quentinnippert/bacnet-simulator) as an independent priority-array, relinquish, COV, scenario, offline-recovery, and REST-observation oracle. Its 66 selected upstream tests plus BACTalk's device/object projection contract pass. Source addresses are never bound and live routes are forbidden.
+- Product adapters and real contracts for Haxall/Xeto, Phable, PNNL ConStrain, Open-FDD, BuildingMOTIF, Open Control Engine, modelica-json/CDL, pyfunnel, BACpypes3/BAC0, the independent BACnet Simulator, VOLTTRON, a locally executed BOPTEST building-physics runtime, Alfalfa's client/source contract, and LBNL DFLEXLIBS reference controls.
+- Native Open Control Engine execution of stateful CXF/G36 trajectories, with explicit typed inputs, monotonic simulation time, selected output capture, and bounded scenario admission—not merely source parsing.
+- A sparse, source-only MIT AixOCAT integration with 211 typed IEC 61131-3 control/equipment patterns. Six common scaling, manual override, deadband/dead-zone, timed mutual-interlock, and hydronic heating-curve patterns are source-bound, behavior-tested, lowered to typed IR, and Niagara-target compiled; unmapped Structured Text remains fail-closed.
+- A pinned BuildingMOTIF catalog with real expansion of G36, chiller-plant, and ASHRAE 223P semantic equipment templates.
+- A capability/evidence UI that distinguishes discovered, installed, executable, product-wired, target-compiled, verified, field-qualified, and production-supported stages.
+- A role-separated Cerebras workflow when `CEREBRAS_API_KEY` is present in `.env`: `gpt-oss-120b` handles contractor conversation and routing, while `qwen-3.8-27b` is the proposal-only coding model. Coding proposals pass deterministic gates, inherit source evidence, record parent/child lineage, expose exact graph diffs, and become separate candidates that a named engineer can approve or reject.
+- An AI-custom intake lane for equipment without an installed deterministic pack: the contractor supplies the real sequence, points, and engineer-authored acceptance tests; Cerebras drafts the first complete typed graph and may repair it against those immutable tests, while the normal compiler, evidence, and approval gates remain authoritative. For pinned plant-library jobs, AI changes are constrained to the controller's declared parameter schema; the model cannot rewrite the expanded topology, and every proposal is rebuilt and retested as a separate candidate.
+- An immutable approval gate: export is refused until a named human approves the exact SHA-256-addressed artifact. Changing the graph, report, `.bog`, or ProgramObject source package invalidates export.
+- No endpoint or code path that writes to a live building.
+
+## Quick start
+
+Python 3.11 or newer is required.
+
+```bash
+make install
+make install-suite
+make install-haxall
+make buildingmotif-install
+make independent-bacnet-simulator-install
+make test
+make demo
+make serve
+```
+
+For AI programming, copy `.env.example` to `.env`, add the Cerebras key locally, and keep the two roles separate. `CEREBRAS_CHAT_MODEL=gpt-oss-120b` talks to the contractor; `CEREBRAS_CODING_MODEL=qwen-3.8-27b` writes and repairs typed control-graph proposals. Verify model entitlements, strict schemas, the coding pipeline, and chat isolation with `make cerebras-smoke`.
+
+Open [http://127.0.0.1:8000](http://127.0.0.1:8000), click **Build demo job**, inspect the graph and test results, enter a reviewer name, and approve the artifact. Generated runs live under `.bactalk/runs/` and are ignored by git.
+
+The enterprise UI rewrite is available side-by-side at [http://127.0.0.1:8000/next/](http://127.0.0.1:8000/next/). It guides a contractor through scope and source-package intake, performs real point normalization and mapping preflight, and opens retained candidates in a typed wiresheet, deterministic Test Lab, multi-fidelity Simulation Lab, Graphics Studio, and digest-bound Review & Release workspace. Whole-building projects expose equipment topology and cross-program evidence; the library, environment, and administration workspaces expose installed OSS, contractor Niagara inputs, maturity stages, blockers, and audit integrity. Global search and the AI launcher route directly into retained programs. The release workspace verifies the signed artifact set on the server, inventories every handoff file and SHA-256 digest, distinguishes engineering approval from deployment qualification, and offers separate target and full-review-bundle downloads. A connected AI controls-engineer drawer keeps conversation and coding roles visibly separate and presents every proposed change as a new tested candidate. The existing workbench remains at `/` while each proven workflow is migrated, so no controls capability is removed during the transition. To develop and verify the React/TypeScript frontend:
+
+```bash
+make web-install
+make web-build
+make web-test
+make web-lint
+make web-sbom
+```
+
+The build regenerates TypeScript API types from FastAPI's OpenAPI document before compiling. Browser tests cover desktop and tablet layouts, the real intake-normalization path, the legacy workbench migration boundary, and automated accessibility checks.
+
+You can also submit a job directly:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/runs \
+  -H 'Content-Type: application/json' \
+  --data @examples/vav-reheat-job.json
+```
+
+The plant-library job lane uses the same endpoint:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/runs \
+  -H 'Content-Type: application/json' \
+  --data @examples/plant-hold-job.json
+```
+
+## Safety boundary
+
+The execution pipeline is intentionally one-way:
+
+```text
+job inputs -> typed IR -> static validation -> target builder -> simulation
+                                                |              |
+                                                v              v
+                                      .bog or source package  test report
+                                                |
+                                                v
+engineer review -> artifact-bound approval -> download for manual Workbench import
+```
+
+The approval is bound to the graph, target artifact, and test-report hashes. BACTalk does not deploy, enable, or command live equipment. Hardware-in-the-loop and live BACnet capabilities must remain separate, explicitly configured test modes with their own interlocks.
+
+## Architecture
+
+The central contract is `ControlGraph`, not generated Python or Niagara XML. An AI planner will be allowed to propose this IR, while deterministic validators and compilers remain in control of what becomes an artifact. This also keeps Niagara, BOPTEST, and other targets replaceable.
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/INTEGRATION-STATUS.md](docs/INTEGRATION-STATUS.md), [docs/NIAGARA-ENVIRONMENT-PACK.md](docs/NIAGARA-ENVIRONMENT-PACK.md), [docs/VOLTTRON-EVALUATION.md](docs/VOLTTRON-EVALUATION.md), [docs/ROADMAP.md](docs/ROADMAP.md), and [docs/OSS-REVIEW.md](docs/OSS-REVIEW.md).
+
+## API
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/runs` | Validate, compile, and test a submitted job |
+| `POST` | `/api/intake/inspect` | Normalize points and inspect sequence documents without starting a build |
+| `POST` | `/api/runs/import` | Build from contractor point, sequence, BACnet, Niagara-template, and environment-pack uploads |
+| `POST` | `/api/projects/preflight` | Validate multi-equipment topology and installed build coverage |
+| `POST` | `/api/projects/build` | Build and test every program in a multi-equipment project |
+| `POST` | `/api/projects/build-import` | Build all programs and atomically assemble a supplied contractor station BOG |
+| `POST` | `/api/projects/{id}/approve` | Approve the exact whole-building artifact set |
+| `GET` | `/api/projects/{id}/export` | Download the reviewed project bundle; approval required |
+| `POST` | `/api/runs/demo` | Build the synthetic example job |
+| `GET` | `/api/capability-packs` | Read truthful equipment-pack and artifact coverage |
+| `GET` | `/api/capability-packs/{id}/release-gates` | Read every passed and blocking production gate for a pack |
+| `GET` | `/api/system/readiness` | Read integration stages and explicit blockers |
+| `POST` | `/api/translate/cxf` | Lower ASHRAE 231P CXF into typed IR and optionally replay vectors |
+| `POST` | `/api/execute/cxf` | Execute a bounded typed/stateful CXF trajectory in Open Control Engine |
+| `GET` | `/api/library/g36/controllers` | Browse the allowlisted LBNL Guideline 36 controller source catalog |
+| `POST` | `/api/library/g36/controllers/{id}/translate` | Translate a selected G36 controller to CXF and validate it in OCE |
+| `GET` | `/api/library/g36/controllers/{id}/parameters` | Inspect typed required/default G36 design parameters before translation |
+| `POST` | `/api/library/g36/controllers/{id}/flatten` | Resolve and flatten a selected G36 controller with the pinned Rumoca/MSL toolchain |
+| `POST` | `/api/library/g36/controllers/{id}/execute` | Execute a selected G36 controller through its public named interface |
+| `POST` | `/api/library/g36/controllers/{id}/niagara-program-package` | Download exact non-stock ProgramObject source, slots, manifest, and Java parity kernel |
+| `GET/POST` | `/api/library/plant-controls/controllers...` | Catalog, parameterize, translate, execute, or package proven LBNL plant controllers |
+| `POST` | `/api/library/plant-controls/controllers/{id}/job-template` | Generate the exact point-list CSV and acceptance-output contract for a configured plant controller |
+| `POST` | `/api/library/g36/controllers/{id}/job-template` | Generate the exact point-list CSV and acceptance-output contract for a configured G36 controller |
+| `GET/POST` | `/api/library/aixocat/patterns...` | Browse typed Structured Text patterns or lower reviewed patterns to verified IR |
+| `GET/POST` | `/api/library/open-control/faults...` | Catalog or translate 137 pinned executable fault routines |
+| `GET` | `/api/library/niagara-programs...` | Catalog or inspect pinned Niagara ProgramObject source |
+| `GET/POST` | `/api/semantics/buildingmotif/...` | Catalog or instantiate pinned semantic templates |
+| `POST` | `/api/verify/haxall` | Validate a Haystack/Xeto graph |
+| `POST` | `/api/verify/constrain` | Run an isolated ConStrain rule |
+| `POST` | `/api/verify/open-fdd` | Run an Open-FDD rule |
+| `GET` | `/api/runs/{id}/graph` | Read the proposed typed graph |
+| `GET` | `/api/runs/{id}/report` | Read test evidence |
+| `GET` | `/api/runs/{id}/deliverables` | Read generated artifact coverage and explicit target blockers |
+| `GET` | `/api/runs/{id}/release-summary` | Re-hash the retained candidate and read its signed release, download, and safety contract |
+| `GET` | `/api/runs/{id}/volttron-manifest` | Read the observation-only edge artifact manifest |
+| `GET` | `/api/runs/{id}/bacnet-lab-manifest` | Read the executable isolated fake-building manifest |
+| `GET` | `/api/runs/{id}/environment-manifest` | Read the validated contractor Niagara environment and compatibility report |
+| `GET` | `/api/runs/{id}/station-assembly` | Read offline station insertion/replacement and handle-rebase evidence |
+| `POST` | `/api/runs/{id}/approve` | Approve the exact artifact hash |
+| `POST` | `/api/runs/{id}/reject` | Reject and retain a candidate with a named audit decision |
+| `GET` | `/api/runs/{id}/export` | Download the `.bog` or ProgramObject source package; approval required |
+| `GET` | `/api/runs/{id}/review-bundle` | Download all signed contractor inputs and outputs; approval required |
+
+FastAPI also exposes interactive API documentation at `/docs` before the root static mount in development integrations. The existing product UI is served at `/`; the progressively migrated enterprise interface is served at `/next/`.
+
+## Important limitations
+
+- The stock-block compiler covers 113/137 pinned Open Control Library routines. Exact IR execution covers all 137; moving averages, periodic samplers, unit delays, and numeric change detection require the separately gated ProgramObject/custom-module target lane before Niagara deployment. Every supported Niagara version still needs licensed runtime fixtures and qualification.
+- G36 SupplySignals now has an exact typed/executable lowering. Its stock-block portion target-compiles, but stock `kitControl:LoopPoint` is deliberately rejected for `PIDWithReset` because reset, `Ni` anti-windup, and `Nd` derivative semantics differ. A typed contractor component can complete the `.bog`, or BACTalk can generate reviewable ProgramObject source; neither path is runtime-qualified until licensed Workbench compilation and trajectory replay pass.
+- Whole-building intake/build/export can execute typed cross-equipment signals, test independent multi-phase project acceptance cases, emit separately tested `.bog` programs, and atomically insert/replace and link them in one contractor station template with collision checks and handle rebasing. High-fidelity whole-building physics and licensed whole-station execution are not complete.
+- VAV-reheat, AHU safety/cooling, AHU duct-static PI, exhaust-fan proof, two-pump selection, and contractor-supplied typed graphs have compiler paths. They are prototypes, not field-qualified packs; the equipment-family matrix deliberately marks the rest as discovered until complete packs exist.
+- AI-custom intake can draft beyond installed packs, but it intentionally requires an independently authored acceptance oracle and still cannot claim equipment-family support or field qualification. AI-generated tests are not accepted as proof of the AI-generated program.
+- The local plant is meant to catch sign, enable, wiring, clamping, and basic response defects. It is not a physical validation or a substitute for BOPTEST.
+- BOPTEST now runs locally through Colima/Docker with digest-pinned Redis and MinIO dependencies. Beyond the service smoke, `BoptestGraphRunner` checks a complete explicit mapping, feeds live FMU measurements into a typed BACTalk graph, bounds every override against BOPTEST metadata, advances the physical model, retains KPIs, and always stops the test case. BOPTEST qualification is also a first-class run/API operation: pyfunnel grades explicitly supplied independent trajectory oracles, a failing oracle blocks approval, and the evidence plus all five pyfunnel CSVs enter the run's signed digest and review bundle. `make boptest-graph-runtime` now proves the complete contractor lane—normal job creation, deterministic tests, Niagara `.bog` generation, denied pre-approval export, four live `bestest_air` intervals, signed qualification, test-identity approval, and approved artifact/review-bundle export. Production equipment-specific maps, long-horizon scenarios, real human review, and licensed Niagara attachment remain.
+- Point discovery is represented in the job schema, but active BACnet scanning is not enabled in this milestone.
+- Imported scans now produce real loopback BACnet/IP devices and an automatic scenario/result-capture runner. MS/TP-origin identities can be mirrored through BACnet/IP, but exact token passing, baud, routers, and electrical behavior still require a serial hardware-in-loop lane.
+- Proprietary modules, palettes, and graphics can be ingested, signed, statically checked, and used through explicit typed component contracts. Contractor PX templates compile with complete exact-ORD point bindings while preserving the shop's visual standard. BACTalk does not install, render, or execute those assets; exact dependency closure and behavior must pass the licensed Niagara version/runtime matrix before field use.
+- BACnet object identifiers alone do not identify an existing Niagara proxy component. Automatic station binding therefore requires an exact reviewed `niagara_ord`; otherwise the package explicitly lists the point as unbound. Generated installer source is not executed by BACTalk and remains subject to licensed-SDK and disposable-station qualification.
+- Review-data manifests cover graphics, alarms, histories, schedules, and tags. Boolean/numeric weekly schedules and fixed-interval numeric/boolean histories compile into the `.bog`. Alarm and nHaystack semantic-tag installers are emitted as deterministic, collision-denying Niagara SDK source with exact component ORDs. Contractor PX templates compile into signed `.px` files with complete exact-ORD binding contracts. None are executed by BACTalk. Holiday/special-event calendars, COV histories, complete station hierarchy, and exact licensed-runtime execution remain roadmap work.
+- VOLTTRON is pinned as a separate Python 3.11/Linux edge profile. Current modular releases are pre-stable and are not a live-write safety authority.
+- This repository is technical work, not legal advice; dependency and standards licensing should receive counsel review before commercial distribution.

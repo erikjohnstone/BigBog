@@ -1,0 +1,72 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "bactalk"
+version = "0.1.0"
+description = "A human-gated AI programming workbench for building controls"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.116,<1",
+  "brickschema>=0.7.8,<1",
+  "httpx>=0.28,<1",
+  "openpyxl>=3.1.5,<4",
+  "pydantic>=2.11,<3",
+  "pypdf>=6,<7",
+  "phable==0.1.29",
+  "pybog==0.1.6",
+  "python-docx>=1.2,<2",
+  "python-multipart>=0.0.20,<1",
+  "python-dotenv>=1.1,<2",
+  "pyshacl>=0.31,<1",
+  "rdflib>=7.3,<8",
+  "tzdata>=2026.4,<2027",
+  "uvicorn[standard]>=0.35,<1",
+]
+
+[project.optional-dependencies]
+ai = ["cerebras_cloud_sdk==1.91.0"]
+bacnet = ["bacpypes3>=0.0.102,<1"]
+bacnet-lab = [
+  "BAC0==2026.7.25",
+  "bacpypes3>=0.0.102,<1",
+]
+fdd = ["open-fdd[oracle]==4.4.1"]
+funnel = ["pyfunnel==2.0.2"]
+semantics = [
+]
+suite = [
+  "BAC0==2026.7.25",
+  "alfalfa-client==1.0.0",
+  "bacpypes3>=0.0.102,<1",
+  "cerebras_cloud_sdk==1.91.0",
+  "open-fdd[oracle]==4.4.1",
+  "pyfunnel==2.0.2",
+]
+test = [
+  "hypothesis>=6.138,<7",
+  "pytest>=9,<10",
+  "pytest-cov>=6.2,<7",
+  "pyyaml>=6,<7",
+  "ruff>=0.12,<1",
+  "schemathesis>=4.1,<5",
+]
+
+[project.scripts]
+bactalk = "bactalk.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bactalk"]
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-markers"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

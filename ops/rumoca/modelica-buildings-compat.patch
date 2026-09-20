@@ -1,0 +1,26 @@
+diff --git a/Buildings/Controls/OBC/CDL/Reals/PID.mo b/Buildings/Controls/OBC/CDL/Reals/PID.mo
+index 8b84851..814abdf 100644
+--- a/Buildings/Controls/OBC/CDL/Reals/PID.mo
++++ b/Buildings/Controls/OBC/CDL/Reals/PID.mo
+@@ -109,7 +109,7 @@ protected
+   Buildings.Controls.OBC.CDL.Reals.Sources.Constant Dzero(final k=0)
+     if not with_D
+     "Zero input signal"
+-    annotation (Evaluate=true,HideResult=true,Placement(transformation(extent={{-50,90},
++    annotation (HideResult=true,Placement(transformation(extent={{-50,90},
+             {-30,110}})));
+   Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter uS_revAct(
+     final k=revAct/r) "Set point multiplied by reverse action sign"
+diff --git a/Buildings/Controls/OBC/CDL/Reals/PIDWithReset.mo b/Buildings/Controls/OBC/CDL/Reals/PIDWithReset.mo
+index 802fb8e..816dcd3 100644
+--- a/Buildings/Controls/OBC/CDL/Reals/PIDWithReset.mo
++++ b/Buildings/Controls/OBC/CDL/Reals/PIDWithReset.mo
+@@ -113,7 +113,7 @@ protected
+   Buildings.Controls.OBC.CDL.Reals.Sources.Constant Dzero(
+     final k=0) if not with_D
+     "Zero input signal"
+-    annotation (Evaluate=true,HideResult=true,Placement(transformation(extent={{-50,90},
++    annotation (HideResult=true,Placement(transformation(extent={{-50,90},
+             {-30,110}})));
+   Buildings.Controls.OBC.CDL.Reals.Sources.Constant Izero(
+     final k=0) if not with_I

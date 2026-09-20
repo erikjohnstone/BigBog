@@ -1,0 +1,10 @@
+{
+  "name": "bactalk-haxall-runtime",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Pinned isolated Haxall/Xeto validation runtime for BACTalk",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@haxall/haxall": "4.0.4"
+  }
+}

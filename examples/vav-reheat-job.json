@@ -1,0 +1,98 @@
+{
+  "name": "North Wing VAV-12 retrofit",
+  "site": "Example Campus",
+  "equipment_name": "VAV_12",
+  "sequence": {
+    "family": "G36_VAV_REHEAT",
+    "version": "ASHRAE Guideline 36-2021 inspired MVP",
+    "parameters": {
+      "loop_span_f": 3.0,
+      "minimum_damper_pct": 20.0,
+      "high_zone_temp_f": 80.0
+    }
+  },
+  "points": [
+    {"name": "ZoneTemp", "label": "Zone temperature", "data_type": "numeric", "role": "sensor", "units": "°F", "default": 76.0, "bacnet_object": "analog-input,1", "brick_class": "brick:Zone_Air_Temperature_Sensor"},
+    {"name": "CoolingSetpoint", "label": "Effective cooling setpoint", "data_type": "numeric", "role": "setpoint", "units": "°F", "default": 74.0, "brick_class": "brick:Zone_Air_Cooling_Temperature_Setpoint"},
+    {"name": "HeatingSetpoint", "label": "Effective heating setpoint", "data_type": "numeric", "role": "setpoint", "units": "°F", "default": 70.0, "brick_class": "brick:Zone_Air_Heating_Temperature_Setpoint"},
+    {"name": "Occupied", "label": "Occupied mode", "data_type": "boolean", "role": "status", "default": true, "brick_class": "brick:Occupancy_Status"},
+    {"name": "DamperCommand", "label": "VAV damper command", "data_type": "numeric", "role": "command", "units": "%", "default": 0.0, "bacnet_object": "analog-output,1", "brick_class": "brick:Damper_Position_Command"},
+    {"name": "ValveCommand", "label": "Reheat valve command", "data_type": "numeric", "role": "command", "units": "%", "default": 0.0, "bacnet_object": "analog-output,2", "brick_class": "brick:Valve_Command"},
+    {"name": "CoolingDemand", "label": "Zone cooling demand", "data_type": "numeric", "role": "status", "units": "%", "default": 0.0},
+    {"name": "HeatingDemand", "label": "Zone heating demand", "data_type": "numeric", "role": "status", "units": "%", "default": 0.0},
+    {"name": "HighZoneTempAlarm", "label": "High zone temperature", "data_type": "boolean", "role": "alarm", "default": false}
+  ],
+  "deliverables": {
+    "schema_version": "1.0",
+    "shop_profile": {
+      "name": "Example Controls Standards",
+      "version": "1.0",
+      "station_folder": "Config/Drivers/BACnetNetwork/ExampleCampus",
+      "niagara_site_ord": "station:|slot:/Config/Sites/ExampleCampus",
+      "graphics_theme": "Example light equipment theme",
+      "tag_dictionary": "dual"
+    },
+    "alarms": [
+      {
+        "point": "HighZoneTempAlarm",
+        "alarm_class": "HVAC-Critical",
+        "priority": 100,
+        "delay_seconds": 300,
+        "acknowledgement_required": true,
+        "offnormal_text": "Zone temperature high",
+        "normal_text": "Zone temperature normal",
+        "routing": ["Facilities"]
+      }
+    ],
+    "schedules": [
+      {
+        "id": "OccupancySchedule",
+        "output_point": "Occupied",
+        "timezone": "America/New_York",
+        "default_value": false,
+        "weekly_periods": [
+          {"day": "monday", "start": "07:00", "end": "18:00", "value": true},
+          {"day": "tuesday", "start": "07:00", "end": "18:00", "value": true},
+          {"day": "wednesday", "start": "07:00", "end": "18:00", "value": true},
+          {"day": "thursday", "start": "07:00", "end": "18:00", "value": true},
+          {"day": "friday", "start": "07:00", "end": "18:00", "value": true}
+        ]
+      }
+    ],
+    "histories": [
+      {
+        "point": "ZoneTemp",
+        "mode": "fixed_interval",
+        "interval_seconds": 300,
+        "retention_days": 365
+      }
+    ],
+    "graphics": [
+      {
+        "id": "VavOverview",
+        "title": "VAV-12 Overview",
+        "points": ["ZoneTemp", "CoolingSetpoint", "HeatingSetpoint", "Occupied", "DamperCommand", "ValveCommand", "CoolingDemand", "HeatingDemand", "HighZoneTempAlarm"],
+        "template": "ExampleVavOverview",
+        "navigation_parent": "North Wing"
+      }
+    ]
+  },
+  "bacnet_scan": {
+    "source": "synthetic demo scan",
+    "captured_at": "2026-09-19T12:00:00Z",
+    "devices": [
+      {
+        "device_instance": 120012,
+        "address": "192.0.2.12/24:47808",
+        "name": "VAV-12 Controller",
+        "vendor_id": 999,
+        "objects": [
+          {"object_id": "analog-input,1", "name": "Zone Temperature", "data_type": "numeric", "writable": false, "units": "°F", "present_value": 76.0},
+          {"object_id": "analog-output,1", "name": "Damper Command", "data_type": "numeric", "writable": true, "units": "%", "present_value": 0.0},
+          {"object_id": "analog-output,2", "name": "Reheat Valve Command", "data_type": "numeric", "writable": true, "units": "%", "present_value": 0.0}
+        ]
+      }
+    ]
+  },
+  "notes": "Synthetic demonstration job; no live building connection."
+}

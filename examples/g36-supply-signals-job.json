@@ -1,0 +1,37 @@
+{
+  "acceptance_tests": [
+    {
+      "expectations": [
+        {"operator": "eq", "target": "uTSup", "tolerance": 1e-12, "value": 0.0},
+        {"operator": "eq", "target": "yCooCoi", "tolerance": 1e-12, "value": 0.0},
+        {"operator": "eq", "target": "yHeaCoi", "tolerance": 1e-12, "value": 0.0}
+      ],
+      "inputs": {
+        "TAirSup": 292.15,
+        "TAirSupSet": 290.15,
+        "u1SupFan": true
+      },
+      "name": "bounded first scan"
+    }
+  ],
+  "equipment_brick_class": "brick:Air_Handling_Unit",
+  "equipment_name": "AHU_SupplySignals",
+  "name": "LBNL G36 supply-signals controller example",
+  "points": [
+    {"data_type": "numeric", "default": 292.15, "label": "Supply air temperature", "name": "TAirSup", "required": true, "role": "sensor"},
+    {"data_type": "numeric", "default": 290.15, "label": "Supply air temperature setpoint", "name": "TAirSupSet", "required": true, "role": "setpoint"},
+    {"data_type": "boolean", "default": true, "label": "Supply fan proven", "name": "u1SupFan", "required": true, "role": "status"},
+    {"data_type": "numeric", "default": 0.0, "label": "Supply temperature loop", "name": "uTSup", "required": true, "role": "command"},
+    {"data_type": "numeric", "default": 0.0, "label": "Cooling coil command", "name": "yCooCoi", "required": true, "role": "command"},
+    {"data_type": "numeric", "default": 0.0, "label": "Heating coil command", "name": "yHeaCoi", "required": true, "role": "command"}
+  ],
+  "sequence": {
+    "controller_id": "AHUs.MultiZone.VAV.SetPoints.SupplySignals",
+    "execution_profile": "modelica_exact",
+    "family": "LBNL_G36_CONTROLLER",
+    "library": "g36",
+    "parameters": {},
+    "version": "Pinned LBNL Modelica Buildings G36 source"
+  },
+  "site": "Qualification Lab"
+}

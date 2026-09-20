@@ -1,0 +1,110 @@
+site
+id: @demo-site
+dis: "BACTalk Demo Site"
+spec: @ph::Site
+---
+equip
+id: @vav-101
+dis: "VAV-101"
+spec: @ashrae.g36::G36ReheatVav
+siteRef: @demo-site
+hotWaterHeating
+singleDuct
+vav
+---
+point
+id: @vav-101-zone-temp
+dis: "VAV-101 Zone Temperature"
+spec: @ph.points::ZoneAirTempSensor
+equipRef: @vav-101
+kind: "Number"
+unit: "°F"
+air
+temp
+sensor
+zone
+---
+point
+id: @vav-101-zone-temp-sp
+dis: "VAV-101 Effective Zone Temperature Setpoint"
+spec: @ph.points::ZoneAirTempEffectiveSp
+equipRef: @vav-101
+kind: "Number"
+unit: "°F"
+air
+temp
+sp
+zone
+effective
+---
+point
+id: @vav-101-occupied
+dis: "VAV-101 Occupancy"
+spec: @ph.points::ZoneOccupiedSensor
+equipRef: @vav-101
+kind: "Bool"
+enum: @ph.points::OccupiedEnum
+occupied
+sensor
+zone
+---
+point
+id: @vav-101-co2
+dis: "VAV-101 Zone CO2"
+spec: @ph.points::ZoneCo2Sensor
+equipRef: @vav-101
+kind: "Number"
+unit: "ppm"
+air
+co2
+concentration
+sensor
+zone
+---
+point
+id: @vav-101-hw-valve-cmd
+dis: "VAV-101 Hot Water Valve Command"
+spec: @ph.points::HotWaterValveCmd
+equipRef: @vav-101
+kind: "Number"
+unit: "%"
+valve
+cmd
+hot
+water
+---
+point
+id: @vav-101-damper-cmd
+dis: "VAV-101 Discharge Damper Command"
+spec: @ph.points::DischargeDamperCmd
+equipRef: @vav-101
+kind: "Number"
+unit: "%"
+air
+damper
+cmd
+discharge
+---
+point
+id: @vav-101-airflow
+dis: "VAV-101 Discharge Air Flow"
+spec: @ph.points::DischargeAirFlowSensor
+equipRef: @vav-101
+kind: "Number"
+unit: "cfm"
+air
+flow
+sensor
+discharge
+---
+point
+id: @vav-101-dat
+dis: "VAV-101 Discharge Air Temperature"
+spec: @ph.points::DischargeAirTempSensor
+equipRef: @vav-101
+kind: "Number"
+unit: "°F"
+air
+temp
+sensor
+discharge

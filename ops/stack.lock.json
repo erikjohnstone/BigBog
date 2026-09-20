@@ -1,0 +1,189 @@
+{
+  "verified_at": "2026-09-19",
+  "components": {
+    "aixocat": {
+      "repository": "https://github.com/RWTH-EBC/AixOCAT",
+      "branch": "develop",
+      "revision": "580100c2eb280a9e50ce7f22ae6bc9536157900b",
+      "license": "MIT",
+      "scope": "Sparse source-only IEC 61131-3 control corpus: 211 POU references; 6 behavior-verified typed-IR and Niagara lowerings"
+    },
+    "pybog-source": {
+      "repository": "https://github.com/bbartling/pybog",
+      "branch": "develop",
+      "revision": "0248d941bf230aad2f19f9805be67c0e64bd51ef",
+      "package": "pybog==0.1.6",
+      "license": "MIT",
+      "scope": "Niagara compiler source and 21 equipment/control examples"
+    },
+    "n4-hvac-optimization-blocks": {
+      "repository": "https://github.com/bbartling/n4-hvac-optimization-blocks",
+      "revision": "27815cc31686dc6ef0d7490f380376487e6a0606",
+      "license": "MIT",
+      "scope": "20 Niagara .bog archives containing 36 ProgramObjects for Guideline 36, plant, scheduling, FDD, and optimization references"
+    },
+    "boptest": {
+      "repository": "https://github.com/ibpsa/project1-boptest",
+      "revision": "0f8a467cb1823f005b6512937e9333c65e1e483e",
+      "license": "Revised BSD-3-Clause with notices"
+    },
+    "modelica-buildings": {
+      "repository": "https://github.com/lbl-srg/modelica-buildings",
+      "release": "v13.0.0",
+      "revision": "55abf579598ca81cae0a82f337350375958e6722",
+      "license": "Revised BSD-3-Clause with notices",
+      "scope": "Buildings/Controls/OBC plus Buildings/Templates/Plants, including the plant controls source corpus"
+    },
+    "modelica-json": {
+      "repository": "https://github.com/lbl-srg/modelica-json",
+      "revision": "5460add3b273286157412d8f5992493bd48ab061",
+      "license": "Modified BSD-3-Clause",
+      "patch_sha256": "4aa839080fc23327a4a1da2c62bd3c1d850c536ae702b61b4e0d5746c4362124",
+      "scope": "CDL/CXF translation with local null-type and symbolic-array IRI guards"
+    },
+    "modelica-standard-library": {
+      "repository": "https://github.com/modelica/ModelicaStandardLibrary",
+      "release": "v4.1.0",
+      "revision": "8ae3d35c24e519cb2996cab20f3b13daf2b0c50a",
+      "license": "BSD-3-Clause",
+      "scope": "Pinned language/runtime types required for reproducible Modelica elaboration"
+    },
+    "rumoca": {
+      "repository": "https://github.com/CogniPilot/rumoca",
+      "revision": "7ddbadf77eb5699580c32cef680c3e1ea3a36fdc",
+      "package": "rumoca==0.10.1 source build",
+      "license": "Apache-2.0",
+      "scope": "Allowlisted G36 parse, resolve, instantiate, and flattened-IR compiler boundary"
+    },
+    "open-control-engine": {
+      "repository": "https://github.com/jscott3201/open-control-engine",
+      "revision": "b738a603265e8d61c7f7e94205722373cf00da84",
+      "license": "MIT OR Apache-2.0",
+      "scope": "Pre-1.0 external CXF validation runtime; 133 public CDL blocks"
+    },
+    "open-control-library": {
+      "repository": "https://github.com/jscott3201/open-control-library",
+      "revision": "9799be841c26089f5261eb3221440fccf0c13cb9",
+      "engine_revision": "e2ff2f84577d9be65a49e6cb5440c223f6126817",
+      "license": "MIT OR Apache-2.0",
+      "scope": "137 executable CXF fault rules across 14 equipment families with vectors and semantic point dictionaries"
+    },
+    "constrain": {
+      "repository": "https://github.com/pnnl/ConStrain",
+      "revision": "3717cd320d29c207f575ed51ecc71d40675a7fe0",
+      "license": "BSD-2-Clause",
+      "scope": "Independent control-performance verification catalog"
+    },
+    "buildingmotif": {
+      "repository": "https://github.com/NatLabRockies/BuildingMOTIF",
+      "release": "v0.4.0",
+      "revision": "46d4c26cd8add43f266d66345b8bcb0989356079",
+      "license": "BSD-3-Clause",
+      "scope": "Semantic equipment templates, topology creation, and validation"
+    },
+    "alfalfa": {
+      "repository": "https://github.com/NatLabRockies/alfalfa",
+      "release": "v1.0.0",
+      "revision": "47284f704ca01c7ba820bb73af45c065800cb316",
+      "license": "BSD-3-Clause",
+      "scope": "Containerized EnergyPlus/OpenStudio/FMU virtual-building service"
+    },
+    "alfalfa-client": {
+      "repository": "https://github.com/NatLabRockies/alfalfa-client",
+      "release": "v1.0.0",
+      "revision": "2ebf962b4e5ad4e55d1533650dab3c3385885c78",
+      "package": "alfalfa-client==1.0.0",
+      "license": "BSD-3-Clause"
+    },
+    "dflexlibs": {
+      "repository": "https://github.com/LBNL-ETA/DFLEXLIBS",
+      "release": "0.2.0",
+      "revision": "9462cf2c732d9be50207cd846a6c6ce044695a80",
+      "license": "BSD-3-Clause-style LBNL license",
+      "scope": "Demand-flexibility control functions and BOPTEST/VOLTTRON reference paths"
+    },
+    "volttron": {
+      "repository": "https://github.com/eclipse-volttron/volttron-zmq",
+      "revision": "8b6a82e146cab5a60643885711905c5217e1acd0",
+      "package": "volttron==11.0.0rc3",
+      "license": "Apache-2.0"
+    },
+    "volttron-core": {
+      "repository": "https://github.com/eclipse-volttron/volttron-core",
+      "revision": "3a7f615981ab9d410d51ba64e236c18cb557e5c9",
+      "package": "volttron-core==2.0.0rc34",
+      "license": "Apache-2.0"
+    },
+    "volttron-platform-driver": {
+      "repository": "https://github.com/eclipse-volttron/volttron-platform-driver",
+      "revision": "bcb8172acb730ce2598d23867a3f4e9a6b5ed5a3",
+      "package": "volttron-platform-driver==2.0.0rc7",
+      "license": "Apache-2.0"
+    },
+    "volttron-bacnet-driver": {
+      "repository": "https://github.com/eclipse-volttron/volttron-lib-bacnet-driver",
+      "revision": "9e0786bfda3c0f55c2e923f1444cf1e5a602c061",
+      "package": "volttron-lib-bacnet-driver==2.0.0rc3",
+      "license": "Apache-2.0"
+    },
+    "volttron-fake-driver": {
+      "repository": "https://github.com/eclipse-volttron/volttron-lib-fake-driver",
+      "revision": "a32f996cc7f9aa58564905b8c059345db4784c78",
+      "package": "volttron-lib-fake-driver==2.0.0rc0",
+      "license": "Apache-2.0"
+    },
+    "bacpypes3": {
+      "repository": "https://github.com/JoelBender/BACpypes3",
+      "package": "bacpypes3==0.0.107",
+      "license": "MIT",
+      "scope": "Loopback-only BACnet/IP virtual-device runtime generated from contractor scans"
+    },
+    "bac0": {
+      "repository": "https://github.com/ChristianTremblay/BAC0",
+      "package": "BAC0==2026.7.25",
+      "license": "LGPL-3.0",
+      "scope": "Dynamically linked independent client for generated BACnet lab interoperability probes"
+    },
+    "bacnet-simulator": {
+      "repository": "https://github.com/quentinnippert/bacnet-simulator",
+      "revision": "d06fccb963abd4c773f6b5dd74e12f9ec79a5edd",
+      "package": "bacnet-lab==0.1.0",
+      "license": "MIT",
+      "license_sha256": "56c7ffa9ff22bd72c4bf682e962af6742fb0d89101c9a3b358b24a6c33871622",
+      "scope": "Independent BACnet/IP protocol oracle for generated scan mirrors, priority arrays, relinquish, COV, offline recovery, and REST observation"
+    },
+    "openpyxl": {
+      "package": "openpyxl==3.1.5",
+      "license": "MIT",
+      "scope": "Read-only normalization of contractor XLSX point schedules"
+    },
+    "pypdf": {
+      "package": "pypdf==6.19.0",
+      "license": "BSD-3-Clause",
+      "scope": "Bounded text extraction from contractor sequence PDFs"
+    },
+    "python-docx": {
+      "package": "python-docx==1.2.0",
+      "license": "MIT",
+      "scope": "Text and table extraction from contractor sequence DOCX files"
+    },
+    "tzdata": {
+      "package": "tzdata==2026.4",
+      "license": "Apache-2.0",
+      "scope": "Portable IANA timezone validation for contractor schedule requirements"
+    },
+    "nhaystack": {
+      "repository": "https://github.com/ci-richard-mcelhinney/nhaystack",
+      "branch": "n4",
+      "revision": "130c5dc0db903875b8aea077cb7ef4cd1eca7e1c",
+      "license": "AFL-3.0",
+      "scope": "Niagara-native Haystack site/equipment/point discovery and current/history readback contract"
+    },
+    "am8x-control": {
+      "repository": "https://github.com/zEhmsy/am8xControl",
+      "revision": "4b3944a0f10c5f2772c52b20ce0211ff09255f3b",
+      "license": "Apache-2.0",
+      "scope": "Reference implementation for Niagara alarm class and BAlarmSourceExt automation"
+    }
+  }
+}

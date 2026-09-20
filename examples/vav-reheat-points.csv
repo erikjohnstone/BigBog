@@ -1,0 +1,10 @@
+name,label,data_type,role,units,default,required,bacnet_device_instance,bacnet_object,brick_class
+ZoneTemp,Zone temperature,numeric,sensor,degF,76,true,120012,"analog-input,1",brick:Zone_Air_Temperature_Sensor
+CoolingSetpoint,Effective cooling setpoint,numeric,setpoint,degF,74,true,,,brick:Zone_Air_Cooling_Temperature_Setpoint
+HeatingSetpoint,Effective heating setpoint,numeric,setpoint,degF,70,true,,,brick:Zone_Air_Heating_Temperature_Setpoint
+Occupied,Occupied mode,boolean,status,,true,true,,,brick:Occupancy_Status
+DamperCommand,VAV damper command,numeric,command,%,0,true,120012,"analog-output,1",brick:Damper_Position_Command
+ValveCommand,Reheat valve command,numeric,command,%,0,true,120012,"analog-output,2",brick:Valve_Command
+CoolingDemand,Zone cooling demand,numeric,status,%,0,true,,,
+HeatingDemand,Zone heating demand,numeric,status,%,0,true,,,
+HighZoneTempAlarm,High zone temperature,boolean,alarm,,false,true,,,
