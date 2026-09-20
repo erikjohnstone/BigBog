@@ -113,9 +113,7 @@ class PointSpec(BaseModel):
             if self.niagara_ord is None:
                 raise ValueError("niagara_write_priority requires niagara_ord")
             if self.role not in {PointRole.COMMAND, PointRole.ALARM}:
-                raise ValueError(
-                    "niagara_write_priority is only valid for command or alarm points"
-                )
+                raise ValueError("niagara_write_priority is only valid for command or alarm points")
         return self
 
 
@@ -194,6 +192,70 @@ class FaultKind(StrEnum):
     INVERT = "invert"
 
 
+class QualificationCategory(StrEnum):
+    NORMAL_OPERATION = "normal_operation"
+    DISABLED_SHUTDOWN = "disabled_shutdown"
+    UNOCCUPIED_SHUTDOWN = "unoccupied_shutdown"
+    MODE_TRANSITION = "mode_transition"
+    OUTPUT_BOUNDS = "output_bounds"
+    ALARM_BEHAVIOR = "alarm_behavior"
+    HIGH_PRESSURE_SHUTDOWN = "high_pressure_shutdown"
+    FIRE_SMOKE_SHUTDOWN = "fire_smoke_shutdown"
+    FREEZE_PROTECTION = "freeze_protection"
+    SENSOR_INVALID = "sensor_invalid"
+    SENSOR_STALE = "sensor_stale"
+    COMMUNICATIONS_LOSS = "communications_loss"
+    ACTUATOR_PROOF_FAILURE = "actuator_proof_failure"
+    EQUIPMENT_UNAVAILABLE = "equipment_unavailable"
+    ALL_EQUIPMENT_UNAVAILABLE = "all_equipment_unavailable"
+    MANUAL_OVERRIDE = "manual_override"
+    POWER_CYCLE = "power_cycle"
+    LEAD_LAG_ROTATION = "lead_lag_rotation"
+    RECOVERY = "recovery"
+
+
+class QualificationLevel(StrEnum):
+    REQUIRED = "required"
+    CONDITIONAL = "conditional"
+    NOT_APPLICABLE = "not_applicable"
+
+
+class QualificationRequirement(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    category: QualificationCategory
+    level: QualificationLevel = QualificationLevel.REQUIRED
+    description: str = Field(min_length=1, max_length=500)
+    fault_required: bool = False
+    recovery_required: bool = False
+
+    @model_validator(mode="after")
+    def applicability_is_coherent(self) -> QualificationRequirement:
+        if self.level == QualificationLevel.NOT_APPLICABLE and (
+            self.fault_required or self.recovery_required
+        ):
+            raise ValueError("not-applicable qualifications cannot require fault evidence")
+        return self
+
+
+class QualificationProfile(BaseModel):
+    """Versioned safety/behavior evidence policy for one equipment application."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(pattern=r"^[a-z][a-z0-9.-]*$", max_length=160)
+    version: str = Field(min_length=1, max_length=80)
+    source: str = Field(min_length=1, max_length=240)
+    requirements: list[QualificationRequirement] = Field(min_length=1, max_length=200)
+
+    @model_validator(mode="after")
+    def categories_are_unique(self) -> QualificationProfile:
+        categories = [item.category for item in self.requirements]
+        if len(categories) != len(set(categories)):
+            raise ValueError("qualification profile categories must be unique")
+        return self
+
+
 class FaultInjection(BaseModel):
     """A reviewable fault applied to a graph input during an acceptance case.
 
@@ -269,6 +331,7 @@ class AcceptanceCase(BaseModel):
     repeat: int = Field(default=1, ge=1, le=1_000_000)
     step_seconds: float = Field(default=1.0, gt=0.0, le=86_400.0)
     faults: list[FaultInjection] = Field(default_factory=list, max_length=1_000)
+    qualifications: list[QualificationCategory] = Field(default_factory=list, max_length=100)
     timeline: list[AcceptancePhase] = Field(default_factory=list, max_length=10_000)
 
     @model_validator(mode="after")
@@ -285,6 +348,8 @@ class AcceptanceCase(BaseModel):
         fault_ids = [fault.id for fault in self.faults]
         if len(fault_ids) != len(set(fault_ids)):
             raise ValueError("fault ids must be unique within an acceptance case")
+        if len(self.qualifications) != len(set(self.qualifications)):
+            raise ValueError("acceptance-case qualification categories must be unique")
         return self
 
 
@@ -492,6 +557,7 @@ class JobSpec(BaseModel):
     points: list[PointSpec]
     control_graph: ControlGraph | None = None
     acceptance_tests: list[AcceptanceCase] = Field(default_factory=list)
+    qualification_profile: QualificationProfile | None = None
     deliverables: DeliverableRequirements = Field(default_factory=DeliverableRequirements)
     bacnet_scan: BacnetScan | None = None
     template_bog: str | None = None
@@ -982,9 +1048,7 @@ class Block(BaseModel):
                     or not isinstance(value, (int, float))
                     or not math.isfinite(float(value))
                 ):
-                    raise ValueError(
-                        f"boolean_true_false_hold config.{key} must be finite numeric"
-                    )
+                    raise ValueError(f"boolean_true_false_hold config.{key} must be finite numeric")
         if self.kind in {
             BlockKind.TRIM_AND_RESPOND,
             BlockKind.TRIM_AND_RESPOND_HOLD,
@@ -1002,9 +1066,7 @@ class Block(BaseModel):
             }
             missing = sorted(required - set(self.config))
             if missing:
-                raise ValueError(
-                    "trim_and_respond missing config: " + ", ".join(missing)
-                )
+                raise ValueError("trim_and_respond missing config: " + ", ".join(missing))
             values: dict[str, float] = {}
             for key in sorted(required):
                 value = self.config[key]
@@ -1016,9 +1078,7 @@ class Block(BaseModel):
                     raise ValueError(f"trim_and_respond config.{key} must be finite numeric")
                 values[key] = float(value)
             if values["sample_period_seconds"] < 0.001:
-                raise ValueError(
-                    "trim_and_respond sample_period_seconds must be at least 0.001"
-                )
+                raise ValueError("trim_and_respond sample_period_seconds must be at least 0.001")
             if values["delay_seconds"] < 0:
                 raise ValueError("trim_and_respond delay_seconds must be non-negative")
             if values["ignored_requests"] < 0:
@@ -1042,9 +1102,7 @@ class Block(BaseModel):
             hold_enabled = self.config.get("hold_enabled", False)
             expected_hold = self.kind == BlockKind.TRIM_AND_RESPOND_HOLD
             if hold_enabled is not expected_hold:
-                raise ValueError(
-                    "trim_and_respond hold_enabled must match its typed block kind"
-                )
+                raise ValueError("trim_and_respond hold_enabled must match its typed block kind")
             if expected_hold:
                 duration = self.config.get("hold_duration_seconds")
                 if (
@@ -1110,16 +1168,13 @@ class Block(BaseModel):
                     or not math.isfinite(float(value))
                 ):
                     raise ValueError(f"pid_with_reset config.{key} must be finite numeric")
-            if float(self.config.get("y_min", 0.0)) >= float(
-                self.config.get("y_max", 1.0)
-            ):
+            if float(self.config.get("y_min", 0.0)) >= float(self.config.get("y_max", 1.0)):
                 raise ValueError("pid_with_reset y_min must be below y_max")
             if not isinstance(self.config.get("reverse_acting", True), bool):
                 raise ValueError("pid_with_reset reverse_acting must be boolean")
         if self.kind == BlockKind.PLANT_EQUIPMENT_AVAILABILITY:
             semantic_contract = (
-                "Buildings.Templates.Plants.Controls.StagingRotation."
-                "EquipmentAvailability"
+                "Buildings.Templates.Plants.Controls.StagingRotation.EquipmentAvailability"
             )
             if self.config.get("semantic_contract") != semantic_contract:
                 raise ValueError(
@@ -1138,17 +1193,11 @@ class Block(BaseModel):
                 )
             for name in ("have_heating", "have_cooling"):
                 if not isinstance(self.config.get(name), bool):
-                    raise ValueError(
-                        f"plant_equipment_availability config.{name} must be Boolean"
-                    )
+                    raise ValueError(f"plant_equipment_availability config.{name} must be Boolean")
             if not (self.config["have_heating"] or self.config["have_cooling"]):
-                raise ValueError(
-                    "plant_equipment_availability requires at least one active loop"
-                )
+                raise ValueError("plant_equipment_availability requires at least one active loop")
         if self.kind == BlockKind.PLANT_ENABLE:
-            semantic_contract = (
-                "Buildings.Templates.Plants.Controls.Enabling.Enable"
-            )
+            semantic_contract = "Buildings.Templates.Plants.Controls.Enabling.Enable"
             if self.config.get("semantic_contract") != semantic_contract:
                 raise ValueError("plant_enable requires its pinned semantic contract")
             if self.config.get("application") not in {"Heating", "Cooling"}:
@@ -1196,10 +1245,7 @@ class Block(BaseModel):
                     )
                 previous = float(row[0])
         if self.kind == BlockKind.PLANT_HRC_MODE_CONTROL:
-            contract = (
-                "Buildings.Templates.Plants.Controls.HeatRecoveryChillers."
-                "ModeControl"
-            )
+            contract = "Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl"
             if self.config.get("semantic_contract") != contract:
                 raise ValueError("plant_hrc_mode_control requires its pinned contract")
             cop = self.config.get("heating_cop")
@@ -1211,10 +1257,7 @@ class Block(BaseModel):
             ):
                 raise ValueError("plant_hrc_mode_control heating_cop must be >= 1.1")
         if self.kind == BlockKind.PLANT_HRC_ENABLE:
-            contract = (
-                "Buildings.Templates.Plants.Controls.HeatRecoveryChillers."
-                "Enable"
-            )
+            contract = "Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable"
             if self.config.get("semantic_contract") != contract:
                 raise ValueError("plant_hrc_enable requires its pinned contract")
             for name in (
@@ -1239,10 +1282,7 @@ class Block(BaseModel):
                         f"plant_hrc_enable config.{name} must be finite and >= {minimum}"
                     )
         if self.kind == BlockKind.PLANT_STAGE_COMPLETION:
-            contract = (
-                "Buildings.Templates.Plants.Controls.StagingRotation."
-                "StageCompletion"
-            )
+            contract = "Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion"
             if self.config.get("semantic_contract") != contract:
                 raise ValueError("plant_stage_completion requires its pinned contract")
             count = self.config.get("equipment_count")
@@ -1251,9 +1291,7 @@ class Block(BaseModel):
                     "plant_stage_completion config.equipment_count must be 1 through 52"
                 )
         if self.kind == BlockKind.PLANT_STAGE_INDEX:
-            contract = (
-                "Buildings.Templates.Plants.Controls.Utilities.StageIndex"
-            )
+            contract = "Buildings.Templates.Plants.Controls.Utilities.StageIndex"
             if self.config.get("semantic_contract") != contract:
                 raise ValueError("plant_stage_index requires its pinned contract")
             count = self.config.get("stage_count")
@@ -1267,8 +1305,7 @@ class Block(BaseModel):
                 or float(runtime) < 0
             ):
                 raise ValueError(
-                    "plant_stage_index config.minimum_runtime_seconds must be "
-                    "non-negative finite"
+                    "plant_stage_index config.minimum_runtime_seconds must be non-negative finite"
                 )
         if self.kind == BlockKind.MOVING_AVERAGE:
             window = self.config.get("window_seconds")

@@ -42,6 +42,7 @@ export function TestLab({ report, run }: { report: TestReport; run: RunDetail })
       <div className="test-summary-numbers"><strong>{passedAssertions}/{assertions.length}</strong><span>assertions passed</span></div>
     </section>
     <FaultQualification coverage={faultCoverage} />
+    <QualificationMatrix matrix={report.coverage?.qualification_matrix} />
     <div className="evidence-grid">
       <section className="evidence-panel evidence-visuals">
         <div className="panel-title"><div><span className="eyebrow">BEHAVIOR TRACE</span><h2>What the program did</h2></div><Activity size={19} /></div>
@@ -60,6 +61,19 @@ export function TestLab({ report, run }: { report: TestReport; run: RunDetail })
       </section>
     </div>
   </div>;
+}
+
+function QualificationMatrix({ matrix }: { matrix: NonNullable<TestReport['coverage']>['qualification_matrix'] | undefined }) {
+  if (!matrix || !matrix.profile) return <section className="qualification-summary missing"><TriangleAlert size={20} /><div><span className="eyebrow">EQUIPMENT SAFETY PROFILE</span><strong>No qualification profile is bound to this sequence</strong><p>A contractor-approved profile must define which normal, failure, safety, override, restart, and recovery cases apply.</p></div><span>Profile required</span></section>;
+  const complete = matrix.engineering_matrix_complete;
+  return <section className={`qualification-summary ${complete ? 'complete' : 'incomplete'}`}>
+    <div className="qualification-heading"><ShieldCheck size={20} /><div><span className="eyebrow">EQUIPMENT SAFETY PROFILE</span><strong>{matrix.profile.id}</strong><p>{matrix.interpretation}</p></div><span className={complete ? 'complete' : 'incomplete'}>{complete ? 'Matrix complete' : `${matrix.blockers.length} open decisions`}</span></div>
+    <div className="qualification-metrics"><div><strong>{matrix.required_passed}/{matrix.required_count}</strong><span>Required evidence</span></div><div><strong>{matrix.conditional_addressed}/{matrix.conditional_count}</strong><span>Conditional resolved</span></div><div><strong>{matrix.profile.version}</strong><span>Profile version</span></div></div>
+    <details className="qualification-details"><summary>Review the full safety and failure matrix</summary><div aria-label="Safety and failure requirements" tabIndex={0}>{matrix.requirements.map((item) => {
+      const passed = ['passed', 'not_applicable'].includes(item.status);
+      return <article className={passed ? 'passed' : 'open'} key={item.category}><span>{passed ? <CheckCircle2 size={14} /> : <TriangleAlert size={14} />}</span><div><header><strong>{item.category.replaceAll('_', ' ')}</strong><small>{item.level.replaceAll('_', ' ')}</small></header><p>{item.description}</p><span>{item.reason}</span>{item.evidence_cases.length > 0 && <code>{item.evidence_cases.join(' · ')}</code>}</div></article>;
+    })}</div></details>
+  </section>;
 }
 
 function FaultQualification({ coverage }: { coverage: NonNullable<TestReport['coverage']>['fault_injection'] | undefined }) {

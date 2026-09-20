@@ -221,6 +221,9 @@ test('contractor can upload, preflight, compile, and assemble a complex building
   await expect(page.getByText('2 injected fault activations')).toBeVisible();
   await expect(page.getByText('lost_fan_proof').first()).toBeVisible();
   await expect(page.getByText('Raw → effective → response')).toBeVisible();
+  await expect(page.getByText('exhaust-fan-proof-safety-v1')).toBeVisible();
+  await page.getByText('Review the full safety and failure matrix').click();
+  await expect(page.getByText('actuator proof failure')).toBeVisible();
   expect((await new AxeBuilder({ page }).exclude('[data-sonner-toaster]').analyze()).violations).toEqual([]);
 });
 

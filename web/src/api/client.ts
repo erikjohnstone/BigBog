@@ -142,6 +142,33 @@ const faultCoverageSchema = z.object({
   interpretation: z.string(),
 }).passthrough();
 
+const qualificationMatrixSchema = z.object({
+  schema: z.string(),
+  sequence_family: z.string().nullable(),
+  profile: z.object({
+    id: z.string(),
+    version: z.string(),
+    source: z.string(),
+  }).nullable(),
+  required_passed: z.number(),
+  required_count: z.number(),
+  conditional_addressed: z.number(),
+  conditional_count: z.number(),
+  engineering_matrix_complete: z.boolean(),
+  requirements: z.array(z.object({
+    category: z.string(),
+    level: z.string(),
+    description: z.string(),
+    fault_required: z.boolean(),
+    recovery_required: z.boolean(),
+    status: z.string(),
+    reason: z.string(),
+    evidence_cases: z.array(z.string()),
+  }).passthrough()),
+  blockers: z.array(z.string()),
+  interpretation: z.string().optional(),
+}).passthrough();
+
 const reportSchema = z.object({
   engine: z.string(),
   passed: z.boolean(),
@@ -153,6 +180,7 @@ const reportSchema = z.object({
     outcomes_possible: z.number().optional(),
     gaps: z.array(z.string()).optional(),
     fault_injection: faultCoverageSchema.optional(),
+    qualification_matrix: qualificationMatrixSchema.optional(),
   }).passthrough().nullable().optional(),
   scenarios: z.array(z.object({
     name: z.string(),

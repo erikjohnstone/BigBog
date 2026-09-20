@@ -19,6 +19,7 @@ from bactalk.domain import (
     OutputExpectation,
     PointRole,
     PointSpec,
+    QualificationCategory,
     ScheduleRequirement,
     SequenceSpec,
     ShopProfile,
@@ -475,6 +476,10 @@ def generalist_demo_job() -> JobSpec:
     cases = [
         AcceptanceCase(
             name="occupied cooling",
+            qualifications=[
+                QualificationCategory.NORMAL_OPERATION,
+                QualificationCategory.OUTPUT_BOUNDS,
+            ],
             inputs={
                 "Occupied": True,
                 "DuctStatic": 1.5,
@@ -494,6 +499,10 @@ def generalist_demo_job() -> JobSpec:
         ),
         AcceptanceCase(
             name="unoccupied shutdown",
+            qualifications=[
+                QualificationCategory.UNOCCUPIED_SHUTDOWN,
+                QualificationCategory.OUTPUT_BOUNDS,
+            ],
             inputs={
                 "Occupied": False,
                 "DuctStatic": 1.5,
@@ -509,6 +518,11 @@ def generalist_demo_job() -> JobSpec:
         ),
         AcceptanceCase(
             name="duct high-pressure interlock",
+            qualifications=[
+                QualificationCategory.HIGH_PRESSURE_SHUTDOWN,
+                QualificationCategory.ALARM_BEHAVIOR,
+                QualificationCategory.OUTPUT_BOUNDS,
+            ],
             inputs={
                 "Occupied": True,
                 "DuctStatic": 2.7,

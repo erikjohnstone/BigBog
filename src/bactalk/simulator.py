@@ -17,6 +17,8 @@ from bactalk.domain import (
     FaultKind,
     JobSpec,
     OutputExpectation,
+    QualificationCategory,
+    QualificationProfile,
     ScenarioResult,
     TestReport,
 )
@@ -42,9 +44,7 @@ class FaultInjector:
         for fault in faults:
             data_type = self.input_types.get(fault.target)
             if data_type is None:
-                raise ValueError(
-                    f"fault {fault.id!r} target {fault.target!r} is not a graph input"
-                )
+                raise ValueError(f"fault {fault.id!r} target {fault.target!r} is not a graph input")
             if fault.target in targets:
                 raise ValueError(f"multiple active faults target input {fault.target!r}")
             targets.add(fault.target)
@@ -469,18 +469,14 @@ class GraphInterpreter:
                     state["low_request_since"] = self.time
             else:
                 state["low_request_since"] = None
-            low_request_passed = (
-                state["low_request_since"] is not None
-                and self.time - float(state["low_request_since"])
-                >= float(block.config["low_request_time_seconds"])
-            )
+            low_request_passed = state["low_request_since"] is not None and self.time - float(
+                state["low_request_since"]
+            ) >= float(block.config["low_request_time_seconds"])
             heating = block.config["application"] == "Heating"
             lockout = float(block.config["outdoor_lockout"])
             hysteresis = float(block.config["outdoor_lockout_hysteresis"])
             outdoor_enable = (
-                outdoor_temperature < lockout
-                if heating
-                else outdoor_temperature > lockout
+                outdoor_temperature < lockout if heating else outdoor_temperature > lockout
             )
             outdoor_disable = (
                 outdoor_temperature > lockout + hysteresis
@@ -489,9 +485,7 @@ class GraphInterpreter:
             )
             minimum_time = float(block.config["minimum_state_time_seconds"])
             if not bool(state["enabled"]):
-                disabled_long_enough = (
-                    self.time - float(state["disabled_since"]) >= minimum_time
-                )
+                disabled_long_enough = self.time - float(state["disabled_since"]) >= minimum_time
                 if (
                     disabled_long_enough
                     and schedule_enabled
@@ -501,9 +495,7 @@ class GraphInterpreter:
                     state["enabled"] = True
                     state["enabled_since"] = self.time
             else:
-                enabled_long_enough = (
-                    self.time - float(state["enabled_since"]) >= minimum_time
-                )
+                enabled_long_enough = self.time - float(state["enabled_since"]) >= minimum_time
                 if enabled_long_enough and (
                     not schedule_enabled or low_request_passed or outdoor_disable
                 ):
@@ -622,15 +614,9 @@ class GraphInterpreter:
                 "low_heating_load", cooling_load, minimum_heating_capacity
             )
             hrc_falling_edge = bool(state["previous_hrc_status"]) and not hrc_status
-            low_load_cycle_off = hrc_falling_edge and (
-                low_cooling_load or low_heating_load
-            )
-            first_temperature_time = float(
-                block.config["temperature_limit_1_time_seconds"]
-            )
-            second_temperature_time = float(
-                block.config["temperature_limit_2_time_seconds"]
-            )
+            low_load_cycle_off = hrc_falling_edge and (low_cooling_load or low_heating_load)
+            first_temperature_time = float(block.config["temperature_limit_1_time_seconds"])
+            second_temperature_time = float(block.config["temperature_limit_2_time_seconds"])
             chilled_limit = float(block.config["minimum_chilled_supply_temperature"])
             heating_limit = float(block.config["maximum_heating_supply_temperature"])
             chilled_temperature_trip_1 = timer(
@@ -643,9 +629,7 @@ class GraphInterpreter:
                 chilled_temperature < chilled_limit,
                 second_temperature_time,
             )
-            chilled_temperature_trip = (
-                chilled_temperature_trip_1 or chilled_temperature_trip_2
-            )
+            chilled_temperature_trip = chilled_temperature_trip_1 or chilled_temperature_trip_2
             heating_temperature_trip_1 = timer(
                 "heating_temperature_1",
                 heating_temperature > heating_limit - 1.5,
@@ -656,9 +640,7 @@ class GraphInterpreter:
                 heating_temperature > heating_limit,
                 second_temperature_time,
             )
-            heating_temperature_trip = (
-                heating_temperature_trip_1 or heating_temperature_trip_2
-            )
+            heating_temperature_trip = heating_temperature_trip_1 or heating_temperature_trip_2
             disable = (
                 not cooling_plant_enable
                 or not heating_plant_enable
@@ -671,9 +653,7 @@ class GraphInterpreter:
             previous_disable = bool(state["previous_disable"])
             if first_tick:
                 latch = not disable and all_enable
-            elif (disable and not previous_disable) or (
-                all_enable and not previous_all_enable
-            ):
+            elif (disable and not previous_disable) or (all_enable and not previous_all_enable):
                 latch = not disable and all_enable
             else:
                 latch = bool(state["latch"])
@@ -709,19 +689,13 @@ class GraphInterpreter:
         if kind == BlockKind.PLANT_HRC_MODE_CONTROL:
             cooling_load = self._number(args["coolingLoad"])
             heating_load = self._number(args["heatingLoad"])
-            evaporator_load = heating_load * (
-                1.0 - 1.0 / float(block.config["heating_cop"])
-            )
+            evaporator_load = heating_load * (1.0 - 1.0 / float(block.config["heating_cop"]))
             state = self.state.setdefault(
                 block.id,
                 {"comparison": False, "cooling_mode": False},
             )
-            comparison = (
-                (not bool(state["comparison"]) and cooling_load < evaporator_load)
-                or (
-                    bool(state["comparison"])
-                    and cooling_load < evaporator_load + 1.0
-                )
+            comparison = (not bool(state["comparison"]) and cooling_load < evaporator_load) or (
+                bool(state["comparison"]) and cooling_load < evaporator_load + 1.0
             )
             state["comparison"] = comparison
             if bool(args["setMode"]):
@@ -770,19 +744,13 @@ class GraphInterpreter:
             pre_any_change = bool(state["previous_any_change"])
             stage_change = stage != int(state["previous_stage"])
             change_latch = not stage_change and (
-                (
-                    pre_any_change
-                    and not bool(state["previous_pre_any_change"])
-                )
+                (pre_any_change and not bool(state["previous_pre_any_change"]))
                 or bool(state["change_latch"])
             )
             all_match = command_mask == status_mask
             change_and_match = change_latch and all_match
             stage_latch = not change_and_match and (
-                (
-                    stage_change
-                    and not bool(state["previous_stage_change"])
-                )
+                (stage_change and not bool(state["previous_stage_change"]))
                 or bool(state["stage_latch"])
             )
             completed = bool(state["stage_latch"]) and not stage_latch
@@ -798,10 +766,7 @@ class GraphInterpreter:
             stage_count = int(block.config["stage_count"])
             maximum_mask = (1 << stage_count) - 1
             availability_value = self._number(args["availabilityMask"])
-            if (
-                not availability_value.is_integer()
-                or not 0 <= availability_value <= maximum_mask
-            ):
+            if not availability_value.is_integer() or not 0 <= availability_value <= maximum_mask:
                 raise ValueError(
                     "stage index availabilityMask must be an integer mask from 0 "
                     f"through {maximum_mask}"
@@ -826,9 +791,7 @@ class GraphInterpreter:
                 higher = [value for value in available if value > stage]
                 lower = [value for value in available if value < stage]
                 active_available = stage in available
-                runtime_met = elapsed >= float(
-                    block.config["minimum_runtime_seconds"]
-                )
+                runtime_met = elapsed >= float(block.config["minimum_runtime_seconds"])
                 # The pinned StateGraph connects inter-stage transitions before
                 # the stage-zero transition.  An unavailable active stage thus
                 # advances immediately when a higher stage exists.
@@ -893,9 +856,8 @@ class GraphInterpreter:
                 {"out": bool(block.config.get("initial", False))},
             )
             previous = bool(state["out"])
-            output = (
-                (not previous and value > float(block.config["u_high"]))
-                or (previous and value >= float(block.config["u_low"]))
+            output = (not previous and value > float(block.config["u_high"])) or (
+                previous and value >= float(block.config["u_low"])
             )
             state["out"] = output
             return output
@@ -1098,9 +1060,11 @@ class GraphInterpreter:
                 },
             )
             reverse_sign = 1.0 if bool(block.config.get("reverse_acting", True)) else -1.0
-            error = reverse_sign * (
-                self._number(args["setpoint"]) - self._number(args["measurement"])
-            ) / scale
+            error = (
+                reverse_sign
+                * (self._number(args["setpoint"]) - self._number(args["measurement"]))
+                / scale
+            )
             proportional = k * error
             derivative_gain = k * td
             derivative_time = td / nd
@@ -1108,8 +1072,7 @@ class GraphInterpreter:
                 derivative = (
                     float(block.config.get("yd_start", 0.0))
                     if state["first_tick"]
-                    else (derivative_gain / derivative_time)
-                    * (error - float(state["derivative"]))
+                    else (derivative_gain / derivative_time) * (error - float(state["derivative"]))
                 )
             else:
                 derivative = 0.0
@@ -1121,9 +1084,10 @@ class GraphInterpreter:
             if with_integral:
                 rising_reset = bool(args["trigger"]) and not bool(state["previous_trigger"])
                 if rising_reset:
-                    state["integral"] = float(
-                        block.config.get("y_reset", block.config.get("xi_start", 0.0))
-                    ) - proportional_derivative
+                    state["integral"] = (
+                        float(block.config.get("y_reset", block.config.get("xi_start", 0.0)))
+                        - proportional_derivative
+                    )
                 else:
                     anti_windup = (unlimited - output) / (k * ni)
                     corrected_error = error - anti_windup
@@ -1200,9 +1164,7 @@ class GraphInterpreter:
                 state["hold_elapsed"] = float(state["hold_elapsed"]) + step_seconds
                 if hold_input != bool(state["hold_out"]):
                     required = (
-                        float(config["hold_duration_seconds"])
-                        if bool(state["hold_out"])
-                        else 0.0
+                        float(config["hold_duration_seconds"]) if bool(state["hold_out"]) else 0.0
                     )
                     if float(state["hold_elapsed"]) >= required:
                         state["hold_out"] = hold_input
@@ -1238,9 +1200,7 @@ class GraphInterpreter:
             state["sampler_last_index"] = sample_index
             state["sampler_held"] = requests
         else:
-            sample_index = math.floor(
-                (self.time - float(state["sampler_t0"])) / period + 1e-9
-            )
+            sample_index = math.floor((self.time - float(state["sampler_t0"])) / period + 1e-9)
             if sample_index > int(state["sampler_last_index"]):
                 state["sampler_last_index"] = sample_index
                 state["sampler_held"] = requests
@@ -1250,13 +1210,9 @@ class GraphInterpreter:
         if not bool(state["unit_initialized"]):
             unit_output = initial
         else:
-            unit_index = math.floor(
-                (self.time - float(state["unit_t0"])) / period + 1e-9
-            )
+            unit_index = math.floor((self.time - float(state["unit_t0"])) / period + 1e-9)
             unit_due = unit_index > int(state["unit_last_index"])
-            unit_output = float(
-                state["unit_staged"] if unit_due else state["unit_held"]
-            )
+            unit_output = float(state["unit_staged"] if unit_due else state["unit_held"])
 
         request_delta = sampled_requests - float(config["ignored_requests"])
         respond_amount = float(config["respond_amount"])
@@ -1282,9 +1238,7 @@ class GraphInterpreter:
             unit_t0 = round(math.floor(self.time / period) * period, 6)
             state["unit_initialized"] = True
             state["unit_t0"] = unit_t0
-            state["unit_last_index"] = math.floor(
-                (self.time - unit_t0) / period + 1e-9
-            )
+            state["unit_last_index"] = math.floor((self.time - unit_t0) / period + 1e-9)
             state["unit_staged"] = output
         elif unit_due:
             state["unit_last_index"] = math.floor(
@@ -1531,7 +1485,12 @@ def _fault_coverage(
     }
 
 
-def run_generic_acceptance_suite(graph: ControlGraph, cases: list[AcceptanceCase]) -> TestReport:
+def run_generic_acceptance_suite(
+    graph: ControlGraph,
+    cases: list[AcceptanceCase],
+    *,
+    qualification_profile: QualificationProfile | None = None,
+) -> TestReport:
     block_ids = {block.id for block in graph.blocks}
     results: list[ScenarioResult] = []
     for case in cases:
@@ -1623,6 +1582,18 @@ def run_generic_acceptance_suite(graph: ControlGraph, cases: list[AcceptanceCase
         )
     coverage = _decision_coverage(graph, results)
     coverage["fault_injection"] = _fault_coverage(cases, results)
+    from bactalk.qualification import assess_qualification_matrix
+
+    coverage["qualification_matrix"] = assess_qualification_matrix(
+        sequence_family=(
+            str(graph.metadata["sequence_family"])
+            if graph.metadata.get("sequence_family") is not None
+            else None
+        ),
+        cases=cases,
+        results=results,
+        profile=qualification_profile,
+    )
     return TestReport(
         passed=all(scenario.passed for scenario in results),
         scenarios=results,
@@ -1708,7 +1679,11 @@ def run_acceptance_suite(graph: ControlGraph, job: JobSpec | None = None) -> Tes
 
         validate_job_graph_contract(job, graph)
     if job is not None and job.acceptance_tests:
-        return run_generic_acceptance_suite(graph, job.acceptance_tests)
+        return run_generic_acceptance_suite(
+            graph,
+            job.acceptance_tests,
+            qualification_profile=job.qualification_profile,
+        )
     if graph.metadata.get("sequence_family") != "G36_VAV_REHEAT":
         raise ValueError(
             "custom control graphs require acceptance_tests; "
@@ -1905,8 +1880,63 @@ def run_acceptance_suite(graph: ControlGraph, job: JobSpec | None = None) -> Tes
         )
     )
 
+    qualification_cases = [
+        AcceptanceCase(
+            name="occupied cooling response",
+            expectations=[OutputExpectation(target="DamperCommand", value=0.0)],
+            qualifications=[
+                QualificationCategory.NORMAL_OPERATION,
+                QualificationCategory.MODE_TRANSITION,
+                QualificationCategory.OUTPUT_BOUNDS,
+            ],
+        ),
+        AcceptanceCase(
+            name="occupied heating response",
+            expectations=[OutputExpectation(target="ValveCommand", value=0.0)],
+            qualifications=[
+                QualificationCategory.NORMAL_OPERATION,
+                QualificationCategory.MODE_TRANSITION,
+                QualificationCategory.OUTPUT_BOUNDS,
+            ],
+        ),
+        AcceptanceCase(
+            name="unoccupied shutdown",
+            expectations=[OutputExpectation(target="DamperCommand", value=0.0)],
+            qualifications=[
+                QualificationCategory.UNOCCUPIED_SHUTDOWN,
+                QualificationCategory.MODE_TRANSITION,
+            ],
+        ),
+        AcceptanceCase(
+            name="occupied high temperature alarm",
+            expectations=[OutputExpectation(target="HighZoneTempAlarm", value=True)],
+            qualifications=[
+                QualificationCategory.ALARM_BEHAVIOR,
+                QualificationCategory.OUTPUT_BOUNDS,
+            ],
+        ),
+        AcceptanceCase(
+            name="occupied deadband and false-alarm check",
+            expectations=[OutputExpectation(target="DamperCommand", value=minimum_damper)],
+            qualifications=[
+                QualificationCategory.MODE_TRANSITION,
+                QualificationCategory.OUTPUT_BOUNDS,
+            ],
+        ),
+    ]
+    coverage = _decision_coverage(graph, results)
+    coverage["fault_injection"] = _fault_coverage(qualification_cases, results)
+    from bactalk.qualification import assess_qualification_matrix
+
+    coverage["qualification_matrix"] = assess_qualification_matrix(
+        sequence_family="G36_VAV_REHEAT",
+        cases=qualification_cases,
+        results=results,
+        profile=job.qualification_profile if job is not None else None,
+    )
     return TestReport(
         passed=all(scenario.passed for scenario in results),
         scenarios=results,
         engine="BACTalk deterministic VAV plant simulator (Tier 1)",
+        coverage=coverage,
     )

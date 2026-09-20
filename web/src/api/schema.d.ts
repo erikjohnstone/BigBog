@@ -1241,6 +1241,8 @@ export interface components {
             };
             /** Name */
             name: string;
+            /** Qualifications */
+            qualifications?: components["schemas"]["QualificationCategory"][];
             /**
              * Repeat
              * @default 1
@@ -1833,6 +1835,7 @@ export interface components {
             notes?: string | null;
             /** Points */
             points: components["schemas"]["PointSpec"][];
+            qualification_profile?: components["schemas"]["QualificationProfile"] | null;
             sequence?: components["schemas"]["SequenceSpec"];
             /** Site */
             site: string;
@@ -2017,6 +2020,48 @@ export interface components {
              * @enum {string}
              */
             station_assembly_mode: "none" | "insert" | "replace";
+        };
+        /**
+         * QualificationCategory
+         * @enum {string}
+         */
+        QualificationCategory: "normal_operation" | "disabled_shutdown" | "unoccupied_shutdown" | "mode_transition" | "output_bounds" | "alarm_behavior" | "high_pressure_shutdown" | "fire_smoke_shutdown" | "freeze_protection" | "sensor_invalid" | "sensor_stale" | "communications_loss" | "actuator_proof_failure" | "equipment_unavailable" | "all_equipment_unavailable" | "manual_override" | "power_cycle" | "lead_lag_rotation" | "recovery";
+        /**
+         * QualificationLevel
+         * @enum {string}
+         */
+        QualificationLevel: "required" | "conditional" | "not_applicable";
+        /**
+         * QualificationProfile
+         * @description Versioned safety/behavior evidence policy for one equipment application.
+         */
+        QualificationProfile: {
+            /** Id */
+            id: string;
+            /** Requirements */
+            requirements: components["schemas"]["QualificationRequirement"][];
+            /** Source */
+            source: string;
+            /** Version */
+            version: string;
+        };
+        /** QualificationRequirement */
+        QualificationRequirement: {
+            category: components["schemas"]["QualificationCategory"];
+            /** Description */
+            description: string;
+            /**
+             * Fault Required
+             * @default false
+             */
+            fault_required: boolean;
+            /** @default required */
+            level: components["schemas"]["QualificationLevel"];
+            /**
+             * Recovery Required
+             * @default false
+             */
+            recovery_required: boolean;
         };
         /** RejectionRequest */
         RejectionRequest: {

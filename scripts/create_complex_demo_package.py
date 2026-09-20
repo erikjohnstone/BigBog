@@ -21,6 +21,7 @@ from bactalk.domain import (
     OutputExpectation,
     PointRole,
     PointSpec,
+    QualificationCategory,
     SequenceSpec,
 )
 from bactalk.projects import (
@@ -76,6 +77,7 @@ def exhaust_job() -> JobSpec:
         acceptance_tests=[
             AcceptanceCase(
                 name="command starts within proof grace period",
+                qualifications=[QualificationCategory.NORMAL_OPERATION],
                 inputs={"Enable": True, "FanStatus": False},
                 expectations=[
                     OutputExpectation(target="FanCommand", value=True),
@@ -84,6 +86,11 @@ def exhaust_job() -> JobSpec:
             ),
             AcceptanceCase(
                 name="proof failure and recovery",
+                qualifications=[
+                    QualificationCategory.ACTUATOR_PROOF_FAILURE,
+                    QualificationCategory.ALARM_BEHAVIOR,
+                    QualificationCategory.RECOVERY,
+                ],
                 timeline=[
                     AcceptancePhase(
                         name="startup grace",
@@ -169,11 +176,16 @@ def static_pressure_job() -> JobSpec:
         acceptance_tests=[
             AcceptanceCase(
                 name="disabled loop fails to zero",
+                qualifications=[QualificationCategory.DISABLED_SHUTDOWN],
                 inputs={"Enable": False, "DuctStatic": 1.0, "DuctStaticSetpoint": 1.5},
                 expectations=[OutputExpectation(target="SupplyFanSpeedCommand", value=0.0)],
             ),
             AcceptanceCase(
                 name="reverse acting response",
+                qualifications=[
+                    QualificationCategory.NORMAL_OPERATION,
+                    QualificationCategory.OUTPUT_BOUNDS,
+                ],
                 timeline=[
                     AcceptancePhase(
                         name="initialize disabled",
@@ -255,16 +267,21 @@ def pump_job() -> JobSpec:
         ],
         acceptance_tests=[
             AcceptanceCase(
-                name="disabled", inputs=common, expectations=expected(False, False, False)
+                name="disabled",
+                inputs=common,
+                qualifications=[QualificationCategory.DISABLED_SHUTDOWN],
+                expectations=expected(False, False, False),
             ),
             AcceptanceCase(
                 name="selected lead runs",
                 inputs={**common, "SystemEnable": True},
+                qualifications=[QualificationCategory.NORMAL_OPERATION],
                 expectations=expected(True, False, False),
             ),
             AcceptanceCase(
                 name="lead failure selects standby",
                 inputs={**common, "SystemEnable": True},
+                qualifications=[QualificationCategory.EQUIPMENT_UNAVAILABLE],
                 faults=[
                     FaultInjection(
                         id="pump_1_unavailable",
@@ -278,6 +295,7 @@ def pump_job() -> JobSpec:
             AcceptanceCase(
                 name="no available pump fails closed",
                 inputs={**common, "SystemEnable": True},
+                qualifications=[QualificationCategory.ALL_EQUIPMENT_UNAVAILABLE],
                 faults=[
                     FaultInjection(
                         id="pump_1_unavailable",
