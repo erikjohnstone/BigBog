@@ -24,6 +24,8 @@ function readSizes(): Record<string, PanelLayout> {
 interface UiState {
   commandMode: CommandMode;
   assistantOpen: boolean;
+  /** A question typed in the agent palette, consumed by the thread once. */
+  assistantDraft: string | null;
   railExpanded: boolean;
   /** Schematic panel on the Test stage. */
   schematicOpen: boolean;
@@ -33,6 +35,7 @@ interface UiState {
   closeCommand: () => void;
   setAssistantOpen: (open: boolean) => void;
   toggleAssistant: () => void;
+  setAssistantDraft: (draft: string | null) => void;
   setRailExpanded: (expanded: boolean) => void;
   setSchematicOpen: (open: boolean) => void;
   savePanelSizes: (key: string, sizes: PanelLayout) => void;
@@ -42,6 +45,7 @@ interface UiState {
 export const useUi = create<UiState>((set, get) => ({
   commandMode: null,
   assistantOpen: false,
+  assistantDraft: null,
   railExpanded: false,
   schematicOpen: (() => {
     try {
@@ -63,6 +67,9 @@ export const useUi = create<UiState>((set, get) => ({
   },
   toggleAssistant() {
     set({ assistantOpen: !get().assistantOpen });
+  },
+  setAssistantDraft(draft) {
+    set({ assistantDraft: draft });
   },
   setRailExpanded(expanded) {
     set({ railExpanded: expanded });

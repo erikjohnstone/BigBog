@@ -2,6 +2,7 @@ import { GitCompareArrows } from 'lucide-react';
 import { ReactFlowProvider, useReactFlow } from '@xyflow/react';
 import { Group, Panel, Separator } from 'react-resizable-panels';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 import type { RunDetail } from '../../api/client';
 import { useBlockCatalog, useGraph, useReport } from '../../api/queries';
@@ -50,11 +51,27 @@ function BuildBody({
 }) {
   const flow = useReactFlow();
   const clear = useSelection((state) => state.clear);
-  const panelSizes = useUi((state) => state.panelSizes[LAYOUT_KEY]);
   const savePanelSizes = useUi((state) => state.savePanelSizes);
+  const [initialLayout] = useState(() => useUi.getState().panelSizes[LAYOUT_KEY] ?? defaultLayout);
   const traceId = traceIdForRun(run.id);
   const trace = useTrace(traceId);
-  const [compare, setCompare] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const compare = Boolean(run.parent_run_id) && searchParams.get('compare') === '1';
+  const setCompare = useCallback(
+    (next: boolean | ((current: boolean) => boolean)) => {
+      const value = typeof next === 'function' ? next(compare) : next;
+      setSearchParams(
+        (current) => {
+          const params = new URLSearchParams(current);
+          if (value) params.set('compare', '1');
+          else params.delete('compare');
+          return params;
+        },
+        { replace: true },
+      );
+    },
+    [compare, setSearchParams],
+  );
   const parent = useGraph(compare && run.parent_run_id ? run.parent_run_id : undefined);
   const [tidied, setTidied] = useState<Map<string, { x: number; y: number }> | null>(null);
   const [intro, setIntro] = useState(true);
@@ -119,7 +136,7 @@ function BuildBody({
     <Group
       orientation="horizontal"
       className="h-full"
-      defaultLayout={panelSizes ?? defaultLayout}
+      defaultLayout={initialLayout}
       onLayoutChanged={(layout) => savePanelSizes(LAYOUT_KEY, layout)}
     >
       <Panel id="outline" minSize="12" defaultSize={defaultLayout.outline} className="bg-bg-1 hairline-r">

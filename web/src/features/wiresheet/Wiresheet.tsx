@@ -119,12 +119,24 @@ export function Wiresheet({ graph, graphKey, nodes: inputNodes, edges: inputEdge
     };
   }, [flow]);
 
+  // React Flow calls this synchronously inside its own store update. Writing
+  // the shared selection there would feed straight back into node props and
+  // nest updates, so the write is deferred out of React Flow's cycle.
+  const pendingSelection = useRef<string[] | null>(null);
   const onSelectionChange = useCallback(
     ({ nodes: selected }: OnSelectionChangeParams<BlockNode, SignalEdgeType>) => {
       const ids = selected.map((node) => node.id);
-      const current = useSelection.getState().blockIds;
-      if (ids.length === current.size && ids.every((id) => current.has(id))) return;
-      selectBlocks(ids);
+      const already = pendingSelection.current !== null;
+      pendingSelection.current = ids;
+      if (already) return;
+      queueMicrotask(() => {
+        const next = pendingSelection.current;
+        pendingSelection.current = null;
+        if (!next) return;
+        const current = useSelection.getState().blockIds;
+        if (next.length === current.size && next.every((id) => current.has(id))) return;
+        selectBlocks(next);
+      });
     },
     [selectBlocks],
   );

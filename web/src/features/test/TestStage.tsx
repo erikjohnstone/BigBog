@@ -58,9 +58,13 @@ function TestBody({
 }) {
   const traceId = traceIdForRun(run.id);
   const trace = useTrace(traceId);
-  const panelSizes = useUi((state) => state.panelSizes);
   const savePanelSizes = useUi((state) => state.savePanelSizes);
   const schematicOpen = useUi((state) => state.schematicOpen);
+  const [outerLayout] = useState(() => useUi.getState().panelSizes[`${LAYOUT_KEY}:outer`] ?? defaultOuter);
+  const [innerLayouts] = useState(() => ({
+    3: useUi.getState().panelSizes[`${LAYOUT_KEY}:inner:3`] ?? defaultInner,
+    2: useUi.getState().panelSizes[`${LAYOUT_KEY}:inner:2`] ?? { rail: 22, trends: 78 },
+  }));
   const setSchematicOpen = useUi((state) => state.setSchematicOpen);
   const trends = useTrends((state) => state.byTrace[traceId]);
   const ensure = useTrends((state) => state.ensure);
@@ -102,10 +106,10 @@ function TestBody({
 
   return (
     <div className="h-full flex flex-col">
-      <Group orientation="vertical" className="flex-1 min-h-0" defaultLayout={panelSizes[`${LAYOUT_KEY}:outer`] ?? defaultOuter} onLayoutChanged={(layout) => savePanelSizes(`${LAYOUT_KEY}:outer`, layout)}>
+      <Group orientation="vertical" className="flex-1 min-h-0" defaultLayout={outerLayout} onLayoutChanged={(layout) => savePanelSizes(`${LAYOUT_KEY}:outer`, layout)}>
         <Panel id="top" defaultSize={defaultOuter.top} minSize="30" className="min-h-0">
           <Group orientation="horizontal" className="h-full" key={schematicOpen ? 'with-schematic' : 'no-schematic'}
-            defaultLayout={panelSizes[`${LAYOUT_KEY}:inner:${schematicOpen ? 3 : 2}`] ?? (schematicOpen ? defaultInner : { rail: 22, trends: 78 })}
+            defaultLayout={schematicOpen ? innerLayouts[3] : innerLayouts[2]}
             onLayoutChanged={(layout) => savePanelSizes(`${LAYOUT_KEY}:inner:${schematicOpen ? 3 : 2}`, layout)}
           >
             <Panel id="rail" defaultSize={defaultInner.rail} minSize="12" className="hairline-r min-w-0">

@@ -94,7 +94,7 @@ export function Inspector({
   };
 
   return (
-    <div className="h-full overflow-auto text-sm">
+    <div className="h-full overflow-auto text-sm outline-none focus-visible:[box-shadow:inset_0_0_0_2px_var(--accent)]" tabIndex={0} role="region" aria-label={`Inspector: ${data.label}`}>
       <header className="sticky top-0 z-10 bg-bg-1 hairline-b px-3 h-9 flex items-center gap-2">
         <span className="eyebrow">Inspector</span>
         <span className="flex-1" />

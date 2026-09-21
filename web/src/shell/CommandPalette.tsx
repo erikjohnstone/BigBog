@@ -23,6 +23,7 @@ export function CommandPalette() {
 function Palette({ mode }: { mode: 'search' | 'agent' }) {
   const close = useUi((state) => state.closeCommand);
   const setAssistantOpen = useUi((state) => state.setAssistantOpen);
+  const setAssistantDraft = useUi((state) => state.setAssistantDraft);
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const runs = useRuns();
@@ -78,10 +79,13 @@ function Palette({ mode }: { mode: 'search' | 'agent' }) {
                 return (
                   <Item
                     key={run.id}
-                    value={`${run.job.name} ${run.job.equipment_name} ${run.id}`}
+                    value={mode === 'agent' ? `${query} ${run.job.name} ${run.job.equipment_name} ${run.id}` : `${run.job.name} ${run.job.equipment_name} ${run.id}`}
                     icon={<Boxes size={14} />}
                     onSelect={() => {
-                      if (mode === 'agent') setAssistantOpen(true);
+                      if (mode === 'agent') {
+                        setAssistantOpen(true);
+                        if (query.trim()) setAssistantDraft(query.trim());
+                      }
                       go(`/jobs/${run.id}/build`);
                     }}
                     trailing={<StatusPill tone={status.tone}>{status.label}</StatusPill>}

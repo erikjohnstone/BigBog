@@ -291,3 +291,6 @@
 @utility hairline-t {
   border-top: 1px solid var(--line-1);
 }
+@utility hairline-l {
+  border-left: 1px solid var(--line-1);
+}

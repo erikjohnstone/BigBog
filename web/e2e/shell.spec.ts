@@ -331,6 +331,77 @@ test('project system map draws equipment, relationships, and bindings', async ({
   await axe(page);
 });
 
+test('assistant thread explains, proposes a separate candidate, and survives navigation', async ({ page }) => {
+  test.setTimeout(60_000);
+  const runs = (await (await page.request.get('/api/runs')).json()) as Run[];
+  const candidate = runs.find((run) => run.status === 'ready_for_review') ?? runs[0];
+  test.skip(!candidate, 'A retained candidate is required.');
+  const detail = (await (await page.request.get(`/api/runs/${candidate.id}`)).json()) as Record<string, unknown>;
+  await page.route('**/api/ai/status', (route) =>
+    route.fulfill({
+      json: {
+        configured: true,
+        provider: 'cerebras',
+        authority: 'proposal-only',
+        roles: {
+          conversation: { configured: true, model: 'conversation-test-model', authority: 'explain-and-route-only' },
+          coding: { configured: true, model: 'coding-test-model', authority: 'proposal-only' },
+        },
+        unavailable_reason: null,
+      },
+    }),
+  );
+  let received: { message: string; history: unknown[] } | null = null;
+  await page.route(`**/api/runs/${candidate.id}/chat`, async (route) => {
+    received = route.request().postDataJSON() as { message: string; history: unknown[] };
+    const propose = received.message.toLowerCase().includes('change');
+    await route.fulfill({
+      json: propose
+        ? {
+            message: '### Proposal routed\n\nThe coding model produced a **separate candidate**; BACTalk ran its tests.',
+            intent: 'propose_change',
+            assumptions: ['The source candidate remains immutable.'],
+            source_run_id: candidate.id,
+            new_run: { ...detail, id: 'proposal-mock', origin: 'ai_proposal', parent_run_id: candidate.id, changes: { added: ['block:Extra'], modified: [], removed: [] } },
+          }
+        : { message: 'The damper block clamps the demand between the occupied minimum and 100 %.', intent: 'answer', assumptions: [], source_run_id: candidate.id, new_run: null },
+    });
+  });
+
+  await page.goto(`/next/jobs/${candidate.id}/build`);
+  await page.getByRole('button', { name: 'Assistant' }).click();
+  const thread = page.getByRole('complementary', { name: 'Assistant' });
+  await expect(thread).toBeVisible();
+  await expect(thread.getByText('proposal-only')).toBeVisible();
+  await expect(thread.getByText(/conversation-test-model explains and routes/)).toBeVisible();
+
+  // Context chips ride along with the question.
+  await page.getByRole('navigation', { name: 'Block outline' }).getByRole('button').first().click();
+  const composer = thread.getByRole('textbox', { name: 'Message the assistant' });
+  await composer.fill('Why does this block clamp?');
+  await composer.press('Enter');
+  await expect(thread.getByText(/clamps the demand/)).toBeVisible();
+  expect(received!.message).toMatch(/\[Context\] Selected blocks/);
+  expect(received!.message).toMatch(/\[Context\] The engineer is on the build stage/);
+
+  await composer.fill('Please change the minimum to 25%.');
+  await composer.press('Enter');
+  await expect(thread.getByRole('heading', { name: 'Proposal routed' })).toBeVisible();
+  const card = thread.getByRole('group', { name: 'Proposed candidate' });
+  await expect(card.getByText('AI proposal')).toBeVisible();
+  await expect(card.getByText('block:Extra')).toBeVisible();
+  await expect(card.getByRole('link', { name: /preview diff/i })).toHaveAttribute('href', '/next/jobs/proposal-mock/build?compare=1');
+  await expect(card.getByRole('link', { name: /open candidate/i })).toHaveAttribute('href', '/next/jobs/proposal-mock/test');
+  await axe(page);
+
+  // The thread survives closing, reopening, and changing stage.
+  await thread.getByRole('button', { name: 'Close assistant' }).click();
+  await expect(thread).toBeHidden();
+  await page.getByRole('navigation', { name: 'Job stages' }).getByRole('link', { name: /^\d Review/ }).click();
+  await page.getByRole('button', { name: 'Assistant' }).click();
+  await expect(page.getByRole('complementary', { name: 'Assistant' }).getByRole('heading', { name: 'Proposal routed' })).toBeVisible();
+});
+
 test('legacy studio and simulation links redirect into the stage model', async ({ page }) => {
   const runs = (await (await page.request.get('/api/runs')).json()) as Run[];
   test.skip(runs.length === 0, 'A retained candidate is required.');
@@ -387,7 +458,6 @@ test('projects, libraries, connections, and administration render real data', as
 // Rebuilt in later phases of the UI rewrite. Each is skipped by name so the
 // missing coverage is visible in every report until the journey returns.
 test.fixme('contractor intake normalizes a real points list before build (guided intake, phase 6)', async () => {});
-test.fixme('AI proposal renders as a ghost diff and opens the candidate (phase 5)', async () => {});
 test.fixme('whole-building topology and high-fidelity evidence on one clock (phases 3, 4, 9)', async () => {});
 test.fixme('contractor can upload, preflight, compile, and assemble a complex building project (phase 9)', async () => {});
 test.fixme('ctrl-flow design pipeline from template to candidate (phase 6)', async () => {});
