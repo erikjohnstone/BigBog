@@ -192,6 +192,14 @@ class SequenceSpec(BaseModel):
         max_length=240,
     )
     execution_profile: Literal["modelica_exact", "host_tick_v1"] = "modelica_exact"
+    expert_program_objects: bool = Field(
+        default=False,
+        description=(
+            "Allow the expert ProgramObject lane (generated Java) when the lowering "
+            "matrix has no native Niagara row for a block kind. Off by default "
+            "(GOAL-NATIVE-BOG.md N2 policy)."
+        ),
+    )
     source_filename: str | None = Field(default=None, max_length=255)
     source_media_type: str | None = Field(default=None, max_length=200)
     source_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")

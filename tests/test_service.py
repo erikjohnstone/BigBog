@@ -130,29 +130,23 @@ def test_plant_library_job_runs_tests_and_exports_signed_program_source_package(
 
     record = service.create_run(job)
 
+    # Since N4 a library controller whose kinds have native rows exports one .bog;
+    # the ProgramObject package survives only for blocked graphs behind the
+    # expert flag (tests/test_native_bog_emit.py).
     assert record.status == RunStatus.READY_FOR_REVIEW
-    assert record.target_artifact_kind == TargetArtifactKind.NIAGARA_PROGRAM_SOURCE_PACKAGE
-    assert record.bog_path is None
-    assert record.program_package_path == record.target_artifact_path
-    assert record.program_package_path is not None
+    assert record.target_artifact_kind == TargetArtifactKind.NIAGARA_BOG
+    assert record.program_package_path is None
+    assert record.bog_path == record.target_artifact_path
+    assert record.bog_path is not None
     deliverables = json.loads(Path(record.deliverable_manifest_path).read_text())
-    assert deliverables["coverage"]["logic"]["artifact_kind"] == (
-        "niagara_program_source_package"
-    )
-    summary_path = next(
-        Path(path)
-        for path in record.deliverable_artifact_paths
-        if path.endswith("engineering-summary.md")
-    )
-    assert "logic target is ProgramObject source" in summary_path.read_text()
-    with zipfile.ZipFile(record.program_package_path) as archive:
-        manifest = archive.read("manifest.json")
-        assert b'"controller_id": "Utilities.HoldReal"' in manifest
-        assert b'"licensed_workbench_compile_required": true' in manifest
-        assert "wiring-plan.json" in archive.namelist()
+    assert deliverables["coverage"]["logic"]["artifact_kind"] == "niagara_bog"
+    with zipfile.ZipFile(record.bog_path) as archive:
+        assert archive.namelist() == ["file.xml"]
+    lowering = json.loads((Path(record.bog_path).parent / "niagara-lowering.json").read_text())
+    assert lowering["lane"].startswith("native")
 
     service.approve(record.id, "Alex Engineer")
-    assert service.export_path(record.id) == Path(record.program_package_path)
+    assert service.export_path(record.id) == Path(record.bog_path)
 
 
 def test_g36_library_controller_enters_the_same_human_gated_job_lane(
@@ -222,12 +216,11 @@ def test_g36_library_controller_enters_the_same_human_gated_job_lane(
     record = service.create_run(job)
 
     assert record.status == RunStatus.READY_FOR_REVIEW
-    assert record.target_artifact_kind == TargetArtifactKind.NIAGARA_PROGRAM_SOURCE_PACKAGE
-    assert record.program_package_path is not None
-    with zipfile.ZipFile(record.program_package_path) as archive:
-        manifest = archive.read("manifest.json")
-        assert b'"controller_id": "AHUs.MultiZone.VAV.SetPoints.SupplySignals"' in manifest
-        assert len(json.loads(manifest)["programs"]) == 1
+    assert record.target_artifact_kind == TargetArtifactKind.NIAGARA_BOG
+    assert record.bog_path is not None and record.program_package_path is None
+    emit = json.loads((Path(record.bog_path).parent / "niagara-emit.json").read_text())
+    assert emit["graph"] and emit["component_count"] > 0
+    assert "bactalkG36:PIDWithReset" in emit["module_types"]
 
 
 def test_artifact_tampering_invalidates_approval(tmp_path: Path) -> None:

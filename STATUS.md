@@ -24,7 +24,7 @@ stack is present on the development box and the LBNL translation lane runs
 | N1 Catalog + validator | **done** | `make test-native-bog` (47 passed); integration: `test_native_bog_validator` drift + corpus tests | catalog is package data (docs/decisions/002) |
 | N2 Lowering matrix | **done** | `make test-native-bog` (matrix `--check` + 14 lowering tests; 61 native_bog tests total) | rows provisional until N7 (docs/decisions/003) |
 | N3 bactalkG36 kernels | **done (CI part)** | `make kernels-check`; `tests/test_native_bog_kernels.py` in `make test-native-bog` | building and signing the real module is Gate G-SDK (WAITING_ON_HUMAN) |
-| N4 Native emitter | not started | | |
+| N4 Native emitter | **done** | `make test-native-bog` (`tests/test_native_bog_emit.py`); both retained Tier 1 controllers export one validated `.bog` | descriptions and writable parameters wait on N5 (docs/decisions/005) |
 | N5 Point linking | not started | | |
 | N6 Shadow Runtime | not started | | |
 | N7 Prove it | not started | | Gate G-WB written |
@@ -149,6 +149,38 @@ stack is present on the development box and the LBNL translation lane runs
   `module-include.xml`.
 - **Not claimed.** Nothing here has been loaded by a Niagara station. Gate
   G-SDK lists the exact build, signing, palette and execution evidence.
+
+## N4 results
+
+- **Emitter.** `bactalk.niagara.emit` writes the `bajaObjectGraph` directly
+  (pybog kept for the pack lane): root folder, `Inputs`, one folder per
+  first-level CDL composite (`ActAirSet`, `DamVal`, `SysReq`, …; chunked to at
+  most 60 components), `Outputs`; stock blocks, matrix composites (falling
+  edge, set/reset with feedback, sampler, sample trigger, assert note, Tstat
+  hysteresis) and `bactalkG36` components with their parameter properties;
+  units on every numeric point; sequential handles; deterministic layered
+  layout (`bactalk.niagara.layout`); byte-identical output for identical input.
+- **Origins.** The CXF importer now records `metadata.block_origins`
+  (composite instance path per block); both retained translations were
+  regenerated with `scripts/retain_library_translations.py`.
+- **Result.** VAV reheat: 496 components, 650 links, 13 logic folders; multizone
+  AHU: 606 components, 792 links, 15 logic folders. Both pass the N1 validator
+  with the module types declared, with zero warnings, and fail on `type.known`
+  without the declaration (the module is real, not assumed).
+- **Previews.** `bactalk.niagara.preview` renders one deterministic SVG per
+  folder; the service writes `niagara-emit.json` and `previews/*.svg` beside
+  the archive.
+- **Lane wiring.** `NiagaraCompiler.compile` takes the native lane for any
+  graph the stock table cannot carry; the service chooses the artifact from
+  the matrix (`native_*` → `.bog`, `blocked` → refused with blockers,
+  `program_objects` → package only with `sequence.expert_program_objects`).
+  The LBNL demo, the plant `HoldReal` job and the G36 `SupplySignals` job now
+  produce a `.bog`; station assembly is no longer refused for them. The
+  air-to-water plant contract keeps the expert flag until N8.
+- **Not done here.** Interface descriptions on points and writable
+  `Parameters` (the CDL parameters are folded into composite-level constants
+  by the importer) are N5 work; multi-equipment output (AHU + N VAVs in one
+  `.bog`) is deferred to N5 with point linking.
 
 ## Gates
 

@@ -302,7 +302,7 @@ def test_library_chat_changes_parameters_then_rebuilds_and_retests(tmp_path: Pat
     assert revision["origin"] == "ai_proposal"
     assert revision["parent_run_id"] == source["id"]
     assert revision["status"] == "ready_for_review"
-    assert revision["target_artifact_kind"] == "niagara_program_source_package"
+    assert revision["target_artifact_kind"] == "niagara_bog"
     assert revision["job"]["sequence"]["parameters"] == {"dtHol": 5.0}
     assert source["job"]["sequence"]["parameters"] == {"dtHol": 3.0}
     assert provider.messages == []

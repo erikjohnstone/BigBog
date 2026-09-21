@@ -56,8 +56,13 @@ def test_temporal_cxf_executes_exactly_and_fails_closed_for_niagara(tmp_path: Pa
         "Buildings.Controls.OBC.CDL.Reals.MovingAverage" in coverage["niagara_unsupported_classes"]
     )
     assert report["passed"] is True
+    # Stock-only lowering still refuses it; the native lane (N4) carries it as
+    # bactalkG36:MovingAverage.
     with pytest.raises(ValueError, match="moving_average"):
-        NiagaraCompiler().compile(graph, tmp_path / "unsupported.bog")
+        NiagaraCompiler().compile(graph, tmp_path / "unsupported.bog", native=False)
+    native = NiagaraCompiler().compile(graph, tmp_path / "native.bog")
+    with zipfile.ZipFile(native) as archive:
+        assert 't="bactalkG36:MovingAverage"' in archive.read("file.xml").decode()
 
 
 def test_unknown_cxf_class_reports_exact_gap_and_fails_closed() -> None:

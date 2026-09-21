@@ -406,8 +406,13 @@ def test_exact_temporal_block_without_component_contract_still_fails_closed(
         ],
     )
 
+    # The stock-only lane still fails closed without a contract for the kind;
+    # left to itself the native lane (N4) carries it as a bactalkG36 component.
     with pytest.raises(ValueError, match="pid_with_reset"):
-        NiagaraCompiler().compile(graph, tmp_path / "unsafe-pid.bog")
+        NiagaraCompiler().compile(graph, tmp_path / "unsafe-pid.bog", native=False)
+    native = NiagaraCompiler().compile(graph, tmp_path / "native-pid.bog")
+    with zipfile.ZipFile(native) as archive:
+        assert 't="bactalkG36:PIDWithReset"' in archive.read("file.xml").decode()
 
 
 def test_environment_pack_is_signed_into_the_approval_bundle(tmp_path: Path) -> None:

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import zipfile
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 from xml.etree import ElementTree
@@ -11,6 +13,7 @@ from bactalk.domain import (
     ControlGraph,
     DataType,
     DeliverableRequirements,
+    PointSpec,
     ScheduleRequirement,
 )
 from bactalk.integrations.environment_pack import (
@@ -18,6 +21,8 @@ from bactalk.integrations.environment_pack import (
     EnvironmentPackManifest,
 )
 from bactalk.integrations.niagara_bindings import program_root_ord_for
+from bactalk.niagara.emit import emit_bog
+from bactalk.niagara.preview import render_previews
 from bactalk.niagara_extensions import apply_point_units, inject_fixed_interval_histories
 
 
@@ -97,14 +102,38 @@ class NiagaraCompiler:
         deliverables: DeliverableRequirements | None = None,
         environment: EnvironmentPackManifest | None = None,
         units: dict[str, str | None] | None = None,
+        points: Iterable[PointSpec] = (),
+        report_directory: Path | None = None,
+        native: bool | None = None,
     ) -> Path:
         """Compile ``graph`` to ``destination``.
+
+        A graph that carries any block the stock pybog table cannot lower (or
+        ``native=True``) takes the native lane (GOAL-NATIVE-BOG.md N4):
+        :func:`bactalk.niagara.emit.emit_bog` writes the archive directly, and the
+        emit report and folder previews land in ``report_directory`` when given.
+        The pack lane keeps pybog until the packs retire.
 
         ``units`` maps a point block id to the unit string the job declares for
         that point. pybog cannot set units, so the numeric point facets are
         rewritten after the archive is saved; a point without a resolvable unit
         keeps Niagara's null unit.
         """
+        if native is None:
+            # A contractor environment pack keeps its typed-component lane (it
+            # fails closed on anything it does not cover); otherwise any block
+            # the stock table cannot carry sends the graph to the native lane.
+            native = environment is None and any(
+                block.kind not in self.SLOT_NAMES for block in graph.blocks
+            )
+        if native:
+            return self._compile_native(
+                graph,
+                destination,
+                deliverables=deliverables,
+                points=points,
+                report_directory=report_directory,
+            )
         custom_registry = self._custom_registry(environment)
         custom_contracts = list(
             {item.contract.type_spec: item for item in custom_registry.values()}.values()
@@ -214,6 +243,35 @@ class NiagaraCompiler:
                 ),
                 units=units,
             )
+        return destination
+
+    @staticmethod
+    def _compile_native(
+        graph: ControlGraph,
+        destination: Path,
+        *,
+        deliverables: DeliverableRequirements | None,
+        points: Iterable[PointSpec],
+        report_directory: Path | None,
+    ) -> Path:
+        if deliverables is not None and (deliverables.histories or deliverables.schedules):
+            raise ValueError(
+                "the native Niagara lane does not carry history or schedule deliverables yet "
+                "(GOAL-NATIVE-BOG.md N5); remove them or use a pack sequence"
+            )
+        result = emit_bog(graph, points=points)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(result.content)
+        if report_directory is not None:
+            report_directory.mkdir(parents=True, exist_ok=True)
+            (report_directory / "niagara-emit.json").write_text(
+                json.dumps(result.report.to_dict(), indent=1, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            previews = report_directory / "previews"
+            previews.mkdir(exist_ok=True)
+            for folder, svg in render_previews(result.report).items():
+                (previews / f"{folder}.svg").write_text(svg, encoding="utf-8")
         return destination
 
     @staticmethod

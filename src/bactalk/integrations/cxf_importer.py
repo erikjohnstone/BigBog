@@ -738,6 +738,11 @@ class CxfImporter:
         input_ports: dict[str, list[tuple[str, str]]] = {}
         output_ports: dict[str, tuple[str, str]] = {}
         used_ids: set[str] = set()
+        # Composite instance path of the CDL component each block came from,
+        # relative to the controller root ("actAirSet.max2"); the native .bog
+        # emitter folders the wiresheet by it (GOAL-NATIVE-BOG.md N4).
+        origins: dict[str, str] = {}
+        current_origin: str | None = None
 
         def unique_id(raw: str, fallback: str) -> str:
             base = _identifier(raw, fallback)
@@ -747,7 +752,11 @@ class CxfImporter:
                 candidate = f"{base}_{suffix}"
                 suffix += 1
             used_ids.add(candidate)
+            if current_origin is not None:
+                origins[candidate] = current_origin
             return candidate
+
+        root_prefix = f"{coverage['root_id']}."
 
         for connector_id in _refs(root, "S231:hasInput"):
             connector = by_id[connector_id]
@@ -776,6 +785,11 @@ class CxfImporter:
 
         for index, component_id in enumerate(_refs(root, "S231:containsBlock")):
             component = by_id[component_id]
+            current_origin = (
+                component_id[len(root_prefix) :]
+                if component_id.startswith(root_prefix)
+                else _local_name(component_id)
+            )
             class_name = _suffix(component["@type"])
             label = str(component.get("S231:label", _local_name(component_id)))
             block_id = unique_id(label, f"Block_{index + 1}")
@@ -1685,6 +1699,7 @@ class CxfImporter:
                         )
                     )
 
+        current_origin = None
         graph_name = unique_id(str(coverage["root_label"]), "CxfProgram")
         used_ids.remove(graph_name)
         return ControlGraph(
@@ -1696,5 +1711,6 @@ class CxfImporter:
                 "source_sha256": coverage["source_sha256"],
                 "lowering": self.mapping_version,
                 "coverage": coverage,
+                "block_origins": dict(sorted(origins.items())),
             },
         )

@@ -63,7 +63,8 @@ from bactalk.integrations.niagara_station import assemble_station_bog
 from bactalk.integrations.niagara_template import NiagaraTemplateAnalyzer
 from bactalk.integrations.plant_controls_library import PlantControlsLibrary
 from bactalk.integrations.volttron import build_readonly_volttron_export
-from bactalk.niagara.lowering import plan_lowering
+from bactalk.niagara.lowering import LoweringPolicy, plan_lowering
+from bactalk.niagara.module import declared_types
 from bactalk.niagara.validate import validate_bog
 from bactalk.repository import RunRepository
 
@@ -158,10 +159,20 @@ class WorkbenchService:
         agent_result = agent.run(job)
         graph = agent_result.graph
         report = agent_result.report
-        requires_program_package = (
-            job.sequence.library is not None
-            and any(block.kind not in self.compiler.SLOT_NAMES for block in graph.blocks)
+        # GOAL-NATIVE-BOG.md N2/N4: the lowering matrix chooses the lane. Native
+        # graphs become one .bog; the ProgramObject package survives only behind
+        # the job's expert flag; anything else is refused with its blockers.
+        lowering_plan = plan_lowering(
+            graph,
+            LoweringPolicy(expert_program_objects=job.sequence.expert_program_objects),
         )
+        if lowering_plan.lane == "blocked":
+            raise ValueError(
+                "no native Niagara lowering for this graph: "
+                + "; ".join(lowering_plan.blockers)
+                + " (set sequence.expert_program_objects to use the ProgramObject lane)"
+            )
+        requires_program_package = lowering_plan.lane == "program_objects"
         target_artifact_kind = (
             TargetArtifactKind.NIAGARA_PROGRAM_SOURCE_PACKAGE
             if requires_program_package
@@ -262,8 +273,12 @@ class WorkbenchService:
         report_path.write_text(canonical_json(report), encoding="utf-8")
         # GOAL-NATIVE-BOG.md N2: record which lane the lowering matrix assigns
         # this graph. The artifact choice itself moves to the matrix in N4.
+        lowering_plan = plan_lowering(
+            graph,
+            LoweringPolicy(expert_program_objects=job.sequence.expert_program_objects),
+        )
         (run_dir / "niagara-lowering.json").write_text(
-            canonical_json(plan_lowering(graph).to_dict()), encoding="utf-8"
+            canonical_json(lowering_plan.to_dict()), encoding="utf-8"
         )
         environment_definition = (
             inspect_environment_pack(environment_pack, template_bog=template_bog)
@@ -281,9 +296,13 @@ class WorkbenchService:
                     else None
                 ),
                 units={point.name: point.units for point in job.points},
+                points=job.points,
+                report_directory=run_dir,
             )
             # GOAL-NATIVE-BOG.md N1: nothing ships that fails static validation.
-            validation = validate_bog(bog_path, label=bog_path.name)
+            validation = validate_bog(
+                bog_path, declared_types=declared_types(), label=bog_path.name
+            )
             (run_dir / "niagara-validation.json").write_text(
                 canonical_json(validation.to_dict()), encoding="utf-8"
             )

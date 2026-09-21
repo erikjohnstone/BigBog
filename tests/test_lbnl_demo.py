@@ -80,11 +80,11 @@ def test_demo_builds_on_a_base_install_without_the_translation_toolchain(tmp_pat
     service = WorkbenchService(RunRepository(tmp_path / "runs"))
     record = service.create_run(lbnl_vav_reheat_demo_job())
     assert record.status.value == "ready_for_review"
-    # Until N4 the honest artifact for an LBNL controller is the ProgramObject package.
-    assert record.target_artifact_kind.value == "niagara_program_source_package"
-    assert record.program_package_path is not None
-    assert Path(record.program_package_path).is_file()
-    assert record.bog_path is None
+    # Since N4 an LBNL controller exports one native .bog (validated in create_run).
+    assert record.target_artifact_kind.value == "niagara_bog"
+    assert record.bog_path is not None
+    assert Path(record.bog_path).is_file()
+    assert record.program_package_path is None
 
 
 @pytest.mark.integration

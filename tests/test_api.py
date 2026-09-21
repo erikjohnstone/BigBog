@@ -41,7 +41,7 @@ def test_review_api_flow(tmp_path: Path) -> None:
     assert lbnl.json()["status"] == "ready_for_review"
     assert lbnl.json()["job"]["sequence"]["library"] == "g36"
     assert lbnl.json()["job"]["sequence"]["controller_id"] == "TerminalUnits.Reheat.Controller"
-    assert lbnl.json()["target_artifact_kind"] == "niagara_program_source_package"
+    assert lbnl.json()["target_artifact_kind"] == "niagara_bog"
 
     create_response = client.post("/api/runs/demo/standard-vav")
     assert create_response.status_code == 201
@@ -164,9 +164,9 @@ def test_multipart_plant_controller_intake_builds_reviewable_source_package(
     assert response.status_code == 201, response.text
     run = response.json()
     assert run["status"] == "ready_for_review"
-    assert run["target_artifact_kind"] == "niagara_program_source_package"
-    assert run["bog_path"] is None
-    assert run["program_package_path"] == run["target_artifact_path"]
+    assert run["target_artifact_kind"] == "niagara_bog"
+    assert run["program_package_path"] is None
+    assert run["bog_path"] == run["target_artifact_path"]
     approval = client.post(
         f"/api/runs/{run['id']}/approve",
         json={"reviewer": "Alex Engineer"},
@@ -175,8 +175,7 @@ def test_multipart_plant_controller_intake_builds_reviewable_source_package(
     export = client.get(f"/api/runs/{run['id']}/export")
     assert export.status_code == 200
     with zipfile.ZipFile(io.BytesIO(export.content)) as archive:
-        assert "manifest.json" in archive.namelist()
-        assert "wiring-plan.json" in archive.namelist()
+        assert archive.namelist() == ["file.xml"]
 
 
 def test_reject_api_records_named_decision_and_refuses_export(tmp_path: Path) -> None:

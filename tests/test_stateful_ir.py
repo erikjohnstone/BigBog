@@ -650,8 +650,14 @@ def test_pid_with_reset_matches_pinned_oce_recurrence_and_fails_closed_for_niaga
     ]
 
     assert observed == pytest.approx(expected, rel=0.0, abs=5e-16)
+    # Since N4 the native lane carries pid_with_reset as a bactalkG36 component
+    # (docs/niagara-lowering-matrix.md); the stock table alone still cannot.
+    destination = NiagaraCompiler().compile(graph, tmp_path / "native-pid.bog")
+    with zipfile.ZipFile(destination) as archive:
+        xml = archive.read("file.xml").decode()
+    assert 't="bactalkG36:PIDWithReset"' in xml
     with pytest.raises(ValueError, match="pid_with_reset"):
-        NiagaraCompiler().compile(graph, tmp_path / "not-qualified.bog")
+        NiagaraCompiler().compile(graph, tmp_path / "stock-only.bog", native=False)
 
 
 def test_boolean_assert_warning_emits_every_false_evaluation_and_clears_per_step() -> None:

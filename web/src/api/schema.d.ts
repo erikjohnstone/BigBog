@@ -2030,6 +2030,11 @@ export interface components {
              * @enum {string}
              */
             execution_profile: "modelica_exact" | "host_tick_v1";
+            /**
+             * Expert Program Objects
+             * @default false
+             */
+            expert_program_objects: boolean;
             /** Name */
             name: string;
             /** Notes */
@@ -2935,6 +2940,12 @@ export interface components {
              * @enum {string}
              */
             execution_profile: "modelica_exact" | "host_tick_v1";
+            /**
+             * Expert Program Objects
+             * @description Allow the expert ProgramObject lane (generated Java) when the lowering matrix has no native Niagara row for a block kind. Off by default (GOAL-NATIVE-BOG.md N2 policy).
+             * @default false
+             */
+            expert_program_objects: boolean;
             /**
              * Family
              * @default G36_VAV_REHEAT

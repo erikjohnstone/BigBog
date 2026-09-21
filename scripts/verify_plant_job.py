@@ -127,6 +127,7 @@ def _job() -> JobSpec:
             library="plant_controls",
             controller_id="HeatPumps.AirToWater",
             parameters=PARAMETERS,
+            expert_program_objects=True,
         ),
         points=points,
         acceptance_tests=[
