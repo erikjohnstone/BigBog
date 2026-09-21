@@ -490,6 +490,40 @@ const alfalfaEvidenceSchema = z.object({
   }).passthrough()),
 }).passthrough();
 
+const fmiVariableSchema = z.object({
+  name: z.string(),
+  value_reference: z.string().nullable(),
+  causality: z.string(),
+  variability: z.string().nullable(),
+  initial: z.string().nullable(),
+  data_type: z.string(),
+  unit: z.string().nullable(),
+  minimum: z.string().nullable(),
+  maximum: z.string().nullable(),
+  start: z.string().nullable(),
+  description: z.string().nullable(),
+});
+
+const fmiModelSchema = z.object({
+  schema: z.literal('bactalk.fmi-model-description/v1'),
+  filename: z.string(),
+  sha256: z.string(),
+  bytes: z.number().int().nonnegative(),
+  fmi_version: z.string(),
+  model_name: z.string(),
+  guid: z.string().nullable(),
+  instantiation_token: z.string().nullable(),
+  generation_tool: z.string().nullable(),
+  model_identifiers: z.array(z.string()),
+  platforms: z.array(z.string()),
+  inputs: z.array(fmiVariableSchema),
+  outputs: z.array(fmiVariableSchema),
+  parameter_count: z.number().int().nonnegative(),
+  local_variable_count: z.number().int().nonnegative(),
+  variable_count: z.number().int().nonnegative(),
+  live_building_writes: z.literal(false),
+});
+
 const deliverablesSchema = z.object({
   schema: z.string(),
   equipment_name: z.string(),
@@ -962,6 +996,8 @@ export type BacnetLab = z.infer<typeof bacnetLabSchema>;
 export type BacnetProbe = z.infer<typeof probeSchema>;
 export type BoptestEvidence = z.infer<typeof boptestSchema>;
 export type AlfalfaEvidence = z.infer<typeof alfalfaEvidenceSchema>;
+export type FmiVariable = z.infer<typeof fmiVariableSchema>;
+export type FmiModel = z.infer<typeof fmiModelSchema>;
 export type Deliverables = z.infer<typeof deliverablesSchema>;
 export type ReleaseSummary = z.infer<typeof releaseSummarySchema>;
 export type Catalog = z.infer<typeof catalogSchema>;
@@ -1089,6 +1125,13 @@ export const api = {
     body.append('qualification', JSON.stringify(qualification));
     return z.object({ run: runDetailSchema, evidence: alfalfaEvidenceSchema }).parse(
       await postForm(`/api/runs/${runId}/verify/alfalfa`, body),
+    );
+  },
+  async inspectAlfalfaFmu(model: File) {
+    const body = new FormData();
+    body.append('model_file', model);
+    return fmiModelSchema.parse(
+      await postForm('/api/integrations/alfalfa/inspect-fmu', body),
     );
   },
   async deliverables(runId: string) {

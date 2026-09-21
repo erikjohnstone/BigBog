@@ -135,7 +135,26 @@ def _mapping() -> AlfalfaGraphMap:
 def _fmu_bytes() -> bytes:
     stream = io.BytesIO()
     with zipfile.ZipFile(stream, "w", compression=zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr("modelDescription.xml", "<fmiModelDescription/>")
+        archive.writestr(
+            "modelDescription.xml",
+            """<fmiModelDescription fmiVersion="2.0" modelName="TestBuilding" guid="test-guid">
+  <CoSimulation modelIdentifier="test_building" />
+  <ModelVariables>
+    <ScalarVariable name="hvac_oveAhu_yFan_u" valueReference="1"
+      causality="input" variability="continuous">
+      <Real min="0" max="1" start="0" />
+    </ScalarVariable>
+    <ScalarVariable name="hvac_reaZonCor_TZon_y" valueReference="2"
+      causality="output" variability="continuous">
+      <Real unit="K" start="293.15" />
+    </ScalarVariable>
+    <ScalarVariable name="hvac_oveAhu_yFan_y" valueReference="3"
+      causality="output" variability="continuous">
+      <Real min="0" max="1" />
+    </ScalarVariable>
+  </ModelVariables>
+</fmiModelDescription>""",
+        )
     return stream.getvalue()
 
 
@@ -363,3 +382,29 @@ def test_alfalfa_qualification_is_available_through_product_api(tmp_path: Path) 
     retained = client.get(f"/api/runs/{run_id}/verify/alfalfa")
     assert retained.status_code == 200
     assert retained.json()["steps"] == 2
+
+
+def test_fmu_inspection_is_available_through_product_api(tmp_path: Path) -> None:
+    client = TestClient(create_app(tmp_path / "runs"))
+
+    response = client.post(
+        "/api/integrations/alfalfa/inspect-fmu",
+        files={"model_file": ("building.fmu", _fmu_bytes(), "application/zip")},
+    )
+
+    assert response.status_code == 200, response.text
+    payload = response.json()
+    assert payload["schema"] == "bactalk.fmi-model-description/v1"
+    assert payload["filename"] == "building.fmu"
+    assert payload["fmi_version"] == "2.0"
+    assert payload["model_name"] == "TestBuilding"
+    assert payload["model_identifiers"] == ["test_building"]
+    assert payload["variable_count"] == 3
+    assert [item["name"] for item in payload["inputs"]] == [
+        "hvac_oveAhu_yFan_u"
+    ]
+    assert [item["name"] for item in payload["outputs"]] == [
+        "hvac_reaZonCor_TZon_y",
+        "hvac_oveAhu_yFan_y",
+    ]
+    assert payload["live_building_writes"] is False

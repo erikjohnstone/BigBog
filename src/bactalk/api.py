@@ -66,6 +66,7 @@ from bactalk.integrations.constrain import ConStrainError, ConStrainVerifier
 from bactalk.integrations.ctrl_flow import CtrlFlowError, CtrlFlowLibrary
 from bactalk.integrations.cxf_importer import CxfImporter, CxfImportError
 from bactalk.integrations.cxf_vectors import CxfVectorError, CxfVectorVerifier
+from bactalk.integrations.fmi import inspect_fmu_archive
 from bactalk.integrations.g36_library import G36Library
 from bactalk.integrations.haxall import HaxallError, HaxallValidator
 from bactalk.integrations.niagara_program_codegen import NiagaraProgramCodegenError
@@ -1559,6 +1560,24 @@ def create_app(
             close = getattr(client, "close", None)
             if callable(close):
                 close()
+
+    @app.post("/api/integrations/alfalfa/inspect-fmu")
+    async def inspect_alfalfa_fmu(
+        model_file: Annotated[UploadFile, File()],
+    ) -> dict:
+        model_bytes = await model_file.read(MAX_ALFALFA_MODEL_BYTES + 1)
+        if len(model_bytes) > MAX_ALFALFA_MODEL_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Alfalfa FMU exceeds the {MAX_ALFALFA_MODEL_BYTES}-byte limit",
+            )
+        try:
+            return inspect_fmu_archive(
+                model_bytes,
+                filename=model_file.filename or "model.fmu",
+            ).model_dump(mode="json", by_alias=True)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     @app.get("/api/runs/{run_id}/verify/alfalfa")
     def get_alfalfa_qualification(run_id: str) -> dict:

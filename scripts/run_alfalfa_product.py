@@ -100,6 +100,12 @@ def main() -> int:
         raise FileNotFoundError(model)
     with tempfile.TemporaryDirectory(prefix="bactalk-alfalfa-product-") as directory:
         client = TestClient(create_app(Path(directory) / "runs"))
+        with model.open("rb") as stream:
+            inspected = client.post(
+                "/api/integrations/alfalfa/inspect-fmu",
+                files={"model_file": (model.name, stream, "application/zip")},
+            )
+        _require(inspected, 200, "FMU inspection")
         created = client.post("/api/runs", json=_job().model_dump(mode="json"))
         _require(created, 201, "candidate creation")
         run_id = created.json()["id"]
@@ -150,6 +156,7 @@ def main() -> int:
             "schema": "bactalk.alfalfa-product-workflow/v1",
             "status": "pass",
             "product_api_exercised": True,
+            "fmu_inspection": inspected.json(),
             "run_id": run_id,
             "preapproval_export_denied": True,
             "qualified_run": qualified.json()["run"],

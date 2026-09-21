@@ -143,6 +143,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/integrations/alfalfa/inspect-fmu": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Inspect Alfalfa Fmu */
+        post: operations["inspect_alfalfa_fmu_api_integrations_alfalfa_inspect_fmu_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/library/aixocat/patterns": {
         parameters: {
             query?: never;
@@ -1791,6 +1808,11 @@ export interface components {
             /** Template Bog */
             template_bog?: string | null;
         };
+        /** Body_inspect_alfalfa_fmu_api_integrations_alfalfa_inspect_fmu_post */
+        Body_inspect_alfalfa_fmu_api_integrations_alfalfa_inspect_fmu_post: {
+            /** Model File */
+            model_file: string;
+        };
         /** Body_inspect_contractor_intake_api_intake_inspect_post */
         Body_inspect_contractor_intake_api_intake_inspect_post: {
             /** Points File */
@@ -2954,6 +2976,41 @@ export interface operations {
         requestBody: {
             content: {
                 "multipart/form-data": components["schemas"]["Body_inspect_contractor_intake_api_intake_inspect_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    inspect_alfalfa_fmu_api_integrations_alfalfa_inspect_fmu_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_inspect_alfalfa_fmu_api_integrations_alfalfa_inspect_fmu_post"];
             };
         };
         responses: {

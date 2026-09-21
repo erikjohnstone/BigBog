@@ -9,7 +9,7 @@ import tempfile
 import zipfile
 from collections.abc import Mapping
 from datetime import datetime
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 
 from bactalk.agent import ControlsPlanner, ProgrammingAgent, SequencePackPlanner
 from bactalk.compiler import NiagaraCompiler
@@ -39,6 +39,7 @@ from bactalk.integrations.boptest_graph import (
 )
 from bactalk.integrations.brick import build_and_validate_brick
 from bactalk.integrations.environment_pack import inspect_environment_pack
+from bactalk.integrations.fmi import inspect_fmu_archive
 from bactalk.integrations.funnel import FunnelScorer
 from bactalk.integrations.nhaystack import build_readonly_nhaystack_export
 from bactalk.integrations.niagara_program_codegen import NiagaraProgramPackageBuilder
@@ -60,9 +61,6 @@ class ArtifactChangedError(RuntimeError):
 MAX_SOURCE_DOCUMENTS = 16
 MAX_SOURCE_DOCUMENT_BYTES = 50 * 1024 * 1024
 MAX_ALFALFA_MODEL_BYTES = 512 * 1024 * 1024
-MAX_ALFALFA_ARCHIVE_MEMBERS = 100_000
-MAX_ALFALFA_UNCOMPRESSED_BYTES = 4 * 1024 * 1024 * 1024
-MAX_ALFALFA_COMPRESSION_RATIO = 500
 
 
 def _safe_source_name(value: str) -> str:
@@ -73,54 +71,6 @@ def _safe_source_name(value: str) -> str:
     if not cleaned:
         raise ValueError("source document filename is empty after normalization")
     return cleaned[:200]
-
-
-def _validate_fmu_archive(path: Path) -> None:
-    """Reject malformed or hostile FMU containers before runtime submission."""
-
-    try:
-        with zipfile.ZipFile(path) as archive:
-            infos = archive.infolist()
-            if len(infos) > MAX_ALFALFA_ARCHIVE_MEMBERS:
-                raise ValueError("Alfalfa FMU contains too many archive members")
-            total_size = 0
-            names: set[str] = set()
-            for info in infos:
-                normalized = info.filename.replace("\\", "/")
-                member = PurePosixPath(normalized)
-                if member.is_absolute() or ".." in member.parts:
-                    raise ValueError("Alfalfa FMU contains an unsafe archive path")
-                if not normalized or normalized in names:
-                    raise ValueError("Alfalfa FMU contains duplicate archive members")
-                names.add(normalized)
-                if info.flag_bits & 0x1:
-                    raise ValueError("Alfalfa FMU contains encrypted archive members")
-                if (info.external_attr >> 16) & 0o170000 == 0o120000:
-                    raise ValueError("Alfalfa FMU contains symbolic links")
-                total_size += info.file_size
-                if total_size > MAX_ALFALFA_UNCOMPRESSED_BYTES:
-                    raise ValueError(
-                        "Alfalfa FMU expands beyond the 4 GiB admission limit"
-                    )
-                if (
-                    info.compress_size
-                    and info.file_size / info.compress_size
-                    > MAX_ALFALFA_COMPRESSION_RATIO
-                ):
-                    raise ValueError(
-                        "Alfalfa FMU contains a suspiciously compressed member"
-                    )
-            if "modelDescription.xml" not in names:
-                raise ValueError("Alfalfa FMU is missing modelDescription.xml")
-            prefix = archive.read("modelDescription.xml")[:65_536].upper()
-            if b"<FMIMODELDESCRIPTION" not in prefix:
-                raise ValueError("Alfalfa FMU has an invalid modelDescription.xml")
-            if b"<!DOCTYPE" in prefix or b"<!ENTITY" in prefix:
-                raise ValueError(
-                    "Alfalfa FMU modelDescription.xml contains forbidden declarations"
-                )
-    except zipfile.BadZipFile as exc:
-        raise ValueError("Alfalfa model is not a valid FMU/ZIP archive") from exc
 
 
 def artifact_hash(*paths: Path) -> str:
@@ -788,7 +738,7 @@ class WorkbenchService:
         try:
             model_path = staging / safe_name
             model_path.write_bytes(model_bytes)
-            _validate_fmu_archive(model_path)
+            inspect_fmu_archive(model_path)
             evidence = AlfalfaGraphRunner(client, graph, mapping).run(
                 model_path,
                 steps=steps,
