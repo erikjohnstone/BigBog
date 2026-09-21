@@ -21,6 +21,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/block-catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Block Catalog
+         * @description Typed slots for every block kind, so the wiresheet draws declared ports.
+         */
+        get: operations["get_block_catalog_api_block_catalog_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/capability-packs": {
         parameters: {
             query?: never;
@@ -3022,6 +3042,28 @@ export interface components {
 export type $defs = Record<string, never>;
 export interface operations {
     ai_status_api_ai_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_block_catalog_api_block_catalog_get: {
         parameters: {
             query?: never;
             header?: never;

@@ -183,12 +183,35 @@ export interface SignalBinding {
   signalId: string;
   /** Called every frame with the current value; default writes textContent. */
   apply?: (element: HTMLElement | SVGElement, value: number, signal: Signal | undefined) => void;
+  /**
+   * Level-of-detail group. A view pauses a whole group (for example every
+   * wiresheet chip while zoomed out past legibility) so the frame skips
+   * DOM writes nobody can read.
+   */
+  group?: string;
 }
 
 const bindings = new Set<SignalBinding>();
+const pausedGroups = new Set<string>();
 let frameScheduled = false;
 let lastIndex = -1;
 let lastTraceId: string | null = null;
+
+/** Pause or resume every binding in a group; resuming repaints the group. */
+export function setBindingGroupActive(group: string, active: boolean): void {
+  const paused = pausedGroups.has(group);
+  if (active && paused) {
+    pausedGroups.delete(group);
+    lastIndex = -1;
+    scheduleFlush();
+  } else if (!active && !paused) {
+    pausedGroups.add(group);
+  }
+}
+
+export function isBindingGroupActive(group: string): boolean {
+  return !pausedGroups.has(group);
+}
 
 export function formatSignalValue(value: number, signal: Signal | undefined): string {
   if (Number.isNaN(value)) return '—';
@@ -211,6 +234,7 @@ function flush(): void {
   lastIndex = index;
   if (!traceId) return;
   for (const binding of bindings) {
+    if (binding.group && pausedGroups.has(binding.group)) continue;
     const signal = traceStore.signal(traceId, binding.signalId);
     const value = traceStore.valueAt(traceId, binding.signalId, index);
     (binding.apply ?? defaultApply)(binding.element, value, signal);
@@ -253,13 +277,14 @@ export function bindSignal(binding: SignalBinding): () => void {
 export function useSignalRef<T extends HTMLElement | SVGElement = HTMLElement>(
   signalId: string | null | undefined,
   apply?: SignalBinding['apply'],
+  group?: string,
 ): RefObject<T | null> {
   const ref = useRef<T | null>(null);
   useEffect(() => {
     const element = ref.current;
     if (!element || !signalId) return;
-    return bindSignal({ element, signalId, apply });
-  }, [signalId, apply]);
+    return bindSignal({ element, signalId, apply, group });
+  }, [signalId, apply, group]);
   return ref;
 }
 

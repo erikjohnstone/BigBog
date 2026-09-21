@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { useTimeCursor } from './timeCursor';
-import { traceStore } from './trace';
+import { bindSignal, setBindingGroupActive, traceStore } from './trace';
 import type { Trace } from './trace';
 
 function makeTrace(): Trace {
@@ -159,5 +159,32 @@ describe('traceStore.valueAt', () => {
     unsubscribe();
     traceStore.put(makeTrace());
     expect(calls).toBe(2);
+  });
+});
+
+describe('binding groups', () => {
+  beforeEach(() => {
+    traceStore.put(makeTrace());
+    useTimeCursor.getState().setTrace('trace-1');
+  });
+
+  it('skips paused groups and repaints them on resume', async () => {
+    const paint = () => new Promise((resolve) => requestAnimationFrame(resolve));
+    const chip = document.createElement('span');
+    const live = document.createElement('span');
+    const unbindChip = bindSignal({ element: chip, signalId: 'zone', group: 'lod' });
+    const unbindLive = bindSignal({ element: live, signalId: 'zone' });
+    await paint();
+    expect(chip.textContent).toBe('70.00');
+    setBindingGroupActive('lod', false);
+    useTimeCursor.getState().seekIndex(3);
+    await paint();
+    expect(live.textContent).toBe('73.00');
+    expect(chip.textContent).toBe('70.00');
+    setBindingGroupActive('lod', true);
+    await paint();
+    expect(chip.textContent).toBe('73.00');
+    unbindChip();
+    unbindLive();
   });
 });

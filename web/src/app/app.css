@@ -141,3 +141,136 @@
   scrollbar-width: thin;
   scrollbar-color: var(--line-2) transparent;
 }
+
+/* ---- wiresheet ---------------------------------------------------------- */
+:root {
+  --family-io: var(--m-air-supply);
+  --family-const: var(--fg-2);
+  --family-math: var(--m-cmd);
+  --family-compare: var(--m-elec);
+  --family-logic: var(--m-status);
+  --family-switch: var(--m-refrig);
+  --family-timing: var(--m-steam);
+  --family-state: var(--m-chw);
+  --family-filter: var(--m-air-outside);
+  --family-loop: var(--m-hw);
+  --family-plant: var(--sim);
+  --family-assert: var(--fail);
+  --family-unknown: var(--line-2);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: var(--radius-chip);
+  border: 1px solid var(--line-1);
+  background: var(--bg-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--fg-0);
+  white-space: nowrap;
+  /* Fixed minimum width so a changing value never resizes its node: a node
+     resize would make React Flow re-measure and re-render every frame. */
+  min-width: 6.5ch;
+  justify-content: flex-end;
+  font-variant-numeric: tabular-nums;
+}
+.chip[data-state='true'] {
+  color: var(--m-status);
+  border-color: color-mix(in oklch, var(--m-status) 40%, transparent);
+}
+.chip[data-state='false'] {
+  color: var(--fg-2);
+}
+.chip[data-state='nan'],
+.chip[data-state='none'] {
+  color: var(--fg-2);
+  opacity: 0.7;
+}
+
+/* The system builds itself: blocks then wires, in topological order. */
+@keyframes bactalk-materialize {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.materialize {
+  animation: bactalk-materialize var(--duration-layout) var(--ease-out) both;
+  animation-delay: var(--materialize-delay, 0ms);
+}
+@keyframes bactalk-draw {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.materialize-edge {
+  animation: bactalk-draw var(--duration-state) var(--ease-out) both;
+  animation-delay: var(--materialize-delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .materialize,
+  .materialize-edge {
+    animation: none;
+  }
+}
+.wiresheet-node[data-diff='removed'] {
+  pointer-events: none;
+}
+/* Level of detail: unreadable chips and wire flow stop past these zooms. */
+[data-lod='low'] .wiresheet-node .chip,
+[data-lod='mid'] .wiresheet-node .chip {
+  visibility: hidden;
+}
+[data-lod='low'] .edge-flow {
+  animation: none;
+  opacity: 0.35;
+}
+
+/* ---- transport slider --------------------------------------------------- */
+.transport-range {
+  appearance: none;
+  height: 24px;
+  background: transparent;
+  cursor: pointer;
+}
+.transport-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: transparent;
+}
+.transport-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 3px;
+  height: 18px;
+  margin-top: -8px;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.transport-range::-moz-range-track {
+  height: 2px;
+  background: transparent;
+}
+.transport-range::-moz-range-thumb {
+  width: 3px;
+  height: 18px;
+  border: none;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.transport-range:disabled {
+  cursor: default;
+  opacity: 0.5;
+}

@@ -8,8 +8,7 @@ import { App } from './app/App';
 import { ThemeProvider } from './design-system/theme';
 import { TooltipProvider } from './design-system/primitives/tooltip';
 
-import '@fontsource-variable/jetbrains-mono';
-import './design-system/fonts.css';
+import './design-system/fonts';
 import './design-system/tokens.css';
 import './app/app.css';
 

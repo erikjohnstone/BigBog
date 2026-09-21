@@ -64,6 +64,9 @@ export function useRuns(opts?: Opts<Awaited<ReturnType<typeof api.runs>>>) {
 export function useRun(id: string | undefined) {
   return useQuery({ queryKey: keys.run(id ?? ''), queryFn: () => api.run(id!), enabled: Boolean(id) });
 }
+export function useBlockCatalog() {
+  return useQuery({ queryKey: keys.blockCatalog, queryFn: api.blockCatalog, staleTime: Infinity });
+}
 export function useGraph(id: string | undefined) {
   return useQuery({ queryKey: keys.graph(id ?? ''), queryFn: () => api.graph(id!), enabled: Boolean(id), staleTime: Infinity });
 }

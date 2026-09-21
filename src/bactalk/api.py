@@ -19,6 +19,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.routing import Match
 from starlette.types import Scope
 
+from bactalk import block_catalog
 from bactalk.ai import (
     AIProviderError,
     CerebrasProvider,
@@ -621,6 +622,11 @@ def create_app(
     @app.get("/api/reference-stack")
     def get_reference_stack() -> dict:
         return reference_stack.inventory()
+
+    @app.get("/api/block-catalog")
+    def get_block_catalog() -> dict:
+        """Typed slots for every block kind, so the wiresheet draws declared ports."""
+        return block_catalog.catalog()
 
     @app.get("/api/system/readiness")
     def get_system_readiness() -> dict:

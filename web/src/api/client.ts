@@ -1236,6 +1236,23 @@ export type CtrlFlowBrief = z.infer<typeof ctrlFlowBriefSchema>;
 export type CtrlFlowReconciliation = z.infer<typeof ctrlFlowReconciliationSchema>;
 export type GraphicsModel = z.infer<typeof graphicsModelSchema>;
 export type GraphicsPlan = z.infer<typeof graphicsPlanSchema>;
+const blockSlotSchema = z.object({ name: z.string(), type: z.enum(['numeric', 'boolean']).or(z.string()) });
+const blockCatalogSchema = z.object({
+  schema: z.string(),
+  families: z.array(z.string()),
+  kinds: z.array(z.object({
+    kind: z.string(),
+    family: z.string(),
+    stateful: z.boolean(),
+    feedback: z.boolean(),
+    inputs: z.array(blockSlotSchema),
+    outputs: z.array(blockSlotSchema),
+  })),
+});
+
+export type BlockCatalog = z.infer<typeof blockCatalogSchema>;
+export type BlockCatalogKind = BlockCatalog['kinds'][number];
+
 export type ArtifactState<T> =
   | { state: 'available'; data: T }
   | { state: 'missing' }
@@ -1334,6 +1351,9 @@ export const api = {
   },
   async run(runId: string) {
     return runDetailSchema.parse(await getJson(`/api/runs/${runId}`));
+  },
+  async blockCatalog() {
+    return blockCatalogSchema.parse(await getJson('/api/block-catalog'));
   },
   async graph(runId: string) {
     return graphSchema.parse(await getJson(`/api/runs/${runId}/graph`));

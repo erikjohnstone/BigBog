@@ -10,10 +10,12 @@ export type Stage = 'intake' | 'build' | 'test' | 'review' | 'release';
 
 const SIZES_KEY = 'bactalk.layout.v1';
 
-function readSizes(): Record<string, number[]> {
+export type PanelLayout = Record<string, number>;
+
+function readSizes(): Record<string, PanelLayout> {
   try {
     const raw = localStorage.getItem(SIZES_KEY);
-    return raw ? (JSON.parse(raw) as Record<string, number[]>) : {};
+    return raw ? (JSON.parse(raw) as Record<string, PanelLayout>) : {};
   } catch {
     return {};
   }
@@ -23,14 +25,14 @@ interface UiState {
   commandMode: CommandMode;
   assistantOpen: boolean;
   railExpanded: boolean;
-  panelSizes: Record<string, number[]>;
+  panelSizes: Record<string, PanelLayout>;
 
   openCommand: (mode: Exclude<CommandMode, null>) => void;
   closeCommand: () => void;
   setAssistantOpen: (open: boolean) => void;
   toggleAssistant: () => void;
   setRailExpanded: (expanded: boolean) => void;
-  savePanelSizes: (key: string, sizes: number[]) => void;
+  savePanelSizes: (key: string, sizes: PanelLayout) => void;
   resetPanelSizes: (key: string) => void;
 }
 
