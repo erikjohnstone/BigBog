@@ -13,6 +13,7 @@ const runSchema = z.object({
   artifact_sha256: z.string(),
   bacnet_lab_manifest_path: z.string().nullable().optional(),
   boptest_verification_path: z.string().nullable().optional(),
+  alfalfa_verification_path: z.string().nullable().optional(),
   environment_manifest_path: z.string().nullable().optional(),
   deliverable_manifest_path: z.string().nullable().optional(),
   job: z.object({
@@ -447,6 +448,45 @@ const boptestSchema = z.object({
       absolute_time_tolerance: z.number(),
       absolute_value_tolerance: z.number(),
     }).passthrough(),
+  }).passthrough()),
+}).passthrough();
+
+const alfalfaEvidenceSchema = z.object({
+  schema: z.literal('bactalk.alfalfa-graph-run/v1'),
+  status: z.literal('pass'),
+  runtime: z.literal('Alfalfa'),
+  run_id: z.string(),
+  bactalk_run_id: z.string().optional(),
+  approval_allowed: z.literal(true),
+  live_building_writes: z.literal(false),
+  status_after_start: z.string(),
+  status_after_stop: z.string(),
+  model_name: z.string(),
+  model_sha256: z.string(),
+  graph_name: z.string(),
+  graph_sha256: z.string(),
+  runtime_input_count: z.number().int().nonnegative(),
+  runtime_output_count: z.number().int().nonnegative(),
+  start: z.string(),
+  end: z.string(),
+  step_seconds: z.number().positive(),
+  steps: z.number().int().positive(),
+  clean_stop: z.literal(true),
+  trajectory: z.array(z.object({
+    index: z.number().int().nonnegative(),
+    start_time: z.string(),
+    end_time: z.string(),
+    graph_inputs: numericMap,
+    initial_output_values: numericMap,
+    controller_outputs: numericMap,
+    fmu_inputs: numericMap,
+    observed_outputs: numericMap,
+    command_echoes: z.record(z.string(), z.object({
+      output: z.string(),
+      command: z.number(),
+      feedback: z.number(),
+      matched: z.boolean(),
+    }).passthrough()),
   }).passthrough()),
 }).passthrough();
 
@@ -921,6 +961,7 @@ export type ProjectPreflight = z.infer<typeof projectPreflightSchema>;
 export type BacnetLab = z.infer<typeof bacnetLabSchema>;
 export type BacnetProbe = z.infer<typeof probeSchema>;
 export type BoptestEvidence = z.infer<typeof boptestSchema>;
+export type AlfalfaEvidence = z.infer<typeof alfalfaEvidenceSchema>;
 export type Deliverables = z.infer<typeof deliverablesSchema>;
 export type ReleaseSummary = z.infer<typeof releaseSummarySchema>;
 export type Catalog = z.infer<typeof catalogSchema>;
@@ -1038,6 +1079,17 @@ export const api = {
   },
   async boptest(runId: string) {
     return getArtifact(`/api/runs/${runId}/verify/boptest`, boptestSchema);
+  },
+  async alfalfa(runId: string) {
+    return getArtifact(`/api/runs/${runId}/verify/alfalfa`, alfalfaEvidenceSchema);
+  },
+  async qualifyAlfalfa(runId: string, model: File, qualification: { mapping: unknown; steps: number; step_seconds: number; start: string }) {
+    const body = new FormData();
+    body.append('model_file', model);
+    body.append('qualification', JSON.stringify(qualification));
+    return z.object({ run: runDetailSchema, evidence: alfalfaEvidenceSchema }).parse(
+      await postForm(`/api/runs/${runId}/verify/alfalfa`, body),
+    );
   },
   async deliverables(runId: string) {
     return getArtifact(`/api/runs/${runId}/deliverables`, deliverablesSchema);

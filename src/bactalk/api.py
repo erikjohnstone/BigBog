@@ -5,10 +5,14 @@ import json
 import os
 import socket
 from collections.abc import Callable
+from datetime import datetime
+from importlib import metadata
 from pathlib import Path
 from typing import Annotated, Any, Literal
 from uuid import uuid4
 
+import httpx
+from alfalfa_client import AlfalfaClient
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -48,6 +52,8 @@ from bactalk.intake import (
     parse_sequence_document,
 )
 from bactalk.integrations.aixocat import AixocatError, AixocatLibrary
+from bactalk.integrations.alfalfa import AlfalfaClientLike
+from bactalk.integrations.alfalfa_graph import AlfalfaGraphMap
 from bactalk.integrations.bacnet_lab import VirtualBacnetLab, probe_manifest_with_bac0
 from bactalk.integrations.boptest import BoptestClient, BoptestError
 from bactalk.integrations.boptest_graph import (
@@ -106,6 +112,7 @@ from bactalk.sequence_review_repository import (
     SequenceReviewIntegrityError,
 )
 from bactalk.service import (
+    MAX_ALFALFA_MODEL_BYTES,
     ApprovalRequiredError,
     ArtifactChangedError,
     WorkbenchService,
@@ -143,6 +150,13 @@ class BoptestQualificationRequest(BaseModel):
     step_seconds: float = Field(gt=0, le=86_400, allow_inf_nan=False)
     start_time: float = Field(default=0.0, ge=0, allow_inf_nan=False)
     warmup_period: float = Field(default=0.0, ge=0, allow_inf_nan=False)
+
+
+class AlfalfaQualificationRequest(BaseModel):
+    mapping: AlfalfaGraphMap
+    steps: int = Field(ge=1, le=100_000)
+    step_seconds: float = Field(gt=0, le=86_400, allow_inf_nan=False)
+    start: datetime
 
 
 class HaxallValidationRequest(BaseModel):
@@ -256,6 +270,7 @@ def create_app(
     ai_coding_provider: StructuredChatProvider | None = None,
     security_config: SecurityConfig | None = None,
     boptest_client_factory: Callable[[], BoptestRuntime] | None = None,
+    alfalfa_client_factory: Callable[[], AlfalfaClientLike] | None = None,
 ) -> FastAPI:
     root = run_root or Path(os.getenv("BACTALK_RUNS", ".bactalk/runs"))
     repository = RunRepository(root)
@@ -311,6 +326,10 @@ def create_app(
     security_audit = AuditLog(root.parent / "audit" / "events.jsonl")
     make_boptest_client = boptest_client_factory or (
         lambda: BoptestClient(os.getenv("BACTALK_BOPTEST_URL", "http://127.0.0.1:8000"))
+    )
+    alfalfa_base_url = os.getenv("BACTALK_ALFALFA_URL", "http://127.0.0.1:8088")
+    make_alfalfa_client = alfalfa_client_factory or (
+        lambda: AlfalfaClient(alfalfa_base_url)
     )
     app = FastAPI(
         title="BACTalk",
@@ -1483,6 +1502,72 @@ def create_app(
             raise HTTPException(
                 status_code=404,
                 detail="run or BOPTEST qualification evidence not found",
+            ) from exc
+        except ArtifactChangedError as exc:
+            raise HTTPException(status_code=412, detail=str(exc)) from exc
+
+    @app.post("/api/runs/{run_id}/verify/alfalfa")
+    async def qualify_run_with_alfalfa(
+        run_id: str,
+        model_file: Annotated[UploadFile, File()],
+        qualification: Annotated[str, Form(min_length=2, max_length=5_000_000)],
+    ) -> dict:
+        try:
+            request = AlfalfaQualificationRequest.model_validate_json(qualification)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=422,
+                detail=f"Alfalfa qualification request is invalid: {exc}",
+            ) from exc
+        model_bytes = await model_file.read(MAX_ALFALFA_MODEL_BYTES + 1)
+        client = make_alfalfa_client()
+        try:
+            server_version: object = None
+            if alfalfa_client_factory is None:
+                response = httpx.get(
+                    f"{alfalfa_base_url.rstrip('/')}/api/v2/version",
+                    timeout=15.0,
+                )
+                response.raise_for_status()
+                body = response.json()
+                server_version = body.get("payload", body) if isinstance(body, dict) else body
+            record = service.qualify_with_alfalfa(
+                run_id,
+                client=client,
+                mapping=request.mapping,
+                model_bytes=model_bytes,
+                model_filename=model_file.filename or "model.fmu",
+                steps=request.steps,
+                step_seconds=request.step_seconds,
+                start=request.start,
+                server_version=server_version,
+                client_version=metadata.version("alfalfa-client"),
+            )
+            evidence = json.loads(service.alfalfa_verification_path(run_id).read_text())
+            return {"run": record.model_dump(mode="json"), "evidence": evidence}
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="run not found") from exc
+        except ApprovalRequiredError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except ArtifactChangedError as exc:
+            raise HTTPException(status_code=412, detail=str(exc)) from exc
+        except httpx.HTTPError as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        finally:
+            close = getattr(client, "close", None)
+            if callable(close):
+                close()
+
+    @app.get("/api/runs/{run_id}/verify/alfalfa")
+    def get_alfalfa_qualification(run_id: str) -> dict:
+        try:
+            return json.loads(service.alfalfa_verification_path(run_id).read_text())
+        except KeyError as exc:
+            raise HTTPException(
+                status_code=404,
+                detail="run or Alfalfa qualification evidence not found",
             ) from exc
         except ArtifactChangedError as exc:
             raise HTTPException(status_code=412, detail=str(exc)) from exc

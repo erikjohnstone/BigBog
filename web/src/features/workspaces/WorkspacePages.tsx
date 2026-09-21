@@ -47,7 +47,7 @@ function RunWorkspace({ heading, eyebrow, description, runs, loading, mode }: { 
         <Link className="run-workspace-card" key={run.id} to={`/studio/${run.id}/${mode === 'simulation' ? 'simulation' : 'wiresheet'}`}>
           <header><span className="run-workspace-icon">{mode === 'simulation' ? <FlaskConical size={19} /> : <Blocks size={19} />}</span><div><span className="eyebrow">{run.job.site}</span><h2>{run.job.equipment_name}</h2></div><ChevronRight size={16} /></header>
           <p>{run.job.name}</p>
-          {mode === 'simulation' ? <div className="qualification-lanes"><Lane label="Typed" active={run.status !== 'failed'} /><Lane label="BACnet" active={Boolean(run.bacnet_lab_manifest_path)} /><Lane label="BOPTEST" active={Boolean(run.boptest_verification_path)} /><Lane label="Niagara" active={false} /></div> : <div className="run-workspace-meta"><span>{run.job.sequence.family.replaceAll('_', ' ')}</span><code>{run.artifact_sha256.slice(0, 10)}</code></div>}
+          {mode === 'simulation' ? <div className="qualification-lanes"><Lane label="Typed" active={run.status !== 'failed'} /><Lane label="BACnet" active={Boolean(run.bacnet_lab_manifest_path)} /><Lane label="BOPTEST" active={Boolean(run.boptest_verification_path)} /><Lane label="Alfalfa" active={Boolean(run.alfalfa_verification_path)} /><Lane label="Niagara" active={false} /></div> : <div className="run-workspace-meta"><span>{run.job.sequence.family.replaceAll('_', ' ')}</span><code>{run.artifact_sha256.slice(0, 10)}</code></div>}
           <footer><span className={`status-badge ${run.status}`}>{run.status.replaceAll('_', ' ')}</span><span>{mode === 'simulation' ? 'Open evidence' : 'Open program'}</span></footer>
         </Link>
       ))}</section>}

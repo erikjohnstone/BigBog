@@ -1678,6 +1678,7 @@ class RunRecord(BaseModel):
     environment_artifact_paths: list[str] = Field(default_factory=list)
     source_artifact_paths: list[str] = Field(default_factory=list)
     boptest_verification_path: str | None = None
+    alfalfa_verification_path: str | None = None
     verification_artifact_paths: list[str] = Field(default_factory=list)
     artifact_sha256: str
     approval: Approval | None = None

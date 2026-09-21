@@ -1173,6 +1173,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/runs/{run_id}/verify/alfalfa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Alfalfa Qualification */
+        get: operations["get_alfalfa_qualification_api_runs__run_id__verify_alfalfa_get"];
+        put?: never;
+        /** Qualify Run With Alfalfa */
+        post: operations["qualify_run_with_alfalfa_api_runs__run_id__verify_alfalfa_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/runs/{run_id}/verify/boptest": {
         parameters: {
             query?: never;
@@ -1690,7 +1708,7 @@ export interface components {
          * BlockKind
          * @enum {string}
          */
-        BlockKind: "numeric_input" | "boolean_input" | "numeric_output" | "boolean_output" | "numeric_const" | "boolean_const" | "add" | "subtract" | "multiply" | "divide" | "minimum" | "maximum" | "average" | "greater_than" | "greater_than_or_equal" | "less_than" | "less_than_or_equal" | "equal" | "not_equal" | "and" | "or" | "xor" | "not" | "numeric_switch" | "boolean_switch" | "boolean_delay" | "one_shot" | "boolean_falling_edge" | "moving_average" | "numeric_sampler" | "numeric_unit_delay" | "numeric_changed" | "numeric_increased" | "numeric_decreased" | "numeric_latch" | "boolean_latch" | "boolean_pre_host_tick" | "boolean_initialization" | "boolean_set_reset" | "boolean_true_false_hold" | "hysteresis" | "timer" | "timer_with_reset" | "timer_accumulating" | "boolean_assert_warning" | "trim_and_respond" | "trim_and_respond_hold" | "reset" | "pi_loop" | "pid_with_reset" | "plant_equipment_availability" | "plant_enable" | "plant_hrc_enable" | "plant_hrc_mode_control" | "plant_stage_completion" | "plant_stage_index";
+        BlockKind: "numeric_input" | "boolean_input" | "numeric_output" | "boolean_output" | "numeric_const" | "boolean_const" | "add" | "subtract" | "multiply" | "divide" | "minimum" | "maximum" | "average" | "greater_than" | "greater_than_or_equal" | "less_than" | "less_than_or_equal" | "equal" | "not_equal" | "and" | "or" | "xor" | "not" | "numeric_switch" | "boolean_switch" | "boolean_delay" | "one_shot" | "boolean_falling_edge" | "moving_average" | "numeric_sampler" | "numeric_first_order_hold" | "boolean_sample_trigger" | "numeric_unit_delay" | "numeric_changed" | "numeric_increased" | "numeric_decreased" | "numeric_latch" | "boolean_latch" | "boolean_pre_host_tick" | "boolean_initialization" | "boolean_set_reset" | "boolean_true_false_hold" | "hysteresis" | "timer" | "timer_with_reset" | "timer_accumulating" | "boolean_assert_warning" | "trim_and_respond" | "trim_and_respond_hold" | "reset" | "pi_loop" | "pid_with_reset" | "plant_equipment_availability" | "plant_enable" | "plant_hrc_enable" | "plant_hrc_mode_control" | "plant_stage_completion" | "plant_stage_index";
         /** Body_approve_ctrl_flow_sequence_requirements_api_library_ctrl_flow_templates__template_id__review_requirements_approve_post */
         Body_approve_ctrl_flow_sequence_requirements_api_library_ctrl_flow_templates__template_id__review_requirements_approve_post: {
             /** Point Reconciliation Id */
@@ -1804,6 +1822,13 @@ export interface components {
             selections: string;
             /** Sequence Document */
             sequence_document: string;
+        };
+        /** Body_qualify_run_with_alfalfa_api_runs__run_id__verify_alfalfa_post */
+        Body_qualify_run_with_alfalfa_api_runs__run_id__verify_alfalfa_post: {
+            /** Model File */
+            model_file: string;
+            /** Qualification */
+            qualification: string;
         };
         /** BoptestActuatorBinding */
         BoptestActuatorBinding: {
@@ -2163,6 +2188,8 @@ export interface components {
             site: string;
             /** Template Bog */
             template_bog?: string | null;
+            /** Virtual Actuators */
+            virtual_actuators?: components["schemas"]["VirtualActuatorSpec"][];
         };
         JsonValue: unknown;
         /** Link */
@@ -2620,6 +2647,87 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /**
+         * VirtualActuatorKind
+         * @description Physical actuator families modeled by the isolated BACnet lab.
+         * @enum {string}
+         */
+        VirtualActuatorKind: "valve" | "damper";
+        /**
+         * VirtualActuatorSpec
+         * @description Reviewed command-to-motion contract for one virtual valve or damper.
+         *
+         *     The point bindings are deliberately explicit. BACTalk must not guess that an
+         *     arbitrary sensor is actuator feedback when exercising an external controller.
+         */
+        VirtualActuatorSpec: {
+            /** Closed Proof Point */
+            closed_proof_point?: string | null;
+            /**
+             * Closed Proof Threshold
+             * @default 10
+             */
+            closed_proof_threshold: number;
+            /**
+             * Command Deadband
+             * @default 0.25
+             */
+            command_deadband: number;
+            /** Command Point */
+            command_point: string;
+            /**
+             * Fail Position
+             * @default 0
+             */
+            fail_position: number;
+            /**
+             * Flow Exponent
+             * @default 1
+             */
+            flow_exponent: number;
+            /** Id */
+            id: string;
+            kind: components["schemas"]["VirtualActuatorKind"];
+            /**
+             * Leakage Percent
+             * @default 0
+             */
+            leakage_percent: number;
+            /**
+             * Maximum Position
+             * @default 100
+             */
+            maximum_position: number;
+            /**
+             * Minimum Position
+             * @default 0
+             */
+            minimum_position: number;
+            /** Open Proof Point */
+            open_proof_point?: string | null;
+            /**
+             * Open Proof Threshold
+             * @default 90
+             */
+            open_proof_threshold: number;
+            /** Position Point */
+            position_point: string;
+            /**
+             * Proof Timeout Seconds
+             * @default 120
+             */
+            proof_timeout_seconds: number;
+            /**
+             * Stroke Close Seconds
+             * @default 90
+             */
+            stroke_close_seconds: number;
+            /**
+             * Stroke Open Seconds
+             * @default 90
+             */
+            stroke_open_seconds: number;
         };
         /** WeeklySchedulePeriod */
         WeeklySchedulePeriod: {
@@ -4818,6 +4926,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_alfalfa_qualification_api_runs__run_id__verify_alfalfa_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    qualify_run_with_alfalfa_api_runs__run_id__verify_alfalfa_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_qualify_run_with_alfalfa_api_runs__run_id__verify_alfalfa_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Validation Error */
