@@ -1,4 +1,4 @@
-.PHONY: install install-suite install-haxall aixocat-contract alfalfa-contract bacnet-lab-contract bacnet-scale-runtime independent-bacnet-simulator-install independent-bacnet-simulator-contract environment-pack-contract buildingmotif-install buildingmotif-contract constrain-install constrain-contract ctrl-flow-install ctrl-flow-contract dflexlibs-contract g36-audit g36-audit-contract plant-controls-audit plant-controls-contract plant-job-contract haxall-contract nhaystack-contract niagara-alarm-contract niagara-binding-contract niagara-graphics-contract niagara-program-codegen-contract niagara-station-contract project-signal-contract integration-use-contract n4-hvac-library-contract open-control-library-contract open-fdd-contract pybog-examples-contract rumoca-install rumoca-contract suite-contract cerebras-smoke test lint demo demo-package record-demo serve clean boptest-contract boptest-smoke boptest-runtime-build boptest-runtime-up boptest-runtime-smoke boptest-graph-runtime boptest-scale-runtime boptest-runtime-down volttron-install volttron-contract oce-contract cdl-oce-contract web-install web-build web-test web-lint web-sbom
+.PHONY: install install-suite install-haxall aixocat-contract alfalfa-contract alfalfa-runtime-up alfalfa-runtime-smoke alfalfa-runtime-down bacnet-lab-contract bacnet-scale-runtime independent-bacnet-simulator-install independent-bacnet-simulator-contract environment-pack-contract buildingmotif-install buildingmotif-contract constrain-install constrain-contract ctrl-flow-install ctrl-flow-contract dflexlibs-contract g36-audit g36-audit-contract plant-controls-audit plant-controls-contract plant-job-contract haxall-contract nhaystack-contract niagara-alarm-contract niagara-binding-contract niagara-graphics-contract niagara-program-codegen-contract niagara-station-contract project-signal-contract integration-use-contract n4-hvac-library-contract open-control-library-contract open-fdd-contract pybog-examples-contract rumoca-install rumoca-contract suite-contract cerebras-smoke test lint demo demo-package record-demo serve clean boptest-contract boptest-smoke boptest-runtime-build boptest-runtime-up boptest-runtime-smoke boptest-graph-runtime boptest-scale-runtime boptest-runtime-down volttron-install volttron-contract oce-contract cdl-oce-contract web-install web-build web-test web-lint web-sbom
 
 web-install:
 	cd web && npm ci
@@ -34,6 +34,16 @@ buildingmotif-contract:
 
 alfalfa-contract:
 	.venv/bin/python scripts/verify_alfalfa_contract.py
+
+alfalfa-runtime-up:
+	docker compose -f ops/alfalfa.compose.yml build worker
+	docker compose -f ops/alfalfa.compose.yml up -d --scale worker=2 --wait
+
+alfalfa-runtime-smoke:
+	PYTHONPATH=src .venv/bin/python scripts/run_alfalfa_runtime.py
+
+alfalfa-runtime-down:
+	docker compose -f ops/alfalfa.compose.yml down
 
 aixocat-contract:
 	PYTHONPATH=src .venv/bin/python scripts/verify_aixocat.py

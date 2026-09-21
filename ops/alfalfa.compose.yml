@@ -1,0 +1,130 @@
+# Isolated BACTalk runtime for Alfalfa v1.0.0.
+#
+# Upstream moved its public images from ghcr.io/nrel to
+# ghcr.io/natlabrockies. Every image below is digest-pinned. The worker is
+# intentionally amd64 because the retained integration FMU contains an x86-64
+# shared library. The web service is also pinned to amd64 because the published
+# v1.0.0 ARM64 manifest currently serves a layer whose bytes do not match its
+# declared digest; Docker correctly rejects that image. Redis and MinIO remain
+# native ARM on Apple Silicon; Mongo is explicitly emulated for the no-AVX 4.4
+# compatibility lane documented below.
+name: bactalk-alfalfa
+
+x-runtime-environment: &runtime-environment
+  AWS_ACCESS_KEY_ID: bactalk-alfalfa-local
+  AWS_SECRET_ACCESS_KEY: bactalk-alfalfa-local-secret
+  JOB_QUEUE: BACTalk Alfalfa Job Queue
+  MONGO_URL: mongodb://admin:bactalk-alfalfa-mongo@mongo:27017/alfalfa?authSource=admin
+  NODE_ENV: production
+  REDIS_URL: redis://redis:6379/0
+  S3_REGION: us-east-1
+  S3_BUCKET: alfalfa
+  S3_URL: http://minio:9000
+
+services:
+  web:
+    image: ghcr.io/natlabrockies/alfalfa/web@sha256:9f79f502a18e629e5362be08795ae26680e947ccd4268666319f6c20089a9fb8
+    platform: linux/amd64
+    ports:
+      - "127.0.0.1:8088:80"
+    environment:
+      <<: *runtime-environment
+      GIT_COMMIT: 47284f704ca01c7ba820bb73af45c065800cb316
+      S3_URL_EXTERNAL: http://127.0.0.1:9100
+    depends_on:
+      mc:
+        condition: service_completed_successfully
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      worker:
+        condition: service_started
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1/api/v2/version').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+
+  worker:
+    build:
+      context: ..
+      dockerfile: ops/alfalfa-worker/Dockerfile
+    image: bactalk/alfalfa-worker:1.0.0-output-value-fix.1
+    platform: linux/amd64
+    environment:
+      <<: *runtime-environment
+      HISTORIAN_ENABLE: "false"
+      LOGLEVEL: INFO
+    depends_on:
+      mc:
+        condition: service_completed_successfully
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  minio:
+    image: quay.io/minio/minio@sha256:54d3d6a0a58fb25b4e9943d1db3828d3b4de44666f911381b4fda57175488194
+    command:
+      - server
+      - /data
+      - --address
+      - :9000
+    ports:
+      - "127.0.0.1:9100:9000"
+    environment:
+      MINIO_ROOT_USER: bactalk-alfalfa-local
+      MINIO_ROOT_PASSWORD: bactalk-alfalfa-local-secret
+    healthcheck:
+      test: [CMD, mc, ready, local]
+      interval: 3s
+      timeout: 2s
+      retries: 30
+
+  mc:
+    image: quay.io/minio/mc@sha256:d798ef4fe8f417b814a8968682c1e172cdfabe59da81b39e4d9cc108a355b271
+    environment:
+      MC_HOST_local: http://bactalk-alfalfa-local:bactalk-alfalfa-local-secret@minio:9000
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        until mc ready local; do sleep 1; done
+        mc mb --ignore-existing local/alfalfa
+        mc anonymous set public local/alfalfa
+    depends_on:
+      minio:
+        condition: service_healthy
+
+  mongo:
+    # MongoDB 5+ amd64 requires AVX, which qemu-x86_64 does not expose on the
+    # Apple Silicon qualification host. Alfalfa uses only the compatible CRUD
+    # surface in this isolated lane, so the no-AVX Mongo 4.4 line is pinned.
+    # Production amd64 deployments should qualify the upstream Mongo 7 profile.
+    image: mongo:4.4.29@sha256:6189a342f8da4568b4b111c378a890b1fe186b1bc133742bff8811fe63d2e01e
+    platform: linux/amd64
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: bactalk-alfalfa-mongo
+      MONGO_INITDB_DATABASE: alfalfa
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mongo --quiet --eval "db.adminCommand('ping').ok" || exit 1
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:7.4-alpine@sha256:520775a41a63e77e06c73e35d2fd9cc15921a609516818796b4ecbb813078bc7
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 3s
+      timeout: 2s
+      retries: 30

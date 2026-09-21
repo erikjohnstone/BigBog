@@ -80,6 +80,21 @@ class IntegrationReadiness:
         buildingmotif_python = self.root / ".buildingmotif-venv/bin/python"
         volttron_python = self.root / ".volttron-venv/bin/python"
         docker = shutil.which("docker") or shutil.which("podman")
+        alfalfa_evidence_path = self.root / ".bactalk/alfalfa-runtime-evidence.json"
+        alfalfa_evidence: dict[str, Any] = {}
+        if alfalfa_evidence_path.is_file():
+            try:
+                candidate = json.loads(alfalfa_evidence_path.read_text(encoding="utf-8"))
+                if isinstance(candidate, dict):
+                    alfalfa_evidence = candidate
+            except (OSError, json.JSONDecodeError):
+                pass
+        alfalfa_runtime_pass = (
+            alfalfa_evidence.get("schema") == "bactalk.alfalfa-runtime-evidence/v1"
+            and alfalfa_evidence.get("status") == "pass"
+            and alfalfa_evidence.get("results", {}).get("clean_stop") is True
+            and alfalfa_evidence.get("results", {}).get("changed_output_count", 0) > 0
+        )
         components = [
             _component(
                 "aixocat",
@@ -376,33 +391,52 @@ class IntegrationReadiness:
             _component(
                 "alfalfa",
                 "Alfalfa virtual building service",
-                stage="executable",
+                stage="product-wired" if alfalfa_runtime_pass else "executable",
                 installed=(self.root / ".vendor/alfalfa").is_dir(),
                 version=revisions.get("alfalfa"),
                 license_name="BSD-3-Clause",
                 role="EnergyPlus/OpenStudio/FMU virtual-building runtime",
-                product_path="Isolated Alfalfa service/client contract; runtime not connected",
-                evidence_command="make alfalfa-contract",
+                product_path=(
+                    "Digest-pinned isolated service plus hardened scalar-output worker; "
+                    "external-clock FMU lifecycle retains signal, command, trajectory, and "
+                    "clean-stop evidence"
+                ),
+                evidence_command="make alfalfa-runtime-up alfalfa-runtime-smoke",
                 blocker=(
-                    None
-                    if docker
-                    else (
-                        "Docker/Compose is required and is absent on this host; container "
-                        "dependency license/SBOM review is also required before distribution."
+                    (
+                        "Docker/Compose is required and is absent on this host. "
+                        if not docker
+                        else ""
+                    )
+                    + (
+                        "Run the retained FMU qualification on this host. "
+                        if not alfalfa_runtime_pass
+                        else ""
+                    )
+                    + (
+                        "Production Linux capacity, job-specific model authority, BACTalk graph "
+                        "coupling, Niagara/BACnet attachment, HA, and field qualification remain."
                     )
                 ),
             ),
             _component(
                 "alfalfa-client",
                 "Alfalfa Python client",
-                stage="executable",
+                stage="product-wired" if alfalfa_runtime_pass else "executable",
                 installed=_package_version("alfalfa-client", "alfalfa_client") is not None,
                 version=_package_version("alfalfa-client", "alfalfa_client"),
                 license_name="BSD-3-Clause",
                 role="Client API for Alfalfa virtual buildings",
-                product_path="AlfalfaClient service-boundary contract",
-                evidence_command="make alfalfa-contract",
-                blocker="Needs a pinned running Alfalfa service and retained trajectory evidence.",
+                product_path="AlfalfaClient-backed retained FMU runtime qualification",
+                evidence_command="make alfalfa-runtime-smoke",
+                blocker=(
+                    "Needs a pinned running Alfalfa service and retained trajectory evidence."
+                    if not alfalfa_runtime_pass
+                    else (
+                        "Production Linux capacity, job-specific model authority, and full "
+                        "controller/target coupling remain."
+                    )
+                ),
             ),
             _component(
                 "dflexlibs",

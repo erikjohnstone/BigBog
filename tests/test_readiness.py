@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -24,6 +25,8 @@ def test_readiness_is_conservative_and_complete() -> None:
         "n4-hvac-optimization-blocks",
         "constrain",
         "boptest",
+        "alfalfa",
+        "alfalfa-client",
         "pyfunnel",
         "brick",
         "haxall",
@@ -43,6 +46,31 @@ def test_readiness_is_conservative_and_complete() -> None:
     assert components["nhaystack"]["stage"] == "product-wired"
     assert components["am8x-alarm-pattern"]["stage"] == "product-wired"
     assert components["niagara-runtime"]["production_ready"] is False
+
+
+def test_alfalfa_runtime_evidence_advances_readiness_without_claiming_production(
+    tmp_path: Path,
+) -> None:
+    evidence_path = tmp_path / ".bactalk/alfalfa-runtime-evidence.json"
+    evidence_path.parent.mkdir(parents=True)
+    evidence_path.write_text(
+        json.dumps(
+            {
+                "schema": "bactalk.alfalfa-runtime-evidence/v1",
+                "status": "pass",
+                "results": {"clean_stop": True, "changed_output_count": 95},
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    components = {
+        item["id"]: item for item in IntegrationReadiness(tmp_path).report()["components"]
+    }
+
+    assert components["alfalfa"]["stage"] == "product-wired"
+    assert components["alfalfa-client"]["stage"] == "product-wired"
+    assert components["alfalfa"]["production_ready"] is False
 
 
 def test_readiness_api(tmp_path: Path) -> None:
