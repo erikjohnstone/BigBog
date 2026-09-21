@@ -23,6 +23,7 @@ from bactalk.integrations.bacnet_lab import (
     probe_manifest_with_bac0,
 )
 from bactalk.integrations.virtual_actuator import VirtualActuatorFault
+from bactalk.stack_lock import locked_revision
 
 
 def _free_udp_port() -> int:
@@ -303,7 +304,7 @@ def test_generated_lab_is_loopback_only_and_retains_source_identity(tmp_path: Pa
 
     independent = manifest["independent_protocol_oracle"]
     assert independent["license"] == "MIT"
-    assert independent["revision"] == "d06fccb963abd4c773f6b5dd74e12f9ec79a5edd"
+    assert independent["revision"] == locked_revision("bacnet-simulator")
     external_device = json.loads(
         (tmp_path / "independent-simulator/devices/120012.yaml").read_text()
     )

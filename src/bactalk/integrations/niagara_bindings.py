@@ -7,12 +7,13 @@ from dataclasses import dataclass
 from typing import Any
 
 from bactalk.domain import BlockKind, ControlGraph, JobSpec, ShopProfile, canonical_json
+from bactalk.stack_lock import locked_revision
 
 AM8X_LINK_SOURCE = (
     ".vendor/am8x-control/am8xControl-rt/src/"
     "com/sitecVendor/am8xControl/modbus/ModbusPointFactory.java"
 )
-AM8X_REVISION = "4b3944a0f10c5f2772c52b20ce0211ff09255f3b"
+AM8X_REVISION = locked_revision("am8x-control")
 
 _INPUT_KINDS = {BlockKind.NUMERIC_INPUT, BlockKind.BOOLEAN_INPUT}
 _OUTPUT_KINDS = {BlockKind.NUMERIC_OUTPUT, BlockKind.BOOLEAN_OUTPUT}

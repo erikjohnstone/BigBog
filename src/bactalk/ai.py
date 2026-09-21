@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from bactalk.agent import ControlsPlanner
 from bactalk.domain import BLOCK_SLOTS, ControlGraph, JobSpec, TestReport
+from bactalk.optional_dependencies import CEREBRAS
 
 
 class AIProviderError(RuntimeError):
@@ -128,12 +129,7 @@ class CerebrasProvider:
     def __init__(self, api_key: str, *, model: str):
         if not api_key:
             raise ValueError("Cerebras API key is required")
-        try:
-            from cerebras.cloud.sdk import Cerebras
-        except ImportError as exc:  # pragma: no cover - installation guard
-            raise RuntimeError(
-                "install BACTalk's ai extra to enable Cerebras: pip install -e '.[ai]'"
-            ) from exc
+        Cerebras = CEREBRAS.attribute("Cerebras")
         self.model = model
         self._client = Cerebras(
             api_key=api_key,
@@ -152,6 +148,11 @@ class CerebrasProvider:
     ) -> CerebrasProvider | None:
         key = os.getenv("CEREBRAS_API_KEY")
         if not key:
+            return None
+        if not CEREBRAS.available():
+            # A configured key with no SDK installed is an unavailable
+            # capability, not a startup failure: the rest of the workbench
+            # must still run. /api/ai/status reports the missing extra.
             return None
         legacy_model = os.getenv(legacy_model_variable) if legacy_model_variable else None
         return cls(key, model=os.getenv(model_variable, legacy_model or default_model))

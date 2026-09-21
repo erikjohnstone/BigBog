@@ -7,6 +7,8 @@ import sys
 from contextlib import redirect_stdout
 from pathlib import Path
 
+from bactalk.stack_lock import locked_revision
+
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / ".vendor/dflexlibs"
 
@@ -81,7 +83,7 @@ def main() -> int:
         json.dumps(
             {
                 "passed": True,
-                "revision": "9462cf2c732d9be50207cd846a6c6ce044695a80",
+                "revision": locked_revision("dflexlibs"),
                 "checks": [
                     "source-compilation",
                     "commercial-license-grant",

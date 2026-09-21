@@ -27,3 +27,12 @@ web/test-results/
 artifacts/demo-inputs/
 artifacts/demo-validation/
 artifacts/demos/
+
+# Build output from the pinned Rust helpers. `make bootstrap-full` recreates
+# these; committing them would ship machine-specific binaries.
+ops/open-control-engine-runner/target/
+target/
+
+# Generated evidence and reports written by the bootstrap, doctor, and
+# workflow proofs. These are run artifacts, not source.
+.bactalk/

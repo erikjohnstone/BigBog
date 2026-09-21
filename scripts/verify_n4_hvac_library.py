@@ -5,10 +5,11 @@ import subprocess
 from pathlib import Path
 
 from bactalk.integrations.niagara_program_library import NiagaraProgramLibrary
+from bactalk.stack_lock import locked_revision
 
 ROOT = Path(__file__).resolve().parents[1]
 LIBRARY = ROOT / ".vendor/n4-hvac-optimization-blocks"
-EXPECTED_REVISION = "27815cc31686dc6ef0d7490f380376487e6a0606"
+EXPECTED_REVISION = locked_revision("n4-hvac-optimization-blocks")
 
 
 def main() -> int:

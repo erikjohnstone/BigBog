@@ -11,9 +11,10 @@ from phable.io.ph_zinc import ph_from_zinc, ph_to_zinc
 
 from bactalk.domain import ControlGraph, DataType, JobSpec, PointRole, canonical_json
 from bactalk.integrations.niagara_bindings import program_root_ord
+from bactalk.stack_lock import locked_revision
 
 NHAYSTACK_REPOSITORY = "https://github.com/ci-richard-mcelhinney/nhaystack"
-NHAYSTACK_REVISION = "130c5dc0db903875b8aea077cb7ef4cd1eca7e1c"
+NHAYSTACK_REVISION = locked_revision("nhaystack")
 
 _COLUMNS = (
     "id",

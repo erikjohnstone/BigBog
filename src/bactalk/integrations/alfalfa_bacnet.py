@@ -24,6 +24,7 @@ from bactalk.integrations.bacnet_lab import (
     LabDeviceConfig,
     VirtualBacnetLab,
 )
+from bactalk.optional_dependencies import BACPYPES3
 from bactalk.simulator import GraphInterpreter
 
 
@@ -318,6 +319,7 @@ class AlfalfaBacnetGraphRunner:
         }
 
     def _controller_application(self) -> Any:
+        BACPYPES3.require()
         from bacpypes3.app import Application
 
         used_instances = set(self.lab.device_configs)

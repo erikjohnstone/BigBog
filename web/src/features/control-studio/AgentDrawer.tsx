@@ -110,7 +110,7 @@ function AgentDrawer({ open, onClose, run }: { open: boolean; onClose: () => voi
             <div className="agent-unavailable">
               <CircleAlert size={22} />
               <strong>AI roles are not connected</strong>
-              <span>Add the Cerebras key to the server’s local <code>.env</code>, keep chat and coding models separate, and restart BACTalk.</span>
+              <span>{status.data?.unavailable_reason ?? 'Add the Cerebras key to the server’s local .env, keep chat and coding models separate, and restart BACTalk.'}</span>
             </div>
           )}
           {configured && messages.length === 0 && (

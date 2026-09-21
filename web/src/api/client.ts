@@ -83,7 +83,27 @@ const aiStatusSchema = z.object({
       authority: z.string(),
     }),
   }),
+  // Why the roles are unconfigured: a missing key, or a configured key whose
+  // SDK extra was never installed. The UI shows this instead of guessing.
+  unavailable_reason: z.string().nullable().optional(),
 }).passthrough();
+
+const optionalCapabilitySchema = z.object({
+  distribution: z.string(),
+  module: z.string(),
+  extra: z.string(),
+  capability: z.string(),
+  installed: z.boolean(),
+  version: z.string().nullable(),
+  remediation: z.string().nullable(),
+});
+
+const optionalCapabilitiesSchema = z.object({
+  schema: z.literal('bactalk.optional-capabilities/v1'),
+  dependencies: z.array(optionalCapabilitySchema),
+  all_installed: z.boolean(),
+  bootstrap_command: z.string(),
+});
 
 const chatTurnSchema = z.object({
   role: z.enum(['user', 'assistant']),
@@ -1192,6 +1212,7 @@ export type TestReport = z.infer<typeof reportSchema>;
 export type Point = z.infer<typeof pointSchema>;
 export type IntakeInspection = z.infer<typeof intakeInspectionSchema>;
 export type AIStatus = z.infer<typeof aiStatusSchema>;
+export type OptionalCapabilities = z.infer<typeof optionalCapabilitiesSchema>;
 export type ChatTurn = z.infer<typeof chatTurnSchema>;
 export type ChatResponse = z.infer<typeof chatResponseSchema>;
 export type ProjectRecord = z.infer<typeof projectRecordSchema>;
@@ -1303,6 +1324,9 @@ export const api = {
   },
   async approveProject(projectId: string, reviewer: string) {
     return projectRecordSchema.parse(await postJson(`/api/projects/${projectId}/approve`, { reviewer }));
+  },
+  async optionalCapabilities() {
+    return optionalCapabilitiesSchema.parse(await getJson('/api/system/optional-capabilities'));
   },
   async aiStatus() {
     return aiStatusSchema.parse(await getJson('/api/ai/status'));

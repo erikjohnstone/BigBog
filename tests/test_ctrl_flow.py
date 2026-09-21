@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 
 from bactalk.api import create_app
 from bactalk.integrations.ctrl_flow import CtrlFlowError, CtrlFlowLibrary
+from bactalk.stack_lock import locked_revision
 
 AHU_TEMPLATE = "Buildings.Templates.AirHandlersFans.VAVMultiZone"
 DRAW_THROUGH_SELECTION = "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupDra-fanSupDra"
@@ -45,7 +46,7 @@ def test_ctrl_flow_adapter_does_not_create_a_capability_import_cycle() -> None:
 def test_catalog_exposes_real_upstream_linkage_schema() -> None:
     catalog = CtrlFlowLibrary().catalog()
 
-    assert catalog["revision"] == "9063e347b13b1a55f9b324ab35da01b5006492de"
+    assert catalog["revision"] == locked_revision("ctrl-flow")
     assert catalog["template_count"] == 3
     assert catalog["option_count"] == 2_593
     assert len(catalog["snapshot_sha256"]) == 64

@@ -8,10 +8,11 @@ from pathlib import Path
 from bactalk.compiler import NiagaraCompiler
 from bactalk.domain import ControlGraph
 from bactalk.integrations.aixocat import AixocatLibrary
+from bactalk.stack_lock import locked_revision
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / ".vendor/aixocat"
-EXPECTED_REVISION = "580100c2eb280a9e50ce7f22ae6bc9536157900b"
+EXPECTED_REVISION = locked_revision("aixocat")
 
 
 def main() -> int:

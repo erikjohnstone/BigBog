@@ -12,13 +12,11 @@ from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from datetime import UTC, datetime, timedelta
 from enum import StrEnum
-from importlib import metadata
 from pathlib import Path
 from typing import Any, Literal, Protocol
 from uuid import uuid4
 
 import httpx
-from alfalfa_client import AlfalfaClient
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from bactalk.domain import canonical_json
@@ -37,6 +35,7 @@ from bactalk.integrations.boptest_graph import (
     BoptestScenario,
     BoptestTrajectoryOracle,
 )
+from bactalk.optional_dependencies import ALFALFA_CLIENT
 from bactalk.repository import RunRepository
 from bactalk.service import MAX_ALFALFA_MODEL_BYTES, WorkbenchService
 
@@ -1002,9 +1001,11 @@ def execute_alfalfa_qualification_job(
     executor = AlfalfaQualificationJobExecutor(
         QualificationJobRepository(Path(jobs_root)),
         WorkbenchService(RunRepository(Path(runs_root))),
-        client_factory=lambda: AlfalfaClient(base_url),
+        # Imported on demand so importing this module (and therefore the RQ
+        # worker entry point) never requires the optional Alfalfa extra.
+        client_factory=lambda: ALFALFA_CLIENT.attribute("AlfalfaClient")(base_url),
         server_version_loader=lambda: _alfalfa_server_version(base_url),
-        client_version=metadata.version("alfalfa-client"),
+        client_version=ALFALFA_CLIENT.version(),
     )
     return executor.execute(job_id).model_dump(mode="json")
 

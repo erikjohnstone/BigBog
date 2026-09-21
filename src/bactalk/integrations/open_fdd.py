@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from bactalk.optional_dependencies import OPEN_FDD
+
 
 class OpenFddError(RuntimeError):
     pass
@@ -24,6 +26,7 @@ class OpenFddVerifier:
     ) -> dict[str, Any]:
         try:
             import pandas as pd
+            OPEN_FDD.require()
             from open_fdd.rules.runner import RULES_BY_ID, run_cookbook_rule
         except ImportError as exc:  # pragma: no cover - installation guard
             raise OpenFddError("install BACTalk with the 'fdd' extra") from exc

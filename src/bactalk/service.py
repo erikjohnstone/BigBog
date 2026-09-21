@@ -1272,11 +1272,28 @@ class WorkbenchService:
         actor_id: str | None = None,
         tenant_id: str | None = None,
         authentication: str = "self-asserted-local",
+        expected_artifact_sha256: str | None = None,
     ) -> RunRecord:
+        """Approve one exact artifact on behalf of a named reviewer.
+
+        ``expected_artifact_sha256`` is the digest the reviewer actually
+        inspected. When supplied it must equal the candidate's current digest,
+        so an artifact that changed between review and approval -- for example
+        because a qualification tier appended evidence and re-signed the run --
+        is refused instead of being approved unseen.
+        """
         record = self.repository.get(run_id)
         if record.status != RunStatus.READY_FOR_REVIEW:
             raise ApprovalRequiredError("only a passing run can be approved")
         self._verify_integrity(record)
+        if expected_artifact_sha256 is not None:
+            if expected_artifact_sha256 != record.artifact_sha256:
+                raise ArtifactChangedError(
+                    "the artifact changed since it was reviewed: approval names "
+                    f"{expected_artifact_sha256}, the candidate is now "
+                    f"{record.artifact_sha256}. Re-review the current artifact "
+                    "before approving it."
+                )
         approved = record.model_copy(
             update={
                 "status": RunStatus.APPROVED,

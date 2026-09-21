@@ -16,6 +16,7 @@ from typing import Any
 
 from bactalk.domain import canonical_json
 from bactalk.integrations.bacnet_lab import BacnetLabManifest, VirtualBacnetLab
+from bactalk.optional_dependencies import BACPYPES3
 
 
 @dataclass(frozen=True, slots=True)
@@ -222,6 +223,7 @@ class BacnetScaleRunner:
         return await asyncio.gather(*(bounded(item) for item in items))
 
     async def run(self) -> dict[str, Any]:
+        BACPYPES3.require()
         from bacpypes3.app import Application
         from bacpypes3.pdu import Address
 

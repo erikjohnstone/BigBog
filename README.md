@@ -51,18 +51,113 @@ This repository is an expanding product foundation, **not yet a program-any-buil
 
 ## Quick start
 
-Python 3.11 or newer is required.
+### Minimal install
+
+A base install is a supported configuration. It needs only Python 3.11+ and
+gives you the whole contractor workflow -- intake, typed graph generation,
+deterministic tests, review, approval, and export -- with the optional
+simulation and AI capabilities reported as unavailable rather than crashing.
 
 ```bash
-make install
-make install-suite
-make install-haxall
-make buildingmotif-install
-make independent-bacnet-simulator-install
-make test
+make install            # ~2 minutes, ~400 MB
+make test-minimal       # the tier that must pass on a base install
 make demo
-make serve
+make serve              # http://127.0.0.1:8000
 ```
+
+### Full install from a clean clone
+
+`make bootstrap-full` reconstructs the entire pinned stack from
+`ops/stack.lock.json`: it clones every selected upstream at its exact locked
+revision, verifies licenses and digests, applies the tracked patches under
+`ops/`, builds the Rust and Node helpers, creates the isolated Python
+environments, and installs the frontend toolchain. It is idempotent -- rerun
+it any time and it skips what is already installed.
+
+```bash
+make doctor             # what this machine has, and how to fix what it lacks
+make bootstrap-full     # ~30-60 minutes on a warm network, ~15 GB
+make doctor             # confirm every selected capability is ready
+make test-integration   # everything that does not need containers
+```
+
+Prerequisites, and what each unlocks:
+
+| Prerequisite | Needed for | Install |
+| --- | --- | --- |
+| Python 3.11+ | everything | your platform's package manager |
+| Node.js 20+ and npm | frontend, ctrl-flow, modelica-json, Haxall | <https://nodejs.org> |
+| Rust with `rustup` | Open Control Engine runner, Rumoca flattener | <https://rustup.rs> |
+| JDK with `javac` | compiling generated ProgramObject qualification kernels | `apt install default-jdk` |
+| `libudev-dev`, `pkg-config` | the Rumoca build (Linux only) | `apt install libudev-dev pkg-config` |
+| Container runtime + registry access | BOPTEST and Alfalfa simulation tiers | Docker Engine or Colima |
+
+`make doctor` checks all of these and prints the exact remediation for
+anything missing, so run it first on a new machine.
+
+### Expected time and storage
+
+| Step | Time | Disk |
+| --- | --- | --- |
+| `make install` | 1-3 min | ~400 MB |
+| `make bootstrap-full` | 30-60 min | ~15 GB under `.vendor/` and the venvs |
+| `make test-integration` | 10-25 min | - |
+| BOPTEST / Alfalfa images | 20-60 min | ~20 GB additional |
+
+Nothing `bootstrap-full` downloads is committed: `.vendor/`, every virtual
+environment, and `node_modules/` are ignored by git. A clean clone plus
+`make bootstrap-full` is the only supported way to rebuild the stack.
+
+### Running and proving the whole stack
+
+```bash
+make full-stack-up      # queue, RQ worker, API, and physics services if available
+make full-stack-smoke   # prove each integration by making it do real work
+make full-stack-down
+```
+
+`full-stack-smoke` reports each integration as `ready`, `blocked`, or
+`missing`. A `blocked` result records an external constraint -- no container
+registry, no licensed runtime -- and is never counted as a pass.
+
+To prove the contractor workflow end to end through the real HTTP API:
+
+```bash
+.venv/bin/python scripts/verify_contractor_workflow.py
+```
+
+It uploads a real point schedule and sequence document, builds and tests a
+candidate, checks that export and the review bundle are refused before
+approval, approves one exact digest, downloads the approved artifact and
+review bundle, and proves that tampering with a signed artifact invalidates
+the approval.
+
+### Test tiers
+
+| Command | Tier | Requires |
+| --- | --- | --- |
+| `make test-minimal` | base install only | `make install` |
+| `make test-integration` | everything except containers and licensed runtimes | `make bootstrap-full` |
+| `make test-docker` | BOPTEST/Alfalfa physics | container runtime with registry access |
+| `make test-all` | both of the above | all of the above |
+
+A minimal install reports optional integrations as unavailable; it must never
+crash. After `make bootstrap-full` the vendor-dependent tests execute rather
+than skip.
+
+### Troubleshooting
+
+| Symptom | Cause and fix |
+| --- | --- |
+| `ModuleNotFoundError` for an optional package | That extra is not installed. `GET /api/system/optional-capabilities` lists each one and its install command; `make bootstrap-full` installs them all. |
+| A capability returns HTTP 503 with a `remediation` field | Working as designed on a partial install: the response names the extra to install. |
+| `checkout is not at the pinned revision` from `make doctor` | A vendored tree drifted. Rerun `make bootstrap-full`, which re-checks out the locked revision. |
+| `tracked patch does not apply cleanly` | Upstream moved under a pin. Re-pin the component in `ops/stack.lock.json` and regenerate the patch under `ops/`. |
+| Rumoca build fails in `libudev-sys` | Install `libudev-dev` and `pkg-config`, then rerun `make bootstrap-full`. |
+| OCE runner fails with `requires rustc 1.97` | Run `make bootstrap-full`, which installs the pinned toolchain via rustup. |
+| `denied` or `403` pulling container images | Your network blocks the registry. The BOPTEST/Alfalfa tiers cannot run there; everything else still works. `make doctor` reports this as `blocked`. |
+| Queue will not start | `make queue-up` prefers the pinned container and falls back to a loopback-only native `redis-server`. Install one with `apt install redis-server`. |
+| A pinned revision no longer resolves | Run `.venv/bin/python scripts/verify_lock_resolves.py` to see which upstream dropped the commit. |
 
 For AI programming, copy `.env.example` to `.env`, add the Cerebras key locally, and keep the two roles separate. `CEREBRAS_CHAT_MODEL=gpt-oss-120b` talks to the contractor; `CEREBRAS_CODING_MODEL=qwen-3.8-27b` writes and repairs typed control-graph proposals. Verify model entitlements, strict schemas, the coding pipeline, and chat isolation with `make cerebras-smoke`.
 
@@ -104,6 +199,27 @@ curl -X POST http://127.0.0.1:8000/api/runs \
   --data @examples/plant-hold-job.json
 ```
 
+## Capability status
+
+Every capability is tracked against the maturity ladder in
+[docs/ENTERPRISE-PRODUCTION-GOAL.md](docs/ENTERPRISE-PRODUCTION-GOAL.md). The
+live, machine-readable source is `GET /api/system/readiness`; this table is a
+summary. Being installed is deliberately not treated as production support.
+
+| Capability | Status | What that means here |
+| --- | --- | --- |
+| Typed control IR, validation, interpreter | Verified | Passes all 137 pinned Open Control Library vectors; reproducible from a clean clone. |
+| Contractor intake, mapping, review, approval, export | Product-wired | Proven end to end by `scripts/verify_contractor_workflow.py` against the real API. |
+| Immutable approval and artifact binding | Verified | Approval names one exact digest; a changed artifact invalidates export. |
+| Niagara `.bog` and ProgramObject source generation | Target-compiled (offline) | Deterministic source and archives are produced. **Not** compiled or run in a licensed Niagara environment. |
+| Deterministic equipment packs | Prototype / qualifying | Bounded VAV reheat, AHU safety, duct-static PI, exhaust proof, two-pump selection, plus the pinned LBNL plant and G36 controller lanes. No pack is field-qualified. |
+| BOPTEST / Alfalfa simulation tiers | Product-wired, container-gated | Real physics through pinned services. Requires a container runtime with registry access; blocked networks cannot run this tier. |
+| Loopback BACnet/IP lab and capacity harness | Product-wired | Runs on plain loopback UDP with no containers. |
+| Durable qualification queue and workers | Product-wired | Pinned container, with a loopback-only native `redis-server` fallback. |
+| Semantic and independent verification (Haxall/Xeto, BuildingMOTIF, ConStrain, Open-FDD, Brick) | Product-wired | Each runs real checks behind a process boundary. |
+| AI conversation and coding roles | Product-wired, proposal-only | The chat model has no graph field; every coding proposal is revalidated, retested, and approved separately. |
+| **Licensed Niagara runtime qualification** | **Not available** | No licensed Workbench or station is bundled, and none of this repository's evidence claims runtime or field qualification. Generated artifacts require licensed compilation and station testing outside BACTalk. |
+
 ## Safety boundary
 
 The execution pipeline is intentionally one-way:
@@ -142,6 +258,7 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/INTEGRATION-STATUS.md](d
 | `GET` | `/api/capability-packs` | Read truthful equipment-pack and artifact coverage |
 | `GET` | `/api/capability-packs/{id}/release-gates` | Read every passed and blocking production gate for a pack |
 | `GET` | `/api/system/readiness` | Read integration stages and explicit blockers |
+| `GET` | `/api/system/optional-capabilities` | Read which optional extras are installed and how to add the rest |
 | `POST` | `/api/translate/cxf` | Lower ASHRAE 231P CXF into typed IR and optionally replay vectors |
 | `POST` | `/api/execute/cxf` | Execute a bounded typed/stateful CXF trajectory in Open Control Engine |
 | `GET` | `/api/library/g36/controllers` | Browse the allowlisted LBNL Guideline 36 controller source catalog |

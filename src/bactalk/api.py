@@ -11,7 +11,6 @@ from typing import Annotated, Any, Literal
 from uuid import uuid4
 
 import httpx
-from alfalfa_client import AlfalfaClient
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -86,6 +85,12 @@ from bactalk.integrations.readiness import IntegrationReadiness
 from bactalk.integrations.reference_stack import ReferenceStackCatalog
 from bactalk.integrations.rumoca import RumocaCompiler, RumocaError
 from bactalk.integrations.use_audit import IntegrationUseAudit
+from bactalk.optional_dependencies import (
+    ALFALFA_CLIENT,
+    CEREBRAS,
+    OptionalDependencyError,
+    optional_dependency_status,
+)
 from bactalk.point_mapping import (
     PointMappingError,
     canonicalize_deliverable_requirements,
@@ -151,6 +156,15 @@ class SPAStaticFiles(StaticFiles):
 
 class ApprovalRequest(BaseModel):
     reviewer: str | None = Field(default=None, min_length=2, max_length=120)
+    artifact_sha256: str | None = Field(
+        default=None,
+        pattern=r"^[0-9a-f]{64}$",
+        description=(
+            "The exact artifact digest the reviewer inspected. When supplied it "
+            "must match the candidate's current digest, so an artifact that "
+            "changed after review cannot be approved unseen."
+        ),
+    )
 
 
 class RejectionRequest(BaseModel):
@@ -352,14 +366,39 @@ def create_app(
 
     make_boptest_client = boptest_client_factory or configured_boptest_client
     alfalfa_base_url = os.getenv("BACTALK_ALFALFA_URL", "http://127.0.0.1:8088")
-    make_alfalfa_client = alfalfa_client_factory or (
-        lambda: AlfalfaClient(alfalfa_base_url)
-    )
+    def _default_alfalfa_client() -> AlfalfaClientLike:
+        # Imported on demand: a minimal install without the Alfalfa extra must
+        # still start the API and serve every other capability.
+        client_class = ALFALFA_CLIENT.attribute("AlfalfaClient")
+        return client_class(alfalfa_base_url)
+
+    make_alfalfa_client = alfalfa_client_factory or _default_alfalfa_client
     app = FastAPI(
         title="BACTalk",
         version="0.1.0",
         description="Human-gated controls programming workbench",
     )
+
+    @app.exception_handler(OptionalDependencyError)
+    async def optional_dependency_unavailable(
+        request: Request, exc: OptionalDependencyError
+    ) -> JSONResponse:
+        """Report a missing optional extra as an unavailable capability.
+
+        A minimal install is a supported configuration, so a capability whose
+        package was never installed answers with an explicit remediation
+        instead of a 500 that looks like a product defect.
+        """
+        return JSONResponse(
+            status_code=503,
+            content={
+                "detail": str(exc),
+                "capability": exc.capability,
+                "distribution": exc.dependency.distribution,
+                "extra": exc.dependency.extra,
+                "remediation": exc.remediation,
+            },
+        )
 
     def review_identity(
         http_request: Request,
@@ -548,6 +587,35 @@ def create_app(
                 },
             },
             "authority": "proposal-only",
+            # When a key is configured but the SDK extra is absent the roles
+            # stay unconfigured on purpose; name the remediation so the UI can
+            # show why instead of silently hiding the capability.
+            "unavailable_reason": (
+                None
+                if chat_provider is not None and coding_provider is not None
+                else (
+                    CEREBRAS.remediation
+                    if os.getenv("CEREBRAS_API_KEY") and not CEREBRAS.available()
+                    else "CEREBRAS_API_KEY is not configured"
+                    if not os.getenv("CEREBRAS_API_KEY")
+                    else None
+                )
+            ),
+        }
+
+    @app.get("/api/system/optional-capabilities")
+    def optional_capabilities() -> dict:
+        """Report which optional extras are installed and how to add the rest.
+
+        A minimal install is supported, so the UI reads this to disable
+        capability entry points instead of offering buttons that 503.
+        """
+        statuses = optional_dependency_status()
+        return {
+            "schema": "bactalk.optional-capabilities/v1",
+            "dependencies": statuses,
+            "all_installed": all(item["installed"] for item in statuses),
+            "bootstrap_command": "make bootstrap-full",
         }
 
     @app.get("/api/reference-stack")
@@ -2257,6 +2325,10 @@ def create_app(
                 manifest_path,
                 client_port=_free_loopback_udp_port(),
             )
+        except OptionalDependencyError:
+            # A capability whose extra was never installed is a 503 with
+            # remediation, not a 409 that reads like a product defect.
+            raise
         except (OSError, RuntimeError, ValueError) as exc:
             raise HTTPException(
                 status_code=409,
@@ -2560,6 +2632,7 @@ def create_app(
                 actor_id=actor_id,
                 tenant_id=tenant_id,
                 authentication=authentication,
+                expected_artifact_sha256=request.artifact_sha256,
             ).model_dump(mode="json")
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="run not found") from exc

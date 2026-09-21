@@ -458,6 +458,7 @@ export function SystemWorkspace() {
   const integration = useQuery({ queryKey: ['integration-audit'], queryFn: api.integrationAudit });
   const security = useQuery({ queryKey: ['security-status'], queryFn: api.securityStatus });
   const audit = useQuery({ queryKey: ['security-audit-status'], queryFn: api.securityAuditStatus });
+  const capabilities = useQuery({ queryKey: ['optional-capabilities'], queryFn: api.optionalCapabilities });
   const loading = readiness.isLoading || integration.isLoading || security.isLoading || audit.isLoading;
   const failed = readiness.isError || integration.isError || security.isError || audit.isError;
   if (loading) return <WorkspaceLoading />;
@@ -478,6 +479,23 @@ export function SystemWorkspace() {
         <article><ShieldCheck size={20} /><div><span className="eyebrow">DEPLOYMENT SAFETY</span><h2>Human approval remains mandatory</h2><p>The agent proposes and tests candidates. This runtime does not write to a live building, and every release retains reviewer and artifact evidence.</p></div><dl><div><dt>Authentication</dt><dd>{security.data.mode.replaceAll('-', ' ')}</dd></div><div><dt>Review identity</dt><dd>{security.data.review_identity.replaceAll('-', ' ')}</dd></div><div><dt>HTTPS required</dt><dd>{security.data.https_required ? 'Yes' : 'Local development'}</dd></div></dl></article>
         <article><ClipboardCheck size={20} /><div><span className="eyebrow">AUDIT CHAIN</span><h2>{audit.data.event_count.toLocaleString()} retained events</h2><p>API activity is append-only and hash chained. External immutable retention is still required for a production deployment.</p></div><code title={audit.data.head_hash}>{audit.data.head_hash}</code></article>
       </section>
+      {capabilities.data && !capabilities.data.all_installed && (
+        <section className="system-boundaries optional-capabilities">
+          <article>
+            <PackageCheck size={20} />
+            <div>
+              <span className="eyebrow">OPTIONAL CAPABILITIES</span>
+              <h2>{capabilities.data.dependencies.filter((item) => !item.installed).length} capability package(s) not installed</h2>
+              <p>This install is running without every optional extra. The capabilities below are disabled rather than failing at use; install them with <code>{capabilities.data.bootstrap_command}</code>.</p>
+            </div>
+            <dl>
+              {capabilities.data.dependencies.filter((item) => !item.installed).map((item) => (
+                <div key={item.distribution}><dt>{item.capability}</dt><dd>{item.distribution} &middot; <code>pip install -e &apos;.[{item.extra}]&apos;</code></dd></div>
+              ))}
+            </dl>
+          </article>
+        </section>
+      )}
       <section className="maturity-ledger">
         <header><div><span className="eyebrow">CAPABILITY MATURITY</span><h2>What is installed, wired, compiled, and still blocked</h2></div><span>{selected.length} selected components</span></header>
         <div className="maturity-table" tabIndex={0}><table><thead><tr><th>Component</th><th>Purpose</th><th>License</th><th>Maturity</th><th>Evidence / blocker</th></tr></thead><tbody>{selected.map((component) => <tr key={component.id}><th><strong>{component.name}</strong><code>{component.version || component.id}</code></th><td>{component.role}</td><td>{component.license}</td><td><span className={`maturity-stage stage-${maturityStages.indexOf(component.stage)}`}>{component.stage.replaceAll('-', ' ')}</span></td><td>{component.blocker ? <details><summary>Open qualification boundary</summary><p>{component.blocker}</p></details> : <span className="maturity-clear"><CheckCircle2 size={13} /> No declared blocker</span>}</td></tr>)}</tbody></table></div>

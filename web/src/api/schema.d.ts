@@ -1566,6 +1566,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/system/optional-capabilities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Optional Capabilities
+         * @description Report which optional extras are installed and how to add the rest.
+         *
+         *     A minimal install is supported, so the UI reads this to disable
+         *     capability entry points instead of offering buttons that 503.
+         */
+        get: operations["optional_capabilities_api_system_optional_capabilities_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/system/readiness": {
         parameters: {
             query?: never;
@@ -1780,6 +1803,11 @@ export interface components {
         };
         /** ApprovalRequest */
         ApprovalRequest: {
+            /**
+             * Artifact Sha256
+             * @description The exact artifact digest the reviewer inspected. When supplied it must match the candidate's current digest, so an artifact that changed after review cannot be approved unseen.
+             */
+            artifact_sha256?: string | null;
             /** Reviewer */
             reviewer?: string | null;
         };
@@ -5943,6 +5971,28 @@ export interface operations {
         };
     };
     get_integration_audit_api_system_integration_audit_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    optional_capabilities_api_system_optional_capabilities_get: {
         parameters: {
             query?: never;
             header?: never;

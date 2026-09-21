@@ -7,6 +7,13 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from bactalk.stack_lock import stack_lock
+
+
+def _pinned_rust_channel() -> str:
+    """Exact Rust channel Open Control Engine is built with."""
+    return stack_lock().field("rust-toolchain", "channel")
+
 
 class OpenControlEngine:
     """Isolated CLI adapter for deterministic validation and execution of CXF."""
@@ -62,7 +69,7 @@ class OpenControlEngine:
     def _run(self, command: list[str], *, timeout: float) -> dict[str, Any]:
         environment = os.environ.copy()
         environment["CARGO_TARGET_DIR"] = str(self.engine_checkout / "target")
-        environment.setdefault("RUSTUP_TOOLCHAIN", "1.97.1")
+        environment.setdefault("RUSTUP_TOOLCHAIN", _pinned_rust_channel())
         try:
             completed = subprocess.run(
                 command,

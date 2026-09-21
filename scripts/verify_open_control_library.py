@@ -10,12 +10,13 @@ from pathlib import Path
 from bactalk.compiler import NiagaraCompiler
 from bactalk.integrations.cxf_importer import CxfImporter
 from bactalk.integrations.cxf_vectors import CxfVectorVerifier
+from bactalk.stack_lock import locked_revision, stack_lock
 
 ROOT = Path(__file__).resolve().parents[1]
 LIBRARY = ROOT / ".vendor/open-control-library"
 ENGINE = ROOT / ".vendor/open-control"
-EXPECTED_REVISION = "9799be841c26089f5261eb3221440fccf0c13cb9"
-EXPECTED_ENGINE_REVISION = "e2ff2f84577d9be65a49e6cb5440c223f6126817"
+EXPECTED_REVISION = locked_revision("open-control-library")
+EXPECTED_ENGINE_REVISION = stack_lock().field("open-control-library", "engine_revision")
 
 
 def _revision(path: Path) -> str:

@@ -30,6 +30,7 @@ dependencies = [
 
 [project.optional-dependencies]
 ai = ["cerebras_cloud_sdk==1.91.0"]
+alfalfa = ["alfalfa-client==1.0.0"]
 bacnet = ["bacpypes3>=0.0.102,<1"]
 bacnet-lab = [
   "BAC0==2026.7.25",
@@ -65,6 +66,12 @@ packages = ["src/bactalk"]
 [tool.pytest.ini_options]
 addopts = "-q --strict-markers"
 testpaths = ["tests"]
+markers = [
+  "minimal: runs on a base `make install` with no optional extras and no vendored upstream sources",
+  "integration: requires `make bootstrap-full` (vendored upstream checkouts, isolated venvs, node/rust helpers)",
+  "docker: requires a container runtime and pullable images (BOPTEST, Alfalfa, queue services)",
+  "licensed: requires a licensed external runtime such as Niagara Workbench; never run in CI",
+]
 
 [tool.ruff]
 line-length = 100

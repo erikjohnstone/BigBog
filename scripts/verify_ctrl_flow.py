@@ -7,10 +7,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from bactalk.integrations.ctrl_flow import CtrlFlowLibrary
+from bactalk.stack_lock import locked_revision, stack_lock
 
 ROOT = Path(__file__).resolve().parents[1]
-REVISION = "9063e347b13b1a55f9b324ab35da01b5006492de"
-LICENSE_SHA256 = "1d1367874c6d5f974749edc9fdbd8988a5ab3d73c6900bc03737f8547d95c29f"
+REVISION = locked_revision("ctrl-flow")
+LICENSE_SHA256 = stack_lock().field("ctrl-flow", "license_sha256")
 AHU_TEMPLATE = "Buildings.Templates.AirHandlersFans.VAVMultiZone"
 DRAW_THROUGH_SELECTION = (
     "Buildings.Templates.AirHandlersFans.VAVMultiZone.fanSupDra-fanSupDra"

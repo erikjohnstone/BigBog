@@ -26,6 +26,9 @@ from bactalk.domain import (
     canonical_json,
 )
 from bactalk.integrations.virtual_actuator import VirtualActuator, VirtualActuatorFault
+from bactalk.optional_dependencies import BAC0 as BAC0_CLIENT
+from bactalk.optional_dependencies import BACPYPES3
+from bactalk.stack_lock import locked_revision
 
 SUPPORTED_OBJECT_TYPES = {
     "analog-input",
@@ -544,7 +547,7 @@ def build_bacnet_lab_export(job: JobSpec, *, base_port: int = 47_820) -> BacnetL
         "independent_protocol_oracle": {
             "implementation": "quentinnippert/bacnet-simulator",
             "license": "MIT",
-            "revision": "d06fccb963abd4c773f6b5dd74e12f9ec79a5edd",
+            "revision": locked_revision("bacnet-simulator"),
             "config_root": "independent-simulator",
             "settings": "independent-simulator/settings.yaml",
             "launcher": "independent-simulator/run.py",
@@ -616,6 +619,7 @@ class VirtualBacnetLab:
 
     @staticmethod
     def _object(config: LabObjectConfig) -> Any:
+        BACPYPES3.require()
         from bacpypes3.errors import PropertyError
         from bacpypes3.local.analog import (
             AnalogInputObject,
@@ -756,6 +760,7 @@ class VirtualBacnetLab:
     async def start_device(self, device_instance: int) -> None:
         """Start or recover one configured virtual device on its original address."""
 
+        BACPYPES3.require()
         from bacpypes3.app import Application
 
         if device_instance in self.device_apps:
@@ -1046,6 +1051,7 @@ async def probe_manifest_with_bac0(
 ) -> dict[str, Any]:
     """Read every mapped virtual point through BAC0 as an independent protocol client."""
 
+    BAC0_CLIENT.require()
     import BAC0
 
     path = manifest_path.resolve()

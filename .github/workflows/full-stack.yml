@@ -1,0 +1,98 @@
+name: Full stack
+
+# The expensive, environment-dependent tiers.
+#
+# These need a full bootstrap (tens of gigabytes of pinned upstream sources,
+# Rust and Node toolchains, isolated Python environments) and, for the physics
+# tier, a container runtime that can pull the pinned images. Hosted runners
+# cannot satisfy that within normal limits, so this workflow is manual and
+# expects a self-hosted runner.
+#
+# It is intentionally not part of the pull-request gate: `ci.yml` covers the
+# reproducible subset that every change must pass.
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: Runner label to execute on
+        required: false
+        default: self-hosted
+      include_docker_tier:
+        description: Also run the container-backed BOPTEST/Alfalfa tier
+        type: boolean
+        required: false
+        default: false
+  schedule:
+    # Weekly, to catch upstream pins that stopped resolving.
+    - cron: "0 6 * * 1"
+
+concurrency:
+  group: full-stack
+  cancel-in-progress: false
+
+env:
+  PYTHONPATH: src
+
+jobs:
+  bootstrap-and-prove:
+    name: Bootstrap the pinned stack and prove it
+    runs-on: ${{ github.event.inputs.runner || 'self-hosted' }}
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Report prerequisites before starting
+        run: python3 scripts/doctor.py || true
+
+      # Idempotent: a runner that already has the stack skips what is present.
+      - name: Bootstrap the full pinned stack
+        run: make bootstrap-full
+
+      - name: Doctor must report every selected capability ready
+        run: python3 scripts/doctor.py --strict
+
+      - name: Lock pins still resolve upstream
+        run: .venv/bin/python scripts/verify_lock_resolves.py
+
+      - name: Python suite (everything except docker and licensed tiers)
+        run: make test-integration
+
+      - name: Frontend build and tests
+        run: |
+          make web-build
+          make web-test
+          make web-lint
+
+      - name: Bring the stack up
+        run: make full-stack-up
+
+      - name: Prove the stack
+        run: make full-stack-smoke
+
+      - name: Prove the contractor workflow against the live API
+        run: .venv/bin/python scripts/verify_contractor_workflow.py
+
+      - name: Integration contract suite
+        run: make suite-contract
+
+      - name: Container-backed simulation tier
+        if: ${{ github.event.inputs.include_docker_tier == 'true' }}
+        run: make test-docker
+
+      - name: Collect evidence
+        if: always()
+        run: |
+          mkdir -p evidence
+          cp -f .bactalk/*.json evidence/ 2>/dev/null || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: full-stack-evidence
+          path: evidence/
+          if-no-files-found: ignore
+
+      - name: Tear the stack down
+        if: always()
+        run: make full-stack-down

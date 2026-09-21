@@ -6,7 +6,27 @@
       "branch": "develop",
       "revision": "580100c2eb280a9e50ce7f22ae6bc9536157900b",
       "license": "MIT",
-      "scope": "Sparse source-only IEC 61131-3 control corpus: 211 POU references; 6 behavior-verified typed-IR and Niagara lowerings"
+      "scope": "Sparse source-only IEC 61131-3 control corpus: 211 POU references; 6 behavior-verified typed-IR and Niagara lowerings",
+      "sparse_paths": [
+        "/LICENSE",
+        "/*.md",
+        "/OSCAT/**/Engineering/Control/",
+        "/OSCAT/**/Engineering/automation/",
+        "/OSCAT/**/Engineering/signal processing/",
+        "/OSCAT/**/Engineering/measurements/",
+        "/Examples/HeatPumpTestBenchControl/",
+        "/Examples/HeatSupplyCircle/**/POUs/Components/",
+        "/Examples/ERC_TestHall/CCA/",
+        "/Examples/ERC_TestHall/Components/",
+        "!/Examples/**/_Libraries/",
+        "!/Examples/**/_Boot/",
+        "!*.compiled-library",
+        "!*.library",
+        "!*.bootinfo",
+        "!*.tizip"
+      ],
+      "sparse_no_cone": true,
+      "expected_pou_count": 211
     },
     "pybog-source": {
       "repository": "https://github.com/bbartling/pybog",
@@ -32,7 +52,15 @@
       "release": "v13.0.0",
       "revision": "55abf579598ca81cae0a82f337350375958e6722",
       "license": "Revised BSD-3-Clause with notices",
-      "scope": "Buildings/Controls/OBC plus Buildings/Templates/Plants, including the plant controls source corpus"
+      "scope": "Buildings/Controls/OBC plus Buildings/Templates/Plants, including the plant controls source corpus",
+      "sparse_paths": [
+        "Buildings/Controls/OBC",
+        "Buildings/Templates",
+        "Buildings/Utilities",
+        "Buildings/Fluid",
+        "Buildings/package.mo",
+        "Buildings/package.order"
+      ]
     },
     "modelica-json": {
       "repository": "https://github.com/lbl-srg/modelica-json",
@@ -47,7 +75,17 @@
       "parser_dependency_revision": "b715c09d3092192779e8eccd80c813f08ea1a8e6",
       "license": "BSD-3-Clause-style LBNL license with notices",
       "license_sha256": "1d1367874c6d5f974749edc9fdbd8988a5ab3d73c6900bc03737f8547d95c29f",
-      "scope": "Product-wired Linkage Schema and upstream interpreter: 3 HVAC templates, 2 system families, 2,593 typed/conditional options, configuration evidence API"
+      "scope": "Product-wired Linkage Schema and upstream interpreter: 3 HVAC templates, 2 system families, 2,593 typed/conditional options, configuration evidence API",
+      "sparse_paths": [
+        "/LICENSE.txt",
+        "/LEGAL.txt",
+        "/ReadMe.md",
+        "/client/",
+        "/server/",
+        "/specification/",
+        "/docs/"
+      ],
+      "sparse_no_cone": true
     },
     "modelica-standard-library": {
       "repository": "https://github.com/modelica/ModelicaStandardLibrary",
@@ -192,6 +230,12 @@
       "revision": "4b3944a0f10c5f2772c52b20ce0211ff09255f3b",
       "license": "Apache-2.0",
       "scope": "Reference implementation for Niagara alarm class and BAlarmSourceExt automation"
+    },
+    "rust-toolchain": {
+      "package": "rust==1.97.1",
+      "channel": "1.97.1",
+      "license": "MIT OR Apache-2.0",
+      "scope": "Exact Rust toolchain required by Open Control Engine (edition 2024) and the BACTalk OCE runner; pinned so local and CI builds agree."
     }
   }
 }

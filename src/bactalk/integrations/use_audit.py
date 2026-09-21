@@ -7,6 +7,15 @@ from typing import Any
 # Every component in ops/stack.lock.json must have an explicit use and proof.
 # Adding a pin without adding a binding makes the audit fail closed.
 _BINDINGS: dict[str, dict[str, str]] = {
+    "rust-toolchain": {
+        "mode": "build-toolchain",
+        "product_path": (
+            "Exact Rust channel used to build the Open Control Engine runner and the "
+            "Rumoca flattener; OpenControlEngineRunner pins RUSTUP_TOOLCHAIN to this "
+            "value so local and CI builds of the CXF validation oracle agree"
+        ),
+        "proof": "make oce-contract",
+    },
     "aixocat": {
         "mode": "product-api-and-compiler-input",
         "product_path": (

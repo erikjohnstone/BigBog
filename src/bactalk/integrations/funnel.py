@@ -7,6 +7,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from bactalk.optional_dependencies import PYFUNNEL
+
 
 @dataclass(frozen=True)
 class FunnelResult:
@@ -136,10 +138,10 @@ class FunnelScorer:
         absolute_time_tolerance: float = 0.0,
         absolute_value_tolerance: float = 0.0,
     ) -> FunnelResult:
-        try:
-            from pyfunnel import compareAndReport
-        except ImportError as exc:  # pragma: no cover - installation guard
-            raise RuntimeError("install BACTalk with the 'funnel' extra to use pyfunnel") from exc
+        # Raises OptionalDependencyError, which the API renders as a 503
+        # naming this capability and the exact install command.
+        PYFUNNEL.require()
+        from pyfunnel import compareAndReport
 
         output_directory.mkdir(parents=True, exist_ok=True)
         status = compareAndReport(

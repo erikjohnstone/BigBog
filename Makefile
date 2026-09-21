@@ -2,6 +2,8 @@
 
 .PHONY: alfalfa-product-smoke qualification-queue-up qualification-queue-down qualification-worker
 
+.PHONY: bootstrap-full bootstrap-list doctor doctor-json queue-up queue-down full-stack-up full-stack-smoke full-stack-down contractor-workflow simulation-workflow test-minimal test-integration test-integration-lenient test-docker test-all
+
 web-install:
 	cd web && npm ci
 
@@ -211,6 +213,81 @@ rumoca-contract:
 
 rumoca-install:
 	scripts/install_rumoca.sh
+
+# ---------------------------------------------------------------------------
+# Bootstrap, diagnosis, and the full local stack
+# ---------------------------------------------------------------------------
+
+# Reconstruct the entire pinned stack from ops/stack.lock.json. Idempotent:
+# rerunning skips everything already installed. See docs in scripts/bootstrap.py.
+bootstrap-full:
+	python3 scripts/bootstrap.py
+
+bootstrap-list:
+	python3 scripts/bootstrap.py --list
+
+# Report prerequisites, pinned-revision drift, and exact remediation.
+doctor:
+	python3 scripts/doctor.py
+
+doctor-json:
+	python3 scripts/doctor.py --json --output .bactalk/doctor-report.json
+
+# The durable qualification queue. Prefers the pinned container; falls back to
+# a loopback-only native redis-server when no container registry is reachable,
+# so the worker plane can still be proven on a restricted host.
+queue-up:
+	PYTHONPATH=src python3 scripts/queue_service.py up
+
+queue-down:
+	PYTHONPATH=src python3 scripts/queue_service.py down
+
+full-stack-up:
+	PYTHONPATH=src .venv/bin/python scripts/full_stack.py up
+
+full-stack-smoke:
+	PYTHONPATH=src .venv/bin/python scripts/full_stack.py smoke
+
+# Prove the contractor workflow through the real HTTP API: intake -> mapping ->
+# candidate -> deterministic tests -> review -> approval -> export, with the
+# pre-approval gate and tamper detection asserted.
+contractor-workflow:
+	PYTHONPATH=src .venv/bin/python scripts/verify_contractor_workflow.py
+
+# Prove the simulation qualification lane: durable queue, real out-of-process
+# worker, digest binding, orphan fail-closed, pyfunnel grading, the loopback
+# BACnet control boundary, and the physics tiers when they are reachable.
+simulation-workflow:
+	PYTHONPATH=src .venv/bin/python scripts/verify_simulation_workflow.py
+
+full-stack-down:
+	PYTHONPATH=src .venv/bin/python scripts/full_stack.py down
+
+# ---------------------------------------------------------------------------
+# Test tiers (see pyproject [tool.pytest.ini_options] markers)
+# ---------------------------------------------------------------------------
+
+# Runs on a bare `make install`: no optional extras, no vendored upstreams.
+test-minimal:
+	.venv/bin/pytest -m minimal
+
+# Everything that does not need a container runtime or a licensed runtime.
+# This is what must pass after `make bootstrap-full`. BACTALK_REQUIRE_FULL_STACK
+# turns an unmet requirement into a failure instead of a skip, so a missing
+# vendored source cannot hide a regression behind a green run.
+test-integration:
+	BACTALK_REQUIRE_FULL_STACK=1 .venv/bin/pytest -m "not docker and not licensed"
+
+# The same tier without the strict gate, for a partially bootstrapped machine.
+test-integration-lenient:
+	.venv/bin/pytest -m "not docker and not licensed"
+
+# Requires a container runtime with registry access.
+test-docker:
+	.venv/bin/pytest -m docker
+
+test-all:
+	.venv/bin/pytest -m "not licensed"
 
 lint:
 	.venv/bin/ruff check src tests scripts

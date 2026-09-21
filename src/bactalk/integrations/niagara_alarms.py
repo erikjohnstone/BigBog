@@ -8,9 +8,10 @@ from typing import Any
 
 from bactalk.domain import AlarmRequirement, ControlGraph, DataType, JobSpec, canonical_json
 from bactalk.integrations.niagara_bindings import program_root_ord
+from bactalk.stack_lock import locked_revision
 
 AM8X_REPOSITORY = "https://github.com/zEhmsy/am8xControl"
-AM8X_REVISION = "4b3944a0f10c5f2772c52b20ce0211ff09255f3b"
+AM8X_REVISION = locked_revision("am8x-control")
 
 
 @dataclass(frozen=True)

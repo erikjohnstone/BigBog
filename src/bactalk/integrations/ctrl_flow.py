@@ -16,6 +16,20 @@ from bactalk.sequence_requirements import (
     SequenceRequirementReviewRequest,
     compile_sequence_requirement_review,
 )
+from bactalk.stack_lock import stack_lock
+
+
+def _locked_ctrl_flow() -> tuple[str, str]:
+    """Pinned ctrl-flow revision and license read from ops/stack.lock.json.
+
+    The revision also seeds every configuration digest, so it must come from
+    the same place the installer checks out rather than a copy in this file.
+    """
+    component = stack_lock().get("ctrl-flow")
+    return component.require_revision(), component.require("license")
+
+
+CTRL_FLOW_REVISION, CTRL_FLOW_LICENSE = _locked_ctrl_flow()
 
 
 class CtrlFlowError(RuntimeError):
@@ -86,8 +100,8 @@ class CtrlFlowLibrary:
                 "Modelica Buildings system templates, conditional engineering choices, and "
                 "evaluated configuration evidence"
             ),
-            "license": "BSD-3-Clause-style LBNL license with notices",
-            "revision": "9063e347b13b1a55f9b324ab35da01b5006492de",
+            "license": CTRL_FLOW_LICENSE,
+            "revision": CTRL_FLOW_REVISION,
             "snapshot_sha256": hashlib.sha256(self.snapshot.read_bytes()).hexdigest(),
             "template_count": len(templates),
             "option_count": result.get("option_count", 0),
@@ -207,7 +221,7 @@ class CtrlFlowLibrary:
         digest_payload = {
             "template_id": template.get("modelicaPath"),
             "selections": selections,
-            "revision": "9063e347b13b1a55f9b324ab35da01b5006492de",
+            "revision": CTRL_FLOW_REVISION,
         }
         digest = hashlib.sha256(
             json.dumps(digest_payload, sort_keys=True, separators=(",", ":")).encode()
@@ -228,7 +242,7 @@ class CtrlFlowLibrary:
             "evaluated_values": result.get("evaluated_values", {}),
             "source_evidence": {
                 "repository": "https://github.com/lbl-srg/ctrl-flow-dev",
-                "revision": "9063e347b13b1a55f9b324ab35da01b5006492de",
+                "revision": CTRL_FLOW_REVISION,
                 "snapshot_sha256": hashlib.sha256(self.snapshot.read_bytes()).hexdigest(),
                 "interpreter": "client/src/interpreter/interpreter.ts",
                 "display_mapper": "client/src/interpreter/display-option.ts",

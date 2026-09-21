@@ -1,0 +1,212 @@
+name: CI
+
+# Reproducibility gates that run on ordinary hosted runners.
+#
+# The expensive tiers are deliberately excluded: BOPTEST and Alfalfa need a
+# container runtime with registry access and tens of gigabytes, and the Niagara
+# tier needs a licensed Workbench. Those run locally or on a self-hosted runner
+# (see .github/workflows/full-stack.yml), so this workflow stays fast and
+# always reproducible from a clean clone.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONPATH: src
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+jobs:
+  minimal-install:
+    name: Clean clone, base install only
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      # Exactly what `make install` gives a contractor: no optional extras,
+      # no vendored upstreams. The API must still import, boot, and serve the
+      # core workflow.
+      - name: Install base dependencies only
+        run: python -m pip install -e '.[test]'
+
+      - name: Assert no optional extra is present
+        run: |
+          python - <<'PY'
+          import importlib.util, sys
+          # These must NOT be installed in this job: their absence is the point.
+          for module in ("alfalfa_client", "bacpypes3", "BAC0", "pyfunnel"):
+              if importlib.util.find_spec(module) is not None:
+                  sys.exit(f"{module} must not be installed in the minimal job")
+          print("confirmed: no optional extras installed")
+          PY
+
+      - name: API imports and boots without extras
+        run: |
+          python - <<'PY'
+          import pathlib, tempfile
+          from fastapi.testclient import TestClient
+          from bactalk.api import create_app
+          client = TestClient(create_app(pathlib.Path(tempfile.mkdtemp()) / "runs"))
+          assert client.get("/api/health").status_code == 200
+          assert client.post("/api/runs/demo").status_code == 201
+          caps = client.get("/api/system/optional-capabilities").json()
+          assert caps["all_installed"] is False
+          print("minimal install boots and builds a demo candidate")
+          PY
+
+      - name: Minimal test tier
+        run: python -m pytest -m minimal
+
+      - name: Contractor workflow end to end
+        run: python scripts/verify_contractor_workflow.py --base-url http://127.0.0.1:1
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: minimal-workflow-evidence
+          path: .bactalk/contractor-workflow-evidence.json
+          if-no-files-found: ignore
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+      - run: python -m ruff check src tests scripts
+
+  lock-validation:
+    name: Dependency lock validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: python -m pip install -e '.[test]'
+
+      # Every pin lives in ops/stack.lock.json and nowhere else.
+      - name: Lock is the single source of revisions
+        run: python -m pytest tests/test_stack_lock.py
+
+      - name: Bootstrap plan is well formed
+        run: |
+          python scripts/bootstrap.py --list
+          python - <<'PY'
+          import subprocess, sys
+          result = subprocess.run(
+              [sys.executable, "scripts/bootstrap.py", "--only", "not-a-step"],
+              capture_output=True, text=True,
+          )
+          assert result.returncode == 2, "an unknown step must be rejected"
+          assert "unknown step" in result.stderr
+          print("bootstrap rejects unknown steps")
+          PY
+
+      # Prove the lock's pinned revisions still resolve upstream without
+      # downloading the trees: a deleted or force-pushed pin fails here.
+      - name: Every pinned revision still resolves upstream
+        run: python scripts/verify_lock_resolves.py
+
+      - name: Doctor runs and reports
+        run: python scripts/doctor.py --json --output doctor-report.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: doctor-report
+          path: doctor-report.json
+          if-no-files-found: ignore
+
+  bootstrap-smoke:
+    name: Bootstrap a representative slice
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # A full bootstrap clones tens of gigabytes. This proves the machinery --
+      # lock-driven clone, revision verification, license digest check, patch
+      # application, idempotent rerun -- on a representative subset.
+      - name: Bootstrap source checkouts
+        run: |
+          python scripts/bootstrap.py --only \
+            open-control-engine open-control-library aixocat pybog-source \
+            n4-hvac-library nhaystack am8x-control
+
+      - name: Rerun is idempotent
+        run: |
+          python scripts/bootstrap.py --only \
+            open-control-engine open-control-library aixocat pybog-source \
+            n4-hvac-library nhaystack am8x-control \
+            | tee rerun.log
+          grep -q "already installed" rerun.log
+
+      - name: Checkouts match the lock
+        run: python scripts/doctor.py
+
+  frontend:
+    name: Frontend build and tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: python -m pip install -e '.[test]'
+      - run: npm ci
+        working-directory: web
+
+      # The build regenerates TypeScript types from the live OpenAPI document,
+      # so a backend contract change that the frontend has not adopted fails
+      # here rather than in a browser.
+      - run: npm run build
+        working-directory: web
+
+      - run: npm run lint
+        working-directory: web
+
+      - run: npm test
+        working-directory: web
+
+      - name: Generated API types are current
+        working-directory: web
+        run: |
+          git diff --exit-code src/api/schema.d.ts || {
+            echo "::error::web/src/api/schema.d.ts is stale; run 'make web-build' and commit it"
+            exit 1
+          }
