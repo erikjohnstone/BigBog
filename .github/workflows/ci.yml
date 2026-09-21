@@ -210,3 +210,21 @@ jobs:
             echo "::error::web/src/api/schema.d.ts is stale; run 'make web-build' and commit it"
             exit 1
           }
+
+      # The browser suite drives the real FastAPI app, so it is an
+      # integration check rather than a unit test. It needs no vendored
+      # upstreams, which keeps it inside the reproducible CI tier.
+      - name: Install Playwright browsers
+        working-directory: web
+        run: npx playwright install --with-deps chromium
+
+      - name: Browser end-to-end suite
+        working-directory: web
+        run: npx playwright test --project=chromium-desktop
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: web/playwright-report/
+          if-no-files-found: ignore

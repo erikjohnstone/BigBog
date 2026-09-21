@@ -143,7 +143,19 @@ the approval.
 
 A minimal install reports optional integrations as unavailable; it must never
 crash. After `make bootstrap-full` the vendor-dependent tests execute rather
-than skip.
+than skip: `make test-integration` sets `BACTALK_REQUIRE_FULL_STACK=1`, which
+turns a missing requirement into a failure instead of a silent skip. Use
+`make test-integration-lenient` on a partially bootstrapped machine.
+
+The browser suite drives the real API and is run separately:
+
+```bash
+cd web && npx playwright test
+```
+
+On a machine where browsers were provisioned out of band, set
+`PLAYWRIGHT_BROWSERS_PATH` (or `BACTALK_CHROMIUM_PATH` for an exact binary)
+and the config will use them instead of downloading.
 
 ### Troubleshooting
 
