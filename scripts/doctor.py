@@ -155,6 +155,22 @@ def check_interpreters(report: Report) -> None:
         )
     )
 
+    maven = which_version("mvn", ["-v"])
+    report.add(
+        Finding(
+            section,
+            "maven",
+            READY if maven else DEGRADED,
+            detail=maven or "not installed",
+            remediation=""
+            if maven
+            else "Install Maven to build modelica-json's Java parser used by the "
+            "ctrl-flow design lane: apt install maven",
+            expected="mvn",
+            actual=maven or "",
+        )
+    )
+
     cargo = which_version("cargo")
     report.add(
         Finding(
@@ -465,6 +481,10 @@ def check_built_artifacts(report: Report) -> None:
         "frontend build": (
             ROOT / "src" / "bactalk" / "static-next" / "index.html",
             "make web-build",
+        ),
+        "ctrl-flow parser jar": (
+            VENDOR / "ctrl-flow-dependencies" / "modelica-json" / "java" / "moParser.jar",
+            "make bootstrap-full  (step: ctrl-flow); needs Maven and a JDK",
         ),
         "ctrl-flow client deps": (
             VENDOR / "ctrl-flow-dev" / "client" / "node_modules",

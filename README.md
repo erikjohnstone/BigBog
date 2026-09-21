@@ -89,6 +89,7 @@ Prerequisites, and what each unlocks:
 | Node.js 20+ and npm | frontend, ctrl-flow, modelica-json, Haxall | <https://nodejs.org> |
 | Rust with `rustup` | Open Control Engine runner, Rumoca flattener | <https://rustup.rs> |
 | JDK with `javac` | compiling generated ProgramObject qualification kernels | `apt install default-jdk` |
+| Maven | building modelica-json's Java parser for the ctrl-flow lane | `apt install maven` |
 | `libudev-dev`, `pkg-config` | the Rumoca build (Linux only) | `apt install libudev-dev pkg-config` |
 | Container runtime + registry access | BOPTEST and Alfalfa simulation tiers | Docker Engine or Colima |
 
@@ -166,6 +167,7 @@ and the config will use them instead of downloading.
 | `checkout is not at the pinned revision` from `make doctor` | A vendored tree drifted. Rerun `make bootstrap-full`, which re-checks out the locked revision. |
 | `tracked patch does not apply cleanly` | Upstream moved under a pin. Re-pin the component in `ops/stack.lock.json` and regenerate the patch under `ops/`. |
 | Rumoca build fails in `libudev-sys` | Install `libudev-dev` and `pkg-config`, then rerun `make bootstrap-full`. |
+| ctrl-flow parser tests fail with `Cannot read properties of undefined` | The parser jar is missing (install Maven and rerun `make bootstrap-full`), or a JVM banner is corrupting its output. `JAVA_TOOL_OPTIONS` set in your environment causes the latter; the contract unsets it for that call. |
 | OCE runner fails with `requires rustc 1.97` | Run `make bootstrap-full`, which installs the pinned toolchain via rustup. |
 | `denied` or `403` pulling container images | Your network blocks the registry. The BOPTEST/Alfalfa tiers cannot run there; everything else still works. `make doctor` reports this as `blocked`. |
 | Queue will not start | `make queue-up` prefers the pinned container and falls back to a loopback-only native `redis-server`. Install one with `apt install redis-server`. |
