@@ -69,6 +69,12 @@ jobs:
       - name: Minimal test tier
         run: python -m pytest -m minimal
 
+      # The native Niagara .bog contract (GOAL-NATIVE-BOG.md) runs in every tier
+      # that can build a .bog; on the base install that is the units and validator
+      # rules over the packs that still compile natively.
+      - name: Native .bog contract
+        run: python -m pytest -m native_bog
+
       - name: Contractor workflow end to end
         run: python scripts/verify_contractor_workflow.py --base-url http://127.0.0.1:1
 

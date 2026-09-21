@@ -27,7 +27,12 @@ from bactalk.domain import (
 )
 
 
-def demo_job() -> JobSpec:
+def standard_vav_demo_job() -> JobSpec:
+    """The bounded standard VAV pack fixture (not Guideline 36).
+
+    Kept for the BACnet, station and topology fixtures until N4.
+    """
+
     points = [
         PointSpec(
             name="ZoneTemp",
@@ -210,8 +215,8 @@ def demo_job() -> JobSpec:
     )
 
 
-def generalist_demo_job() -> JobSpec:
-    """An equipment-neutral AHU job exercised through its installed pack."""
+def standard_ahu_demo_job() -> JobSpec:
+    """An equipment-neutral AHU pack fixture; kept for station and topology fixtures until N4."""
 
     # Retained as an inspectable reference fixture; the deterministic planner
     # independently rebuilds this program from the job contract.
@@ -555,3 +560,12 @@ def generalist_demo_job() -> JobSpec:
         acceptance_tests=cases,
         notes="Synthetic AHU demonstration; no live building connection.",
     )
+
+
+# ``demo_job``/``generalist_demo_job`` are the standard pack fixtures under their
+# historical names: the Niagara station, BACnet lab, nhaystack, VOLTTRON and
+# topology tests are written against these points until N4. The product demo
+# (``bactalk demo`` and ``POST /api/runs/demo``) is LBNL-sourced and lives in
+# :mod:`bactalk.library_demo` (GOAL-NATIVE-BOG.md N0, docs/decisions/001).
+demo_job = standard_vav_demo_job
+generalist_demo_job = standard_ahu_demo_job

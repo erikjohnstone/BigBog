@@ -71,6 +71,7 @@ markers = [
   "integration: requires `make bootstrap-full` (vendored upstream checkouts, isolated venvs, node/rust helpers)",
   "docker: requires a container runtime and pullable images (BOPTEST, Alfalfa, queue services)",
   "licensed: requires a licensed external runtime such as Niagara Workbench; never run in CI",
+  "native_bog: the native Niagara .bog pipeline contract (GOAL-NATIVE-BOG.md); runs in every tier that can build a .bog",
 ]
 
 [tool.ruff]

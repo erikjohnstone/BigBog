@@ -9,7 +9,7 @@ import json
 import zipfile
 from pathlib import Path
 
-from bactalk.demo import demo_job, generalist_demo_job
+from bactalk.demo import standard_ahu_demo_job, standard_vav_demo_job
 from bactalk.domain import (
     AcceptanceCase,
     AcceptancePhase,
@@ -317,17 +317,17 @@ def pump_job() -> JobSpec:
 
 
 def project_spec() -> ProjectSpec:
-    ahu = generalist_demo_job().model_copy(
+    ahu = standard_ahu_demo_job().model_copy(
         update={
             "name": "AHU-1 safety and discharge cooling",
             "site": SITE,
             "equipment_name": "AHU_1",
         }
     )
-    vav_101 = demo_job().model_copy(
+    vav_101 = standard_vav_demo_job().model_copy(
         update={"name": "East wing VAV-101", "site": SITE, "equipment_name": "VAV_101"}
     )
-    vav_102 = demo_job().model_copy(
+    vav_102 = standard_vav_demo_job().model_copy(
         update={"name": "East wing VAV-102", "site": SITE, "equipment_name": "VAV_102"}
     )
     return ProjectSpec(

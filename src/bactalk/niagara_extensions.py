@@ -7,6 +7,7 @@ from pathlib import Path
 from xml.etree import ElementTree
 
 from bactalk.domain import BlockKind, ControlGraph, HistoryRequirement
+from bactalk.niagara.units import numeric_facets, units_facet
 
 _NUMERIC_WRITABLES = {BlockKind.NUMERIC_INPUT, BlockKind.NUMERIC_OUTPUT}
 _BOOLEAN_WRITABLES = {BlockKind.BOOLEAN_INPUT, BlockKind.BOOLEAN_OUTPUT}
@@ -19,6 +20,7 @@ def inject_fixed_interval_histories(
     histories: list[HistoryRequirement],
     *,
     program_root_ord: str | None = None,
+    units: dict[str, str | None] | None = None,
 ) -> tuple[str, ...]:
     """Add qualified Niagara interval-history extensions to a generated ``.bog``.
 
@@ -33,25 +35,8 @@ def inject_fixed_interval_histories(
     if not selected:
         return ()
 
-    with zipfile.ZipFile(archive_path) as source:
-        members = [(info, source.read(info.filename)) for info in source.infolist()]
-    try:
-        xml_index = next(
-            index for index, (info, _) in enumerate(members) if info.filename == "file.xml"
-        )
-    except StopIteration as exc:
-        raise ValueError("generated Niagara archive does not contain file.xml") from exc
-
-    xml_info, xml_bytes = members[xml_index]
-    root = ElementTree.fromstring(xml_bytes)
-    folders = [
-        element
-        for element in root.iter("p")
-        if element.attrib.get("n") == graph.name and element.attrib.get("t") == "b:Folder"
-    ]
-    if len(folders) != 1:
-        raise ValueError(f"cannot locate unique Niagara graph folder {graph.name!r}")
-    folder = folders[0]
+    members, xml_index, root = _read_archive(archive_path)
+    folder = _graph_folder(root, graph.name)
     point_elements = {child.attrib.get("n"): child for child in folder if child.tag == "p"}
     blocks = {block.id: block for block in graph.blocks}
     handles = [int(element.attrib["h"], 16) for element in root.iter("p") if "h" in element.attrib]
@@ -73,7 +58,7 @@ def inject_fixed_interval_histories(
                 "timestamp,baja:AbsTime;trendFlags,history:TrendFlags;"
                 "status,baja:Status;value,baja:Double"
             )
-            value_facets = "units=u:null;;;;|precision=i:1|min=d:-inf|max=d:+inf"
+            value_facets = numeric_facets((units or {}).get(requirement.point), precision=1)
         elif block.kind in _BOOLEAN_WRITABLES:
             extension_name = "BooleanInterval"
             extension_type = "h:BooleanIntervalHistoryExt"
@@ -158,18 +143,104 @@ def inject_fixed_interval_histories(
         _property(config, "valueFacets", "b:Facets", value_facets)
         emitted.append(requirement.point)
 
+    _write_archive(archive_path, members, xml_index, root)
+    return tuple(emitted)
+
+
+_Members = list[tuple[zipfile.ZipInfo, bytes]]
+
+
+def _read_archive(archive_path: Path) -> tuple[_Members, int, ElementTree.Element]:
+    with zipfile.ZipFile(archive_path) as source:
+        members = [(info, source.read(info.filename)) for info in source.infolist()]
+    try:
+        xml_index = next(
+            index for index, (info, _) in enumerate(members) if info.filename == "file.xml"
+        )
+    except StopIteration as exc:
+        raise ValueError("generated Niagara archive does not contain file.xml") from exc
+    return members, xml_index, ElementTree.fromstring(members[xml_index][1])
+
+
+def _write_archive(
+    archive_path: Path,
+    members: _Members,
+    xml_index: int,
+    root: ElementTree.Element,
+) -> None:
     ElementTree.indent(root, space="  ")
     rendered = b'<?xml version="1.0" encoding="UTF-8"?>\n' + ElementTree.tostring(
         root, encoding="utf-8", short_empty_elements=True
     )
-    members[xml_index] = (xml_info, rendered)
+    members[xml_index] = (members[xml_index][0], rendered)
     output = io.BytesIO()
     with zipfile.ZipFile(output, "w") as destination:
         for info, content in members:
             destination.writestr(info, content)
     archive_path.write_bytes(output.getvalue())
-    return tuple(emitted)
+
+
+def _graph_folder(root: ElementTree.Element, graph_name: str) -> ElementTree.Element:
+    folders = [
+        element
+        for element in root.iter("p")
+        if element.attrib.get("n") == graph_name and element.attrib.get("t") == "b:Folder"
+    ]
+    if len(folders) != 1:
+        raise ValueError(f"cannot locate unique Niagara graph folder {graph_name!r}")
+    return folders[0]
 
 
 def _property(parent: ElementTree.Element, name: str, type_name: str, value: str) -> None:
     ElementTree.SubElement(parent, "p", {"n": name, "t": type_name, "v": value})
+
+
+_POINT_KINDS = {
+    BlockKind.NUMERIC_INPUT,
+    BlockKind.NUMERIC_OUTPUT,
+}
+
+
+def apply_point_units(
+    archive_path: Path,
+    graph: ControlGraph,
+    units: dict[str, str | None],
+) -> tuple[str, ...]:
+    """Rewrite the ``facets`` of every numeric point with a declared unit.
+
+    pybog emits ``units=u:null`` for every writable point. Every numeric input or
+    output block whose id has a declared unit gets the Niagara unit facet from
+    :mod:`bactalk.niagara.units`; the precision, min and max facets pybog wrote are
+    kept. Returns the ids of the points whose facets were rewritten.
+    """
+
+    if not units:
+        return ()
+    members, xml_index, root = _read_archive(archive_path)
+    program = _graph_folder(root, graph.name)
+    rewritten: list[str] = []
+    for block in graph.blocks:
+        if block.kind not in _POINT_KINDS:
+            continue
+        declared = units.get(block.id)
+        if not declared:
+            continue
+        point = next(
+            (child for child in program if child.tag == "p" and child.get("n") == block.id),
+            None,
+        )
+        if point is None:
+            continue
+        facets = next(
+            (child for child in point if child.tag == "p" and child.get("n") == "facets"),
+            None,
+        )
+        if facets is None:
+            continue
+        current = facets.get("v") or ""
+        tail = "|".join(part for part in current.split("|") if not part.startswith("units="))
+        facets.set("v", units_facet(declared) + (f"|{tail}" if tail else ""))
+        rewritten.append(block.id)
+    if rewritten:
+        _write_archive(archive_path, members, xml_index, root)
+    return tuple(rewritten)

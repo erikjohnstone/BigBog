@@ -96,7 +96,7 @@ class CapabilityRegistry:
         self.packs = [
             CapabilityPack(
                 id="g36-vav-reheat-mvp",
-                name="Guideline 36 VAV with reheat — bounded subset",
+                name="Standard VAV with reheat — BACTalk pack (bounded, not Guideline 36)",
                 version="0.1.0",
                 equipment_families=["terminal.vav.reheat"],
                 sequence_families=["G36_VAV_REHEAT"],

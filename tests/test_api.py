@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 from openpyxl import Workbook
 
 from bactalk.api import create_app
-from bactalk.demo import demo_job, generalist_demo_job
+from bactalk.demo import standard_ahu_demo_job, standard_vav_demo_job
 from bactalk.projects import EquipmentRelationship, ProjectSpec
 
 EXAMPLES = Path(__file__).parents[1] / "examples"
@@ -36,7 +36,14 @@ def test_review_api_flow(tmp_path: Path) -> None:
     client = TestClient(create_app(tmp_path / "runs"))
 
     assert client.get("/api/health").json() == {"status": "ok", "mode": "offline-safe"}
-    create_response = client.post("/api/runs/demo")
+    lbnl = client.post("/api/runs/demo")
+    assert lbnl.status_code == 201
+    assert lbnl.json()["status"] == "ready_for_review"
+    assert lbnl.json()["job"]["sequence"]["library"] == "g36"
+    assert lbnl.json()["job"]["sequence"]["controller_id"] == "TerminalUnits.Reheat.Controller"
+    assert lbnl.json()["target_artifact_kind"] == "niagara_program_source_package"
+
+    create_response = client.post("/api/runs/demo/standard-vav")
     assert create_response.status_code == 201
     run = create_response.json()
     run_id = run["id"]
@@ -48,8 +55,8 @@ def test_review_api_flow(tmp_path: Path) -> None:
     nhaystack = client.get(f"/api/runs/{run_id}/nhaystack-manifest")
     assert nhaystack.status_code == 200
     assert nhaystack.json()["writes_enabled"] is False
-    assert nhaystack.json()["point_count"] == len(demo_job().points)
-    assert nhaystack.json()["tag_annotation_count"] == len(demo_job().points) + 2
+    assert nhaystack.json()["point_count"] == len(standard_vav_demo_job().points)
+    assert nhaystack.json()["tag_annotation_count"] == len(standard_vav_demo_job().points) + 2
     assert nhaystack.json()["existing_tag_overwrite_allowed"] is False
     bacnet_lab = client.get(f"/api/runs/{run_id}/bacnet-lab-manifest")
     assert bacnet_lab.status_code == 200
@@ -271,8 +278,8 @@ def test_niagara_program_library_catalog_and_source_are_exposed(tmp_path: Path) 
 
 def test_whole_building_api_build_approval_and_export(tmp_path: Path) -> None:
     client = TestClient(create_app(tmp_path / "runs"))
-    vav = demo_job().model_copy(update={"equipment_name": "VAV_1"})
-    ahu = generalist_demo_job().model_copy(update={"equipment_name": "AHU_1", "site": vav.site})
+    vav = standard_vav_demo_job().model_copy(update={"equipment_name": "VAV_1"})
+    ahu = standard_ahu_demo_job().model_copy(update={"equipment_name": "AHU_1", "site": vav.site})
     project = ProjectSpec(
         name="Two equipment proof",
         site=vav.site,
@@ -306,7 +313,7 @@ def test_whole_building_api_build_approval_and_export(tmp_path: Path) -> None:
 
 def test_imports_contractor_files_and_diffs_template(tmp_path: Path) -> None:
     client = TestClient(create_app(tmp_path / "runs"))
-    baseline = client.post("/api/runs/demo").json()
+    baseline = client.post("/api/runs/demo/standard-vav").json()
     template = Path(baseline["bog_path"]).read_bytes()
 
     response = client.post(

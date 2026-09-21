@@ -273,6 +273,7 @@ class WorkbenchService:
                     if environment_definition is not None
                     else None
                 ),
+                units={point.name: point.units for point in job.points},
             )
         else:
             if program_package_path is None or job.sequence.controller_id is None:

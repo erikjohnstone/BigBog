@@ -50,7 +50,6 @@ _PARAMETER_ARITHMETIC: dict[str, BlockKind] = {
 }
 _CONSTANTS: dict[str, BlockKind] = {
     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": BlockKind.NUMERIC_CONST,
-    "CDL.Reals.Sources.Constant": BlockKind.NUMERIC_CONST,
     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": BlockKind.BOOLEAN_CONST,
     "Buildings.Controls.OBC.CDL.Integers.Sources.Constant": BlockKind.NUMERIC_CONST,
 }
@@ -362,7 +361,12 @@ def _suffix(value: str) -> str:
     # modelica-json emits compact JSON-LD identifiers such as
     # ``ex:Buildings.Controls...``. The lowering table intentionally stores
     # namespace-independent Modelica class names.
-    return suffix.removeprefix("ex:")
+    suffix = suffix.removeprefix("ex:")
+    # Some G36 sources reference CDL classes relative to the ``Buildings.Controls.OBC``
+    # package (``CDL.Logical.Not``); qualify them so one table covers both spellings.
+    if suffix.startswith("CDL."):
+        suffix = "Buildings.Controls.OBC." + suffix
+    return suffix
 
 
 def _local_name(value: str) -> str:

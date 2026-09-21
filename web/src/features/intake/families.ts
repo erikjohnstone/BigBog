@@ -14,7 +14,7 @@ export interface FamilyOption {
 
 export const families: FamilyOption[] = [
   { id: 'AUTO', label: 'Detect from the sequence document', detail: 'BACTalk suggests a family from the narrative; ambiguous suggestions block until you choose.', requiresSequence: true },
-  { id: 'G36_VAV_REHEAT', label: 'Guideline 36 VAV with reheat', detail: 'Deterministic zone terminal program with the VAV plant simulator.' },
+  { id: 'G36_VAV_REHEAT', label: 'Standard VAV with reheat (BACTalk pack)', detail: 'Bounded proportional zone program with the VAV plant simulator. Not Guideline 36; choose the LBNL controller lane for that.' },
   { id: 'CUSTOM_AHU_SAFETY_COOLING', label: 'AHU safety and discharge cooling', detail: 'Supply fan interlock, duct high-limit, discharge cooling loop.' },
   { id: 'AHU_DUCT_STATIC_PI', label: 'AHU duct-static PI loop', detail: 'Static pressure PI control with fault-injected pressure trajectories.' },
   { id: 'EXHAUST_FAN_PROOF', label: 'Exhaust fan command and proof', detail: 'Command, proof timer, and proof-failure alarm.' },

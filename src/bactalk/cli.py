@@ -8,10 +8,10 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from bactalk.compiler import NiagaraCompiler
-from bactalk.demo import demo_job
 from bactalk.domain import canonical_json
 from bactalk.integrations.cxf_importer import CxfImporter
 from bactalk.integrations.cxf_vectors import CxfVectorVerifier
+from bactalk.library_demo import lbnl_vav_reheat_demo_job
 from bactalk.repository import RunRepository
 from bactalk.service import WorkbenchService
 
@@ -55,7 +55,7 @@ def main() -> None:
     args = build_parser().parse_args()
     if args.command == "demo":
         service = WorkbenchService(RunRepository(args.output))
-        record = service.create_run(demo_job())
+        record = service.create_run(lbnl_vav_reheat_demo_job())
         print(json.dumps(record.model_dump(mode="json"), indent=2))
         return
     if args.command == "serve":

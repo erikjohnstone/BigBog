@@ -571,7 +571,7 @@ test('guided intake normalizes a real points list and creates a candidate', asyn
   await page.getByRole('button', { name: 'Continue' }).click();
 
   await expect(page.getByRole('heading', { name: /choose the programming strategy/i })).toBeVisible();
-  await page.getByRole('radio', { name: /Guideline 36 VAV with reheat/ }).click();
+  await page.getByRole('radio', { name: /Standard VAV with reheat/ }).click();
   await axe(page);
   await page.getByRole('button', { name: 'Continue' }).click();
 

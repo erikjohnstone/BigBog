@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from bactalk.agent import ProgrammingAgent
-from bactalk.demo import demo_job
+from bactalk.demo import standard_vav_demo_job
 from bactalk.domain import ControlGraph, JobSpec, Link
 from bactalk.domain import TestReport as ControlsTestReport
 from bactalk.repository import RunRepository
@@ -38,7 +38,7 @@ class SeededFaultPlanner:
 
 
 def test_agent_diagnoses_repairs_and_retests_seeded_fault() -> None:
-    result = ProgrammingAgent(SeededFaultPlanner(), max_attempts=3).run(demo_job())
+    result = ProgrammingAgent(SeededFaultPlanner(), max_attempts=3).run(standard_vav_demo_job())
 
     assert [attempt.passed for attempt in result.attempts] == [False, True]
     assert "zone moves toward heating setpoint" in result.attempts[0].failed_assertions
@@ -54,7 +54,7 @@ def test_repair_attempts_are_persisted_in_the_review_record(tmp_path) -> None:
     repository = RunRepository(tmp_path / "runs")
     service = WorkbenchService(repository)
 
-    record = service.create_run(demo_job(), planner=SeededFaultPlanner())
+    record = service.create_run(standard_vav_demo_job(), planner=SeededFaultPlanner())
     reloaded = repository.get(record.id)
 
     assert [attempt["passed"] for attempt in reloaded.agent_attempts] == [False, True]

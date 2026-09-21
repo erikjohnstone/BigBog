@@ -18,7 +18,7 @@ from bactalk.integrations.environment_pack import (
     EnvironmentPackManifest,
 )
 from bactalk.integrations.niagara_bindings import program_root_ord_for
-from bactalk.niagara_extensions import inject_fixed_interval_histories
+from bactalk.niagara_extensions import apply_point_units, inject_fixed_interval_histories
 
 
 @dataclass(frozen=True)
@@ -96,7 +96,15 @@ class NiagaraCompiler:
         *,
         deliverables: DeliverableRequirements | None = None,
         environment: EnvironmentPackManifest | None = None,
+        units: dict[str, str | None] | None = None,
     ) -> Path:
+        """Compile ``graph`` to ``destination``.
+
+        ``units`` maps a point block id to the unit string the job declares for
+        that point. pybog cannot set units, so the numeric point facets are
+        rewritten after the archive is saved; a point without a resolvable unit
+        keeps Niagara's null unit.
+        """
         custom_registry = self._custom_registry(environment)
         custom_contracts = list(
             {item.contract.type_spec: item for item in custom_registry.values()}.values()
@@ -189,6 +197,7 @@ class NiagaraCompiler:
                     target_slot,
                 )
         builder.save(str(destination))
+        apply_point_units(destination, graph, units or {})
         if custom_by_block:
             module_aliases = {
                 item.module_symbol: item.module_name for item in custom_by_block.values()
@@ -203,6 +212,7 @@ class NiagaraCompiler:
                     graph.name,
                     deliverables.shop_profile,
                 ),
+                units=units,
             )
         return destination
 

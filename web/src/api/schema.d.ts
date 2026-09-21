@@ -863,6 +863,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/qualification-jobs/{job_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream Qualification Job Events
+         * @description Server-sent job progress: one event per second until the job ends.
+         *
+         *     The stream re-reads the retained record each tick, so it reports the
+         *     same status, progress, and heartbeat the polling endpoint does. A
+         *     ``limit`` caps the number of events, which tests and short-lived
+         *     clients use; the browser client falls back to polling when the
+         *     stream is unavailable.
+         */
+        get: operations["stream_qualification_job_events_api_qualification_jobs__job_id__events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/reference-stack": {
         parameters: {
             query?: never;
@@ -926,6 +952,46 @@ export interface paths {
         put?: never;
         /** Create Generalist Demo Run */
         post: operations["create_generalist_demo_run_api_runs_demo_generalist_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/runs/demo/standard-ahu": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Standard Ahu Demo Run
+         * @description The AHU safety/cooling pack fixture used by the whole-building demo.
+         */
+        post: operations["create_standard_ahu_demo_run_api_runs_demo_standard_ahu_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/runs/demo/standard-vav": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Standard Vav Demo Run
+         * @description The bounded standard VAV pack with BACnet mappings (not Guideline 36).
+         */
+        post: operations["create_standard_vav_demo_run_api_runs_demo_standard_vav_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -4632,6 +4698,39 @@ export interface operations {
             };
         };
     };
+    stream_qualification_job_events_api_qualification_jobs__job_id__events_get: {
+        parameters: {
+            query?: {
+                limit?: number | null;
+            };
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_reference_stack_api_reference_stack_get: {
         parameters: {
             query?: never;
@@ -4734,6 +4833,50 @@ export interface operations {
         };
     };
     create_generalist_demo_run_api_runs_demo_generalist_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    create_standard_ahu_demo_run_api_runs_demo_standard_ahu_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    create_standard_vav_demo_run_api_runs_demo_standard_vav_post: {
         parameters: {
             query?: never;
             header?: never;

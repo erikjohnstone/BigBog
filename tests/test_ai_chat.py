@@ -14,7 +14,7 @@ from bactalk.ai import (
     summarize_verification_failures,
 )
 from bactalk.api import create_app
-from bactalk.demo import generalist_demo_job
+from bactalk.demo import standard_ahu_demo_job
 
 
 class FakeProvider:
@@ -98,7 +98,7 @@ def test_failed_verification_is_bounded_and_supplied_to_both_model_roles() -> No
             assumptions=[],
         )
     )
-    job = generalist_demo_job()
+    job = standard_ahu_demo_job()
     graph = SequencePackPlanner().plan(job)
     graph_payload = graph.model_dump_json()
     provider.responses.append(
@@ -175,7 +175,7 @@ def test_chat_answers_without_mutating_run(tmp_path: Path) -> None:
 def test_chat_proposal_creates_separate_tested_run(tmp_path: Path) -> None:
     provider = FakeProvider()
     client = TestClient(create_app(tmp_path / "runs", ai_provider=provider))
-    source = client.post("/api/runs/demo/generalist").json()
+    source = client.post("/api/runs/demo/standard-ahu").json()
     graph = client.get(f"/api/runs/{source['id']}/graph").json()
     graph["metadata"]["ai_revision"] = "review-only test proposal"
     provider.conversations.append(

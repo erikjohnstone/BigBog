@@ -35,7 +35,10 @@ from bactalk.ctrl_flow_point_repository import (
     CtrlFlowPointReconciliationRecord,
     CtrlFlowPointReconciliationRepository,
 )
-from bactalk.demo import demo_job, generalist_demo_job
+from bactalk.demo import (
+    standard_ahu_demo_job,
+    standard_vav_demo_job,
+)
 from bactalk.domain import (
     AcceptanceCase,
     ControlGraph,
@@ -86,6 +89,7 @@ from bactalk.integrations.readiness import IntegrationReadiness
 from bactalk.integrations.reference_stack import ReferenceStackCatalog
 from bactalk.integrations.rumoca import RumocaCompiler, RumocaError
 from bactalk.integrations.use_audit import IntegrationUseAudit
+from bactalk.library_demo import lbnl_multizone_ahu_demo_job, lbnl_vav_reheat_demo_job
 from bactalk.optional_dependencies import (
     ALFALFA_CLIENT,
     CEREBRAS,
@@ -2303,11 +2307,21 @@ def create_app(
 
     @app.post("/api/runs/demo", status_code=201)
     def create_demo_run() -> dict:
-        return service.create_run(demo_job()).model_dump(mode="json")
+        return service.create_run(lbnl_vav_reheat_demo_job()).model_dump(mode="json")
 
     @app.post("/api/runs/demo/generalist", status_code=201)
     def create_generalist_demo_run() -> dict:
-        return service.create_run(generalist_demo_job()).model_dump(mode="json")
+        return service.create_run(lbnl_multizone_ahu_demo_job()).model_dump(mode="json")
+
+    @app.post("/api/runs/demo/standard-vav", status_code=201)
+    def create_standard_vav_demo_run() -> dict:
+        """The bounded standard VAV pack with BACnet mappings (not Guideline 36)."""
+        return service.create_run(standard_vav_demo_job()).model_dump(mode="json")
+
+    @app.post("/api/runs/demo/standard-ahu", status_code=201)
+    def create_standard_ahu_demo_run() -> dict:
+        """The AHU safety/cooling pack fixture used by the whole-building demo."""
+        return service.create_run(standard_ahu_demo_job()).model_dump(mode="json")
 
     @app.get("/api/runs/{run_id}")
     def get_run(run_id: str) -> dict:

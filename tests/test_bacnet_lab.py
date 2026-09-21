@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from bactalk.demo import demo_job
+from bactalk.demo import standard_vav_demo_job
 from bactalk.domain import (
     AcceptanceCase,
     DataType,
@@ -33,7 +33,7 @@ def _free_udp_port() -> int:
 
 
 def _write_export(root: Path, base_port: int) -> Path:
-    export = build_bacnet_lab_export(demo_job(), base_port=base_port)
+    export = build_bacnet_lab_export(standard_vav_demo_job(), base_port=base_port)
     assert export is not None
     for artifact in export.artifacts:
         path = root / artifact.relative_path
@@ -45,7 +45,7 @@ def _write_export(root: Path, base_port: int) -> Path:
 
 
 def _actuator_job() -> JobSpec:
-    payload = demo_job().model_dump(mode="json")
+    payload = standard_vav_demo_job().model_dump(mode="json")
     payload["points"].extend(
         [
             {
@@ -211,7 +211,7 @@ def test_acceptance_runner_drives_inputs_and_captures_controller_output(
     tmp_path: Path,
 ) -> None:
     async def exercise() -> None:
-        job = demo_job().model_copy(
+        job = standard_vav_demo_job().model_copy(
             update={
                 "acceptance_tests": [
                     AcceptanceCase(
