@@ -146,6 +146,16 @@ def test_alfalfa_runtime_evidence_advances_readiness_without_claiming_production
                 "schema": "bactalk.boptest-contractor-e2e/v2",
                 "status": "pass",
                 "room_temperature_changed": True,
+                "boptest_catalog": {
+                    "schema": "bactalk.boptest-catalog/v1",
+                    "test_cases": ["bestest_air"],
+                },
+                "inspected_test_case_contract": {
+                    "schema": "bactalk.boptest-test-case-contract/v1",
+                    "test_case": "bestest_air",
+                    "clean_stop": True,
+                    "initialized": False,
+                },
                 "qualification_job": {
                     "schema_version": "bactalk.qualification-job/v3",
                     "kind": "boptest",

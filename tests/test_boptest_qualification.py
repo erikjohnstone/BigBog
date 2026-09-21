@@ -159,6 +159,9 @@ class _FakeBoptest:
     def version(self) -> dict[str, str]:
         return {"version": "qualification-test"}
 
+    def test_cases(self) -> list[dict[str, str]]:
+        return [{"testcaseid": "bestest_air"}]
+
     def select(self, test_case: str) -> str:
         assert test_case == "bestest_air"
         return "test-123"
@@ -338,6 +341,15 @@ def test_boptest_qualification_is_available_through_the_product_api(tmp_path: Pa
     created = client.post("/api/runs", json=_job().model_dump(mode="json"))
     assert created.status_code == 201
     run_id = created.json()["id"]
+
+    catalog = client.get("/api/integrations/boptest/catalog")
+    assert catalog.status_code == 200
+    assert catalog.json()["test_cases"] == ["bestest_air"]
+    contract = client.get("/api/integrations/boptest/catalog/bestest_air")
+    assert contract.status_code == 200
+    assert contract.json()["measurement_count"] == 1
+    assert contract.json()["input_count"] == 2
+    assert contract.json()["clean_stop"] is True
 
     response = client.post(
         f"/api/runs/{run_id}/verify/boptest",

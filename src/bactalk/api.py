@@ -54,7 +54,12 @@ from bactalk.intake import (
 from bactalk.integrations.aixocat import AixocatError, AixocatLibrary
 from bactalk.integrations.alfalfa import AlfalfaClientLike
 from bactalk.integrations.bacnet_lab import VirtualBacnetLab, probe_manifest_with_bac0
-from bactalk.integrations.boptest import BoptestClient, BoptestError
+from bactalk.integrations.boptest import (
+    BoptestClient,
+    BoptestError,
+    discover_boptest_catalog,
+    inspect_boptest_test_case,
+)
 from bactalk.integrations.boptest_graph import (
     BoptestRuntime,
 )
@@ -1463,6 +1468,38 @@ def create_app(
             )
         except OpenFddError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.get("/api/integrations/boptest/catalog")
+    def get_boptest_catalog() -> dict:
+        client = make_boptest_client()
+        try:
+            return discover_boptest_catalog(client)
+        except (BoptestError, httpx.HTTPError) as exc:
+            raise HTTPException(
+                status_code=503,
+                detail=f"BOPTEST catalog is unavailable: {exc}",
+            ) from exc
+        finally:
+            close = getattr(client, "close", None)
+            if callable(close):
+                close()
+
+    @app.get("/api/integrations/boptest/catalog/{test_case}")
+    def get_boptest_test_case_contract(test_case: str) -> dict:
+        client = make_boptest_client()
+        try:
+            return inspect_boptest_test_case(client, test_case)
+        except ValueError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except (BoptestError, httpx.HTTPError) as exc:
+            raise HTTPException(
+                status_code=503,
+                detail=f"BOPTEST test-case inspection failed: {exc}",
+            ) from exc
+        finally:
+            close = getattr(client, "close", None)
+            if callable(close):
+                close()
 
     @app.get("/api/runs")
     def list_runs() -> list[dict]:

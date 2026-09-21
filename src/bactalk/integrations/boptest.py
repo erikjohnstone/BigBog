@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+from collections.abc import Mapping
 from typing import Any
 
 import httpx
@@ -7,6 +9,107 @@ import httpx
 
 class BoptestError(RuntimeError):
     pass
+
+
+def _test_case_ids(payload: Any) -> list[str]:
+    if not isinstance(payload, list):
+        raise BoptestError("BOPTEST test-case catalog is not a list")
+    result: list[str] = []
+    for item in payload:
+        if isinstance(item, str):
+            value = item
+        elif isinstance(item, dict):
+            value = item.get("testcaseid")
+        else:
+            value = None
+        if not isinstance(value, str) or not value.strip():
+            raise BoptestError("BOPTEST test-case catalog contains an invalid identifier")
+        result.append(value.strip())
+    if len(result) != len(set(result)):
+        raise BoptestError("BOPTEST test-case catalog contains duplicate identifiers")
+    return sorted(result)
+
+
+def _optional_number(value: Any, label: str) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+        raise BoptestError(f"BOPTEST {label} is not numeric")
+    try:
+        result = float(value)
+    except ValueError as exc:
+        raise BoptestError(f"BOPTEST {label} is not numeric") from exc
+    if not math.isfinite(result):
+        raise BoptestError(f"BOPTEST {label} is not finite")
+    return result
+
+
+def _signal_contract(payload: Any, kind: str) -> list[dict[str, Any]]:
+    if not isinstance(payload, Mapping):
+        raise BoptestError(f"BOPTEST {kind} catalog is not an object")
+    result: list[dict[str, Any]] = []
+    for name, raw_metadata in sorted(payload.items()):
+        if not isinstance(name, str) or not name:
+            raise BoptestError(f"BOPTEST {kind} catalog contains an invalid signal name")
+        if not isinstance(raw_metadata, Mapping):
+            raise BoptestError(f"BOPTEST {kind} {name!r} metadata is not an object")
+        unit = raw_metadata.get("Unit")
+        description = raw_metadata.get("Description")
+        if unit is not None and not isinstance(unit, str):
+            raise BoptestError(f"BOPTEST {kind} {name!r} unit is not text")
+        if description is not None and not isinstance(description, str):
+            raise BoptestError(f"BOPTEST {kind} {name!r} description is not text")
+        result.append(
+            {
+                "name": name,
+                "unit": unit,
+                "description": description,
+                "minimum": _optional_number(raw_metadata.get("Minimum"), f"{kind} {name} minimum"),
+                "maximum": _optional_number(raw_metadata.get("Maximum"), f"{kind} {name} maximum"),
+                "activation_signal": name.endswith("_activate"),
+            }
+        )
+    return result
+
+
+def discover_boptest_catalog(client: BoptestClient) -> dict[str, Any]:
+    """Return the exact test cases advertised by one isolated BOPTEST service."""
+
+    return {
+        "schema": "bactalk.boptest-catalog/v1",
+        "version": client.version(),
+        "test_cases": _test_case_ids(client.test_cases()),
+        "live_building_writes": False,
+    }
+
+
+def inspect_boptest_test_case(client: BoptestClient, test_case: str) -> dict[str, Any]:
+    """Select one advertised case just long enough to inspect its exact I/O contract."""
+
+    catalog = discover_boptest_catalog(client)
+    if test_case not in catalog["test_cases"]:
+        raise ValueError(f"BOPTEST test case {test_case!r} is not advertised by this service")
+    test_id = client.select(test_case)
+    stopped: Any = None
+    try:
+        measurements = _signal_contract(client.measurements(test_id), "measurement")
+        inputs = _signal_contract(client.inputs(test_id), "input")
+    finally:
+        stopped = client.stop(test_id)
+    if stopped != "OK":
+        raise BoptestError(f"BOPTEST did not stop catalog inspection cleanly: {stopped!r}")
+    return {
+        "schema": "bactalk.boptest-test-case-contract/v1",
+        "version": catalog["version"],
+        "test_case": test_case,
+        "measurements": measurements,
+        "inputs": inputs,
+        "measurement_count": len(measurements),
+        "input_count": len(inputs),
+        "clean_stop": True,
+        "initialized": False,
+        "live_building_writes": False,
+    }
 
 
 class BoptestClient:

@@ -169,6 +169,10 @@ class IntegrationReadiness:
         boptest_qualification_job = boptest_product_evidence.get(
             "qualification_job", {}
         )
+        boptest_catalog = boptest_product_evidence.get("boptest_catalog", {})
+        boptest_test_case_contract = boptest_product_evidence.get(
+            "inspected_test_case_contract", {}
+        )
         boptest_durable_qualification_pass = (
             boptest_product_evidence.get("schema")
             == "bactalk.boptest-contractor-e2e/v2"
@@ -193,6 +197,17 @@ class IntegrationReadiness:
                 boptest_qualification_job.get("result_artifact_sha256"), str
             )
             and len(boptest_qualification_job["result_artifact_sha256"]) == 64
+            and isinstance(boptest_catalog, dict)
+            and boptest_catalog.get("schema") == "bactalk.boptest-catalog/v1"
+            and isinstance(boptest_catalog.get("test_cases"), list)
+            and bool(boptest_catalog["test_cases"])
+            and isinstance(boptest_test_case_contract, dict)
+            and boptest_test_case_contract.get("schema")
+            == "bactalk.boptest-test-case-contract/v1"
+            and boptest_test_case_contract.get("clean_stop") is True
+            and boptest_test_case_contract.get("initialized") is False
+            and boptest_test_case_contract.get("test_case")
+            in boptest_catalog["test_cases"]
         )
         durable_qualification_pass = (
             alfalfa_durable_qualification_pass
@@ -484,10 +499,12 @@ class IntegrationReadiness:
                 license_name="Revised BSD-3-Clause with notices",
                 role="Dynamic building simulation and KPI oracle",
                 product_path=(
-                    "BoptestGraphRunner maps every typed graph boundary explicitly, enforces "
-                    "advertised actuator bounds, runs closed-loop FMU trajectories through "
-                    "the durable qualification worker plane, retains progress/cancellation, "
-                    "KPIs, and grades the command trace with pyfunnel"
+                    "Simulation Center discovers the running service's exact test cases and "
+                    "signal contracts for visual review; BoptestGraphRunner then maps every "
+                    "typed graph boundary explicitly, enforces advertised actuator bounds, "
+                    "runs closed-loop FMU trajectories through the durable qualification "
+                    "worker plane, retains progress/cancellation and KPIs, and grades the "
+                    "command trace with pyfunnel"
                 ),
                 evidence_command="make boptest-graph-runtime",
                 blocker=(

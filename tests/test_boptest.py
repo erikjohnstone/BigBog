@@ -6,7 +6,11 @@ import httpx
 import pytest
 
 from bactalk.domain import Block, BlockKind, ControlGraph, Link
-from bactalk.integrations.boptest import BoptestClient
+from bactalk.integrations.boptest import (
+    BoptestClient,
+    discover_boptest_catalog,
+    inspect_boptest_test_case,
+)
 from bactalk.integrations.boptest_graph import (
     BoptestActuatorBinding,
     BoptestGraphMap,
@@ -117,6 +121,9 @@ class _FakeBoptest:
     def version(self) -> dict[str, str]:
         return {"version": "test"}
 
+    def test_cases(self) -> list[dict[str, str]]:
+        return [{"testcaseid": "bestest_air"}]
+
     def select(self, test_case: str) -> str:
         assert test_case == "bestest_air"
         return "test-123"
@@ -152,6 +159,36 @@ class _FakeBoptest:
     def stop(self, test_id: str) -> str:
         self.stopped = True
         return "OK"
+
+
+def test_boptest_catalog_inspection_returns_exact_signals_and_stops_case() -> None:
+    client = _FakeBoptest()
+
+    catalog = discover_boptest_catalog(client)
+    contract = inspect_boptest_test_case(client, "bestest_air")
+
+    assert catalog["test_cases"] == ["bestest_air"]
+    assert contract["schema"] == "bactalk.boptest-test-case-contract/v1"
+    assert contract["test_case"] == "bestest_air"
+    assert contract["measurement_count"] == 1
+    assert contract["measurements"][0]["name"] == "zon_reaTRooAir_y"
+    assert contract["measurements"][0]["unit"] == "K"
+    assert contract["input_count"] == 2
+    assert next(
+        item for item in contract["inputs"] if item["name"] == "fcu_oveFan_activate"
+    )["activation_signal"] is True
+    assert contract["clean_stop"] is True
+    assert contract["initialized"] is False
+    assert client.stopped is True
+
+
+def test_boptest_catalog_refuses_unadvertised_case_without_selecting() -> None:
+    client = _FakeBoptest()
+
+    with pytest.raises(ValueError, match="not advertised"):
+        inspect_boptest_test_case(client, "unknown_case")
+
+    assert client.stopped is False
 
 
 def test_graph_runner_executes_complete_closed_loop_mapping() -> None:

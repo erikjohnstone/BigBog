@@ -390,6 +390,32 @@ const probeSchema = z.object({
 }).passthrough();
 
 const numericMap = z.record(z.string(), z.union([z.number(), z.boolean(), z.null()]));
+const boptestCatalogSchema = z.object({
+  schema: z.literal('bactalk.boptest-catalog/v1'),
+  version: z.unknown(),
+  test_cases: z.array(z.string()),
+  live_building_writes: z.literal(false),
+});
+const boptestSignalSchema = z.object({
+  name: z.string(),
+  unit: z.string().nullable(),
+  description: z.string().nullable(),
+  minimum: z.number().nullable(),
+  maximum: z.number().nullable(),
+  activation_signal: z.boolean(),
+});
+const boptestTestCaseContractSchema = z.object({
+  schema: z.literal('bactalk.boptest-test-case-contract/v1'),
+  version: z.unknown(),
+  test_case: z.string(),
+  measurements: z.array(boptestSignalSchema),
+  inputs: z.array(boptestSignalSchema),
+  measurement_count: z.number(),
+  input_count: z.number(),
+  clean_stop: z.literal(true),
+  initialized: z.literal(false),
+  live_building_writes: z.literal(false),
+});
 const boptestSchema = z.object({
   schema: z.string(),
   status: z.enum(['pass', 'fail']),
@@ -1062,6 +1088,9 @@ export type ProjectPreflight = z.infer<typeof projectPreflightSchema>;
 export type BacnetLab = z.infer<typeof bacnetLabSchema>;
 export type BacnetProbe = z.infer<typeof probeSchema>;
 export type BoptestEvidence = z.infer<typeof boptestSchema>;
+export type BoptestCatalog = z.infer<typeof boptestCatalogSchema>;
+export type BoptestSignal = z.infer<typeof boptestSignalSchema>;
+export type BoptestTestCaseContract = z.infer<typeof boptestTestCaseContractSchema>;
 export type AlfalfaEvidence = z.infer<typeof alfalfaEvidenceSchema>;
 export type QualificationJob = z.infer<typeof qualificationJobSchema>;
 export type FmiVariable = z.infer<typeof fmiVariableSchema>;
@@ -1183,6 +1212,14 @@ export const api = {
   },
   async boptest(runId: string) {
     return getArtifact(`/api/runs/${runId}/verify/boptest`, boptestSchema);
+  },
+  async boptestCatalog() {
+    return boptestCatalogSchema.parse(await getJson('/api/integrations/boptest/catalog'));
+  },
+  async inspectBoptestTestCase(testCase: string) {
+    return boptestTestCaseContractSchema.parse(
+      await getJson(`/api/integrations/boptest/catalog/${encodeURIComponent(testCase)}`),
+    );
   },
   async alfalfa(runId: string) {
     return getArtifact(`/api/runs/${runId}/verify/alfalfa`, alfalfaEvidenceSchema);

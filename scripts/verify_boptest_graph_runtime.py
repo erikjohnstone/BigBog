@@ -187,8 +187,34 @@ def main() -> None:
     )
     queue_name = f"bactalk-boptest-qualification-smoke-{uuid4().hex}"
     os.environ["BACTALK_QUALIFICATION_QUEUE"] = queue_name
+    os.environ["BACTALK_BOPTEST_URL"] = arguments.base_url
     jobs_root = arguments.run_root.parent / "qualification-jobs"
     client = TestClient(create_app(arguments.run_root))
+    catalog_response = client.get("/api/integrations/boptest/catalog")
+    _require(catalog_response, 200, "BOPTEST test-case catalog")
+    catalog = catalog_response.json()
+    if mapping.test_case not in catalog["test_cases"]:
+        raise RuntimeError(
+            f"configured test case {mapping.test_case!r} is not advertised by BOPTEST"
+        )
+    contract_response = client.get(
+        f"/api/integrations/boptest/catalog/{mapping.test_case}"
+    )
+    _require(contract_response, 200, "BOPTEST test-case contract inspection")
+    test_case_contract = contract_response.json()
+    measurement_names = {item["name"] for item in test_case_contract["measurements"]}
+    input_names = {item["name"] for item in test_case_contract["inputs"]}
+    required_measurements = {item.measurement for item in mapping.measurements}
+    required_inputs = {
+        name
+        for item in mapping.actuators
+        for name in (item.actuator, item.activation_actuator)
+        if name is not None
+    }
+    if not required_measurements <= measurement_names or not required_inputs <= input_names:
+        raise RuntimeError("configured mapping is absent from the inspected BOPTEST contract")
+    if not test_case_contract["clean_stop"] or test_case_contract["initialized"]:
+        raise RuntimeError("BOPTEST catalog inspection crossed its read-only lifecycle boundary")
     created = client.post("/api/runs", json=contractor_job().model_dump(mode="json"))
     _require(created, 201, "candidate creation")
     run_id = created.json()["id"]
@@ -279,6 +305,8 @@ def main() -> None:
         "status": "pass",
         "run_id": run_id,
         "workflow": [
+            "installed_boptest_catalog_discovered",
+            "exact_test_case_io_inspected_and_stopped",
             "contractor_job_created",
             "deterministic_acceptance_tests_passed",
             "niagara_bog_generated",
@@ -295,6 +323,8 @@ def main() -> None:
             created.json()["artifact_sha256"] != qualified.json()["artifact_sha256"]
         ),
         "preapproval_export_denied": True,
+        "boptest_catalog": catalog,
+        "inspected_test_case_contract": test_case_contract,
         "qualification_job": job.json(),
         "qualified_run": qualified.json(),
         "runtime_evidence": evidence,

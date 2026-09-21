@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { api, type AlfalfaEvidence, type ArtifactState, type BacnetLab, type BoptestEvidence, type ControlGraph, type FmiModel, type FmiVariable, type QualificationJob, type RunDetail } from '../../api/client';
+import { api, type AlfalfaEvidence, type ArtifactState, type BacnetLab, type BoptestEvidence, type BoptestTestCaseContract, type ControlGraph, type FmiModel, type FmiVariable, type QualificationJob, type RunDetail } from '../../api/client';
 import { buildAlfalfaMapping, buildAlfalfaOracles, exactSignalMatch, signalLabel, type AlfalfaOracleDraft, type AlfalfaOracleSignalKind, type CommandBindingDraft, type SensorBindingDraft } from './alfalfa-mapping';
 
 echarts.use([AriaComponent, GridComponent, LegendComponent, TooltipComponent, LineChart, CanvasRenderer]);
@@ -269,12 +269,12 @@ function QualificationJobCard({ job, onCancel, canceling }: { job: Qualification
   return <div className={`qualification-job-card ${job.status}`}><div><strong>{label}</strong><span>{job.progress.phase.replaceAll('_', ' ')} · {job.progress.completed_steps}/{job.progress.total_steps} steps</span><small>Worker {job.worker_id ?? 'awaiting assignment'} · candidate {job.candidate_artifact_sha256?.slice(0, 12) ?? 'legacy-unbound'} · input {job.input_sha256.slice(0, 12)}</small></div><div className="qualification-job-progress"><i style={{ width: `${job.progress.percent}%` }} /></div><b>{job.progress.percent.toFixed(0)}%</b>{active && <button disabled={canceling || job.status === 'cancel_requested'} onClick={() => onCancel(job.id)} type="button">{job.status === 'cancel_requested' ? 'Stopping safely…' : canceling ? 'Requesting…' : 'Cancel run'}</button>}{job.error && <p>{job.error}</p>}</div>;
 }
 
-function boptestContractTemplate(graph?: ControlGraph): string {
+function boptestContractTemplate(graph?: ControlGraph, testCase = 'REVIEW_REQUIRED'): string {
   const inputs = graph?.blocks.filter((block) => block.kind === 'numeric_input' || block.kind === 'boolean_input') ?? [];
   const outputs = graph?.blocks.filter((block) => block.kind === 'numeric_output' || block.kind === 'boolean_output') ?? [];
   return JSON.stringify({
     mapping: {
-      test_case: 'REVIEW_REQUIRED',
+      test_case: testCase,
       measurements: inputs.map((block) => ({ graph_input: block.id, measurement: 'REVIEW_REQUIRED', scale: 1, offset: 0 })),
       actuators: outputs.map((block) => ({ graph_output: block.id, actuator: 'REVIEW_REQUIRED', activation_actuator: null, scale: 1, offset: 0 })),
     },
@@ -286,23 +286,70 @@ function boptestContractTemplate(graph?: ControlGraph): string {
   }, null, 2);
 }
 
+type BoptestContractDocument = {
+  mapping: {
+    test_case: string;
+    measurements: Array<{ graph_input: string; measurement: string; scale: number; offset: number }>;
+    actuators: Array<{ graph_output: string; actuator: string; activation_actuator: string | null; scale: number; offset: number }>;
+  };
+  oracles: Array<{ reference_values: unknown[] }>;
+  steps: number;
+  step_seconds: number;
+};
+
+function boptestSignalLabel(signal: BoptestTestCaseContract['measurements'][number]): string {
+  const bounds = signal.minimum !== null || signal.maximum !== null ? `${signal.minimum ?? '−∞'}…${signal.maximum ?? '∞'}` : null;
+  const detail = [signal.unit, bounds, signal.description].filter(Boolean).join(' · ');
+  return `${signal.name}${detail ? ` — ${detail}` : ''}`;
+}
+
 function BoptestQualificationPanel({ job, graph, canQualify, otherQualificationActive, onQualify, qualifying, onCancel, canceling }: { job?: QualificationJob; graph?: ControlGraph; canQualify: boolean; otherQualificationActive: boolean; onQualify: (qualification: BoptestQualification) => Promise<unknown>; qualifying: boolean; onCancel: (jobId: string) => void; canceling: boolean }) {
   const [contract, setContract] = useState(() => boptestContractTemplate(graph));
+  const [selectedTestCase, setSelectedTestCase] = useState('');
   const [error, setError] = useState<string | null>(null);
   const jobActive = Boolean(job && ['queued', 'running', 'cancel_requested'].includes(job.status));
   const busy = qualifying || jobActive || otherQualificationActive;
+  const graphInputs = useMemo(() => graph?.blocks.filter((block) => block.kind === 'numeric_input' || block.kind === 'boolean_input') ?? [], [graph]);
+  const graphOutputs = useMemo(() => graph?.blocks.filter((block) => block.kind === 'numeric_output' || block.kind === 'boolean_output') ?? [], [graph]);
+  const catalog = useQuery({ queryKey: ['boptest-catalog'], queryFn: api.boptestCatalog, retry: false });
+  const inspectTestCase = useMutation({
+    mutationFn: api.inspectBoptestTestCase,
+    onSuccess: (testCaseContract) => {
+      setContract(boptestContractTemplate(graph, testCaseContract.test_case));
+      setError(null);
+    },
+    onError: (reason) => setError(reason instanceof Error ? reason.message : 'BOPTEST test-case inspection failed'),
+  });
+  const testCaseContract = inspectTestCase.data;
+  const parsedContract = useMemo(() => {
+    try { return JSON.parse(contract) as BoptestContractDocument; } catch { return null; }
+  }, [contract]);
+  const mutateContract = (mutation: (value: BoptestContractDocument) => void) => {
+    try {
+      const value = JSON.parse(contract) as BoptestContractDocument;
+      mutation(value);
+      setContract(JSON.stringify(value, null, 2));
+      setError(null);
+    } catch {
+      setError('Repair the advanced JSON before changing visual bindings');
+    }
+  };
   const contractReady = useMemo(() => {
     try {
-      const value = JSON.parse(contract) as { mapping?: { test_case?: unknown; measurements?: Array<{ measurement?: unknown }>; actuators?: Array<{ actuator?: unknown }> }; oracles?: Array<{ reference_values?: unknown[] }> };
-      return value.mapping?.test_case !== 'REVIEW_REQUIRED'
-        && value.mapping?.measurements?.every((item) => item.measurement !== 'REVIEW_REQUIRED') === true
-        && value.mapping?.actuators?.every((item) => item.actuator !== 'REVIEW_REQUIRED') === true
+      const value = JSON.parse(contract) as { mapping?: { test_case?: unknown; measurements?: Array<{ graph_input?: unknown; measurement?: unknown }>; actuators?: Array<{ graph_output?: unknown; actuator?: unknown }> }; oracles?: Array<{ reference_values?: unknown[] }> };
+      return typeof value.mapping?.test_case === 'string'
+        && value.mapping.test_case.length > 0
+        && value.mapping.test_case !== 'REVIEW_REQUIRED'
+        && value.mapping.measurements?.length === graphInputs.length
+        && value.mapping.measurements.every((item, index) => item.graph_input === graphInputs[index].id && typeof item.measurement === 'string' && item.measurement !== 'REVIEW_REQUIRED')
+        && value.mapping.actuators?.length === graphOutputs.length
+        && value.mapping.actuators.every((item, index) => item.graph_output === graphOutputs[index].id && typeof item.actuator === 'string' && item.actuator !== 'REVIEW_REQUIRED')
         && Boolean(value.oracles?.length)
-        && value.oracles?.every((oracle) => oracle.reference_values?.every((item) => typeof item === 'number')) === true;
+        && value.oracles?.every((oracle) => Boolean(oracle.reference_values?.length) && oracle.reference_values?.every((item) => typeof item === 'number')) === true;
     } catch {
       return false;
     }
-  }, [contract]);
+  }, [contract, graphInputs, graphOutputs]);
   const submit = async () => {
     setError(null);
     try {
@@ -314,9 +361,32 @@ function BoptestQualificationPanel({ job, graph, canQualify, otherQualificationA
   const importContract = async (file: File | null) => {
     if (!file) return;
     setError(null);
-    try { setContract(await file.text()); } catch { setError('The BOPTEST contract could not be read'); }
+    try {
+      const imported = await file.text();
+      const parsed = JSON.parse(imported) as BoptestContractDocument;
+      setContract(JSON.stringify(parsed, null, 2));
+      setSelectedTestCase(parsed.mapping?.test_case ?? '');
+    } catch { setError('The BOPTEST contract is not valid JSON'); }
   };
-  return <section className="simulation-panel boptest-qualification"><div className="simulation-panel-head"><div><span className="eyebrow">BOPTEST CLOSED LOOP</span><h2>Qualify against a reviewed BOPTEST case</h2><p>Map every graph boundary and supply an independent expected trajectory. Signal names are never guessed.</p></div><span className={`qualification-chip ${job?.status ?? 'missing'}`}>{job ? job.status.replaceAll('_', ' ') : 'Not run'}</span></div>{job && <QualificationJobCard job={job} onCancel={onCancel} canceling={canceling} />}<div className="boptest-contract-editor"><header><div><strong>Reviewed mapping + oracle contract</strong><small>The generated skeleton contains every typed graph boundary. Replace every REVIEW_REQUIRED value and null reference before queueing.</small></div><label><FileUp size={14} />Import JSON<input accept=".json,application/json" disabled={busy || !canQualify} onChange={(event) => void importContract(event.target.files?.[0] ?? null)} type="file" /></label></header><textarea aria-label="BOPTEST qualification contract" disabled={busy || !canQualify} onChange={(event) => setContract(event.target.value)} spellCheck={false} value={contract} /><footer><span className={contractReady ? 'ready' : ''}>{contractReady ? 'Contract ready for server validation' : 'Complete all reviewed mappings and numeric oracle values'}</span><button disabled={!canQualify || busy || !contractReady} onClick={() => void submit()} type="button"><Play size={14} />{jobActive ? 'Qualification running…' : qualifying ? 'Queueing…' : 'Queue BOPTEST qualification'}</button></footer></div>{otherQualificationActive && <div className="alfalfa-form-message"><CircleAlert size={16} />Another building-physics qualification is active for this candidate.</div>}{!canQualify && <div className="alfalfa-form-message"><CircleAlert size={16} />Only a passing candidate awaiting review can start qualification.</div>}{error && <div className="alfalfa-form-message error"><CircleAlert size={16} />{error}</div>}</section>;
+  return <section className="simulation-panel boptest-qualification">
+    <div className="simulation-panel-head"><div><span className="eyebrow">BOPTEST CLOSED LOOP</span><h2>Qualify against a reviewed BOPTEST case</h2><p>Discover the installed model boundary, map every graph signal, and supply an independent expected trajectory.</p></div><span className={`qualification-chip ${job?.status ?? 'missing'}`}>{job ? job.status.replaceAll('_', ' ') : 'Not run'}</span></div>
+    {job && <QualificationJobCard job={job} onCancel={onCancel} canceling={canceling} />}
+    <div className="boptest-catalog-picker">
+      <label><span>Installed BOPTEST case</span><select disabled={busy || !canQualify || catalog.isLoading} onChange={(event) => { setSelectedTestCase(event.target.value); inspectTestCase.reset(); setContract(boptestContractTemplate(graph)); }} value={selectedTestCase}><option value="">Select an advertised test case…</option>{catalog.data?.test_cases.map((testCase) => <option key={testCase} value={testCase}>{testCase.replaceAll('_', ' ')}</option>)}</select></label>
+      <button disabled={!selectedTestCase || busy || inspectTestCase.isPending} onClick={() => inspectTestCase.mutate(selectedTestCase)} type="button"><Network size={14} />{inspectTestCase.isPending ? 'Starting isolated model…' : 'Inspect exact I/O'}</button>
+      <span>{catalog.data ? `${catalog.data.test_cases.length} cases advertised · no initialization or live writes` : catalog.isError ? 'BOPTEST catalog unavailable' : 'Reading installed service catalog…'}</span>
+    </div>
+    {testCaseContract && parsedContract && <div className="boptest-visual-mapper">
+      <div className="fmi-contract"><div><span>Test case</span><strong>{testCaseContract.test_case}</strong><small>Advertised by the running BOPTEST service</small></div><div><span>Exact boundary</span><strong>{testCaseContract.measurement_count} / {testCaseContract.input_count}</strong><small>measurements / inputs</small></div><div><span>Inspection lifecycle</span><strong>{testCaseContract.clean_stop ? 'Clean stop' : 'Failed'}</strong><small>Model was not initialized or advanced</small></div><div><span>Graph boundary</span><strong>{graphInputs.length} / {graphOutputs.length}</strong><small>inputs / outputs require review</small></div></div>
+      <section className="alfalfa-mapper-section"><div className="alfalfa-mapper-heading"><strong>Measurements → graph inputs</strong><small>Every controller input must select one exact advertised measurement</small></div><div className="alfalfa-map-table"><table><thead><tr><th>Graph input</th><th>BOPTEST measurement</th></tr></thead><tbody>{graphInputs.map((block, index) => <tr key={block.id}><th><strong>{block.label}</strong><code>{block.id}</code></th><td><select onChange={(event) => mutateContract((value) => { value.mapping.measurements[index].measurement = event.target.value; })} value={parsedContract.mapping.measurements[index]?.measurement ?? ''}><option value="REVIEW_REQUIRED">Select exact measurement…</option>{testCaseContract.measurements.map((signal) => <option key={signal.name} value={signal.name}>{boptestSignalLabel(signal)}</option>)}</select></td></tr>)}</tbody></table></div></section>
+      <section className="alfalfa-mapper-section"><div className="alfalfa-mapper-heading"><strong>Graph outputs → BOPTEST inputs</strong><small>Activation inputs remain independently reviewable</small></div><div className="alfalfa-map-table"><table><thead><tr><th>Graph output</th><th>Command input</th><th>Activation input</th></tr></thead><tbody>{graphOutputs.map((block, index) => <tr key={block.id}><th><strong>{block.label}</strong><code>{block.id}</code></th><td><select onChange={(event) => mutateContract((value) => { value.mapping.actuators[index].actuator = event.target.value; })} value={parsedContract.mapping.actuators[index]?.actuator ?? ''}><option value="REVIEW_REQUIRED">Select exact actuator…</option>{testCaseContract.inputs.filter((signal) => !signal.activation_signal).map((signal) => <option key={signal.name} value={signal.name}>{boptestSignalLabel(signal)}</option>)}</select></td><td><select onChange={(event) => mutateContract((value) => { value.mapping.actuators[index].activation_actuator = event.target.value || null; })} value={parsedContract.mapping.actuators[index]?.activation_actuator ?? ''}><option value="">No activation input</option>{testCaseContract.inputs.filter((signal) => signal.activation_signal).map((signal) => <option key={signal.name} value={signal.name}>{boptestSignalLabel(signal)}</option>)}</select></td></tr>)}</tbody></table></div></section>
+    </div>}
+    <div className="boptest-contract-editor"><header><div><strong>Reviewed mapping + independent oracle</strong><small>Visual selections update this canonical contract. Supply numeric reference values authored independently from the controller under test.</small></div><label><FileUp size={14} />Import JSON<input accept=".json,application/json" disabled={busy || !canQualify} onChange={(event) => void importContract(event.target.files?.[0] ?? null)} type="file" /></label></header><textarea aria-label="BOPTEST qualification contract" disabled={busy || !canQualify} onChange={(event) => setContract(event.target.value)} spellCheck={false} value={contract} /><footer><span className={contractReady ? 'ready' : ''}>{contractReady ? 'Contract ready for server validation' : 'Complete all visual mappings and numeric oracle values'}</span><button disabled={!canQualify || busy || !contractReady} onClick={() => void submit()} type="button"><Play size={14} />{jobActive ? 'Qualification running…' : qualifying ? 'Queueing…' : 'Queue BOPTEST qualification'}</button></footer></div>
+    {catalog.isError && <div className="alfalfa-form-message error"><CircleAlert size={16} />{catalog.error instanceof Error ? catalog.error.message : 'BOPTEST catalog is unavailable'}</div>}
+    {otherQualificationActive && <div className="alfalfa-form-message"><CircleAlert size={16} />Another building-physics qualification is active for this candidate.</div>}
+    {!canQualify && <div className="alfalfa-form-message"><CircleAlert size={16} />Only a passing candidate awaiting review can start qualification.</div>}
+    {error && <div className="alfalfa-form-message error"><CircleAlert size={16} />{error}</div>}
+  </section>;
 }
 
 function BoptestPanel({ evidence, job, graph, canQualify, otherQualificationActive, onQualify, qualifying, onCancel, canceling }: { evidence?: ArtifactState<BoptestEvidence>; job?: QualificationJob; graph?: ControlGraph; canQualify: boolean; otherQualificationActive: boolean; onQualify: (qualification: BoptestQualification) => Promise<unknown>; qualifying: boolean; onCancel: (jobId: string) => void; canceling: boolean }) {
