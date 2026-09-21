@@ -238,6 +238,7 @@ const intakeInspectionSchema = z.object({
 const readinessSchema = z.object({
   production_ready: z.boolean(),
   policy: z.string(),
+  stage_order: z.array(z.string()).default([]),
   components: z.array(z.object({
     id: z.string(),
     name: z.string(),

@@ -3,9 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0b1218" />
-    <meta name="description" content="BACTalk controls engineering workbench" />
-    <title>BACTalk Studio</title>
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1d24" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f6f8" />
+    <link rel="icon" type="image/svg+xml" href="/next/favicon.svg" />
+    <title>BACTalk</title>
+    <script>
+      // Resolve the theme before first paint so there is no flash: an explicit
+      // stored choice wins, otherwise the operating system preference.
+      try {
+        var t = localStorage.getItem("bactalk.theme");
+        if (t !== "dark" && t !== "light") {
+          t = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+        }
+        document.documentElement.dataset.theme = t;
+        var d = localStorage.getItem("bactalk.density");
+        if (d) document.documentElement.dataset.density = d;
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

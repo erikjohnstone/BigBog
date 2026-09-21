@@ -209,7 +209,7 @@ def test_static_workbench_is_served(tmp_path: Path) -> None:
 
     next_response = client.get("/next/")
     assert next_response.status_code == 200
-    assert "BACTalk Studio" in next_response.text
+    assert "<title>BACTalk</title>" in next_response.text
     assert 'id="root"' in next_response.text
     deep_link = client.get("/next/studio/example-run/tests")
     assert deep_link.status_code == 200

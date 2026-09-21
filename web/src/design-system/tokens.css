@@ -1,40 +1,293 @@
-:root {
-  color-scheme: light;
-  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-synthesis: none;
-  --bg-canvas: #f4f6f7;
-  --bg-surface: #ffffff;
-  --bg-subtle: #f7f9fa;
-  --bg-rail: #0b1218;
-  --bg-rail-active: #18242d;
-  --text-primary: #17212a;
-  --text-secondary: #5e6b75;
-  --text-tertiary: #596772;
-  --text-inverse: #f5f7f8;
-  --border: #dce2e6;
-  --border-strong: #c8d0d6;
-  --brand: #13795b;
-  --brand-hover: #0d674b;
-  --brand-soft: #e8f5ef;
-  --amber: #9a6416;
-  --amber-soft: #fff4df;
-  --red: #ad3d3d;
-  --red-soft: #fcebea;
-  --blue: #276e9b;
-  --blue-soft: #e9f3f9;
-  --shadow-sm: 0 1px 2px rgb(11 18 24 / 4%);
-  --shadow-md: 0 14px 40px rgb(11 18 24 / 8%);
-  --radius-sm: 7px;
-  --radius-md: 11px;
-  --radius-lg: 16px;
-  --focus: #1879b7;
+/*
+ * BACTalk design tokens.
+ *
+ * Two first-class themes. The app follows the operating system by default and
+ * a persistent toggle switches instantly; every surface is designed and tested
+ * in both. Colors are OKLCH so lightness steps are perceptually even and the
+ * media/status hues keep their identity across themes.
+ *
+ * Rules that keep the visual language coherent:
+ *   - exactly one interactive accent (focus, selection, cursor needle, links)
+ *   - status colors always pair with an icon and a label, never color alone
+ *   - violet (`--sim`) marks everything simulated or virtual so it can never be
+ *     mistaken for field evidence
+ *   - no font smaller than 11px; live values are 12px tabular mono
+ */
+
+@import "tailwindcss";
+
+@theme {
+  /* ---- typography --------------------------------------------------- */
+  --font-sans: "Geist Variable", "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+
+  --text-2xs: 11px;
+  --text-2xs--line-height: 1.45;
+  --text-xs: 12px;
+  --text-xs--line-height: 1.45;
+  --text-sm: 13px;
+  --text-sm--line-height: 1.45;
+  --text-base: 14px;
+  --text-base--line-height: 1.5;
+  --text-lg: 16px;
+  --text-lg--line-height: 1.45;
+  --text-xl: 20px;
+  --text-xl--line-height: 1.3;
+  --text-2xl: 24px;
+  --text-2xl--line-height: 1.2;
+  --text-3xl: 32px;
+  --text-3xl--line-height: 1.1;
+
+  /* ---- spacing (4px base) ------------------------------------------- */
+  --spacing: 4px;
+
+  /* ---- radii --------------------------------------------------------- */
+  --radius-chip: 4px;
+  --radius-control: 6px;
+  --radius-panel: 10px;
+  --radius-pill: 999px;
+
+  /* ---- motion -------------------------------------------------------- */
+  --duration-micro: 120ms;
+  --duration-state: 180ms;
+  --duration-layout: 260ms;
+  --duration-morph: 400ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ---- semantic colors, exposed to utilities as bg-, text-, and border- --- */
+  --color-bg-0: var(--bg-0);
+  --color-bg-1: var(--bg-1);
+  --color-bg-2: var(--bg-2);
+  --color-bg-3: var(--bg-3);
+  --color-line-1: var(--line-1);
+  --color-line-2: var(--line-2);
+  --color-fg-0: var(--fg-0);
+  --color-fg-1: var(--fg-1);
+  --color-fg-2: var(--fg-2);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-fail: var(--fail);
+  --color-fail-soft: var(--fail-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-offline: var(--offline);
+  --color-sim: var(--sim);
+  --color-sim-soft: var(--sim-soft);
+  --color-m-air-supply: var(--m-air-supply);
+  --color-m-air-return: var(--m-air-return);
+  --color-m-air-outside: var(--m-air-outside);
+  --color-m-chw: var(--m-chw);
+  --color-m-hw: var(--m-hw);
+  --color-m-steam: var(--m-steam);
+  --color-m-refrig: var(--m-refrig);
+  --color-m-elec: var(--m-elec);
+  --color-m-cmd: var(--m-cmd);
+  --color-m-status: var(--m-status);
 }
 
-* { box-sizing: border-box; }
-html, body, #root { min-width: 320px; min-height: 100%; margin: 0; }
-body { background: var(--bg-canvas); color: var(--text-primary); }
-button, input, textarea, select { font: inherit; }
-button, a { -webkit-tap-highlight-color: transparent; }
-:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
-[data-sonner-toast][data-type="success"] { --success-text: #006724 !important; }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; } }
+/* ---- dark theme ------------------------------------------------------ */
+/* `data-theme` is always set before first paint (index.html resolves the
+   stored choice or the OS preference), so each theme is declared once. */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg-0: oklch(0.14 0.012 250);
+  --bg-1: oklch(0.175 0.012 250);
+  --bg-2: oklch(0.215 0.012 250);
+  --bg-3: oklch(0.26 0.014 250);
+  --line-1: oklch(0.3 0.012 250);
+  --line-2: oklch(0.38 0.014 250);
+  --fg-0: oklch(0.95 0.01 250);
+  --fg-1: oklch(0.78 0.01 250);
+  --fg-2: oklch(0.62 0.01 250);
+
+  --accent: oklch(0.8 0.12 195);
+  --accent-fg: oklch(0.18 0.03 195);
+  --accent-soft: oklch(0.8 0.12 195 / 14%);
+
+  --ok: oklch(0.76 0.15 150);
+  --ok-soft: oklch(0.76 0.15 150 / 16%);
+  --fail: oklch(0.68 0.19 25);
+  --fail-soft: oklch(0.68 0.19 25 / 16%);
+  --warn: oklch(0.8 0.14 80);
+  --warn-soft: oklch(0.8 0.14 80 / 16%);
+  --offline: oklch(0.6 0.01 250);
+  --sim: oklch(0.74 0.13 300);
+  --sim-soft: oklch(0.74 0.13 300 / 16%);
+
+  --m-air-supply: oklch(0.8 0.09 225);
+  --m-air-return: oklch(0.7 0.06 225);
+  --m-air-outside: oklch(0.82 0.06 200);
+  --m-chw: oklch(0.72 0.14 245);
+  --m-hw: oklch(0.7 0.17 30);
+  --m-steam: oklch(0.86 0.05 70);
+  --m-refrig: oklch(0.76 0.12 160);
+  --m-elec: oklch(0.86 0.16 95);
+  --m-cmd: oklch(0.75 0.15 330);
+  --m-status: oklch(0.8 0.12 130);
+
+  --shadow-float: 0 12px 32px oklch(0 0 0 / 50%), 0 1px 2px oklch(0 0 0 / 40%);
+  --inset-hi: inset 0 1px 0 oklch(1 0 0 / 4%);
+  --canvas-dot: oklch(0.3 0.012 250);
+  --minimap-mask: oklch(0.14 0.012 250 / 78%);
+}
+
+/* ---- light theme ---------------------------------------------------- */
+/* Every text-on-soft pair here clears 4.5:1 at 11px; axe checks it in e2e. */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-0: oklch(0.97 0.004 250);
+  --bg-1: oklch(0.995 0.002 250);
+  --bg-2: oklch(0.985 0.003 250);
+  --bg-3: oklch(1 0 0);
+  --line-1: oklch(0.88 0.006 250);
+  --line-2: oklch(0.8 0.008 250);
+  --fg-0: oklch(0.2 0.02 250);
+  --fg-1: oklch(0.38 0.015 250);
+  --fg-2: oklch(0.49 0.012 250);
+
+  --accent: oklch(0.46 0.11 200);
+  --accent-fg: oklch(0.99 0.01 200);
+  --accent-soft: oklch(0.46 0.11 200 / 10%);
+
+  --ok: oklch(0.47 0.14 150);
+  --ok-soft: oklch(0.47 0.14 150 / 10%);
+  --fail: oklch(0.5 0.19 25);
+  --fail-soft: oklch(0.5 0.19 25 / 10%);
+  --warn: oklch(0.5 0.12 75);
+  --warn-soft: oklch(0.5 0.12 75 / 12%);
+  --offline: oklch(0.49 0.01 250);
+  --sim: oklch(0.47 0.15 300);
+  --sim-soft: oklch(0.47 0.15 300 / 10%);
+
+  --m-air-supply: oklch(0.55 0.11 225);
+  --m-air-return: oklch(0.5 0.08 225);
+  --m-air-outside: oklch(0.56 0.08 200);
+  --m-chw: oklch(0.5 0.15 245);
+  --m-hw: oklch(0.52 0.18 30);
+  --m-steam: oklch(0.55 0.07 70);
+  --m-refrig: oklch(0.52 0.13 160);
+  --m-elec: oklch(0.58 0.15 95);
+  --m-cmd: oklch(0.52 0.17 330);
+  --m-status: oklch(0.52 0.13 130);
+
+  --shadow-float: 0 12px 32px oklch(0.2 0.02 250 / 14%), 0 1px 2px oklch(0.2 0.02 250 / 8%);
+  --inset-hi: inset 0 1px 0 oklch(1 0 0 / 60%);
+  --canvas-dot: oklch(0.85 0.006 250);
+  --minimap-mask: oklch(0.97 0.004 250 / 78%);
+}
+
+/* ---- density -------------------------------------------------------- */
+:root {
+  --row-h: 28px;
+  --pad: 8px;
+}
+:root[data-density="compact"] {
+  --row-h: 24px;
+  --pad: 6px;
+}
+:root[data-density="comfortable"] {
+  --row-h: 32px;
+  --pad: 12px;
+}
+
+/* ---- base ------------------------------------------------------------ */
+@layer base {
+  html {
+    background: var(--bg-0);
+    color: var(--fg-0);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--bg-0);
+  }
+  #root {
+    min-height: 100dvh;
+  }
+  * {
+    border-color: var(--line-1);
+  }
+  ::selection {
+    background: var(--accent-soft);
+  }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: var(--radius-control);
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+  code,
+  kbd,
+  pre {
+    font-family: var(--font-mono);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ---- utilities the whole app leans on ------------------------------- */
+@utility num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-xs);
+  letter-spacing: -0.01em;
+}
+@utility eyebrow {
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg-2);
+  font-weight: 600;
+}
+@utility panel {
+  background: var(--bg-1);
+  border: 1px solid var(--line-1);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--inset-hi);
+}
+@utility raised {
+  background: var(--bg-2);
+  border: 1px solid var(--line-1);
+  border-radius: var(--radius-control);
+}
+@utility floating {
+  background: var(--bg-3);
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-float);
+}
+@utility hairline-b {
+  border-bottom: 1px solid var(--line-1);
+}
+@utility hairline-r {
+  border-right: 1px solid var(--line-1);
+}
+@utility hairline-t {
+  border-top: 1px solid var(--line-1);
+}
