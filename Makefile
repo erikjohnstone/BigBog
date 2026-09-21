@@ -1,4 +1,4 @@
-.PHONY: test-native-bog niagara-catalog install install-suite install-haxall aixocat-contract alfalfa-contract alfalfa-runtime-up alfalfa-runtime-smoke alfalfa-graph-smoke alfalfa-runtime-down bacnet-lab-contract bacnet-scale-runtime independent-bacnet-simulator-install independent-bacnet-simulator-contract environment-pack-contract buildingmotif-install buildingmotif-contract constrain-install constrain-contract ctrl-flow-install ctrl-flow-contract dflexlibs-contract g36-audit g36-audit-contract plant-controls-audit plant-controls-contract plant-job-contract haxall-contract nhaystack-contract niagara-alarm-contract niagara-binding-contract niagara-graphics-contract niagara-program-codegen-contract niagara-station-contract project-signal-contract integration-use-contract n4-hvac-library-contract open-control-library-contract open-fdd-contract pybog-examples-contract rumoca-install rumoca-contract suite-contract cerebras-smoke test lint demo demo-package record-demo serve clean boptest-contract boptest-smoke boptest-runtime-build boptest-runtime-up boptest-runtime-smoke boptest-graph-runtime boptest-scenario-runtime boptest-scenario-suite-runtime boptest-scale-runtime boptest-runtime-down volttron-install volttron-contract oce-contract cdl-oce-contract web-install web-build web-test web-lint web-sbom
+.PHONY: test-native-bog niagara-catalog lowering-matrix install install-suite install-haxall aixocat-contract alfalfa-contract alfalfa-runtime-up alfalfa-runtime-smoke alfalfa-graph-smoke alfalfa-runtime-down bacnet-lab-contract bacnet-scale-runtime independent-bacnet-simulator-install independent-bacnet-simulator-contract environment-pack-contract buildingmotif-install buildingmotif-contract constrain-install constrain-contract ctrl-flow-install ctrl-flow-contract dflexlibs-contract g36-audit g36-audit-contract plant-controls-audit plant-controls-contract plant-job-contract haxall-contract nhaystack-contract niagara-alarm-contract niagara-binding-contract niagara-graphics-contract niagara-program-codegen-contract niagara-station-contract project-signal-contract integration-use-contract n4-hvac-library-contract open-control-library-contract open-fdd-contract pybog-examples-contract rumoca-install rumoca-contract suite-contract cerebras-smoke test lint demo demo-package record-demo serve clean boptest-contract boptest-smoke boptest-runtime-build boptest-runtime-up boptest-runtime-smoke boptest-graph-runtime boptest-scenario-runtime boptest-scenario-suite-runtime boptest-scale-runtime boptest-runtime-down volttron-install volttron-contract oce-contract cdl-oce-contract web-install web-build web-test web-lint web-sbom
 
 .PHONY: alfalfa-product-smoke qualification-queue-up qualification-queue-down qualification-worker
 
@@ -285,7 +285,12 @@ test-minimal:
 # The native .bog pipeline contract (GOAL-NATIVE-BOG.md): units, validator,
 # lowering matrix, emitter, Shadow Runtime. Must pass on every commit.
 test-native-bog:
+	PYTHONPATH=src .venv/bin/python -m bactalk.niagara.lowering --check
 	.venv/bin/pytest -m native_bog
+
+# Render docs/niagara-lowering-matrix.md from src/bactalk/niagara/lowering.py.
+lowering-matrix:
+	PYTHONPATH=src .venv/bin/python -m bactalk.niagara.lowering --write
 
 # Regenerate the Niagara type/slot catalog and the known-bad validator fixtures
 # from the vendored corpus (needs make bootstrap-full).

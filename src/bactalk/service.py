@@ -63,6 +63,7 @@ from bactalk.integrations.niagara_station import assemble_station_bog
 from bactalk.integrations.niagara_template import NiagaraTemplateAnalyzer
 from bactalk.integrations.plant_controls_library import PlantControlsLibrary
 from bactalk.integrations.volttron import build_readonly_volttron_export
+from bactalk.niagara.lowering import plan_lowering
 from bactalk.niagara.validate import validate_bog
 from bactalk.repository import RunRepository
 
@@ -259,6 +260,11 @@ class WorkbenchService:
         job_path.write_text(canonical_json(job), encoding="utf-8")
         graph_path.write_text(canonical_json(graph), encoding="utf-8")
         report_path.write_text(canonical_json(report), encoding="utf-8")
+        # GOAL-NATIVE-BOG.md N2: record which lane the lowering matrix assigns
+        # this graph. The artifact choice itself moves to the matrix in N4.
+        (run_dir / "niagara-lowering.json").write_text(
+            canonical_json(plan_lowering(graph).to_dict()), encoding="utf-8"
+        )
         environment_definition = (
             inspect_environment_pack(environment_pack, template_bog=template_bog)
             if environment_pack is not None
