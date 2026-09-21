@@ -95,6 +95,12 @@ export function useBoptestEvidence(id: string | undefined) {
 export function useAlfalfaEvidence(id: string | undefined) {
   return useQuery({ queryKey: keys.alfalfa(id ?? ''), queryFn: () => api.alfalfa(id!), enabled: Boolean(id) });
 }
+export function useAuditStatus() {
+  return useQuery({ queryKey: keys.auditStatus, queryFn: api.securityAuditStatus, staleTime: 30_000 });
+}
+export function useIntegrationAudit() {
+  return useQuery({ queryKey: keys.integrationAudit, queryFn: api.integrationAudit, staleTime: 5 * 60_000 });
+}
 export function useProjects() {
   return useQuery({ queryKey: keys.projects, queryFn: api.projects });
 }

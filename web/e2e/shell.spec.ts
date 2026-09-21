@@ -742,6 +742,7 @@ test('command palette reaches jobs and the agent mode', async ({ page }) => {
 });
 
 test('projects, libraries, connections, and administration render real data', async ({ page }) => {
+  test.setTimeout(60_000);
   await page.goto('/next/projects');
   await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible();
   const projects = (await (await page.request.get('/api/projects')).json()) as Array<{ id: string; project: { name: string } }>;
@@ -754,21 +755,84 @@ test('projects, libraries, connections, and administration render real data', as
   await page.goto('/next/libraries');
   await expect(page.getByRole('heading', { name: 'Libraries' })).toBeVisible();
   await expect(page.getByRole('heading', { name: /guideline 36/i })).toBeVisible();
+  // The catalog browser lists and filters real entries.
+  const g36 = page.getByRole('heading', { name: /guideline 36/i }).locator('xpath=ancestor::section[1]');
+  await expect(g36.getByRole('row').nth(1)).toBeVisible();
+  await g36.getByLabel(/Filter ASHRAE Guideline 36/).fill('MultiZone.VAV.Controller');
+  await expect(g36.getByText(/of \d+ entries/)).toBeVisible();
   await axe(page);
 
   await page.goto('/next/connections');
   await expect(page.getByRole('heading', { name: 'Connections' })).toBeVisible();
   await expect(page.getByText(/approval never enables live writes/i)).toBeVisible();
+  const lab = page.getByRole('button', { expanded: false }).first();
+  if (await lab.count()) {
+    await lab.click();
+    await expect(page.getByRole('button', { name: /probe points/i })).toBeVisible();
+    await expect(page.getByRole('columnheader', { name: 'Lab role' })).toBeVisible();
+    await page.getByRole('button', { name: /probe points/i }).click();
+    await expect(page.getByText(/probe (passed|failed)/i)).toBeVisible({ timeout: 30_000 });
+  }
   await axe(page);
 
   await page.goto('/next/admin');
   await expect(page.getByRole('heading', { name: 'Administration' })).toBeVisible();
   await expect(page.getByText('live writes off')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Audit chain' })).toBeVisible();
+  await expect(page.getByText(/chain intact|chain broken/)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Integration use audit' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Integration maturity' })).toBeVisible();
   await axe(page);
 });
 
-// Rebuilt in later phases of the UI rewrite. Each is skipped by name so the
-// missing coverage is visible in every report until the journey returns.
-test.fixme('whole-building topology and high-fidelity evidence on one clock (phases 3, 4, 9)', async () => {});
-test.fixme('contractor can upload, preflight, compile, and assemble a complex building project (phase 9)', async () => {});
+test('whole-building topology and project evidence run on one clock', async ({ page }) => {
+  test.setTimeout(90_000);
+  const projects = (await (await page.request.get('/api/projects')).json()) as Array<{ id: string; project: { name: string; signal_bindings: unknown[] } }>;
+  const project = projects.find((item) => item.project.signal_bindings.length > 0) ?? projects[0];
+  test.skip(!project, 'A retained project is required.');
+
+  await page.goto(`/next/projects/${project.id}`);
+  await expect(page.getByRole('heading', { name: project.project.name })).toBeVisible();
+  const map = page.getByRole('group', { name: /system map/i });
+  await expect(map).toBeVisible();
+  // The project trace is on the clock: timeline, lanes, transport, assertions.
+  await expect(page.getByRole('group', { name: 'Master timeline' })).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Playback' })).toBeVisible();
+  await expect(page.getByText(/\d+\/\d+ project assertions/)).toBeVisible();
+  const readout = page.getByRole('group', { name: 'Playback' }).getByText(/\d+\/\d+/);
+  const before = await readout.textContent();
+  await page.getByRole('slider', { name: 'Scan position' }).focus();
+  await page.keyboard.press('End');
+  await expect(readout).not.toHaveText(before ?? '');
+  // Signal bindings carry live values, not idle placeholders.
+  if (project.project.signal_bindings.length > 0) {
+    await expect(map.locator('.system-binding .edge-flow').first()).toHaveAttribute('data-idle', 'false');
+  }
+  // 3D massing is optional and lazy; it renders a canvas or an honest fallback.
+  await page.getByRole('button', { name: '3D massing' }).click();
+  await expect(page.getByTestId('massing').or(page.getByTestId('massing-fallback'))).toBeVisible({ timeout: 30_000 });
+  await axe(page);
+});
+
+test('contractor can upload, preflight, and build a whole-building project', async ({ page }) => {
+  test.setTimeout(120_000);
+  const projects = (await (await page.request.get('/api/projects')).json()) as Array<{ id: string; project: Record<string, unknown> }>;
+  test.skip(projects.length === 0, 'A retained project spec is required as the upload fixture.');
+  const spec = { ...projects[0].project, name: `E2E rebuild ${Date.now()}` };
+
+  await page.goto('/next/projects/new');
+  await expect(page.getByRole('heading', { name: 'Build a project' })).toBeVisible();
+  await page.getByLabel('Project JSON').fill(JSON.stringify(spec));
+  await expect(page.getByText(/equipment jobs · \d+ relationships/)).toBeVisible();
+  await page.getByRole('button', { name: 'Preflight' }).click();
+  await expect(page.getByRole('heading', { name: 'Preflight' })).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByText(/accepted for build|not accepted/)).toBeVisible();
+  const build = page.getByRole('button', { name: 'Build project' });
+  test.skip(await build.isDisabled(), 'The retained spec was not accepted for build on this stack.');
+  await axe(page);
+  await build.click();
+  await expect(page).toHaveURL(/\/next\/projects\/[0-9a-f]+$/, { timeout: 90_000 });
+  await expect(page.getByRole('heading', { name: spec.name as string })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Equipment candidates' })).toBeVisible();
+});
+

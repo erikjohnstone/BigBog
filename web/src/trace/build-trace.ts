@@ -103,8 +103,9 @@ function classify(key: string, blockIds: Set<string>, run: RunDetail, graph?: Co
     const source: SignalSource = block.kind.endsWith('_input') ? 'input' : block.kind.endsWith('_output') ? 'command' : 'block';
     return { source, blockId: key, label: point?.label ?? block.label };
   }
-  const dot = key.indexOf('.');
-  if (dot > 0) {
+  // `block.slot`, or `Equip.block.slot` in a project trace whose block ids are qualified.
+  for (const dot of [key.indexOf('.'), key.lastIndexOf('.')]) {
+    if (dot <= 0) continue;
     const blockId = key.slice(0, dot);
     const slot = key.slice(dot + 1);
     if (blockIds.has(blockId)) {

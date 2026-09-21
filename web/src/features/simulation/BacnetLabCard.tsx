@@ -23,7 +23,7 @@ export function BacnetLabCard({ runId }: { runId: string }) {
   const points = Object.values(manifest.point_index);
   const injectable = points.filter((point) => point.scenario_injectable).length;
   const capture = points.filter((point) => point.command_capture).length;
-  const safe = Object.values(manifest.safety).every((flag) => flag === true || flag === false) && !manifest.safety.live_network_routes_allowed && manifest.safety.writes_affect_virtual_objects_only;
+  const safe = !manifest.safety.live_network_routes_allowed && manifest.safety.writes_affect_virtual_objects_only && manifest.safety.source_addresses_never_bound && !manifest.safety.live_network_discovery_performed;
 
   return (
     <div className="px-4 py-3 flex flex-col gap-3 text-sm">
