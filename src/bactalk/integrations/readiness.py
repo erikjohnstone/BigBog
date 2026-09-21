@@ -96,6 +96,9 @@ class IntegrationReadiness:
         alfalfa_graph_evidence = _load_json_object(
             self.root / ".bactalk/alfalfa-graph-evidence.json"
         )
+        alfalfa_product_evidence = _load_json_object(
+            self.root / ".bactalk/alfalfa-product-evidence.json"
+        )
         alfalfa_runtime_pass = (
             alfalfa_evidence.get("schema") == "bactalk.alfalfa-runtime-evidence/v1"
             and alfalfa_evidence.get("status") == "pass"
@@ -118,6 +121,27 @@ class IntegrationReadiness:
                     for echo in sample["command_echoes"].values()
                 )
                 for sample in alfalfa_graph_trajectory
+            )
+        )
+        alfalfa_product_runtime = alfalfa_product_evidence.get("runtime_evidence", {})
+        alfalfa_product_oracles = (
+            alfalfa_product_runtime.get("oracles", [])
+            if isinstance(alfalfa_product_runtime, dict)
+            else []
+        )
+        alfalfa_product_oracle_pass = (
+            alfalfa_product_evidence.get("schema")
+            == "bactalk.alfalfa-product-workflow/v1"
+            and alfalfa_product_evidence.get("status") == "pass"
+            and alfalfa_product_runtime.get("status") == "pass"
+            and alfalfa_product_runtime.get("approval_allowed") is True
+            and isinstance(alfalfa_product_oracles, list)
+            and bool(alfalfa_product_oracles)
+            and all(
+                isinstance(oracle, dict)
+                and oracle.get("completed") is True
+                and oracle.get("passed") is True
+                for oracle in alfalfa_product_oracles
             )
         )
         components = [
@@ -424,7 +448,8 @@ class IntegrationReadiness:
                 product_path=(
                     "Digest-pinned isolated service plus hardened scalar-output worker; "
                     "external-clock FMU lifecycle and typed graph coupling retain signal, "
-                    "command/echo, trajectory, and clean-stop evidence; the contractor lane "
+                    "command/echo, trajectory, clean-stop, and independent pyfunnel oracle "
+                    "evidence; the contractor lane "
                     "can close every graph input/output through fresh-port, loopback-only "
                     "BACnet/IP reads, priority writes, and readbacks"
                 ),
@@ -449,6 +474,12 @@ class IntegrationReadiness:
                         else ""
                     )
                     + (
+                        "Run the signed Alfalfa/BACnet product qualification with at least "
+                        "one passing independent trajectory oracle. "
+                        if not alfalfa_product_oracle_pass
+                        else ""
+                    )
+                    + (
                         "Production Linux capacity, job-specific model/map authority, "
                         "licensed Niagara controller attachment, external-controller HIL, "
                         "HA, and field qualification remain."
@@ -463,7 +494,10 @@ class IntegrationReadiness:
                 version=_package_version("alfalfa-client", "alfalfa_client"),
                 license_name="BSD-3-Clause",
                 role="Client API for Alfalfa virtual buildings",
-                product_path="AlfalfaClient-backed retained FMU and typed-graph qualification",
+                product_path=(
+                    "AlfalfaClient-backed retained FMU and typed-graph qualification with "
+                    "independent pyfunnel trajectory acceptance"
+                ),
                 evidence_command=(
                     "make alfalfa-runtime-smoke alfalfa-graph-smoke alfalfa-product-smoke"
                 ),

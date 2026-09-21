@@ -53,7 +53,7 @@ from bactalk.intake import (
 )
 from bactalk.integrations.aixocat import AixocatError, AixocatLibrary
 from bactalk.integrations.alfalfa import AlfalfaClientLike
-from bactalk.integrations.alfalfa_graph import AlfalfaGraphMap
+from bactalk.integrations.alfalfa_graph import AlfalfaGraphMap, AlfalfaTrajectoryOracle
 from bactalk.integrations.bacnet_lab import VirtualBacnetLab, probe_manifest_with_bac0
 from bactalk.integrations.boptest import BoptestClient, BoptestError
 from bactalk.integrations.boptest_graph import (
@@ -155,6 +155,7 @@ class BoptestQualificationRequest(BaseModel):
 
 class AlfalfaQualificationRequest(BaseModel):
     mapping: AlfalfaGraphMap
+    oracles: list[AlfalfaTrajectoryOracle] = Field(min_length=1, max_length=1_000)
     steps: int = Field(ge=1, le=100_000)
     step_seconds: float = Field(gt=0, le=86_400, allow_inf_nan=False)
     start: datetime
@@ -1538,6 +1539,7 @@ def create_app(
                     run_id,
                     client=client,
                     mapping=request.mapping,
+                    oracles=request.oracles,
                     model_bytes=model_bytes,
                     model_filename=model_file.filename or "model.fmu",
                     steps=request.steps,
@@ -1551,6 +1553,7 @@ def create_app(
                     run_id,
                     client=client,
                     mapping=request.mapping,
+                    oracles=request.oracles,
                     model_bytes=model_bytes,
                     model_filename=model_file.filename or "model.fmu",
                     steps=request.steps,

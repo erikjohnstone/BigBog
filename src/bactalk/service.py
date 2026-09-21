@@ -33,7 +33,11 @@ from bactalk.integrations.alfalfa_bacnet import (
     AlfalfaBacnetGraphRunner,
     prepare_runtime_bacnet_lab,
 )
-from bactalk.integrations.alfalfa_graph import AlfalfaGraphMap, AlfalfaGraphRunner
+from bactalk.integrations.alfalfa_graph import (
+    AlfalfaGraphMap,
+    AlfalfaGraphRunner,
+    AlfalfaTrajectoryOracle,
+)
 from bactalk.integrations.bacnet_lab import build_bacnet_lab_export
 from bactalk.integrations.boptest_graph import (
     BoptestGraphMap,
@@ -686,12 +690,101 @@ class WorkbenchService:
             raise
         return updated
 
+    @staticmethod
+    def _validate_alfalfa_oracles(oracles: list[AlfalfaTrajectoryOracle]) -> None:
+        if not oracles:
+            raise ValueError("Alfalfa qualification requires at least one trajectory oracle")
+        oracle_ids = [oracle.id for oracle in oracles]
+        if len(oracle_ids) != len(set(oracle_ids)):
+            raise ValueError("Alfalfa trajectory oracle ids must be unique")
+
+    @classmethod
+    def _score_alfalfa_oracles(
+        cls,
+        runtime_evidence: dict[str, object],
+        oracles: list[AlfalfaTrajectoryOracle],
+        output_root: Path,
+        *,
+        scorer: FunnelScorer | None = None,
+    ) -> tuple[list[dict[str, object]], bool]:
+        cls._validate_alfalfa_oracles(oracles)
+        raw_trajectory = runtime_evidence.get("trajectory")
+        raw_start = runtime_evidence.get("start")
+        if not isinstance(raw_trajectory, list) or not isinstance(raw_start, str):
+            raise ValueError("Alfalfa runtime evidence has no valid trajectory clock")
+        start = datetime.fromisoformat(raw_start)
+        test_times: list[float] = []
+        for sample in raw_trajectory:
+            if not isinstance(sample, dict) or not isinstance(sample.get("end_time"), str):
+                raise ValueError("Alfalfa runtime trajectory has an invalid sample clock")
+            test_times.append(
+                (datetime.fromisoformat(str(sample["end_time"])) - start).total_seconds()
+            )
+        sections = {
+            "graph_input": "graph_inputs",
+            "graph_output": "controller_outputs",
+            "fmu_input": "fmu_inputs",
+            "fmu_output": "observed_outputs",
+        }
+        scorer = scorer or FunnelScorer()
+        results: list[dict[str, object]] = []
+        for index, oracle in enumerate(oracles, start=1):
+            section = sections[oracle.signal_kind]
+            test_values: list[float] = []
+            for sample in raw_trajectory:
+                if not isinstance(sample, dict) or not isinstance(sample.get(section), dict):
+                    raise ValueError(f"Alfalfa trajectory section {section!r} is invalid")
+                signals = sample[section]
+                if oracle.signal not in signals:
+                    raise ValueError(
+                        f"Alfalfa trajectory does not contain {oracle.signal_kind} "
+                        f"signal {oracle.signal!r}"
+                    )
+                raw = signals[oracle.signal]
+                if isinstance(raw, bool):
+                    value = float(raw)
+                elif isinstance(raw, (int, float)):
+                    value = float(raw)
+                else:
+                    raise ValueError(
+                        f"Alfalfa oracle signal {oracle.signal!r} is not numeric"
+                    )
+                if not math.isfinite(value):
+                    raise ValueError(
+                        f"Alfalfa oracle signal {oracle.signal!r} is not finite"
+                    )
+                test_values.append(value)
+            output_directory = output_root / f"oracle-{index:03d}-{oracle.id}"
+            comparison = scorer.compare(
+                oracle.reference_times,
+                oracle.reference_values,
+                test_times,
+                test_values,
+                output_directory,
+                absolute_time_tolerance=oracle.absolute_time_tolerance,
+                absolute_value_tolerance=oracle.absolute_value_tolerance,
+            )
+            results.append(
+                {
+                    "oracle": oracle.model_dump(mode="json"),
+                    "test_times": test_times,
+                    "test_values": test_values,
+                    "pyfunnel_status_code": comparison.status_code,
+                    "completed": comparison.completed,
+                    "passed": comparison.passed,
+                    "max_error": comparison.max_error,
+                    "report_directory": output_directory.name,
+                }
+            )
+        return results, all(bool(item["passed"]) for item in results)
+
     def qualify_with_alfalfa(
         self,
         run_id: str,
         *,
         client: AlfalfaClientLike,
         mapping: AlfalfaGraphMap,
+        oracles: list[AlfalfaTrajectoryOracle],
         model_bytes: bytes,
         model_filename: str,
         steps: int,
@@ -699,6 +792,7 @@ class WorkbenchService:
         start: datetime,
         server_version: object = None,
         client_version: str | None = None,
+        scorer: FunnelScorer | None = None,
     ) -> RunRecord:
         """Attach one signed, graph-coupled Alfalfa FMU run to a candidate.
 
@@ -721,6 +815,7 @@ class WorkbenchService:
             raise ValueError(
                 "runtime qualification is append-once; create a new run to retest"
             )
+        self._validate_alfalfa_oracles(oracles)
         if not model_bytes:
             raise ValueError("Alfalfa FMU is empty")
         if len(model_bytes) > MAX_ALFALFA_MODEL_BYTES:
@@ -751,12 +846,20 @@ class WorkbenchService:
                 server_version=server_version,
                 client_version=client_version,
             )
+            oracle_results, passed = self._score_alfalfa_oracles(
+                evidence,
+                oracles,
+                staging,
+                scorer=scorer,
+            )
             evidence.update(
                 {
+                    "status": "pass" if passed else "fail",
                     "bactalk_run_id": record.id,
                     "artifact_sha256_before_qualification": record.artifact_sha256,
                     "model_original_filename": model_filename,
-                    "approval_allowed": True,
+                    "oracles": oracle_results,
+                    "approval_allowed": passed,
                 }
             )
             evidence_path = staging / "evidence.json"
@@ -773,6 +876,7 @@ class WorkbenchService:
         digest = artifact_hash(*self._record_artifact_paths(record), *final_paths)
         updated = record.model_copy(
             update={
+                "status": RunStatus.READY_FOR_REVIEW if passed else RunStatus.FAILED,
                 "alfalfa_verification_path": str(final_evidence_path),
                 "verification_artifact_paths": [str(path) for path in final_paths],
                 "artifact_sha256": digest,
@@ -791,6 +895,7 @@ class WorkbenchService:
         *,
         client: AlfalfaClientLike,
         mapping: AlfalfaGraphMap,
+        oracles: list[AlfalfaTrajectoryOracle],
         model_bytes: bytes,
         model_filename: str,
         steps: int,
@@ -798,6 +903,7 @@ class WorkbenchService:
         start: datetime,
         server_version: object = None,
         client_version: str | None = None,
+        scorer: FunnelScorer | None = None,
     ) -> RunRecord:
         """Qualify a graph/FMU loop through the run's signed virtual BACnet devices."""
 
@@ -817,6 +923,7 @@ class WorkbenchService:
             raise ValueError(
                 "BACnet-coupled Alfalfa qualification requires a mapped BACnet scan"
             )
+        self._validate_alfalfa_oracles(oracles)
         if not model_bytes:
             raise ValueError("Alfalfa FMU is empty")
         if len(model_bytes) > MAX_ALFALFA_MODEL_BYTES:
@@ -851,12 +958,20 @@ class WorkbenchService:
                 server_version=server_version,
                 client_version=client_version,
             )
+            oracle_results, passed = self._score_alfalfa_oracles(
+                evidence,
+                oracles,
+                staging,
+                scorer=scorer,
+            )
             evidence.update(
                 {
+                    "status": "pass" if passed else "fail",
                     "bactalk_run_id": record.id,
                     "artifact_sha256_before_qualification": record.artifact_sha256,
                     "model_original_filename": model_filename,
-                    "approval_allowed": True,
+                    "oracles": oracle_results,
+                    "approval_allowed": passed,
                 }
             )
             evidence_path = staging / "evidence.json"
@@ -873,6 +988,7 @@ class WorkbenchService:
         digest = artifact_hash(*self._record_artifact_paths(record), *final_paths)
         updated = record.model_copy(
             update={
+                "status": RunStatus.READY_FOR_REVIEW if passed else RunStatus.FAILED,
                 "alfalfa_verification_path": str(final_evidence_path),
                 "verification_artifact_paths": [str(path) for path in final_paths],
                 "artifact_sha256": digest,

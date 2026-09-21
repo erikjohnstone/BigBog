@@ -32,6 +32,7 @@ from bactalk.integrations.alfalfa_graph import (
     AlfalfaGraphMap,
     AlfalfaInputBinding,
     AlfalfaOutputBinding,
+    AlfalfaTrajectoryOracle,
 )
 from bactalk.repository import RunRepository
 from bactalk.service import ApprovalRequiredError, ArtifactChangedError, WorkbenchService
@@ -133,6 +134,17 @@ def _mapping() -> AlfalfaGraphMap:
         ],
         observed_outputs=["hvac_oveAhu_yFan_y"],
         command_echoes={"hvac_oveAhu_yFan_u": "hvac_oveAhu_yFan_y"},
+    )
+
+
+def _oracle(*, expected: float = 0.37) -> AlfalfaTrajectoryOracle:
+    return AlfalfaTrajectoryOracle(
+        id="fan-command",
+        signal_kind="graph_output",
+        signal="fan_command",
+        reference_times=[60.0, 120.0],
+        reference_values=[expected, expected],
+        absolute_value_tolerance=1e-6,
     )
 
 
@@ -494,6 +506,7 @@ def _qualify(service: WorkbenchService, run_id: str) -> object:
         run_id,
         client=_FakeAlfalfa(),
         mapping=_mapping(),
+        oracles=[_oracle()],
         model_bytes=_fmu_bytes(),
         model_filename="contractor-building.fmu",
         steps=2,
@@ -515,7 +528,7 @@ def test_alfalfa_qualification_is_signed_reviewable_and_tamper_evident(
     assert qualified.status == RunStatus.READY_FOR_REVIEW
     assert qualified.artifact_sha256 != candidate.artifact_sha256
     assert qualified.alfalfa_verification_path is not None
-    assert len(qualified.verification_artifact_paths) == 2
+    assert len(qualified.verification_artifact_paths) >= 7
     evidence = json.loads(Path(qualified.alfalfa_verification_path).read_text())
     assert evidence["schema"] == "bactalk.alfalfa-graph-run/v1"
     assert evidence["approval_allowed"] is True
@@ -527,6 +540,7 @@ def test_alfalfa_qualification_is_signed_reviewable_and_tamper_evident(
         names = archive.namelist()
         assert "alfalfa-verification/evidence.json" in names
         assert "alfalfa-verification/contractor-building.fmu" in names
+        assert "alfalfa-verification/oracle-001-fan-command/errors.csv" in names
 
     model_path = next(
         Path(path)
@@ -550,6 +564,7 @@ def test_alfalfa_qualification_rejects_invalid_fmu_without_mutating_run(
             candidate.id,
             client=_FakeAlfalfa(),
             mapping=_mapping(),
+            oracles=[_oracle()],
             model_bytes=b"not-a-zip",
             model_filename="building.fmu",
             steps=1,
@@ -601,6 +616,7 @@ def test_alfalfa_qualification_rejects_unsafe_fmu_archives(
             candidate.id,
             client=_FakeAlfalfa(),
             mapping=_mapping(),
+            oracles=[_oracle()],
             model_bytes=model_bytes,
             model_filename="building.fmu",
             steps=1,
@@ -633,6 +649,7 @@ def test_alfalfa_qualification_is_available_through_product_api(tmp_path: Path) 
     run_id = created.json()["id"]
     qualification = {
         "mapping": _mapping().model_dump(mode="json"),
+        "oracles": [_oracle().model_dump(mode="json")],
         "steps": 2,
         "step_seconds": 60.0,
         "start": "2019-01-01T00:00:00",
@@ -669,6 +686,7 @@ def test_alfalfa_qualification_closes_loop_through_real_bacnet_udp(
             candidate.id,
             client=_FakeAlfalfa(),
             mapping=_mapping(),
+            oracles=[_oracle()],
             model_bytes=_fmu_bytes(),
             model_filename="contractor-building.fmu",
             steps=2,
@@ -696,6 +714,33 @@ def test_alfalfa_qualification_closes_loop_through_real_bacnet_udp(
     service.verify_integrity(candidate.id)
 
 
+def test_failing_alfalfa_oracle_blocks_human_approval(tmp_path: Path) -> None:
+    service = WorkbenchService(RunRepository(tmp_path / "runs"))
+    candidate = service.create_run(_job())
+
+    qualified = service.qualify_with_alfalfa(
+        candidate.id,
+        client=_FakeAlfalfa(),
+        mapping=_mapping(),
+        oracles=[_oracle(expected=0.0)],
+        model_bytes=_fmu_bytes(),
+        model_filename="contractor-building.fmu",
+        steps=2,
+        step_seconds=60.0,
+        start=datetime(2019, 1, 1),
+    )
+
+    assert qualified.status == RunStatus.FAILED
+    evidence = json.loads(Path(qualified.alfalfa_verification_path or "").read_text())
+    assert evidence["status"] == "fail"
+    assert evidence["approval_allowed"] is False
+    assert evidence["oracles"][0]["passed"] is False
+    with pytest.raises(ApprovalRequiredError):
+        service.approve(candidate.id, "Alex Engineer")
+    with pytest.raises(ApprovalRequiredError):
+        service.export_path(candidate.id)
+
+
 def test_bacnet_coupled_alfalfa_qualification_is_available_through_product_api(
     tmp_path: Path,
 ) -> None:
@@ -710,6 +755,7 @@ def test_bacnet_coupled_alfalfa_qualification_is_available_through_product_api(
     run_id = created.json()["id"]
     qualification = {
         "mapping": _mapping().model_dump(mode="json"),
+        "oracles": [_oracle().model_dump(mode="json")],
         "steps": 2,
         "step_seconds": 60.0,
         "start": "2019-01-01T00:00:00",
@@ -747,6 +793,15 @@ def test_bacnet_coupled_alfalfa_supports_boolean_input_and_command_objects(
             candidate.id,
             client=_FakeBooleanAlfalfa(),
             mapping=_boolean_mapping(),
+            oracles=[
+                AlfalfaTrajectoryOracle(
+                    id="run-command",
+                    signal_kind="graph_output",
+                    signal="run_command",
+                    reference_times=[60.0],
+                    reference_values=[1.0],
+                )
+            ],
             model_bytes=_fmu_bytes(),
             model_filename="boolean-building.fmu",
             steps=1,
@@ -777,6 +832,15 @@ def test_bacnet_coupled_alfalfa_supports_multistate_modes(tmp_path: Path) -> Non
             candidate.id,
             client=_FakeModeAlfalfa(),
             mapping=_mode_mapping(),
+            oracles=[
+                AlfalfaTrajectoryOracle(
+                    id="mode-command",
+                    signal_kind="graph_output",
+                    signal="mode_command",
+                    reference_times=[60.0],
+                    reference_values=[2.0],
+                )
+            ],
             model_bytes=_fmu_bytes(),
             model_filename="mode-building.fmu",
             steps=1,
@@ -822,6 +886,7 @@ def test_bacnet_coupled_alfalfa_requires_a_complete_exact_protocol_boundary(
                 candidate.id,
                 client=_FakeAlfalfa(),
                 mapping=_mapping(),
+                oracles=[_oracle()],
                 model_bytes=_fmu_bytes(),
                 model_filename="contractor-building.fmu",
                 steps=1,
@@ -852,6 +917,7 @@ def test_bacnet_coupled_alfalfa_rejects_a_job_without_a_bacnet_scan(
             "qualification": json.dumps(
                 {
                     "mapping": _mapping().model_dump(mode="json"),
+                    "oracles": [_oracle().model_dump(mode="json")],
                     "steps": 1,
                     "step_seconds": 60.0,
                     "start": "2019-01-01T00:00:00",

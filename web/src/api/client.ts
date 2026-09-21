@@ -448,16 +448,16 @@ const boptestSchema = z.object({
       absolute_time_tolerance: z.number(),
       absolute_value_tolerance: z.number(),
     }).passthrough(),
-  }).passthrough()),
+  }).passthrough()).default([]),
 }).passthrough();
 
 const alfalfaEvidenceSchema = z.object({
   schema: z.literal('bactalk.alfalfa-graph-run/v1'),
-  status: z.literal('pass'),
+  status: z.enum(['pass', 'fail']),
   runtime: z.literal('Alfalfa'),
   run_id: z.string(),
   bactalk_run_id: z.string().optional(),
-  approval_allowed: z.literal(true),
+  approval_allowed: z.boolean(),
   live_building_writes: z.literal(false),
   status_after_start: z.string(),
   status_after_stop: z.string(),
@@ -487,6 +487,24 @@ const alfalfaEvidenceSchema = z.object({
     writes_affect_virtual_objects_only: z.literal(true),
     licensed_niagara_runtime: z.literal(false),
   }).passthrough().optional(),
+  oracles: z.array(z.object({
+    completed: z.boolean(),
+    passed: z.boolean(),
+    max_error: z.number().nullable(),
+    pyfunnel_status_code: z.number(),
+    test_times: z.array(z.number()),
+    test_values: z.array(z.number()),
+    report_directory: z.string(),
+    oracle: z.object({
+      id: z.string(),
+      signal_kind: z.enum(['graph_input', 'graph_output', 'fmu_input', 'fmu_output']),
+      signal: z.string(),
+      reference_times: z.array(z.number()),
+      reference_values: z.array(z.number()),
+      absolute_time_tolerance: z.number(),
+      absolute_value_tolerance: z.number(),
+    }).passthrough(),
+  }).passthrough()).default([]),
   trajectory: z.array(z.object({
     index: z.number().int().nonnegative(),
     start_time: z.string(),
@@ -1134,7 +1152,7 @@ export const api = {
   async alfalfa(runId: string) {
     return getArtifact(`/api/runs/${runId}/verify/alfalfa`, alfalfaEvidenceSchema);
   },
-  async qualifyAlfalfa(runId: string, model: File, qualification: { mapping: unknown; steps: number; step_seconds: number; start: string; transport?: 'direct' | 'bacnet_ip_loopback' }) {
+  async qualifyAlfalfa(runId: string, model: File, qualification: { mapping: unknown; oracles: unknown[]; steps: number; step_seconds: number; start: string; transport?: 'direct' | 'bacnet_ip_loopback' }) {
     const body = new FormData();
     body.append('model_file', model);
     body.append('qualification', JSON.stringify(qualification));

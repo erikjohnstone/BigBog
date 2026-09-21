@@ -2,6 +2,24 @@ import type { ControlGraph, FmiVariable } from '../../api/client';
 
 export type SensorBindingDraft = { output: string; scale: string; offset: string; initial: string };
 export type CommandBindingDraft = { input: string; scale: string; offset: string; minimum: string; maximum: string; echo: string };
+export type AlfalfaOracleSignalKind = 'graph_input' | 'graph_output' | 'fmu_input' | 'fmu_output';
+export type AlfalfaOracleDraft = {
+  id: string;
+  signalKind: AlfalfaOracleSignalKind;
+  signal: string;
+  referenceValues: string;
+  timeTolerance: string;
+  valueTolerance: string;
+};
+export type AlfalfaOracle = {
+  id: string;
+  signal_kind: AlfalfaOracleSignalKind;
+  signal: string;
+  reference_times: number[];
+  reference_values: number[];
+  absolute_time_tolerance: number;
+  absolute_value_tolerance: number;
+};
 
 export function signalLabel(variable: FmiVariable): string {
   const bounds = variable.minimum !== null || variable.maximum !== null ? `${variable.minimum ?? '−∞'}…${variable.maximum ?? '∞'}` : null;
@@ -69,4 +87,37 @@ export function buildAlfalfaMapping(
     return draft?.input && draft.echo ? [[draft.input, draft.echo]] : [];
   }));
   return { outputs, inputs, observed_outputs: observedOutputs, command_echoes, echo_tolerance: 1e-6 };
+}
+
+export function buildAlfalfaOracles(
+  drafts: AlfalfaOracleDraft[],
+  steps: number,
+  stepSeconds: number,
+): AlfalfaOracle[] {
+  if (!Number.isInteger(steps) || steps < 1) throw new Error('Oracle steps must be a positive integer');
+  if (!Number.isFinite(stepSeconds) || stepSeconds <= 0) throw new Error('Oracle step seconds must be positive');
+  if (!drafts.length) throw new Error('At least one independent trajectory oracle is required');
+  const ids = drafts.map((draft) => draft.id.trim());
+  if (new Set(ids).size !== ids.length) throw new Error('Trajectory oracle IDs must be unique');
+  return drafts.map((draft) => {
+    const id = draft.id.trim();
+    if (!/^[A-Za-z][A-Za-z0-9_.-]{0,119}$/.test(id)) throw new Error(`Oracle ID ${id || '(blank)'} is invalid`);
+    if (!draft.signal) throw new Error(`Oracle ${id} has no reviewed signal`);
+    const parsed = draft.referenceValues.trim().split(/[\s,]+/).filter(Boolean).map(Number);
+    if (!parsed.length || parsed.some((value) => !Number.isFinite(value))) throw new Error(`Oracle ${id} expected values must be finite numbers`);
+    const referenceValues = parsed.length === 1 ? Array.from({ length: steps }, () => parsed[0]) : parsed;
+    if (referenceValues.length !== steps) throw new Error(`Oracle ${id} requires one value or exactly ${steps} trajectory values`);
+    const absoluteTimeTolerance = numericDraft(draft.timeTolerance, `${id} time tolerance`);
+    const absoluteValueTolerance = numericDraft(draft.valueTolerance, `${id} value tolerance`);
+    if (absoluteTimeTolerance! < 0 || absoluteValueTolerance! < 0) throw new Error(`Oracle ${id} tolerances cannot be negative`);
+    return {
+      id,
+      signal_kind: draft.signalKind,
+      signal: draft.signal,
+      reference_times: Array.from({ length: steps }, (_, index) => (index + 1) * stepSeconds),
+      reference_values: referenceValues,
+      absolute_time_tolerance: absoluteTimeTolerance!,
+      absolute_value_tolerance: absoluteValueTolerance!,
+    };
+  });
 }

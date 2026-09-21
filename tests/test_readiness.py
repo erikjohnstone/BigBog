@@ -95,7 +95,32 @@ def test_alfalfa_runtime_evidence_advances_readiness_without_claiming_production
     }
 
     assert "typed graph-to-FMU" not in graph_qualified["alfalfa"]["blocker"]
+    assert "independent trajectory oracle" in graph_qualified["alfalfa"]["blocker"]
     assert graph_qualified["alfalfa"]["production_ready"] is False
+
+    (tmp_path / ".bactalk/alfalfa-product-evidence.json").write_text(
+        json.dumps(
+            {
+                "schema": "bactalk.alfalfa-product-workflow/v1",
+                "status": "pass",
+                "runtime_evidence": {
+                    "schema": "bactalk.alfalfa-graph-run/v1",
+                    "status": "pass",
+                    "approval_allowed": True,
+                    "oracles": [
+                        {"completed": True, "passed": True, "pyfunnel_status_code": 0}
+                    ],
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    oracle_qualified = {
+        item["id"]: item for item in IntegrationReadiness(tmp_path).report()["components"]
+    }
+
+    assert "independent trajectory oracle" not in oracle_qualified["alfalfa"]["blocker"]
+    assert oracle_qualified["alfalfa"]["production_ready"] is False
 
 
 def test_readiness_api(tmp_path: Path) -> None:

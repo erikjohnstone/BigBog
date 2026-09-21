@@ -4,7 +4,7 @@ import hashlib
 import math
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -103,6 +103,39 @@ class AlfalfaGraphMap(BaseModel):
         echo_outputs = list(self.command_echoes.values())
         if len(echo_outputs) != len(set(echo_outputs)):
             raise ValueError("Alfalfa mapping contains duplicate command echo outputs")
+        return self
+
+
+class AlfalfaTrajectoryOracle(BaseModel):
+    """Independent expected behavior for a graph/FMU closed-loop trajectory."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(pattern=r"^[A-Za-z][A-Za-z0-9_.-]{0,119}$")
+    signal_kind: Literal["graph_input", "graph_output", "fmu_input", "fmu_output"]
+    signal: str = Field(min_length=1, max_length=240)
+    reference_times: list[float] = Field(min_length=1, max_length=100_000)
+    reference_values: list[float] = Field(min_length=1, max_length=100_000)
+    absolute_time_tolerance: float = Field(default=0.0, ge=0, allow_inf_nan=False)
+    absolute_value_tolerance: float = Field(default=0.0, ge=0, allow_inf_nan=False)
+
+    @model_validator(mode="after")
+    def valid_trajectory(self) -> AlfalfaTrajectoryOracle:
+        if len(self.reference_times) != len(self.reference_values):
+            raise ValueError("oracle reference times and values must have equal length")
+        if any(not math.isfinite(value) for value in self.reference_times):
+            raise ValueError("oracle reference times must be finite")
+        if any(not math.isfinite(value) for value in self.reference_values):
+            raise ValueError("oracle reference values must be finite")
+        if any(
+            current <= previous
+            for previous, current in zip(
+                self.reference_times,
+                self.reference_times[1:],
+                strict=False,
+            )
+        ):
+            raise ValueError("oracle reference times must be strictly increasing")
         return self
 
 

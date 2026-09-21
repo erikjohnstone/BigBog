@@ -150,6 +150,23 @@ def main() -> int:
 
         qualification = {
             "mapping": _mapping().model_dump(mode="json"),
+            "oracles": [
+                {
+                    "id": "zone-temperature-response",
+                    "signal_kind": "fmu_output",
+                    "signal": "hvac_reaZonCor_TZon_y",
+                    "reference_times": [60.0, 120.0, 180.0, 240.0, 300.0],
+                    "reference_values": [
+                        293.15735,
+                        293.16227,
+                        293.16072,
+                        293.15350,
+                        293.14196,
+                    ],
+                    "absolute_time_tolerance": 0.0,
+                    "absolute_value_tolerance": 0.05,
+                }
+            ],
             "steps": 5,
             "step_seconds": 60.0,
             "start": "2019-01-01T00:00:00",
@@ -182,6 +199,7 @@ def main() -> int:
         expected = {
             f"alfalfa-verification/{model.name}",
             "alfalfa-verification/evidence.json",
+            "alfalfa-verification/oracle-001-zone-temperature-response/errors.csv",
         }
         if not expected.issubset(names):
             raise RuntimeError(
@@ -214,6 +232,9 @@ def main() -> int:
             raise RuntimeError("product qualification did not traverse BACnet/IP loopback")
         if not transport.get("readbacks_matched"):
             raise RuntimeError("BACnet/IP qualification did not retain matched command readbacks")
+        oracles = retained.json().get("oracles")
+        if not isinstance(oracles, list) or not oracles or not oracles[0].get("passed"):
+            raise RuntimeError("whole-building response trajectory did not pass its oracle")
         write_evidence_atomic(arguments.output, evidence)
         print(json.dumps(evidence, indent=2, sort_keys=True))
     return 0
