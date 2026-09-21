@@ -1210,3 +1210,45 @@ def test_latest_qualification_job_exposes_changed_input_as_precondition_failure(
 
     assert response.status_code == 412
     assert "request digest changed" in response.json()["detail"]
+
+
+def test_qualification_job_events_stream_reports_progress_until_terminal(
+    tmp_path: Path,
+) -> None:
+    dispatcher = _CapturingQualificationDispatcher()
+    client = TestClient(
+        create_app(
+            tmp_path / "runs",
+            qualification_dispatcher=dispatcher,
+        )
+    )
+    created = client.post("/api/runs", json=_job().model_dump(mode="json"))
+    run_id = created.json()["id"]
+    queued = client.post(
+        f"/api/runs/{run_id}/qualification-jobs/alfalfa",
+        data={"qualification": _qualification_payload().model_dump_json()},
+        files={"model_file": ("building.fmu", _fmu_bytes(), "application/zip")},
+    ).json()
+
+    first = client.get(f"/api/qualification-jobs/{queued['id']}/events?limit=1")
+    assert first.status_code == 200
+    assert first.headers["content-type"].startswith("text/event-stream")
+    events = [chunk for chunk in first.text.split("\n\n") if chunk]
+    assert len(events) == 1
+    kind, _, data = events[0].partition("\ndata: ")
+    assert kind == "event: progress"
+    payload = json.loads(data)
+    assert payload["id"] == queued["id"]
+    assert payload["status"] == "queued"
+    assert payload["progress"]["phase"] == queued["progress"]["phase"]
+
+    client.post(f"/api/qualification-jobs/{queued['id']}/cancel")
+    # A terminal record ends the stream on its own, without a limit.
+    ended = client.get(f"/api/qualification-jobs/{queued['id']}/events")
+    events = [chunk for chunk in ended.text.split("\n\n") if chunk]
+    assert len(events) == 1
+    assert json.loads(events[0].partition("\ndata: ")[2])["status"] == "canceled"
+
+    missing = client.get("/api/qualification-jobs/nope/events")
+    assert missing.status_code == 200
+    assert missing.text.startswith("event: gone\n")

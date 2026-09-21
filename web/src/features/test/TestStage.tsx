@@ -5,7 +5,7 @@ import type { RunDetail } from '../../api/client';
 import { useBlockCatalog, useGraph, useReport } from '../../api/queries';
 import { PanelRightClose, PanelRightOpen } from 'lucide-react';
 
-import { Button, StatusPill, Tab, TabList, TabPanel, Tabs } from '../../design-system/primitives';
+import { Button, NativeSelect, StatusPill, Tab, TabList, TabPanel, Tabs } from '../../design-system/primitives';
 import { ErrorState, LoadingState } from '../../design-system/states';
 import { traceStore, useTrace } from '../../stores/trace';
 import type { Signal } from '../../stores/trace';
@@ -13,10 +13,12 @@ import { useTimeCursor } from '../../stores/timeCursor';
 import { useTrends } from '../../stores/trends';
 import { useUi } from '../../stores/ui';
 import { buildTrace, traceIdForRun } from '../../trace/build-trace';
+import { alfalfaTraceId, boptestTraceId } from '../../trace/evidence-trace';
 import { DecisionMatrix } from '../coverage/DecisionMatrix';
 import { FaultMatrix } from '../coverage/FaultMatrix';
 import { QualificationMatrix } from '../coverage/QualificationMatrix';
 import { SchematicPanel } from '../schematic/SchematicPanel';
+import { SimulationCenter } from '../simulation/SimulationCenter';
 import { MasterTimeline } from '../timeline/MasterTimeline';
 import { Transport } from '../timeline/Transport';
 import { SignalRail } from '../trends/SignalRail';
@@ -30,6 +32,9 @@ import { DataTable } from './DataTable';
 const LAYOUT_KEY = 'test';
 const defaultOuter = { top: 64, evidence: 36 };
 const defaultInner = { rail: 18, trends: 52, schematic: 30 };
+
+type ClockSource = 'run' | 'boptest' | 'alfalfa';
+const SOURCE_LABELS: Record<ClockSource, string> = { run: 'Acceptance tests', boptest: 'BOPTEST evidence', alfalfa: 'Alfalfa evidence' };
 
 /**
  * Test stage: master timeline, trend panes, and boolean lanes on the shared
@@ -56,8 +61,17 @@ function TestBody({
   graph: ReturnType<typeof useGraph>['data'];
   catalog: ReturnType<typeof useBlockCatalog>['data'];
 }) {
-  const traceId = traceIdForRun(run.id);
-  const trace = useTrace(traceId);
+  const runTraceId = traceIdForRun(run.id);
+  const sourceIds: Record<ClockSource, string> = { run: runTraceId, boptest: boptestTraceId(run.id), alfalfa: alfalfaTraceId(run.id) };
+  const [requestedSource, setSource] = useState<ClockSource>('run');
+  const runTrace = useTrace(runTraceId);
+  const boptestTrace = useTrace(sourceIds.boptest);
+  const alfalfaTrace = useTrace(sourceIds.alfalfa);
+  const loaded: Record<ClockSource, boolean> = { run: Boolean(runTrace), boptest: Boolean(boptestTrace), alfalfa: Boolean(alfalfaTrace) };
+  // An evidence trace that has not been loaded falls back to the run's own trace.
+  const source: ClockSource = loaded[requestedSource] ? requestedSource : 'run';
+  const traceId = sourceIds[source];
+  const trace = source === 'run' ? runTrace : source === 'boptest' ? boptestTrace : alfalfaTrace;
   const savePanelSizes = useUi((state) => state.savePanelSizes);
   const schematicOpen = useUi((state) => state.schematicOpen);
   const [outerLayout] = useState(() => useUi.getState().panelSizes[`${LAYOUT_KEY}:outer`] ?? defaultOuter);
@@ -83,9 +97,12 @@ function TestBody({
   );
 
   useEffect(() => {
-    if (!traceStore.has(traceId)) traceStore.put(buildTrace(run, report, { catalog, graph: graph ?? undefined }));
-    if (useTimeCursor.getState().traceId !== traceId) useTimeCursor.getState().setTrace(traceId);
-  }, [run, report, catalog, graph, traceId]);
+    if (!traceStore.has(runTraceId)) traceStore.put(buildTrace(run, report, { catalog, graph: graph ?? undefined }));
+  }, [run, report, catalog, graph, runTraceId]);
+
+  useEffect(() => {
+    if (traceStore.has(traceId) && useTimeCursor.getState().traceId !== traceId) useTimeCursor.getState().setTrace(traceId);
+  }, [traceId, trace]);
 
   useEffect(() => {
     if (trace && !trends) ensure(traceId, () => composeDefaultTrends(trace, outputsOf));
@@ -97,10 +114,13 @@ function TestBody({
   );
 
   const summary = useMemo(() => {
+    if (source !== 'run' && trace) return { total: trace.assertions.length, passed: trace.assertions.filter((item) => item.passed).length, label: trace.assertions.length === 1 ? 'oracle' : 'oracles' };
     const total = report.scenarios.reduce((sum, scenario) => sum + scenario.assertions.length, 0);
     const passed = report.scenarios.reduce((sum, scenario) => sum + scenario.assertions.filter((item) => item.passed).length, 0);
-    return { total, passed };
-  }, [report]);
+    return { total, passed, label: 'assertions' };
+  }, [report, source, trace]);
+  const passed = source === 'run' ? report.passed : Boolean(trace?.passed);
+  const passLabel = source === 'run' ? (passed ? 'Tests passed' : 'Tests failed') : passed ? 'Qualification passed' : 'Qualification failed';
 
   if (!trace || !trends) return <LoadingState label="Building trace" />;
 
@@ -118,13 +138,22 @@ function TestBody({
             <Separator className="w-px bg-line-1 hover:bg-accent transition-colors" />
             <Panel id="trends" defaultSize={defaultInner.trends} minSize="40" className="flex flex-col min-w-0">
               <div className="flex items-center gap-2 px-3 h-9 hairline-b shrink-0 bg-bg-1">
-                <StatusPill tone={report.passed ? 'ok' : 'fail'}>{report.passed ? 'Tests passed' : 'Tests failed'}</StatusPill>
-                <span className="num text-fg-2">
-                  {summary.passed}/{summary.total} assertions
+                <StatusPill tone={passed ? 'ok' : 'fail'}>{passLabel}</StatusPill>
+                <span className="num text-fg-2 whitespace-nowrap">
+                  {summary.passed}/{summary.total} {summary.label}
                 </span>
-                <span className="text-xs text-fg-2 truncate hidden lg:inline">{report.engine}</span>
+                <span className="text-xs text-fg-2 truncate max-w-48 hidden lg:inline">{source === 'run' ? report.engine : trace.label}</span>
                 <span className="flex-1" />
-                <span className="text-2xs text-fg-2 hidden md:inline">Drag on the timeline to zoom · drag in a pane to scrub</span>
+                {(loaded.boptest || loaded.alfalfa) && (
+                  <NativeSelect size="sm" className="w-44" aria-label="Clock source" value={source} onChange={(event) => setSource(event.target.value as ClockSource)}>
+                    {(Object.keys(SOURCE_LABELS) as ClockSource[]).filter((key) => loaded[key]).map((key) => (
+                      <option key={key} value={key}>
+                        {SOURCE_LABELS[key]}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                )}
+                <span className="text-2xs text-fg-2 whitespace-nowrap hidden xl:inline">Drag on the timeline to zoom · drag in a pane to scrub</span>
                 <Button size="xs" variant="ghost" onClick={() => reset(traceId, () => composeDefaultTrends(trace, outputsOf))}>
                   Reset panes
                 </Button>
@@ -172,6 +201,7 @@ function TestBody({
               <Tab value="faults">Faults</Tab>
               <Tab value="qualification">Qualification</Tab>
               <Tab value="data">Data</Tab>
+              <Tab value="simulation">Simulation</Tab>
             </TabList>
             <TabPanel value="assertions" className="flex-1 min-h-0 overflow-auto">
               <AssertionList trace={trace} graph={graph ?? undefined} />
@@ -187,6 +217,9 @@ function TestBody({
             </TabPanel>
             <TabPanel value="data" className="flex-1 min-h-0">
               <DataTable trace={trace} />
+            </TabPanel>
+            <TabPanel value="simulation" className="flex-1 min-h-0 overflow-auto">
+              <SimulationCenter runId={run.id} graph={graph} onLoadTrace={(kind) => setSource(kind)} />
             </TabPanel>
           </Tabs>
         </Panel>

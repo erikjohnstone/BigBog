@@ -20,6 +20,8 @@ export interface ThemeColors {
   warn: string;
   warnSoft: string;
   ok: string;
+  sim: string;
+  simSoft: string;
   series: string[];
   font: string;
 }
@@ -41,6 +43,8 @@ export function readThemeColors(): ThemeColors {
     warn: read('--warn'),
     warnSoft: read('--warn-soft'),
     ok: read('--ok'),
+    sim: read('--sim'),
+    simSoft: read('--sim-soft'),
     series: SERIES_VARS.map(read),
     font: `11px ${read('--font-mono') || 'monospace'}`,
   };

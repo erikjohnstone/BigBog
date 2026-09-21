@@ -1463,6 +1463,9 @@ export const api = {
   async latestQualificationJob(runId: string) {
     return getArtifact(`/api/runs/${runId}/qualification-jobs/latest`, qualificationJobSchema);
   },
+  async qualificationJob(jobId: string) {
+    return qualificationJobSchema.parse(await getJson(`/api/qualification-jobs/${encodeURIComponent(jobId)}`));
+  },
   async cancelQualificationJob(jobId: string) {
     return qualificationJobSchema.parse(
       await postJson(`/api/qualification-jobs/${jobId}/cancel`, {}),

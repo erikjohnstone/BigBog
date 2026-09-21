@@ -103,6 +103,53 @@ export const TrendPane = memo(function TrendPane({
         const x1 = xAt(trace.time[window.endIdx] + stepAfter);
         ctx.fillRect(x0, top, Math.max(2, x1 - x0), plotHeight);
       }
+      // Oracle tolerance bands, dashed references, and counterexample windows.
+      for (const band of trace.oracles) {
+        const seriesIndex = signals.findIndex((signal) => signal.id === band.signalId);
+        if (seriesIndex < 0) continue;
+        const reference = trace.signals.get(band.referenceSignalId)?.values;
+        if (!reference) continue;
+        // Each contiguous run of reference samples is one filled ribbon.
+        let start = -1;
+        const flush = (end: number) => {
+          if (start < 0) return;
+          ctx.beginPath();
+          for (let i = start; i <= end; i += 1) ctx.lineTo(xAt(trace.time[i]), u.valToPos(reference[i] + band.tolerance, 'y', true));
+          for (let i = end; i >= start; i -= 1) ctx.lineTo(xAt(trace.time[i]), u.valToPos(reference[i] - band.tolerance, 'y', true));
+          ctx.closePath();
+          ctx.fillStyle = colors.simSoft;
+          ctx.fill();
+          ctx.beginPath();
+          for (let i = start; i <= end; i += 1) ctx.lineTo(xAt(trace.time[i]), u.valToPos(reference[i], 'y', true));
+          ctx.setLineDash([4, 3]);
+          ctx.strokeStyle = colors.sim;
+          ctx.lineWidth = 1;
+          ctx.stroke();
+          ctx.setLineDash([]);
+          start = -1;
+        };
+        for (let i = 0; i < reference.length; i += 1) {
+          if (Number.isNaN(reference[i])) flush(i - 1);
+          else if (start < 0) start = i;
+        }
+        flush(reference.length - 1);
+        if (band.window) {
+          const x0 = xAt(trace.time[band.window.startIdx]);
+          const x1 = xAt(trace.time[band.window.endIdx]);
+          ctx.fillStyle = colors.failSoft;
+          ctx.fillRect(Math.min(x0, x1), top, Math.max(2, Math.abs(x1 - x0)), plotHeight);
+          const peakValue = data[seriesIndex + 1][band.window.peakIdx];
+          if (peakValue !== null && peakValue !== undefined) {
+            const px = xAt(trace.time[band.window.peakIdx]);
+            const py = u.valToPos(peakValue as number, 'y', true);
+            ctx.beginPath();
+            ctx.arc(px, py, 5, 0, Math.PI * 2);
+            ctx.strokeStyle = colors.fail;
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+          }
+        }
+      }
       // Assertion marks for series on this pane.
       const { index: cursorIndex, t } = useTimeCursor.getState();
       for (const assertion of trace.assertions) {

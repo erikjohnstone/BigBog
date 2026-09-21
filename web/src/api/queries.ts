@@ -121,3 +121,9 @@ export function useCtrlFlowConfiguration(templateId: string | undefined, selecti
 export function useG36Parameters(controllerId: string | undefined) {
   return useQuery({ queryKey: keys.g36Parameters(controllerId ?? ''), queryFn: () => api.g36Parameters(controllerId!), enabled: Boolean(controllerId), staleTime: Infinity });
 }
+export function useLatestQualificationJob(runId: string | undefined, opts?: { refetchInterval?: number | false }) {
+  return useQuery({ queryKey: keys.latestJob(runId ?? ''), queryFn: () => api.latestQualificationJob(runId!), enabled: Boolean(runId), refetchInterval: opts?.refetchInterval ?? false });
+}
+export function useBoptestCatalog(enabled = true) {
+  return useQuery({ queryKey: keys.boptestCatalog, queryFn: api.boptestCatalog, enabled, staleTime: 5 * 60_000, retry: false });
+}

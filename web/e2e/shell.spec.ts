@@ -323,6 +323,141 @@ test('schematic builds from the job and animates from the clock', async ({ page 
   await axe(page);
 });
 
+test('simulation center streams job progress and puts BOPTEST evidence on the clock', async ({ page }) => {
+  test.setTimeout(60_000);
+  const runs = (await (await page.request.get('/api/runs')).json()) as Run[];
+  const candidate = runs.find((run) => run.job.equipment_name === 'EF_1') ?? runs.find((run) => run.status === 'ready_for_review') ?? runs[0];
+  test.skip(!candidate, 'A retained candidate is required.');
+
+  const now = new Date().toISOString();
+  const job = {
+    schema_version: 'bactalk.qualification-job/v3',
+    id: 'job-e2e',
+    broker_job_id: 'rq-e2e',
+    run_id: candidate.id,
+    candidate_artifact_sha256: null,
+    kind: 'boptest',
+    transport: 'boptest_rest',
+    status: 'queued',
+    model_filename: null,
+    model_sha256: null,
+    request_sha256: 'a'.repeat(64),
+    input_sha256: 'b'.repeat(64),
+    created_at: now,
+    updated_at: now,
+    started_at: null,
+    completed_at: null,
+    heartbeat_at: null,
+    lease_expires_at: null,
+    worker_id: null,
+    actor_id: null,
+    tenant_id: null,
+    progress: { phase: 'queued', completed_steps: 0, total_steps: 4, percent: 0 },
+    cancellation_requested: false,
+    error: null,
+    result_artifact_sha256: null,
+    qualification_passed: null,
+  };
+  const event = (status: string, phase: string, completed: number, passed: boolean | null) =>
+    `event: progress\ndata: ${JSON.stringify({ id: job.id, status, progress: { phase, completed_steps: completed, total_steps: 4, percent: (completed / 4) * 100 }, heartbeat_at: now, updated_at: now, error: null, qualification_passed: passed, result_artifact_sha256: passed === null ? null : 'c'.repeat(64), cancellation_requested: false })}\n\n`;
+  await page.route(`**/api/runs/${candidate.id}/qualification-jobs/latest`, (route) => route.fulfill({ json: job }));
+  await page.route('**/api/qualification-jobs/job-e2e', (route) => route.fulfill({ json: { ...job, status: 'succeeded', qualification_passed: true } }));
+  await page.route('**/api/qualification-jobs/job-e2e/events', (route) =>
+    route.fulfill({ status: 200, contentType: 'text/event-stream', body: event('running', 'simulating', 2, null) + event('succeeded', 'complete', 4, true) }),
+  );
+  const boptest = {
+    schema: 'bactalk.boptest-qualification/v1',
+    status: 'fail',
+    run_id: candidate.id,
+    approval_allowed: false,
+    live_building_writes: false,
+    runtime: {
+      runtime: 'BOPTEST',
+      test_case: 'bestest_air',
+      graph_name: candidate.job.name,
+      graph_sha256: 'd'.repeat(64),
+      step_seconds: 300,
+      steps: 4,
+      measurement_catalog_count: 1,
+      input_catalog_count: 1,
+      kpis: { ener_tot: 1.5, tdis_tot: 0.25 },
+      mapping: { measurements: [], actuators: [], test_case: 'bestest_air' },
+      trajectory: [0, 1, 2, 3].map((i) => ({ index: i, start_time: 1000 + i * 300, end_time: 1300 + i * 300, graph_inputs: { ZoneTemp: 70 + i }, controller_outputs: { Damper: i * 25 }, overrides: {}, measurements: { reaTZon_y: 293 + i } })),
+    },
+    oracles: [
+      {
+        completed: true,
+        passed: false,
+        max_error: 12,
+        pyfunnel_status_code: 1,
+        test_times: [300, 600, 900, 1200],
+        test_values: [0, 25, 50, 75],
+        counterexample: { schema: 'bactalk.trajectory-counterexample/v1', violation_count: 1, first_violation_time: 900, last_violation_time: 900, peak_error_time: 900, peak_error: 12, peak_absolute_error: 12, context_samples: 1, window: { start_index: 2, end_index: 3, test_times: [900, 1200], test_values: [50, 75] } },
+        oracle: { id: 'damper', signal: 'Damper', signal_kind: 'graph_output', reference_times: [300, 600, 900, 1200], reference_values: [0, 25, 38, 75], absolute_time_tolerance: 0, absolute_value_tolerance: 5 },
+      },
+    ],
+  };
+  await page.route(`**/api/runs/${candidate.id}/verify/boptest`, (route) => route.fulfill({ json: boptest }));
+  await page.route('**/api/integrations/boptest/catalog', (route) => route.fulfill({ json: { schema: 'bactalk.boptest-catalog/v1', version: '0.7.0', test_cases: ['bestest_air'], live_building_writes: false } }));
+  await page.route('**/api/integrations/boptest/catalog/bestest_air', (route) =>
+    route.fulfill({
+      json: {
+        schema: 'bactalk.boptest-test-case-contract/v1',
+        version: '0.7.0',
+        test_case: 'bestest_air',
+        measurements: [{ name: 'reaTZon_y', unit: 'K', description: 'Zone temperature', minimum: null, maximum: null, activation_signal: false }],
+        inputs: [{ name: 'oveFan_u', unit: '1', description: 'Fan override', minimum: 0, maximum: 1, activation_signal: false }],
+        measurement_count: 1,
+        input_count: 1,
+        clean_stop: true,
+        initialized: false,
+        live_building_writes: false,
+      },
+    }),
+  );
+
+  await page.goto(`/next/jobs/${candidate.id}/test`);
+  await page.getByRole('tab', { name: 'Simulation' }).click();
+  const progress = page.getByTestId('job-progress');
+  // The stream carries the job from queued through running to a passed result.
+  await expect(progress).toHaveAttribute('data-status', 'succeeded');
+  await expect(progress.getByText('Qualification passed')).toBeVisible();
+  await expect(progress.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
+
+  // Retained BOPTEST evidence shows KPIs with units and the simulated badge, never a verdict.
+  const evidence = page.getByRole('region', { name: 'BOPTEST evidence' });
+  await expect(evidence.getByText('BOPTEST failed')).toBeVisible();
+  await expect(evidence.getByText('HVAC energy')).toBeVisible();
+  await expect(evidence.getByText('kWh/m²')).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Alfalfa evidence' })).toContainText(/no alfalfa evidence retained/i);
+
+  // Loading the trajectory switches the shared clock to the evidence trace.
+  await evidence.getByRole('button', { name: 'Load onto the clock' }).click();
+  await expect(page.getByRole('combobox', { name: 'Clock source' })).toHaveValue('boptest');
+  await expect(page.getByText('Qualification failed', { exact: true })).toBeVisible();
+  await page.getByRole('tab', { name: 'Assertions' }).click();
+  await expect(page.getByRole('tabpanel')).toContainText('damper within ±5 of reference');
+  await expect(page.getByRole('group', { name: 'Master timeline' })).toBeVisible();
+  await expect(page.getByRole('listbox', { name: 'Signals' })).toContainText('Damper');
+  // And back to the run's own acceptance tests.
+  await page.getByRole('combobox', { name: 'Clock source' }).selectOption('run');
+  await expect(page.getByText(/Tests (passed|failed)/).first()).toBeVisible();
+
+  // The wizard inspects a case and prepares bindings from the graph.
+  await page.getByRole('tab', { name: 'Simulation' }).click();
+  await page.getByRole('button', { name: 'BOPTEST case' }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toContainText(/nothing here writes to a live building/i);
+  await dialog.getByRole('combobox', { name: 'BOPTEST test case' }).selectOption('bestest_air');
+  await dialog.getByRole('button', { name: 'Inspect contract' }).click();
+  await expect(dialog.getByText('1 measurements')).toBeVisible();
+  await dialog.getByRole('button', { name: 'Next' }).click();
+  await expect(dialog.getByRole('region', { name: 'Graph inputs' })).toBeVisible();
+  await axe(page);
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+});
+
 test('project system map draws equipment, relationships, and bindings', async ({ page }) => {
   const projects = (await (await page.request.get('/api/projects')).json()) as Array<{ id: string; project: { name: string; equipment: unknown[] } }>;
   test.skip(projects.length === 0, 'A retained project is required.');

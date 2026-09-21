@@ -10,8 +10,10 @@ import type { SignalSource } from '../types';
 
 function signalFor(trace: Trace | undefined, id: string): string | undefined {
   if (!trace) return undefined;
-  if (trace.signals.has(id)) return id;
-  if (trace.signals.has(`${id}.out`)) return `${id}.out`;
+  // Run traces name points directly; evidence traces namespace them by side.
+  for (const candidate of [id, `${id}.out`, `in.${id}`, `out.${id}`, `meas.${id}`]) {
+    if (trace.signals.has(candidate)) return candidate;
+  }
   return undefined;
 }
 
