@@ -71,6 +71,31 @@ def test_alfalfa_runtime_evidence_advances_readiness_without_claiming_production
     assert components["alfalfa"]["stage"] == "product-wired"
     assert components["alfalfa-client"]["stage"] == "product-wired"
     assert components["alfalfa"]["production_ready"] is False
+    assert "typed graph-to-FMU" in components["alfalfa"]["blocker"]
+
+    (tmp_path / ".bactalk/alfalfa-graph-evidence.json").write_text(
+        json.dumps(
+            {
+                "schema": "bactalk.alfalfa-graph-run/v1",
+                "status": "pass",
+                "clean_stop": True,
+                "trajectory": [
+                    {
+                        "command_echoes": {
+                            "fan_command": {"matched": True},
+                        }
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    graph_qualified = {
+        item["id"]: item for item in IntegrationReadiness(tmp_path).report()["components"]
+    }
+
+    assert "typed graph-to-FMU" not in graph_qualified["alfalfa"]["blocker"]
+    assert graph_qualified["alfalfa"]["production_ready"] is False
 
 
 def test_readiness_api(tmp_path: Path) -> None:

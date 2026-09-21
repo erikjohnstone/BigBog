@@ -105,13 +105,19 @@ _BINDINGS: dict[str, dict[str, str]] = {
     },
     "alfalfa": {
         "mode": "isolated-executable-boundary",
-        "product_path": "Hardened Alfalfa FMU service with retained trajectory qualification",
-        "proof": "make alfalfa-contract && make alfalfa-runtime-smoke",
+        "product_path": (
+            "Hardened Alfalfa FMU service with retained typed graph/trajectory qualification"
+        ),
+        "proof": (
+            "make alfalfa-contract && make alfalfa-runtime-smoke && make alfalfa-graph-smoke"
+        ),
     },
     "alfalfa-client": {
         "mode": "isolated-executable-boundary",
-        "product_path": "Pinned AlfalfaClient runtime boundary",
-        "proof": "make alfalfa-contract && make alfalfa-runtime-smoke",
+        "product_path": "Pinned AlfalfaClient typed graph runtime boundary",
+        "proof": (
+            "make alfalfa-contract && make alfalfa-runtime-smoke && make alfalfa-graph-smoke"
+        ),
     },
     "dflexlibs": {
         "mode": "executable-reference",

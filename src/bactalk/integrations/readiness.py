@@ -29,6 +29,16 @@ def _package_version(distribution: str, module: str | None = None) -> str | None
         return None
 
 
+def _load_json_object(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        return {}
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return value if isinstance(value, dict) else {}
+
+
 def _component(
     component_id: str,
     name: str,
@@ -80,20 +90,35 @@ class IntegrationReadiness:
         buildingmotif_python = self.root / ".buildingmotif-venv/bin/python"
         volttron_python = self.root / ".volttron-venv/bin/python"
         docker = shutil.which("docker") or shutil.which("podman")
-        alfalfa_evidence_path = self.root / ".bactalk/alfalfa-runtime-evidence.json"
-        alfalfa_evidence: dict[str, Any] = {}
-        if alfalfa_evidence_path.is_file():
-            try:
-                candidate = json.loads(alfalfa_evidence_path.read_text(encoding="utf-8"))
-                if isinstance(candidate, dict):
-                    alfalfa_evidence = candidate
-            except (OSError, json.JSONDecodeError):
-                pass
+        alfalfa_evidence = _load_json_object(
+            self.root / ".bactalk/alfalfa-runtime-evidence.json"
+        )
+        alfalfa_graph_evidence = _load_json_object(
+            self.root / ".bactalk/alfalfa-graph-evidence.json"
+        )
         alfalfa_runtime_pass = (
             alfalfa_evidence.get("schema") == "bactalk.alfalfa-runtime-evidence/v1"
             and alfalfa_evidence.get("status") == "pass"
             and alfalfa_evidence.get("results", {}).get("clean_stop") is True
             and alfalfa_evidence.get("results", {}).get("changed_output_count", 0) > 0
+        )
+        alfalfa_graph_trajectory = alfalfa_graph_evidence.get("trajectory", [])
+        alfalfa_graph_pass = (
+            alfalfa_graph_evidence.get("schema") == "bactalk.alfalfa-graph-run/v1"
+            and alfalfa_graph_evidence.get("status") == "pass"
+            and alfalfa_graph_evidence.get("clean_stop") is True
+            and isinstance(alfalfa_graph_trajectory, list)
+            and len(alfalfa_graph_trajectory) > 0
+            and all(
+                isinstance(sample, dict)
+                and isinstance(sample.get("command_echoes"), dict)
+                and bool(sample["command_echoes"])
+                and all(
+                    isinstance(echo, dict) and echo.get("matched") is True
+                    for echo in sample["command_echoes"].values()
+                )
+                for sample in alfalfa_graph_trajectory
+            )
         )
         components = [
             _component(
@@ -398,10 +423,12 @@ class IntegrationReadiness:
                 role="EnergyPlus/OpenStudio/FMU virtual-building runtime",
                 product_path=(
                     "Digest-pinned isolated service plus hardened scalar-output worker; "
-                    "external-clock FMU lifecycle retains signal, command, trajectory, and "
-                    "clean-stop evidence"
+                    "external-clock FMU lifecycle and typed graph coupling retain signal, "
+                    "command/echo, trajectory, and clean-stop evidence"
                 ),
-                evidence_command="make alfalfa-runtime-up alfalfa-runtime-smoke",
+                evidence_command=(
+                    "make alfalfa-runtime-up alfalfa-runtime-smoke alfalfa-graph-smoke"
+                ),
                 blocker=(
                     (
                         "Docker/Compose is required and is absent on this host. "
@@ -414,8 +441,13 @@ class IntegrationReadiness:
                         else ""
                     )
                     + (
-                        "Production Linux capacity, job-specific model authority, BACTalk graph "
-                        "coupling, Niagara/BACnet attachment, HA, and field qualification remain."
+                        "Run the typed graph-to-FMU qualification on this host. "
+                        if not alfalfa_graph_pass
+                        else ""
+                    )
+                    + (
+                        "Production Linux capacity, job-specific model/map authority, "
+                        "Niagara/BACnet attachment, HA, and field qualification remain."
                     )
                 ),
             ),
@@ -427,14 +459,14 @@ class IntegrationReadiness:
                 version=_package_version("alfalfa-client", "alfalfa_client"),
                 license_name="BSD-3-Clause",
                 role="Client API for Alfalfa virtual buildings",
-                product_path="AlfalfaClient-backed retained FMU runtime qualification",
-                evidence_command="make alfalfa-runtime-smoke",
+                product_path="AlfalfaClient-backed retained FMU and typed-graph qualification",
+                evidence_command="make alfalfa-runtime-smoke alfalfa-graph-smoke",
                 blocker=(
                     "Needs a pinned running Alfalfa service and retained trajectory evidence."
                     if not alfalfa_runtime_pass
                     else (
-                        "Production Linux capacity, job-specific model authority, and full "
-                        "controller/target coupling remain."
+                        "Production Linux capacity, job-specific model/map authority, and "
+                        "Niagara/BACnet target coupling remain."
                     )
                 ),
             ),

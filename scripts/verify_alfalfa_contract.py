@@ -63,6 +63,10 @@ def main() -> int:
     runtime_evidence = None
     if evidence_path.is_file():
         runtime_evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+    graph_evidence_path = ROOT / ".bactalk/alfalfa-graph-evidence.json"
+    graph_evidence = None
+    if graph_evidence_path.is_file():
+        graph_evidence = json.loads(graph_evidence_path.read_text(encoding="utf-8"))
     print(
         json.dumps(
             {
@@ -80,6 +84,9 @@ def main() -> int:
                 "runtime_lane_configured": True,
                 "retained_runtime_status": (
                     runtime_evidence.get("status") if runtime_evidence is not None else "not_run"
+                ),
+                "retained_graph_status": (
+                    graph_evidence.get("status") if graph_evidence is not None else "not_run"
                 ),
             },
             sort_keys=True,
