@@ -43,8 +43,11 @@ from bactalk.integrations.alfalfa_graph import (
 )
 from bactalk.integrations.bacnet_lab import build_bacnet_lab_export
 from bactalk.integrations.boptest_graph import (
+    BoptestCancellationCheck,
     BoptestGraphMap,
     BoptestGraphRunner,
+    BoptestProgressCallback,
+    BoptestQualificationCancelled,
     BoptestRuntime,
     BoptestTrajectoryOracle,
 )
@@ -566,6 +569,9 @@ class WorkbenchService:
         start_time: float = 0.0,
         warmup_period: float = 0.0,
         scorer: FunnelScorer | None = None,
+        progress_callback: BoptestProgressCallback | None = None,
+        cancellation_requested: BoptestCancellationCheck | None = None,
+        expected_artifact_sha256: str | None = None,
     ) -> RunRecord:
         """Attach signed, pass/fail BOPTEST evidence to an undecided run.
 
@@ -576,12 +582,19 @@ class WorkbenchService:
         """
 
         record = self.repository.get(run_id)
+        if (
+            expected_artifact_sha256 is not None
+            and record.artifact_sha256 != expected_artifact_sha256
+        ):
+            raise ArtifactChangedError(
+                "candidate changed after BOPTEST qualification was submitted"
+            )
         if record.status != RunStatus.READY_FOR_REVIEW:
             raise ApprovalRequiredError(
                 "BOPTEST qualification requires a passing candidate awaiting review"
             )
         self._verify_integrity(record)
-        if record.verification_artifact_paths or record.boptest_verification_path:
+        if record.boptest_verification_path:
             raise ValueError("BOPTEST qualification is append-once; create a new run to retest")
         if not oracles:
             raise ValueError("BOPTEST qualification requires at least one trajectory oracle")
@@ -597,7 +610,13 @@ class WorkbenchService:
             step_seconds=step_seconds,
             start_time=start_time,
             warmup_period=warmup_period,
+            progress_callback=progress_callback,
+            cancellation_requested=cancellation_requested,
         )
+        if cancellation_requested is not None and cancellation_requested():
+            raise BoptestQualificationCancelled(
+                "BOPTEST qualification was canceled before trajectory scoring"
+            )
         run_dir = self.repository.run_directory(record.id)
         destination = run_dir / "boptest-verification"
         if destination.exists():
@@ -606,6 +625,8 @@ class WorkbenchService:
         scorer = scorer or FunnelScorer()
         oracle_results: list[dict[str, object]] = []
         try:
+            if progress_callback is not None:
+                progress_callback("scoring_oracles", steps, steps)
             trajectory = runtime_evidence["trajectory"]
             test_times = [float(item["end_time"]) for item in trajectory]
             for index, oracle in enumerate(oracles, start=1):
@@ -682,7 +703,10 @@ class WorkbenchService:
             update={
                 "status": RunStatus.READY_FOR_REVIEW if passed else RunStatus.FAILED,
                 "boptest_verification_path": str(final_evidence_path),
-                "verification_artifact_paths": [str(path) for path in final_paths],
+                "verification_artifact_paths": [
+                    *record.verification_artifact_paths,
+                    *(str(path) for path in final_paths),
+                ],
                 "artifact_sha256": digest,
             }
         )
@@ -798,6 +822,7 @@ class WorkbenchService:
         scorer: FunnelScorer | None = None,
         progress_callback: AlfalfaProgressCallback | None = None,
         cancellation_requested: AlfalfaCancellationCheck | None = None,
+        expected_artifact_sha256: str | None = None,
     ) -> RunRecord:
         """Attach one signed, graph-coupled Alfalfa FMU run to a candidate.
 
@@ -807,18 +832,21 @@ class WorkbenchService:
         """
 
         record = self.repository.get(run_id)
+        if (
+            expected_artifact_sha256 is not None
+            and record.artifact_sha256 != expected_artifact_sha256
+        ):
+            raise ArtifactChangedError(
+                "candidate changed after Alfalfa qualification was submitted"
+            )
         if record.status != RunStatus.READY_FOR_REVIEW:
             raise ApprovalRequiredError(
                 "Alfalfa qualification requires a passing candidate awaiting review"
             )
         self._verify_integrity(record)
-        if (
-            record.verification_artifact_paths
-            or record.boptest_verification_path
-            or record.alfalfa_verification_path
-        ):
+        if record.alfalfa_verification_path:
             raise ValueError(
-                "runtime qualification is append-once; create a new run to retest"
+                "Alfalfa qualification is append-once; create a new run to retest"
             )
         self._validate_alfalfa_oracles(oracles)
         if not model_bytes:
@@ -891,7 +919,10 @@ class WorkbenchService:
             update={
                 "status": RunStatus.READY_FOR_REVIEW if passed else RunStatus.FAILED,
                 "alfalfa_verification_path": str(final_evidence_path),
-                "verification_artifact_paths": [str(path) for path in final_paths],
+                "verification_artifact_paths": [
+                    *record.verification_artifact_paths,
+                    *(str(path) for path in final_paths),
+                ],
                 "artifact_sha256": digest,
             }
         )
@@ -919,21 +950,27 @@ class WorkbenchService:
         scorer: FunnelScorer | None = None,
         progress_callback: AlfalfaProgressCallback | None = None,
         cancellation_requested: AlfalfaCancellationCheck | None = None,
+        expected_artifact_sha256: str | None = None,
     ) -> RunRecord:
         """Qualify a graph/FMU loop through the run's signed virtual BACnet devices."""
 
         record = self.repository.get(run_id)
+        if (
+            expected_artifact_sha256 is not None
+            and record.artifact_sha256 != expected_artifact_sha256
+        ):
+            raise ArtifactChangedError(
+                "candidate changed after Alfalfa qualification was submitted"
+            )
         if record.status != RunStatus.READY_FOR_REVIEW:
             raise ApprovalRequiredError(
                 "Alfalfa BACnet qualification requires a passing candidate awaiting review"
             )
         self._verify_integrity(record)
-        if (
-            record.verification_artifact_paths
-            or record.boptest_verification_path
-            or record.alfalfa_verification_path
-        ):
-            raise ValueError("runtime qualification is append-once; create a new run to retest")
+        if record.alfalfa_verification_path:
+            raise ValueError(
+                "Alfalfa qualification is append-once; create a new run to retest"
+            )
         if record.bacnet_lab_manifest_path is None:
             raise ValueError(
                 "BACnet-coupled Alfalfa qualification requires a mapped BACnet scan"
@@ -1013,7 +1050,10 @@ class WorkbenchService:
             update={
                 "status": RunStatus.READY_FOR_REVIEW if passed else RunStatus.FAILED,
                 "alfalfa_verification_path": str(final_evidence_path),
-                "verification_artifact_paths": [str(path) for path in final_paths],
+                "verification_artifact_paths": [
+                    *record.verification_artifact_paths,
+                    *(str(path) for path in final_paths),
+                ],
                 "artifact_sha256": digest,
             }
         )

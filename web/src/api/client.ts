@@ -524,21 +524,24 @@ const alfalfaEvidenceSchema = z.object({
 }).passthrough();
 
 const qualificationJobSchema = z.object({
-  schema_version: z.literal('bactalk.qualification-job/v1'),
+  schema_version: z.enum(['bactalk.qualification-job/v1', 'bactalk.qualification-job/v2', 'bactalk.qualification-job/v3']),
   id: z.string(),
   broker_job_id: z.string(),
   run_id: z.string(),
-  kind: z.literal('alfalfa'),
-  transport: z.enum(['direct', 'bacnet_ip_loopback']),
+  candidate_artifact_sha256: z.string().nullable(),
+  kind: z.enum(['alfalfa', 'boptest']),
+  transport: z.enum(['direct', 'bacnet_ip_loopback', 'boptest_rest']),
   status: z.enum(['queued', 'running', 'cancel_requested', 'canceled', 'succeeded', 'failed']),
-  model_filename: z.string(),
-  model_sha256: z.string(),
+  model_filename: z.string().nullable(),
+  model_sha256: z.string().nullable(),
   request_sha256: z.string(),
   input_sha256: z.string(),
   created_at: z.string(),
   updated_at: z.string(),
   started_at: z.string().nullable(),
   completed_at: z.string().nullable(),
+  heartbeat_at: z.string().nullable(),
+  lease_expires_at: z.string().nullable(),
   worker_id: z.string().nullable(),
   actor_id: z.string().nullable(),
   tenant_id: z.string().nullable(),
@@ -1190,6 +1193,11 @@ export const api = {
     body.append('qualification', JSON.stringify(qualification));
     return qualificationJobSchema.parse(
       await postForm(`/api/runs/${runId}/qualification-jobs/alfalfa`, body),
+    );
+  },
+  async enqueueBoptestQualification(runId: string, qualification: { mapping: unknown; oracles: unknown[]; steps: number; step_seconds: number; start_time?: number; warmup_period?: number }) {
+    return qualificationJobSchema.parse(
+      await postJson(`/api/runs/${runId}/qualification-jobs/boptest`, qualification),
     );
   },
   async latestQualificationJob(runId: string) {

@@ -99,6 +99,9 @@ class IntegrationReadiness:
         alfalfa_product_evidence = _load_json_object(
             self.root / ".bactalk/alfalfa-product-evidence.json"
         )
+        boptest_product_evidence = _load_json_object(
+            self.root / ".bactalk/boptest-graph-runtime-evidence.json"
+        )
         alfalfa_runtime_pass = (
             alfalfa_evidence.get("schema") == "bactalk.alfalfa-runtime-evidence/v1"
             and alfalfa_evidence.get("status") == "pass"
@@ -145,17 +148,55 @@ class IntegrationReadiness:
             )
         )
         qualification_job = alfalfa_product_evidence.get("qualification_job", {})
-        durable_qualification_pass = (
+        alfalfa_durable_qualification_pass = (
             isinstance(qualification_job, dict)
             and qualification_job.get("status") == "succeeded"
+            and qualification_job.get("schema_version")
+            == "bactalk.qualification-job/v3"
             and qualification_job.get("qualification_passed") is True
             and isinstance(qualification_job.get("worker_id"), str)
             and bool(qualification_job["worker_id"])
             and qualification_job.get("progress", {}).get("percent") == 100.0
             and isinstance(qualification_job.get("input_sha256"), str)
             and len(qualification_job["input_sha256"]) == 64
+            and isinstance(
+                qualification_job.get("candidate_artifact_sha256"), str
+            )
+            and len(qualification_job["candidate_artifact_sha256"]) == 64
             and isinstance(qualification_job.get("result_artifact_sha256"), str)
             and len(qualification_job["result_artifact_sha256"]) == 64
+        )
+        boptest_qualification_job = boptest_product_evidence.get(
+            "qualification_job", {}
+        )
+        boptest_durable_qualification_pass = (
+            boptest_product_evidence.get("schema")
+            == "bactalk.boptest-contractor-e2e/v2"
+            and boptest_product_evidence.get("status") == "pass"
+            and boptest_product_evidence.get("room_temperature_changed") is True
+            and isinstance(boptest_qualification_job, dict)
+            and boptest_qualification_job.get("kind") == "boptest"
+            and boptest_qualification_job.get("status") == "succeeded"
+            and boptest_qualification_job.get("schema_version")
+            == "bactalk.qualification-job/v3"
+            and boptest_qualification_job.get("qualification_passed") is True
+            and isinstance(boptest_qualification_job.get("worker_id"), str)
+            and bool(boptest_qualification_job["worker_id"])
+            and boptest_qualification_job.get("progress", {}).get("percent") == 100.0
+            and isinstance(
+                boptest_qualification_job.get("candidate_artifact_sha256"), str
+            )
+            and len(boptest_qualification_job["candidate_artifact_sha256"]) == 64
+            and isinstance(boptest_qualification_job.get("input_sha256"), str)
+            and len(boptest_qualification_job["input_sha256"]) == 64
+            and isinstance(
+                boptest_qualification_job.get("result_artifact_sha256"), str
+            )
+            and len(boptest_qualification_job["result_artifact_sha256"]) == 64
+        )
+        durable_qualification_pass = (
+            alfalfa_durable_qualification_pass
+            and boptest_durable_qualification_pass
         )
         rq_version = _package_version("rq", "rq")
         redis_version = _package_version("redis", "redis")
@@ -444,12 +485,18 @@ class IntegrationReadiness:
                 role="Dynamic building simulation and KPI oracle",
                 product_path=(
                     "BoptestGraphRunner maps every typed graph boundary explicitly, enforces "
-                    "advertised actuator bounds, runs closed-loop FMU trajectories, retains "
+                    "advertised actuator bounds, runs closed-loop FMU trajectories through "
+                    "the durable qualification worker plane, retains progress/cancellation, "
                     "KPIs, and grades the command trace with pyfunnel"
                 ),
                 evidence_command="make boptest-graph-runtime",
                 blocker=(
                     "Install Docker/Podman to execute locally. " if not docker else ""
+                )
+                + (
+                    "Run the retained queued BOPTEST product qualification on this host. "
+                    if not boptest_durable_qualification_pass
+                    else ""
                 )
                 + (
                     "Production equipment packs still need authoritative BOPTEST point maps, "
@@ -551,15 +598,25 @@ class IntegrationReadiness:
                     "for long-running building-physics qualifications"
                 ),
                 product_path=(
-                    "Alfalfa qualification submissions persist digest-bound FMU/request "
-                    "inputs before JSON-only RQ dispatch; a separate SpawnWorker updates "
-                    "progress and terminal evidence while the UI polls or requests cancellation"
+                    "Alfalfa and BOPTEST qualification submissions persist digest-bound "
+                    "requests (plus the exact FMU for Alfalfa) against the exact submitted "
+                    "candidate before JSON-only RQ dispatch; a separate SpawnWorker refuses "
+                    "changed candidates and updates progress and terminal evidence while the UI "
+                    "polls or requests cancellation"
                 ),
-                evidence_command="make qualification-queue-up alfalfa-product-smoke",
+                evidence_command=(
+                    "make qualification-queue-up alfalfa-product-smoke "
+                    "boptest-graph-runtime"
+                ),
                 blocker=(
                     (
-                        "Run the retained queued whole-building product workflow. "
-                        if not durable_qualification_pass
+                        "Run the retained queued Alfalfa whole-building product workflow. "
+                        if not alfalfa_durable_qualification_pass
+                        else ""
+                    )
+                    + (
+                        "Run the retained queued BOPTEST product workflow. "
+                        if not boptest_durable_qualification_pass
                         else ""
                     )
                     + (

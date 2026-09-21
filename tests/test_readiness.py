@@ -116,10 +116,12 @@ def test_alfalfa_runtime_evidence_advances_readiness_without_claiming_production
                     ],
                 },
                 "qualification_job": {
+                    "schema_version": "bactalk.qualification-job/v3",
                     "status": "succeeded",
                     "worker_id": "worker-1",
                     "progress": {"percent": 100.0},
                     "qualification_passed": True,
+                    "candidate_artifact_sha256": "c" * 64,
                     "input_sha256": "a" * 64,
                     "result_artifact_sha256": "b" * 64,
                 },
@@ -133,8 +135,39 @@ def test_alfalfa_runtime_evidence_advances_readiness_without_claiming_production
 
     assert "independent trajectory oracle" not in oracle_qualified["alfalfa"]["blocker"]
     assert oracle_qualified["alfalfa"]["production_ready"] is False
-    assert oracle_qualified["qualification-job-plane"]["stage"] == "product-wired"
-    assert oracle_qualified["qualification-job-plane"]["production_ready"] is False
+    assert oracle_qualified["qualification-job-plane"]["stage"] == "executable"
+    assert (
+        "queued BOPTEST" in oracle_qualified["qualification-job-plane"]["blocker"]
+    )
+
+    (tmp_path / ".bactalk/boptest-graph-runtime-evidence.json").write_text(
+        json.dumps(
+            {
+                "schema": "bactalk.boptest-contractor-e2e/v2",
+                "status": "pass",
+                "room_temperature_changed": True,
+                "qualification_job": {
+                    "schema_version": "bactalk.qualification-job/v3",
+                    "kind": "boptest",
+                    "status": "succeeded",
+                    "worker_id": "worker-2",
+                    "progress": {"percent": 100.0},
+                    "qualification_passed": True,
+                    "candidate_artifact_sha256": "d" * 64,
+                    "input_sha256": "e" * 64,
+                    "result_artifact_sha256": "f" * 64,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    both_qualified = {
+        item["id"]: item for item in IntegrationReadiness(tmp_path).report()["components"]
+    }
+
+    assert both_qualified["qualification-job-plane"]["stage"] == "product-wired"
+    assert "queued BOPTEST" not in both_qualified["qualification-job-plane"]["blocker"]
+    assert both_qualified["qualification-job-plane"]["production_ready"] is False
 
 
 def test_readiness_api(tmp_path: Path) -> None:

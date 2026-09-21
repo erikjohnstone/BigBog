@@ -27,8 +27,20 @@ from bactalk.integrations.boptest_graph import (
     BoptestMeasurementBinding,
     BoptestTrajectoryOracle,
 )
+from bactalk.qualification_jobs import (
+    BoptestQualificationJobExecutor,
+    BoptestQualificationPayload,
+    QualificationJobRecord,
+    QualificationJobRepository,
+    QualificationJobStatus,
+)
 from bactalk.repository import RunRepository
-from bactalk.service import ApprovalRequiredError, ArtifactChangedError, WorkbenchService
+from bactalk.service import (
+    ApprovalRequiredError,
+    ArtifactChangedError,
+    WorkbenchService,
+    artifact_hash,
+)
 
 
 def _graph() -> ControlGraph:
@@ -180,6 +192,27 @@ class _FakeBoptest:
         return "OK"
 
 
+class _CapturingQualificationDispatcher:
+    def __init__(self) -> None:
+        self.enqueued: list[str] = []
+        self.canceled: list[str] = []
+
+    def enqueue(self, record: QualificationJobRecord) -> None:
+        self.enqueued.append(record.id)
+
+    def cancel(self, record: QualificationJobRecord) -> None:
+        self.canceled.append(record.id)
+
+
+def _qualification_payload() -> BoptestQualificationPayload:
+    return BoptestQualificationPayload(
+        mapping=_mapping(),
+        oracles=[_oracle()],
+        steps=2,
+        step_seconds=300.0,
+    )
+
+
 def test_passing_boptest_qualification_is_signed_reviewable_and_tamper_evident(
     tmp_path: Path,
 ) -> None:
@@ -218,6 +251,45 @@ def test_passing_boptest_qualification_is_signed_reviewable_and_tamper_evident(
         stream.write("tampered\n")
     with pytest.raises(ArtifactChangedError):
         service.export_path(candidate.id)
+
+
+def test_boptest_accumulates_with_existing_alfalfa_tier_under_one_digest(
+    tmp_path: Path,
+) -> None:
+    runs = RunRepository(tmp_path / "runs")
+    service = WorkbenchService(runs)
+    candidate = service.create_run(_job())
+    prior = runs.run_directory(candidate.id) / "alfalfa-verification/evidence.json"
+    prior.parent.mkdir()
+    prior.write_text('{"schema":"test-prior-alfalfa","status":"pass"}', encoding="utf-8")
+    with_prior = candidate.model_copy(
+        update={
+            "alfalfa_verification_path": str(prior),
+            "verification_artifact_paths": [str(prior)],
+        }
+    )
+    with_prior = with_prior.model_copy(
+        update={
+            "artifact_sha256": artifact_hash(*service._record_artifact_paths(with_prior))
+        }
+    )
+    runs.save(with_prior)
+
+    qualified = service.qualify_with_boptest(
+        candidate.id,
+        client=_FakeBoptest(),
+        mapping=_mapping(),
+        oracles=[_oracle()],
+        steps=2,
+        step_seconds=300.0,
+    )
+
+    assert qualified.status == RunStatus.READY_FOR_REVIEW
+    assert qualified.alfalfa_verification_path == str(prior)
+    assert qualified.boptest_verification_path is not None
+    assert str(prior) in qualified.verification_artifact_paths
+    assert len(qualified.verification_artifact_paths) == 7
+    service.verify_integrity(candidate.id)
 
 
 def test_failing_boptest_oracle_blocks_human_approval(tmp_path: Path) -> None:
@@ -283,3 +355,128 @@ def test_boptest_qualification_is_available_through_the_product_api(tmp_path: Pa
     retained = client.get(f"/api/runs/{run_id}/verify/boptest")
     assert retained.status_code == 200
     assert retained.json()["runtime"]["test_case"] == "bestest_air"
+
+
+def test_durable_boptest_executor_retains_progress_and_result(tmp_path: Path) -> None:
+    runs = RunRepository(tmp_path / "runs")
+    service = WorkbenchService(runs)
+    candidate = service.create_run(_job())
+    jobs = QualificationJobRepository(tmp_path / "qualification-jobs")
+    job = jobs.create_boptest(
+        run_id=candidate.id,
+        candidate_artifact_sha256=candidate.artifact_sha256,
+        payload=_qualification_payload(),
+    )
+
+    completed = BoptestQualificationJobExecutor(
+        jobs,
+        service,
+        client_factory=_FakeBoptest,
+        worker_id="boptest-worker",
+    ).execute(job.id)
+
+    assert completed.kind == "boptest"
+    assert completed.status == QualificationJobStatus.SUCCEEDED
+    assert completed.worker_id == "boptest-worker"
+    assert completed.model_sha256 is None
+    assert completed.progress.phase == "completed"
+    assert completed.progress.percent == 100
+    assert completed.qualification_passed is True
+    assert completed.result_artifact_sha256 == runs.get(candidate.id).artifact_sha256
+
+
+def test_durable_boptest_refuses_a_candidate_changed_after_submission(
+    tmp_path: Path,
+) -> None:
+    runs = RunRepository(tmp_path / "runs")
+    service = WorkbenchService(runs)
+    candidate = service.create_run(_job())
+    jobs = QualificationJobRepository(tmp_path / "qualification-jobs")
+    job = jobs.create_boptest(
+        run_id=candidate.id,
+        candidate_artifact_sha256=candidate.artifact_sha256,
+        payload=_qualification_payload(),
+    )
+    runs.save(candidate.model_copy(update={"artifact_sha256": "f" * 64}))
+
+    with pytest.raises(ArtifactChangedError, match="changed after BOPTEST"):
+        BoptestQualificationJobExecutor(
+            jobs,
+            service,
+            client_factory=_FakeBoptest,
+            worker_id="digest-bound-worker",
+        ).execute(job.id)
+
+    failed = jobs.get(job.id)
+    assert failed.status == QualificationJobStatus.FAILED
+    assert "ArtifactChangedError" in (failed.error or "")
+    assert runs.get(candidate.id).boptest_verification_path is None
+
+
+def test_running_boptest_job_cancels_cooperatively_and_stops_model(
+    tmp_path: Path,
+) -> None:
+    runs = RunRepository(tmp_path / "runs")
+    service = WorkbenchService(runs)
+    candidate = service.create_run(_job())
+    jobs = QualificationJobRepository(tmp_path / "qualification-jobs")
+    job = jobs.create_boptest(
+        run_id=candidate.id,
+        candidate_artifact_sha256=candidate.artifact_sha256,
+        payload=_qualification_payload(),
+    )
+    fake = _FakeBoptest()
+    original_advance = fake.advance
+
+    def advance_and_cancel(test_id: str, overrides: dict[str, float | int]) -> dict:
+        result = original_advance(test_id, overrides)
+        jobs.request_cancel(job.id)
+        return result
+
+    fake.advance = advance_and_cancel  # type: ignore[method-assign]
+    canceled = BoptestQualificationJobExecutor(
+        jobs,
+        service,
+        client_factory=lambda: fake,
+        worker_id="cancel-boptest-worker",
+    ).execute(job.id)
+
+    assert canceled.status == QualificationJobStatus.CANCELED
+    assert canceled.cancellation_requested is True
+    assert fake.stopped is True
+    assert runs.get(candidate.id).boptest_verification_path is None
+
+
+def test_boptest_qualification_queue_api_persists_polls_and_cancels_jobs(
+    tmp_path: Path,
+) -> None:
+    dispatcher = _CapturingQualificationDispatcher()
+    client = TestClient(
+        create_app(
+            tmp_path / "runs",
+            qualification_dispatcher=dispatcher,
+        )
+    )
+    run_id = client.post("/api/runs", json=_job().model_dump(mode="json")).json()["id"]
+
+    response = client.post(
+        f"/api/runs/{run_id}/qualification-jobs/boptest",
+        json=_qualification_payload().model_dump(mode="json"),
+    )
+
+    assert response.status_code == 202, response.text
+    queued = response.json()
+    assert queued["kind"] == "boptest"
+    assert queued["status"] == "queued"
+    assert queued["schema_version"] == "bactalk.qualification-job/v3"
+    assert queued["candidate_artifact_sha256"]
+    assert queued["model_sha256"] is None
+    assert dispatcher.enqueued == [queued["id"]]
+    latest = client.get(f"/api/runs/{run_id}/qualification-jobs/latest")
+    assert latest.status_code == 200
+    assert latest.json()["input_sha256"] == queued["input_sha256"]
+
+    canceled = client.post(f"/api/qualification-jobs/{queued['id']}/cancel")
+    assert canceled.status_code == 200
+    assert canceled.json()["status"] == "canceled"
+    assert dispatcher.canceled == [queued["id"]]

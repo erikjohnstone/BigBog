@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+from collections.abc import Callable
 from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -28,6 +29,14 @@ class BoptestRuntime(Protocol):
     def kpis(self, test_id: str) -> Any: ...
 
     def stop(self, test_id: str) -> Any: ...
+
+
+class BoptestQualificationCancelled(RuntimeError):
+    pass
+
+
+BoptestProgressCallback = Callable[[str, int, int], None]
+BoptestCancellationCheck = Callable[[], bool]
 
 
 class BoptestMeasurementBinding(BaseModel):
@@ -256,11 +265,17 @@ class BoptestGraphRunner:
         step_seconds: float,
         start_time: float = 0.0,
         warmup_period: float = 0.0,
+        progress_callback: BoptestProgressCallback | None = None,
+        cancellation_requested: BoptestCancellationCheck | None = None,
     ) -> dict[str, Any]:
         if isinstance(steps, bool) or not isinstance(steps, int) or not 1 <= steps <= 100_000:
             raise ValueError("steps must be an integer from 1 through 100000")
         if not math.isfinite(step_seconds) or step_seconds <= 0:
             raise ValueError("step_seconds must be positive and finite")
+        if cancellation_requested is not None and cancellation_requested():
+            raise BoptestQualificationCancelled(
+                "BOPTEST qualification was canceled before model selection"
+            )
 
         version = self.client.version()
         test_id = self.client.select(self.mapping.test_case)
@@ -302,6 +317,10 @@ class BoptestGraphRunner:
             trajectory: list[dict[str, Any]] = []
             previous_time = self._number(current.get("time"), "initial time")
             for index in range(steps):
+                if cancellation_requested is not None and cancellation_requested():
+                    raise BoptestQualificationCancelled(
+                        f"BOPTEST qualification was canceled before step {index + 1}"
+                    )
                 graph_inputs = self._graph_inputs(current)
                 controller_values = interpreter.evaluate(
                     graph_inputs,
@@ -333,6 +352,8 @@ class BoptestGraphRunner:
                 )
                 current = advanced
                 previous_time = advanced_time
+                if progress_callback is not None:
+                    progress_callback("running_physics", index + 1, steps)
             kpis = self.client.kpis(test_id)
         finally:
             stopped = self.client.stop(test_id)

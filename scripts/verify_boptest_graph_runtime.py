@@ -1,10 +1,19 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import io
 import json
+import os
+import subprocess
+import sys
 import zipfile
 from pathlib import Path
+from uuid import uuid4
 
+from fastapi.testclient import TestClient
+
+from bactalk.api import create_app
 from bactalk.domain import (
     AcceptanceCase,
     Block,
@@ -16,18 +25,27 @@ from bactalk.domain import (
     OutputExpectation,
     PointRole,
     PointSpec,
-    RunStatus,
     SequenceSpec,
 )
-from bactalk.integrations.boptest import BoptestClient
 from bactalk.integrations.boptest_graph import (
     BoptestActuatorBinding,
     BoptestGraphMap,
     BoptestMeasurementBinding,
     BoptestTrajectoryOracle,
 )
-from bactalk.repository import RunRepository
-from bactalk.service import ApprovalRequiredError, WorkbenchService
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def _sha256(content: bytes) -> str:
+    return hashlib.sha256(content).hexdigest()
+
+
+def _require(response: object, status_code: int, label: str) -> None:
+    actual = getattr(response, "status_code", None)
+    if actual != status_code:
+        text = getattr(response, "text", "")
+        raise RuntimeError(f"{label} returned {actual}, expected {status_code}: {text}")
 
 
 def fan_controller() -> ControlGraph:
@@ -163,35 +181,78 @@ def main() -> None:
         reference_values=[1.0] * arguments.steps,
         absolute_value_tolerance=0.0,
     )
-    service = WorkbenchService(RunRepository(arguments.run_root))
-    candidate = service.create_run(
-        contractor_job(),
-        source_documents={
-            "qualification-purpose.txt": (
-                b"Real BOPTEST closed-loop contractor job integration proof.\n"
-            )
-        },
+    queue_url = os.getenv(
+        "BACTALK_QUEUE_URL",
+        "redis://:bactalk-queue-local-secret@127.0.0.1:6380/0",
     )
-    preapproval_export_denied = False
-    try:
-        service.export_path(candidate.id)
-    except ApprovalRequiredError:
-        preapproval_export_denied = True
-    if not preapproval_export_denied:
-        raise SystemExit("candidate exported before approval")
+    queue_name = f"bactalk-boptest-qualification-smoke-{uuid4().hex}"
+    os.environ["BACTALK_QUALIFICATION_QUEUE"] = queue_name
+    jobs_root = arguments.run_root.parent / "qualification-jobs"
+    client = TestClient(create_app(arguments.run_root))
+    created = client.post("/api/runs", json=contractor_job().model_dump(mode="json"))
+    _require(created, 201, "candidate creation")
+    run_id = created.json()["id"]
 
-    with BoptestClient(arguments.base_url, timeout=60.0) as client:
-        qualified = service.qualify_with_boptest(
-            candidate.id,
-            client=client,
-            mapping=mapping,
-            oracles=[oracle],
-            steps=arguments.steps,
-            step_seconds=arguments.step,
+    denied = client.get(f"/api/runs/{run_id}/export")
+    _require(denied, 403, "pre-approval export")
+    qualification = {
+        "mapping": mapping.model_dump(mode="json"),
+        "oracles": [oracle.model_dump(mode="json")],
+        "steps": arguments.steps,
+        "step_seconds": arguments.step,
+        "start_time": 0.0,
+        "warmup_period": 0.0,
+    }
+    queued = client.post(
+        f"/api/runs/{run_id}/qualification-jobs/boptest",
+        json=qualification,
+    )
+    _require(queued, 202, "BOPTEST qualification queue submission")
+    job_id = queued.json()["id"]
+    worker_environment = {
+        **os.environ,
+        "BACTALK_QUEUE_URL": queue_url,
+        "BACTALK_QUALIFICATION_QUEUE": queue_name,
+        "BACTALK_BOPTEST_URL": arguments.base_url,
+        "PYTHONPATH": str(ROOT / "src"),
+    }
+    worker = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "bactalk.cli",
+            "qualification-worker",
+            "--burst",
+            "--queue",
+            queue_name,
+            "--output",
+            str(arguments.run_root),
+            "--jobs",
+            str(jobs_root),
+        ],
+        cwd=ROOT,
+        env=worker_environment,
+        capture_output=True,
+        text=True,
+        timeout=1_800,
+    )
+    if worker.returncode != 0:
+        raise RuntimeError(
+            "qualification worker failed: "
+            f"stdout={worker.stdout[-4_000:]}, stderr={worker.stderr[-4_000:]}"
         )
-    if qualified.status != RunStatus.READY_FOR_REVIEW:
+    job = client.get(f"/api/qualification-jobs/{job_id}")
+    _require(job, 200, "retained qualification job")
+    if job.json()["status"] != "succeeded":
+        raise RuntimeError(f"qualification job did not succeed: {job.json()}")
+
+    retained = client.get(f"/api/runs/{run_id}/verify/boptest")
+    _require(retained, 200, "retained BOPTEST evidence")
+    evidence = retained.json()
+    qualified = client.get(f"/api/runs/{run_id}")
+    _require(qualified, 200, "qualified candidate")
+    if qualified.json()["status"] != "ready_for_review":
         raise SystemExit("BOPTEST trajectory oracle failed")
-    evidence = json.loads(Path(qualified.boptest_verification_path).read_text())
     trajectory = evidence["runtime"]["trajectory"]
     room_temperatures = [
         float(row["measurements"]["zon_reaTRooAir_y"]) for row in trajectory
@@ -199,18 +260,24 @@ def main() -> None:
     if len(set(room_temperatures)) <= 1:
         raise SystemExit("BOPTEST room temperature did not respond across the trajectory")
 
-    approved = service.approve(candidate.id, "BACTalk Integration Test Reviewer")
-    exported = service.export_path(candidate.id)
-    review_bundle = service.review_bundle_path(candidate.id)
-    with zipfile.ZipFile(review_bundle) as archive:
+    approved = client.post(
+        f"/api/runs/{run_id}/approve",
+        json={"reviewer": "BACTalk Integration Test Reviewer"},
+    )
+    _require(approved, 200, "candidate approval")
+    exported = client.get(f"/api/runs/{run_id}/export")
+    _require(exported, 200, "approved artifact export")
+    review_bundle = client.get(f"/api/runs/{run_id}/review-bundle")
+    _require(review_bundle, 200, "approved review bundle export")
+    with zipfile.ZipFile(io.BytesIO(review_bundle.content)) as archive:
         bundle_entries = archive.namelist()
     if "boptest-verification/evidence.json" not in bundle_entries:
         raise SystemExit("review bundle omitted signed BOPTEST evidence")
 
     retained = {
-        "schema": "bactalk.boptest-contractor-e2e/v1",
+        "schema": "bactalk.boptest-contractor-e2e/v2",
         "status": "pass",
-        "run_id": approved.id,
+        "run_id": run_id,
         "workflow": [
             "contractor_job_created",
             "deterministic_acceptance_tests_passed",
@@ -222,21 +289,32 @@ def main() -> None:
             "test_identity_approved",
             "approved_bog_and_review_bundle_exported",
         ],
-        "candidate_artifact_sha256": candidate.artifact_sha256,
-        "qualified_artifact_sha256": qualified.artifact_sha256,
+        "candidate_artifact_sha256": created.json()["artifact_sha256"],
+        "qualified_artifact_sha256": qualified.json()["artifact_sha256"],
         "qualification_changed_digest": (
-            candidate.artifact_sha256 != qualified.artifact_sha256
+            created.json()["artifact_sha256"] != qualified.json()["artifact_sha256"]
         ),
-        "preapproval_export_denied": preapproval_export_denied,
-        "qualification_evidence": qualified.boptest_verification_path,
-        "verification_artifact_count": len(qualified.verification_artifact_paths),
+        "preapproval_export_denied": True,
+        "qualification_job": job.json(),
+        "qualified_run": qualified.json(),
+        "runtime_evidence": evidence,
+        "qualification_evidence": qualified.json()["boptest_verification_path"],
+        "verification_artifact_count": len(qualified.json()["verification_artifact_paths"]),
         "room_temperature_changed": len(set(room_temperatures)) > 1,
         "room_temperatures_kelvin": room_temperatures,
         "oracle_passed": evidence["oracles"][0]["passed"],
         "boptest_version": evidence["runtime"]["version"],
         "boptest_kpis": evidence["runtime"]["kpis"],
-        "approved_artifact": str(exported),
-        "review_bundle": str(review_bundle),
+        "approved_run": approved.json(),
+        "approved_artifact": {
+            "bytes": len(exported.content),
+            "sha256": _sha256(exported.content),
+        },
+        "review_bundle": {
+            "bytes": len(review_bundle.content),
+            "sha256": _sha256(review_bundle.content),
+            "members": sorted(bundle_entries),
+        },
         "review_bundle_contains_boptest_evidence": True,
         "approval_mode": "self-asserted integration-test identity",
         "boptest_qualified": True,
@@ -255,9 +333,9 @@ def main() -> None:
         json.dumps(
             {
                 "status": "pass",
-                "run_id": approved.id,
+                "run_id": run_id,
                 "evidence": str(arguments.output),
-                "review_bundle": str(review_bundle),
+                "job_id": job_id,
             }
         )
     )

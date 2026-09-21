@@ -53,6 +53,14 @@ export function SimulationLab({ run }: { run: RunDetail }) {
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : 'Alfalfa qualification failed'),
   });
+  const qualifyBoptest = useMutation({
+    mutationFn: (qualification: BoptestQualification) => api.enqueueBoptestQualification(run.id, qualification),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['qualification-job', run.id] });
+      toast.success('BOPTEST qualification queued. It will continue if this page closes.');
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : 'BOPTEST qualification failed'),
+  });
   const cancelQualification = useMutation({
     mutationFn: (jobId: string) => api.cancelQualificationJob(jobId),
     onSuccess: async () => {
@@ -70,13 +78,18 @@ export function SimulationLab({ run }: { run: RunDetail }) {
     reportedTerminalJob.current = notification;
     void Promise.all([
       queryClient.invalidateQueries({ queryKey: ['alfalfa', run.id] }),
+      queryClient.invalidateQueries({ queryKey: ['boptest', run.id] }),
       queryClient.invalidateQueries({ queryKey: ['runs'] }),
       queryClient.invalidateQueries({ queryKey: ['run', run.id] }),
     ]);
-    if (state.data.status === 'succeeded' && state.data.qualification_passed) toast.success('Exact-FMU qualification passed and entered the approval boundary');
-    else if (state.data.status === 'succeeded') toast.error('FMU execution completed, but its trajectory oracle failed. Approval is blocked.');
+    const runtime = state.data.kind === 'alfalfa' ? 'Alfalfa exact-FMU' : 'BOPTEST';
+    if (state.data.status === 'succeeded' && state.data.qualification_passed) toast.success(`${runtime} qualification passed and entered the approval boundary`);
+    else if (state.data.status === 'succeeded') toast.error(`${runtime} execution completed, but its trajectory oracle failed. Approval is blocked.`);
     else if (state.data.status === 'failed') toast.error(state.data.error ?? 'Qualification worker failed');
   }, [qualificationJob.data, queryClient, run.id]);
+
+  const latestJob = qualificationJob.data?.state === 'available' ? qualificationJob.data.data : undefined;
+  const qualificationActive = Boolean(latestJob && ['queued', 'running', 'cancel_requested'].includes(latestJob.status));
 
   if (boptest.isLoading || bacnet.isLoading || alfalfa.isLoading || qualificationJob.isLoading || graph.isLoading) return <div className="simulation-state"><div className="studio-state-spinner" /><strong>Loading retained simulation evidence…</strong></div>;
   return (
@@ -93,10 +106,10 @@ export function SimulationLab({ run }: { run: RunDetail }) {
       {bacnet.data?.state === 'invalid' && <IntegrityWarning label="Virtual BACnet evidence could not be validated" message={bacnet.data.message} />}
       {alfalfa.data?.state === 'invalid' && <IntegrityWarning label="Alfalfa FMU evidence failed validation" message={alfalfa.data.message} />}
 
-      <AlfalfaPanel evidence={alfalfa.data} job={qualificationJob.data} graph={graph.data} bacnetAvailable={bacnet.data?.state === 'available'} canQualify={run.status === 'ready_for_review'} onQualify={(model, qualification) => qualifyAlfalfa.mutateAsync({ model, qualification })} qualifying={qualifyAlfalfa.isPending} onCancel={(jobId) => cancelQualification.mutate(jobId)} canceling={cancelQualification.isPending} />
+      <AlfalfaPanel evidence={alfalfa.data} job={latestJob?.kind === 'alfalfa' ? latestJob : undefined} graph={graph.data} bacnetAvailable={bacnet.data?.state === 'available'} canQualify={run.status === 'ready_for_review'} otherQualificationActive={qualificationActive && latestJob?.kind !== 'alfalfa'} onQualify={(model, qualification) => qualifyAlfalfa.mutateAsync({ model, qualification })} qualifying={qualifyAlfalfa.isPending} onCancel={(jobId) => cancelQualification.mutate(jobId)} canceling={cancelQualification.isPending} />
 
       <div className="simulation-grid">
-        <BoptestPanel evidence={boptest.data} />
+        <BoptestPanel evidence={boptest.data} job={latestJob?.kind === 'boptest' ? latestJob : undefined} graph={graph.data} canQualify={run.status === 'ready_for_review'} otherQualificationActive={qualificationActive && latestJob?.kind !== 'boptest'} onQualify={(qualification) => qualifyBoptest.mutateAsync(qualification)} qualifying={qualifyBoptest.isPending} onCancel={(jobId) => cancelQualification.mutate(jobId)} canceling={cancelQualification.isPending} />
         <BacnetPanel lab={bacnet.data} onProbe={() => probe.mutate()} probing={probe.isPending} probe={probe.data} />
       </div>
     </div>
@@ -115,9 +128,10 @@ function FidelityRail({ run, boptest, bacnet, alfalfa }: { run: RunDetail; bopte
 }
 
 type AlfalfaQualification = { mapping: unknown; oracles: unknown[]; steps: number; step_seconds: number; start: string; transport: 'direct' | 'bacnet_ip_loopback' };
+type BoptestQualification = { mapping: unknown; oracles: unknown[]; steps: number; step_seconds: number; start_time?: number; warmup_period?: number };
 
-function AlfalfaPanel({ evidence, job, graph, bacnetAvailable, canQualify, onQualify, qualifying, onCancel, canceling }: { evidence?: ArtifactState<AlfalfaEvidence>; job?: ArtifactState<QualificationJob>; graph?: ControlGraph; bacnetAvailable: boolean; canQualify: boolean; onQualify: (model: File, qualification: AlfalfaQualification) => Promise<unknown>; qualifying: boolean; onCancel: (jobId: string) => void; canceling: boolean }) {
-  if (!evidence || evidence.state === 'missing') return <AlfalfaQualificationPanel job={job?.state === 'available' ? job.data : undefined} graph={graph} bacnetAvailable={bacnetAvailable} canQualify={canQualify} onQualify={onQualify} qualifying={qualifying} onCancel={onCancel} canceling={canceling} />;
+function AlfalfaPanel({ evidence, job, graph, bacnetAvailable, canQualify, otherQualificationActive, onQualify, qualifying, onCancel, canceling }: { evidence?: ArtifactState<AlfalfaEvidence>; job?: QualificationJob; graph?: ControlGraph; bacnetAvailable: boolean; canQualify: boolean; otherQualificationActive: boolean; onQualify: (model: File, qualification: AlfalfaQualification) => Promise<unknown>; qualifying: boolean; onCancel: (jobId: string) => void; canceling: boolean }) {
+  if (!evidence || evidence.state === 'missing') return <AlfalfaQualificationPanel job={job} graph={graph} bacnetAvailable={bacnetAvailable} canQualify={canQualify} otherQualificationActive={otherQualificationActive} onQualify={onQualify} qualifying={qualifying} onCancel={onCancel} canceling={canceling} />;
   if (evidence.state === 'invalid') return <section className="simulation-panel empty-tier failed alfalfa-panel"><CircleAlert size={28} /><span className="eyebrow">ALFALFA FMU CLOSED LOOP</span><h2>Evidence is not trustworthy</h2><p>{evidence.message}</p><span className="qualification-chip failed">Release blocked</span></section>;
   const data = evidence.data;
   const samples = data.trajectory;
@@ -137,7 +151,7 @@ function AlfalfaPanel({ evidence, job, graph, bacnetAvailable, canQualify, onQua
   );
 }
 
-function AlfalfaQualificationPanel({ job, graph, bacnetAvailable, canQualify, onQualify, qualifying, onCancel, canceling }: { job?: QualificationJob; graph?: ControlGraph; bacnetAvailable: boolean; canQualify: boolean; onQualify: (model: File, qualification: AlfalfaQualification) => Promise<unknown>; qualifying: boolean; onCancel: (jobId: string) => void; canceling: boolean }) {
+function AlfalfaQualificationPanel({ job, graph, bacnetAvailable, canQualify, otherQualificationActive, onQualify, qualifying, onCancel, canceling }: { job?: QualificationJob; graph?: ControlGraph; bacnetAvailable: boolean; canQualify: boolean; otherQualificationActive: boolean; onQualify: (model: File, qualification: AlfalfaQualification) => Promise<unknown>; qualifying: boolean; onCancel: (jobId: string) => void; canceling: boolean }) {
   const [model, setModel] = useState<File | null>(null);
   const [mappingFile, setMappingFile] = useState<File | null>(null);
   const [sensorBindings, setSensorBindings] = useState<Record<string, SensorBindingDraft>>({});
@@ -150,7 +164,7 @@ function AlfalfaQualificationPanel({ job, graph, bacnetAvailable, canQualify, on
   const [oracleDrafts, setOracleDrafts] = useState<AlfalfaOracleDraft[]>([]);
   const [error, setError] = useState<string | null>(null);
   const jobActive = job ? ['queued', 'running', 'cancel_requested'].includes(job.status) : false;
-  const busy = qualifying || jobActive;
+  const busy = qualifying || jobActive || otherQualificationActive;
   const graphInputs = useMemo(() => graph?.blocks.filter((block) => block.kind === 'numeric_input' || block.kind === 'boolean_input') ?? [], [graph]);
   const graphOutputs = useMemo(() => graph?.blocks.filter((block) => block.kind === 'numeric_output' || block.kind === 'boolean_output') ?? [], [graph]);
   const inspectFmu = useMutation({
@@ -212,7 +226,7 @@ function AlfalfaQualificationPanel({ job, graph, bacnetAvailable, canQualify, on
   return (
     <section className="simulation-panel alfalfa-panel alfalfa-qualification">
       <div className="simulation-panel-head"><div><span className="eyebrow">ALFALFA EXACT-FMU CLOSED LOOP</span><h2>Qualify this exact candidate against a building model</h2><p>The FMU and reviewed signal map become signed artifacts. This operation never connects to a live building.</p></div><span className={`qualification-chip ${job?.status ?? 'missing'}`}>{job ? job.status.replaceAll('_', ' ') : 'Not run'}</span></div>
-      {job && <div className={`qualification-job-card ${job.status}`}><div><strong>{job.model_filename}</strong><span>{job.progress.phase.replaceAll('_', ' ')} · {job.progress.completed_steps}/{job.progress.total_steps} steps</span><small>Worker {job.worker_id ?? 'awaiting assignment'} · input {job.input_sha256.slice(0, 12)}</small></div><div className="qualification-job-progress"><i style={{ width: `${job.progress.percent}%` }} /></div><b>{job.progress.percent.toFixed(0)}%</b>{jobActive && <button disabled={canceling || job.status === 'cancel_requested'} onClick={() => onCancel(job.id)} type="button">{job.status === 'cancel_requested' ? 'Stopping safely…' : canceling ? 'Requesting…' : 'Cancel run'}</button>}{job.error && <p>{job.error}</p>}</div>}
+      {job && <QualificationJobCard job={job} onCancel={onCancel} canceling={canceling} />}
       <div className="alfalfa-qualification-grid">
         <label className={model ? 'selected' : ''}><FileUp size={20} /><span><strong>{model?.name ?? 'Building model (.fmu)'}</strong><small>{inspectFmu.isPending ? 'Inspecting FMI contract…' : model ? `${(model.size / 1024 / 1024).toFixed(1)} MiB · ${contract ? `${contract.inputs.length} inputs · ${contract.outputs.length} outputs` : 'inspection failed'}` : 'FMI archive, maximum 512 MiB'}</small></span><input accept=".fmu,application/zip" disabled={!canQualify || busy} onChange={(event) => selectModel(event.target.files?.[0] ?? null)} type="file" /></label>
         <label className={mappingFile ? 'selected' : ''}><Network size={20} /><span><strong>{mappingFile?.name ?? 'Optional reviewed map (.json)'}</strong><small>{mappingFile ? 'Imported map will be validated at execution' : 'Or build the map visually below'}</small></span><input accept=".json,application/json" disabled={!canQualify || busy || !contract} onChange={(event) => setMappingFile(event.target.files?.[0] ?? null)} type="file" /></label>
@@ -233,6 +247,7 @@ function AlfalfaQualificationPanel({ job, graph, bacnetAvailable, canQualify, on
       </div>}
       <div className="alfalfa-run-settings"><label><span>Control transport</span><select disabled={!canQualify || busy} onChange={(event) => setTransport(event.target.value as 'direct' | 'bacnet_ip_loopback')} value={transport}><option value="direct">Direct typed graph</option>{bacnetAvailable && <option value="bacnet_ip_loopback">BACnet/IP loopback</option>}</select></label><label><span>Model start</span><input disabled={!canQualify || busy} onChange={(event) => setStart(event.target.value)} type="datetime-local" value={start} /></label><label><span>Steps</span><input disabled={!canQualify || busy} min={1} max={100000} onChange={(event) => setSteps(Number(event.target.value))} type="number" value={steps} /></label><label><span>Seconds / step</span><input disabled={!canQualify || busy} min={0.001} onChange={(event) => setStepSeconds(Number(event.target.value))} type="number" value={stepSeconds} /></label><button disabled={!canQualify || !model || !contract || (!mappingFile && !mappingReady) || !oracleReady || busy || steps < 1 || stepSeconds <= 0} onClick={submit} type="button"><Play size={15} />{jobActive ? job?.status === 'cancel_requested' ? 'Stopping safely…' : 'Qualification running…' : qualifying ? 'Queueing qualification…' : 'Queue and sign qualification'}</button></div>
       {bacnetAvailable && transport === 'bacnet_ip_loopback' && <div className="alfalfa-form-message"><Network size={16} />Every graph sensor and command must have an exact BACnet object. Qualification performs real loopback UDP reads, priority writes, and readbacks between each FMU step.</div>}
+      {otherQualificationActive && <div className="alfalfa-form-message"><CircleAlert size={16} />Another building-physics qualification is active for this candidate. Wait for it to finish or cancel it before starting Alfalfa.</div>}
       {!canQualify && <div className="alfalfa-form-message"><CircleAlert size={16} />Only a passing candidate awaiting review can start a new qualification.</div>}
       {inspectFmu.isError && <div className="alfalfa-form-message error"><CircleAlert size={16} />{inspectFmu.error instanceof Error ? inspectFmu.error.message : 'FMU inspection failed'}</div>}
       {error && <div className="alfalfa-form-message error"><CircleAlert size={16} />{error}</div>}
@@ -248,8 +263,64 @@ function SignalSelect({ variables, value, onChange, optional = false }: { variab
   return <select onChange={(event) => onChange(event.target.value)} value={value}><option value="">{optional ? 'No echo required' : 'Select exact signal…'}</option>{variables.map((variable) => <option key={variable.name} value={variable.name}>{signalLabel(variable)}</option>)}</select>;
 }
 
-function BoptestPanel({ evidence }: { evidence?: ArtifactState<BoptestEvidence> }) {
-  if (!evidence || evidence.state === 'missing') return <section className="simulation-panel empty-tier"><Waves size={28} /><span className="eyebrow">BOPTEST PHYSICS</span><h2>No dynamic-physics qualification retained</h2><p>This candidate passed its deterministic checks, but it has not yet been run against a BOPTEST FMU. That tier is not inferred from unit tests.</p><span className="qualification-chip missing">Unqualified tier</span></section>;
+function QualificationJobCard({ job, onCancel, canceling }: { job: QualificationJob; onCancel: (jobId: string) => void; canceling: boolean }) {
+  const active = ['queued', 'running', 'cancel_requested'].includes(job.status);
+  const label = job.model_filename ?? (job.kind === 'boptest' ? 'BOPTEST building-physics run' : 'Building FMU');
+  return <div className={`qualification-job-card ${job.status}`}><div><strong>{label}</strong><span>{job.progress.phase.replaceAll('_', ' ')} · {job.progress.completed_steps}/{job.progress.total_steps} steps</span><small>Worker {job.worker_id ?? 'awaiting assignment'} · candidate {job.candidate_artifact_sha256?.slice(0, 12) ?? 'legacy-unbound'} · input {job.input_sha256.slice(0, 12)}</small></div><div className="qualification-job-progress"><i style={{ width: `${job.progress.percent}%` }} /></div><b>{job.progress.percent.toFixed(0)}%</b>{active && <button disabled={canceling || job.status === 'cancel_requested'} onClick={() => onCancel(job.id)} type="button">{job.status === 'cancel_requested' ? 'Stopping safely…' : canceling ? 'Requesting…' : 'Cancel run'}</button>}{job.error && <p>{job.error}</p>}</div>;
+}
+
+function boptestContractTemplate(graph?: ControlGraph): string {
+  const inputs = graph?.blocks.filter((block) => block.kind === 'numeric_input' || block.kind === 'boolean_input') ?? [];
+  const outputs = graph?.blocks.filter((block) => block.kind === 'numeric_output' || block.kind === 'boolean_output') ?? [];
+  return JSON.stringify({
+    mapping: {
+      test_case: 'REVIEW_REQUIRED',
+      measurements: inputs.map((block) => ({ graph_input: block.id, measurement: 'REVIEW_REQUIRED', scale: 1, offset: 0 })),
+      actuators: outputs.map((block) => ({ graph_output: block.id, actuator: 'REVIEW_REQUIRED', activation_actuator: null, scale: 1, offset: 0 })),
+    },
+    oracles: [{ id: 'behavior-1', signal_kind: 'graph_output', signal: outputs[0]?.id ?? 'REVIEW_REQUIRED', reference_times: [300], reference_values: [null], absolute_time_tolerance: 0, absolute_value_tolerance: 0.1 }],
+    steps: 1,
+    step_seconds: 300,
+    start_time: 0,
+    warmup_period: 0,
+  }, null, 2);
+}
+
+function BoptestQualificationPanel({ job, graph, canQualify, otherQualificationActive, onQualify, qualifying, onCancel, canceling }: { job?: QualificationJob; graph?: ControlGraph; canQualify: boolean; otherQualificationActive: boolean; onQualify: (qualification: BoptestQualification) => Promise<unknown>; qualifying: boolean; onCancel: (jobId: string) => void; canceling: boolean }) {
+  const [contract, setContract] = useState(() => boptestContractTemplate(graph));
+  const [error, setError] = useState<string | null>(null);
+  const jobActive = Boolean(job && ['queued', 'running', 'cancel_requested'].includes(job.status));
+  const busy = qualifying || jobActive || otherQualificationActive;
+  const contractReady = useMemo(() => {
+    try {
+      const value = JSON.parse(contract) as { mapping?: { test_case?: unknown; measurements?: Array<{ measurement?: unknown }>; actuators?: Array<{ actuator?: unknown }> }; oracles?: Array<{ reference_values?: unknown[] }> };
+      return value.mapping?.test_case !== 'REVIEW_REQUIRED'
+        && value.mapping?.measurements?.every((item) => item.measurement !== 'REVIEW_REQUIRED') === true
+        && value.mapping?.actuators?.every((item) => item.actuator !== 'REVIEW_REQUIRED') === true
+        && Boolean(value.oracles?.length)
+        && value.oracles?.every((oracle) => oracle.reference_values?.every((item) => typeof item === 'number')) === true;
+    } catch {
+      return false;
+    }
+  }, [contract]);
+  const submit = async () => {
+    setError(null);
+    try {
+      await onQualify(JSON.parse(contract) as BoptestQualification);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'The BOPTEST contract is invalid');
+    }
+  };
+  const importContract = async (file: File | null) => {
+    if (!file) return;
+    setError(null);
+    try { setContract(await file.text()); } catch { setError('The BOPTEST contract could not be read'); }
+  };
+  return <section className="simulation-panel boptest-qualification"><div className="simulation-panel-head"><div><span className="eyebrow">BOPTEST CLOSED LOOP</span><h2>Qualify against a reviewed BOPTEST case</h2><p>Map every graph boundary and supply an independent expected trajectory. Signal names are never guessed.</p></div><span className={`qualification-chip ${job?.status ?? 'missing'}`}>{job ? job.status.replaceAll('_', ' ') : 'Not run'}</span></div>{job && <QualificationJobCard job={job} onCancel={onCancel} canceling={canceling} />}<div className="boptest-contract-editor"><header><div><strong>Reviewed mapping + oracle contract</strong><small>The generated skeleton contains every typed graph boundary. Replace every REVIEW_REQUIRED value and null reference before queueing.</small></div><label><FileUp size={14} />Import JSON<input accept=".json,application/json" disabled={busy || !canQualify} onChange={(event) => void importContract(event.target.files?.[0] ?? null)} type="file" /></label></header><textarea aria-label="BOPTEST qualification contract" disabled={busy || !canQualify} onChange={(event) => setContract(event.target.value)} spellCheck={false} value={contract} /><footer><span className={contractReady ? 'ready' : ''}>{contractReady ? 'Contract ready for server validation' : 'Complete all reviewed mappings and numeric oracle values'}</span><button disabled={!canQualify || busy || !contractReady} onClick={() => void submit()} type="button"><Play size={14} />{jobActive ? 'Qualification running…' : qualifying ? 'Queueing…' : 'Queue BOPTEST qualification'}</button></footer></div>{otherQualificationActive && <div className="alfalfa-form-message"><CircleAlert size={16} />Another building-physics qualification is active for this candidate.</div>}{!canQualify && <div className="alfalfa-form-message"><CircleAlert size={16} />Only a passing candidate awaiting review can start qualification.</div>}{error && <div className="alfalfa-form-message error"><CircleAlert size={16} />{error}</div>}</section>;
+}
+
+function BoptestPanel({ evidence, job, graph, canQualify, otherQualificationActive, onQualify, qualifying, onCancel, canceling }: { evidence?: ArtifactState<BoptestEvidence>; job?: QualificationJob; graph?: ControlGraph; canQualify: boolean; otherQualificationActive: boolean; onQualify: (qualification: BoptestQualification) => Promise<unknown>; qualifying: boolean; onCancel: (jobId: string) => void; canceling: boolean }) {
+  if (!evidence || evidence.state === 'missing') return <BoptestQualificationPanel job={job} graph={graph} canQualify={canQualify} otherQualificationActive={otherQualificationActive} onQualify={onQualify} qualifying={qualifying} onCancel={onCancel} canceling={canceling} />;
   if (evidence.state === 'invalid') return <section className="simulation-panel empty-tier failed"><CircleAlert size={28} /><span className="eyebrow">BOPTEST PHYSICS</span><h2>Evidence is not trustworthy</h2><p>{evidence.message}</p><span className="qualification-chip failed">Release blocked</span></section>;
   const data = evidence.data;
   const samples = data.runtime.trajectory;

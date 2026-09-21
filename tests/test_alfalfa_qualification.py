@@ -43,7 +43,12 @@ from bactalk.qualification_jobs import (
     QualificationJobStatus,
 )
 from bactalk.repository import RunRepository
-from bactalk.service import ApprovalRequiredError, ArtifactChangedError, WorkbenchService
+from bactalk.service import (
+    ApprovalRequiredError,
+    ArtifactChangedError,
+    WorkbenchService,
+    artifact_hash,
+)
 
 
 def _graph() -> ControlGraph:
@@ -573,6 +578,38 @@ def test_alfalfa_qualification_is_signed_reviewable_and_tamper_evident(
         service.export_path(candidate.id)
 
 
+def test_alfalfa_accumulates_with_existing_boptest_tier_under_one_digest(
+    tmp_path: Path,
+) -> None:
+    runs = RunRepository(tmp_path / "runs")
+    service = WorkbenchService(runs)
+    candidate = service.create_run(_job())
+    prior = runs.run_directory(candidate.id) / "boptest-verification/evidence.json"
+    prior.parent.mkdir()
+    prior.write_text('{"schema":"test-prior-boptest","status":"pass"}', encoding="utf-8")
+    with_prior = candidate.model_copy(
+        update={
+            "boptest_verification_path": str(prior),
+            "verification_artifact_paths": [str(prior)],
+        }
+    )
+    with_prior = with_prior.model_copy(
+        update={
+            "artifact_sha256": artifact_hash(*service._record_artifact_paths(with_prior))
+        }
+    )
+    runs.save(with_prior)
+
+    qualified = _qualify(service, candidate.id)
+
+    assert qualified.status == RunStatus.READY_FOR_REVIEW
+    assert qualified.boptest_verification_path == str(prior)
+    assert qualified.alfalfa_verification_path is not None
+    assert str(prior) in qualified.verification_artifact_paths
+    assert len(qualified.verification_artifact_paths) >= 8
+    service.verify_integrity(candidate.id)
+
+
 def test_alfalfa_qualification_rejects_invalid_fmu_without_mutating_run(
     tmp_path: Path,
 ) -> None:
@@ -994,6 +1031,7 @@ def test_durable_qualification_job_inputs_are_unique_and_tamper_evident(
     jobs = QualificationJobRepository(tmp_path / "qualification-jobs")
     record = jobs.create(
         run_id="abc123",
+        candidate_artifact_sha256="0" * 64,
         payload=_qualification_payload(),
         model_bytes=_fmu_bytes(),
         model_filename="building.fmu",
@@ -1003,6 +1041,7 @@ def test_durable_qualification_job_inputs_are_unique_and_tamper_evident(
     with pytest.raises(ValueError, match="already has active qualification job"):
         jobs.create(
             run_id="abc123",
+            candidate_artifact_sha256="0" * 64,
             payload=_qualification_payload(),
             model_bytes=_fmu_bytes(),
             model_filename="building.fmu",
@@ -1021,6 +1060,7 @@ def test_durable_qualification_executor_retains_progress_and_result(tmp_path: Pa
     jobs = QualificationJobRepository(tmp_path / "qualification-jobs")
     job = jobs.create(
         run_id=candidate.id,
+        candidate_artifact_sha256=candidate.artifact_sha256,
         payload=_qualification_payload(),
         model_bytes=_fmu_bytes(),
         model_filename="contractor-building.fmu",
@@ -1048,6 +1088,7 @@ def test_running_qualification_job_renews_and_expires_its_worker_lease(
     jobs = QualificationJobRepository(tmp_path / "qualification-jobs")
     job = jobs.create(
         run_id="abc123",
+        candidate_artifact_sha256="0" * 64,
         payload=_qualification_payload(),
         model_bytes=_fmu_bytes(),
         model_filename="building.fmu",
@@ -1081,6 +1122,7 @@ def test_running_qualification_job_cancels_cooperatively_and_stops_fmu(
     jobs = QualificationJobRepository(tmp_path / "qualification-jobs")
     job = jobs.create(
         run_id=candidate.id,
+        candidate_artifact_sha256=candidate.artifact_sha256,
         payload=_qualification_payload(),
         model_bytes=_fmu_bytes(),
         model_filename="contractor-building.fmu",

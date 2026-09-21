@@ -19,7 +19,7 @@ from uuid import uuid4
 
 import httpx
 from alfalfa_client import AlfalfaClient
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from bactalk.domain import canonical_json
 from bactalk.integrations.alfalfa import AlfalfaClientLike
@@ -27,6 +27,13 @@ from bactalk.integrations.alfalfa_graph import (
     AlfalfaGraphMap,
     AlfalfaQualificationCancelled,
     AlfalfaTrajectoryOracle,
+)
+from bactalk.integrations.boptest import BoptestClient
+from bactalk.integrations.boptest_graph import (
+    BoptestGraphMap,
+    BoptestQualificationCancelled,
+    BoptestRuntime,
+    BoptestTrajectoryOracle,
 )
 from bactalk.repository import RunRepository
 from bactalk.service import MAX_ALFALFA_MODEL_BYTES, WorkbenchService
@@ -66,6 +73,17 @@ class AlfalfaQualificationPayload(BaseModel):
     transport: Literal["direct", "bacnet_ip_loopback"] = "direct"
 
 
+class BoptestQualificationPayload(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    mapping: BoptestGraphMap
+    oracles: list[BoptestTrajectoryOracle] = Field(min_length=1, max_length=1_000)
+    steps: int = Field(ge=1, le=100_000)
+    step_seconds: float = Field(gt=0, le=86_400, allow_inf_nan=False)
+    start_time: float = Field(default=0.0, ge=0, allow_inf_nan=False)
+    warmup_period: float = Field(default=0.0, ge=0, allow_inf_nan=False)
+
+
 class QualificationJobProgress(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -78,17 +96,22 @@ class QualificationJobProgress(BaseModel):
 class QualificationJobRecord(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    schema_version: Literal["bactalk.qualification-job/v1"] = (
-        "bactalk.qualification-job/v1"
-    )
+    schema_version: Literal[
+        "bactalk.qualification-job/v1",
+        "bactalk.qualification-job/v2",
+        "bactalk.qualification-job/v3",
+    ] = "bactalk.qualification-job/v3"
     id: str = Field(pattern=r"^[a-f0-9]{32}$")
     broker_job_id: str = Field(pattern=r"^[a-f0-9]{32}$")
     run_id: str = Field(pattern=r"^[A-Za-z0-9]+$")
-    kind: Literal["alfalfa"] = "alfalfa"
-    transport: Literal["direct", "bacnet_ip_loopback"]
+    candidate_artifact_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    kind: Literal["alfalfa", "boptest"] = "alfalfa"
+    transport: Literal["direct", "bacnet_ip_loopback", "boptest_rest"]
     status: QualificationJobStatus
-    model_filename: str = Field(min_length=1, max_length=240)
-    model_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    model_filename: str | None = Field(default=None, min_length=1, max_length=240)
+    model_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     input_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     created_at: datetime
@@ -108,6 +131,25 @@ class QualificationJobRecord(BaseModel):
     )
     qualification_passed: bool | None = None
 
+    @model_validator(mode="after")
+    def valid_kind_contract(self) -> QualificationJobRecord:
+        if (
+            self.schema_version == "bactalk.qualification-job/v3"
+            and self.candidate_artifact_sha256 is None
+        ):
+            raise ValueError("v3 qualification jobs require the submitted candidate digest")
+        if self.kind == "alfalfa":
+            if self.transport not in {"direct", "bacnet_ip_loopback"}:
+                raise ValueError("Alfalfa qualification has an invalid transport")
+            if self.model_filename is None or self.model_sha256 is None:
+                raise ValueError("Alfalfa qualification requires an immutable FMU")
+        else:
+            if self.transport != "boptest_rest":
+                raise ValueError("BOPTEST qualification has an invalid transport")
+            if self.model_filename is not None or self.model_sha256 is not None:
+                raise ValueError("BOPTEST qualification cannot contain an uploaded FMU")
+        return self
+
 
 def _sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
@@ -119,6 +161,35 @@ def _sha256_file(path: Path) -> str:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def _qualification_input_sha256(
+    *,
+    schema_version: str,
+    kind: str,
+    run_id: str,
+    candidate_artifact_sha256: str | None,
+    request_sha256: str,
+    model_sha256: str | None,
+) -> str:
+    if schema_version == "bactalk.qualification-job/v1":
+        return _sha256_bytes(
+            f"{run_id}:{request_sha256}:{model_sha256 or ''}".encode()
+        )
+    if schema_version == "bactalk.qualification-job/v2":
+        return _sha256_bytes(
+            f"{kind}:{run_id}:{request_sha256}:{model_sha256 or '-'}".encode()
+        )
+    if candidate_artifact_sha256 is None:
+        raise QualificationJobIntegrityError(
+            "v3 qualification job is missing its submitted candidate digest"
+        )
+    return _sha256_bytes(
+        (
+            f"{kind}:{run_id}:{candidate_artifact_sha256}:"
+            f"{request_sha256}:{model_sha256 or '-'}"
+        ).encode()
+    )
 
 
 def _atomic_text(path: Path, value: str) -> None:
@@ -177,12 +248,18 @@ class QualificationJobRepository:
                 raise QualificationJobIntegrityError(
                     f"qualification job {job_id} request digest changed"
                 )
-            if _sha256_file(self.model_path(job_id)) != record.model_sha256:
-                raise QualificationJobIntegrityError(
-                    f"qualification job {job_id} FMU digest changed"
-                )
-            expected = _sha256_bytes(
-                f"{record.run_id}:{record.request_sha256}:{record.model_sha256}".encode()
+            if record.model_sha256 is not None:
+                if _sha256_file(self.model_path(job_id)) != record.model_sha256:
+                    raise QualificationJobIntegrityError(
+                        f"qualification job {job_id} FMU digest changed"
+                    )
+            expected = _qualification_input_sha256(
+                schema_version=record.schema_version,
+                kind=record.kind,
+                run_id=record.run_id,
+                candidate_artifact_sha256=record.candidate_artifact_sha256,
+                request_sha256=record.request_sha256,
+                model_sha256=record.model_sha256,
             )
             if expected != record.input_sha256:
                 raise QualificationJobIntegrityError(
@@ -199,6 +276,7 @@ class QualificationJobRepository:
         self,
         *,
         run_id: str,
+        candidate_artifact_sha256: str,
         payload: AlfalfaQualificationPayload,
         model_bytes: bytes,
         model_filename: str,
@@ -228,7 +306,6 @@ class QualificationJobRepository:
                     continue
                 if (
                     existing.run_id == run_id
-                    and existing.kind == "alfalfa"
                     and existing.status not in TERMINAL_JOB_STATUSES
                 ):
                     raise ValueError(
@@ -245,13 +322,20 @@ class QualificationJobRepository:
                     id=job_id,
                     broker_job_id=job_id,
                     run_id=run_id,
+                    candidate_artifact_sha256=candidate_artifact_sha256,
+                    kind="alfalfa",
                     transport=payload.transport,
                     status=QualificationJobStatus.QUEUED,
                     model_filename=safe_filename,
                     model_sha256=model_sha256,
                     request_sha256=request_sha256,
-                    input_sha256=_sha256_bytes(
-                        f"{run_id}:{request_sha256}:{model_sha256}".encode()
+                    input_sha256=_qualification_input_sha256(
+                        schema_version="bactalk.qualification-job/v3",
+                        kind="alfalfa",
+                        run_id=run_id,
+                        candidate_artifact_sha256=candidate_artifact_sha256,
+                        request_sha256=request_sha256,
+                        model_sha256=model_sha256,
                     ),
                     created_at=now,
                     updated_at=now,
@@ -270,13 +354,92 @@ class QualificationJobRepository:
                     shutil.rmtree(staging)
         return record
 
+    def create_boptest(
+        self,
+        *,
+        run_id: str,
+        candidate_artifact_sha256: str,
+        payload: BoptestQualificationPayload,
+        actor_id: str | None = None,
+        tenant_id: str | None = None,
+    ) -> QualificationJobRecord:
+        if not run_id.isalnum():
+            raise ValueError("invalid run id")
+        request_bytes = canonical_json(payload).encode("utf-8")
+        request_sha256 = _sha256_bytes(request_bytes)
+        now = datetime.now(UTC)
+        with self._locked():
+            for path in self.root.glob("*/record.json"):
+                try:
+                    existing = QualificationJobRecord.model_validate_json(
+                        path.read_text(encoding="utf-8")
+                    )
+                except (OSError, ValueError, json.JSONDecodeError):
+                    continue
+                if (
+                    existing.run_id == run_id
+                    and existing.status not in TERMINAL_JOB_STATUSES
+                ):
+                    raise ValueError(
+                        f"run {run_id} already has active qualification job {existing.id}"
+                    )
+            job_id = uuid4().hex
+            staging = self.root / f".{job_id}.staging"
+            final = self.job_directory(job_id)
+            staging.mkdir()
+            try:
+                (staging / "request.json").write_bytes(request_bytes)
+                record = QualificationJobRecord(
+                    id=job_id,
+                    broker_job_id=job_id,
+                    run_id=run_id,
+                    candidate_artifact_sha256=candidate_artifact_sha256,
+                    kind="boptest",
+                    transport="boptest_rest",
+                    status=QualificationJobStatus.QUEUED,
+                    request_sha256=request_sha256,
+                    input_sha256=_qualification_input_sha256(
+                        schema_version="bactalk.qualification-job/v3",
+                        kind="boptest",
+                        run_id=run_id,
+                        candidate_artifact_sha256=candidate_artifact_sha256,
+                        request_sha256=request_sha256,
+                        model_sha256=None,
+                    ),
+                    created_at=now,
+                    updated_at=now,
+                    actor_id=actor_id,
+                    tenant_id=tenant_id,
+                    progress=QualificationJobProgress(
+                        phase="queued",
+                        completed_steps=0,
+                        total_steps=payload.steps,
+                        percent=0,
+                    ),
+                )
+                (staging / "record.json").write_text(
+                    canonical_json(record), encoding="utf-8"
+                )
+                os.replace(staging, final)
+            finally:
+                if staging.exists():
+                    shutil.rmtree(staging)
+        return record
+
     def get(self, job_id: str) -> QualificationJobRecord:
         with self._locked():
             return self._read_unlocked(job_id)
 
-    def payload(self, job_id: str) -> AlfalfaQualificationPayload:
+    def payload(
+        self, job_id: str
+    ) -> AlfalfaQualificationPayload | BoptestQualificationPayload:
         record = self.get(job_id)
-        return AlfalfaQualificationPayload.model_validate_json(
+        payload_type = (
+            AlfalfaQualificationPayload
+            if record.kind == "alfalfa"
+            else BoptestQualificationPayload
+        )
+        return payload_type.model_validate_json(
             self.request_path(record.id).read_text(encoding="utf-8")
         )
 
@@ -536,11 +699,17 @@ class RqQualificationDispatcher:
         from rq.job import Callback
 
         self.connection.ping()
+        function = {
+            "alfalfa": "bactalk.qualification_jobs.execute_alfalfa_qualification_job",
+            "boptest": "bactalk.qualification_jobs.execute_boptest_qualification_job",
+        }[record.kind]
         self.queue.enqueue_call(
-            "bactalk.qualification_jobs.execute_alfalfa_qualification_job",
+            function,
             args=(record.id, str(self.jobs_root), str(self.runs_root)),
             job_id=record.broker_job_id,
-            description=f"Alfalfa qualification for BACTalk run {record.run_id}",
+            description=(
+                f"{record.kind.upper()} qualification for BACTalk run {record.run_id}"
+            ),
             timeout=86_400,
             result_ttl=604_800,
             failure_ttl=2_592_000,
@@ -570,6 +739,34 @@ class RqQualificationDispatcher:
             broker_job.cancel()
 
 
+@contextmanager
+def _maintain_worker_lease(
+    jobs: QualificationJobRepository, job_id: str
+) -> Iterator[None]:
+    heartbeat_stop = threading.Event()
+
+    def maintain() -> None:
+        while not heartbeat_stop.wait(QUALIFICATION_HEARTBEAT_SECONDS):
+            try:
+                jobs.heartbeat(job_id)
+            except Exception:
+                # The foreground path remains authoritative and will retain any failure.
+                # A missed heartbeat becomes observable through lease expiry.
+                continue
+
+    heartbeat_thread = threading.Thread(
+        target=maintain,
+        name=f"qualification-heartbeat-{job_id[:8]}",
+        daemon=True,
+    )
+    heartbeat_thread.start()
+    try:
+        yield
+    finally:
+        heartbeat_stop.set()
+        heartbeat_thread.join(timeout=QUALIFICATION_HEARTBEAT_SECONDS)
+
+
 class AlfalfaQualificationJobExecutor:
     def __init__(
         self,
@@ -592,39 +789,50 @@ class AlfalfaQualificationJobExecutor:
         record = self.jobs.mark_running(job_id, self.worker_id)
         if record.status == QualificationJobStatus.CANCELED:
             return record
-        heartbeat_stop = threading.Event()
-
-        def maintain_lease() -> None:
-            while not heartbeat_stop.wait(QUALIFICATION_HEARTBEAT_SECONDS):
-                try:
-                    self.jobs.heartbeat(job_id)
-                except Exception:
-                    # The foreground path remains authoritative and will retain any failure.
-                    # A missed heartbeat becomes observable through lease expiry.
-                    continue
-
-        heartbeat_thread = threading.Thread(
-            target=maintain_lease,
-            name=f"qualification-heartbeat-{job_id[:8]}",
-            daemon=True,
-        )
-        heartbeat_thread.start()
         client: AlfalfaClientLike | None = None
         try:
-            payload = self.jobs.payload(job_id)
-            client = self.client_factory()
-            server_version = (
-                self.server_version_loader() if self.server_version_loader is not None else None
-            )
-            def progress(phase: str, completed: int, total: int) -> None:
-                self.jobs.update_progress(job_id, phase, completed, total)
+            with _maintain_worker_lease(self.jobs, job_id):
+                payload = self.jobs.payload(job_id)
+                if not isinstance(payload, AlfalfaQualificationPayload):
+                    raise ValueError(f"qualification job {job_id} is not an Alfalfa job")
+                if record.model_filename is None:
+                    raise QualificationJobIntegrityError(
+                        f"qualification job {job_id} has no FMU filename"
+                    )
+                client = self.client_factory()
+                server_version = (
+                    self.server_version_loader()
+                    if self.server_version_loader is not None
+                    else None
+                )
 
-            def canceled() -> bool:
-                return self.jobs.cancellation_requested(job_id)
+                def progress(phase: str, completed: int, total: int) -> None:
+                    self.jobs.update_progress(job_id, phase, completed, total)
 
-            if payload.transport == "bacnet_ip_loopback":
-                result = asyncio.run(
-                    self.service.qualify_with_alfalfa_bacnet(
+                def canceled() -> bool:
+                    return self.jobs.cancellation_requested(job_id)
+
+                if payload.transport == "bacnet_ip_loopback":
+                    result = asyncio.run(
+                        self.service.qualify_with_alfalfa_bacnet(
+                            record.run_id,
+                            client=client,
+                            mapping=payload.mapping,
+                            oracles=payload.oracles,
+                            model_bytes=self.jobs.model_path(job_id).read_bytes(),
+                            model_filename=record.model_filename,
+                            steps=payload.steps,
+                            step_seconds=payload.step_seconds,
+                            start=payload.start,
+                            server_version=server_version,
+                            client_version=self.client_version,
+                            progress_callback=progress,
+                            cancellation_requested=canceled,
+                            expected_artifact_sha256=record.candidate_artifact_sha256,
+                        )
+                    )
+                else:
+                    result = self.service.qualify_with_alfalfa(
                         record.run_id,
                         client=client,
                         mapping=payload.mapping,
@@ -638,42 +846,90 @@ class AlfalfaQualificationJobExecutor:
                         client_version=self.client_version,
                         progress_callback=progress,
                         cancellation_requested=canceled,
+                        expected_artifact_sha256=record.candidate_artifact_sha256,
+                    )
+                evidence = json.loads(
+                    self.service.alfalfa_verification_path(record.run_id).read_text(
+                        encoding="utf-8"
                     )
                 )
-            else:
-                result = self.service.qualify_with_alfalfa(
-                    record.run_id,
-                    client=client,
-                    mapping=payload.mapping,
-                    oracles=payload.oracles,
-                    model_bytes=self.jobs.model_path(job_id).read_bytes(),
-                    model_filename=record.model_filename,
-                    steps=payload.steps,
-                    step_seconds=payload.step_seconds,
-                    start=payload.start,
-                    server_version=server_version,
-                    client_version=self.client_version,
-                    progress_callback=progress,
-                    cancellation_requested=canceled,
+                return self.jobs.mark_succeeded(
+                    job_id,
+                    artifact_sha256=result.artifact_sha256,
+                    qualification_passed=evidence.get("status") == "pass",
                 )
-            evidence = json.loads(
-                self.service.alfalfa_verification_path(record.run_id).read_text(
-                    encoding="utf-8"
-                )
-            )
-            return self.jobs.mark_succeeded(
-                job_id,
-                artifact_sha256=result.artifact_sha256,
-                qualification_passed=evidence.get("status") == "pass",
-            )
         except AlfalfaQualificationCancelled as exc:
             return self.jobs.mark_canceled(job_id, str(exc))
         except Exception as exc:
             self.jobs.mark_failed(job_id, f"{type(exc).__name__}: {exc}")
             raise
         finally:
-            heartbeat_stop.set()
-            heartbeat_thread.join(timeout=QUALIFICATION_HEARTBEAT_SECONDS)
+            close = getattr(client, "close", None) if client is not None else None
+            if callable(close):
+                close()
+
+
+class BoptestQualificationJobExecutor:
+    def __init__(
+        self,
+        jobs: QualificationJobRepository,
+        service: WorkbenchService,
+        *,
+        client_factory: Callable[[], BoptestRuntime],
+        worker_id: str | None = None,
+    ) -> None:
+        self.jobs = jobs
+        self.service = service
+        self.client_factory = client_factory
+        self.worker_id = worker_id or f"pid-{os.getpid()}"
+
+    def execute(self, job_id: str) -> QualificationJobRecord:
+        record = self.jobs.mark_running(job_id, self.worker_id)
+        if record.status == QualificationJobStatus.CANCELED:
+            return record
+        client: BoptestRuntime | None = None
+        try:
+            with _maintain_worker_lease(self.jobs, job_id):
+                payload = self.jobs.payload(job_id)
+                if not isinstance(payload, BoptestQualificationPayload):
+                    raise ValueError(f"qualification job {job_id} is not a BOPTEST job")
+                client = self.client_factory()
+
+                def progress(phase: str, completed: int, total: int) -> None:
+                    self.jobs.update_progress(job_id, phase, completed, total)
+
+                def canceled() -> bool:
+                    return self.jobs.cancellation_requested(job_id)
+
+                result = self.service.qualify_with_boptest(
+                    record.run_id,
+                    client=client,
+                    mapping=payload.mapping,
+                    oracles=payload.oracles,
+                    steps=payload.steps,
+                    step_seconds=payload.step_seconds,
+                    start_time=payload.start_time,
+                    warmup_period=payload.warmup_period,
+                    progress_callback=progress,
+                    cancellation_requested=canceled,
+                    expected_artifact_sha256=record.candidate_artifact_sha256,
+                )
+                evidence = json.loads(
+                    self.service.boptest_verification_path(record.run_id).read_text(
+                        encoding="utf-8"
+                    )
+                )
+                return self.jobs.mark_succeeded(
+                    job_id,
+                    artifact_sha256=result.artifact_sha256,
+                    qualification_passed=evidence.get("status") == "pass",
+                )
+        except BoptestQualificationCancelled as exc:
+            return self.jobs.mark_canceled(job_id, str(exc))
+        except Exception as exc:
+            self.jobs.mark_failed(job_id, f"{type(exc).__name__}: {exc}")
+            raise
+        finally:
             close = getattr(client, "close", None) if client is not None else None
             if callable(close):
                 close()
@@ -696,6 +952,18 @@ def execute_alfalfa_qualification_job(
         client_factory=lambda: AlfalfaClient(base_url),
         server_version_loader=lambda: _alfalfa_server_version(base_url),
         client_version=metadata.version("alfalfa-client"),
+    )
+    return executor.execute(job_id).model_dump(mode="json")
+
+
+def execute_boptest_qualification_job(
+    job_id: str, jobs_root: str, runs_root: str
+) -> dict[str, Any]:
+    base_url = os.getenv("BACTALK_BOPTEST_URL", "http://127.0.0.1:8000")
+    executor = BoptestQualificationJobExecutor(
+        QualificationJobRepository(Path(jobs_root)),
+        WorkbenchService(RunRepository(Path(runs_root))),
+        client_factory=lambda: BoptestClient(base_url),
     )
     return executor.execute(job_id).model_dump(mode="json")
 

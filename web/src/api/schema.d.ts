@@ -1136,6 +1136,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/runs/{run_id}/qualification-jobs/boptest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Enqueue Boptest Qualification */
+        post: operations["enqueue_boptest_qualification_api_runs__run_id__qualification_jobs_boptest_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/runs/{run_id}/qualification-jobs/latest": {
         parameters: {
             query?: never;
@@ -4955,6 +4972,43 @@ export interface operations {
         requestBody: {
             content: {
                 "multipart/form-data": components["schemas"]["Body_enqueue_alfalfa_qualification_api_runs__run_id__qualification_jobs_alfalfa_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    enqueue_boptest_qualification_api_runs__run_id__qualification_jobs_boptest_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BoptestQualificationRequest"];
             };
         };
         responses: {

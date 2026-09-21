@@ -47,7 +47,7 @@ alfalfa-runtime-smoke:
 alfalfa-graph-smoke:
 	PYTHONPATH=src .venv/bin/python scripts/run_alfalfa_graph.py
 
-alfalfa-product-smoke:
+alfalfa-product-smoke: qualification-queue-up
 	PYTHONPATH=src .venv/bin/python scripts/run_alfalfa_product.py
 
 alfalfa-runtime-down:
@@ -163,7 +163,7 @@ boptest-runtime-up:
 boptest-runtime-smoke:
 	PYTHONPATH=src .venv/bin/python scripts/run_boptest_smoke.py --output .bactalk/boptest-runtime-evidence.json
 
-boptest-graph-runtime:
+boptest-graph-runtime: qualification-queue-up
 	PYTHONPATH=src .venv/bin/python scripts/verify_boptest_graph_runtime.py
 
 boptest-scale-runtime:

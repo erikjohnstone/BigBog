@@ -42,6 +42,7 @@ from bactalk.domain import (
     JobSpec,
     PointSpec,
     RunOrigin,
+    RunStatus,
     SequenceSpec,
 )
 from bactalk.intake import (
@@ -55,9 +56,7 @@ from bactalk.integrations.alfalfa import AlfalfaClientLike
 from bactalk.integrations.bacnet_lab import VirtualBacnetLab, probe_manifest_with_bac0
 from bactalk.integrations.boptest import BoptestClient, BoptestError
 from bactalk.integrations.boptest_graph import (
-    BoptestGraphMap,
     BoptestRuntime,
-    BoptestTrajectoryOracle,
 )
 from bactalk.integrations.buildingmotif import BuildingMotifAdapter, BuildingMotifError
 from bactalk.integrations.constrain import ConStrainError, ConStrainVerifier
@@ -93,6 +92,7 @@ from bactalk.projects import (
 )
 from bactalk.qualification_jobs import (
     AlfalfaQualificationPayload,
+    BoptestQualificationPayload,
     QualificationDispatcher,
     QualificationJobIntegrityError,
     QualificationJobRepository,
@@ -149,13 +149,8 @@ class RejectionRequest(BaseModel):
     reason: str | None = Field(default=None, max_length=2_000)
 
 
-class BoptestQualificationRequest(BaseModel):
-    mapping: BoptestGraphMap
-    oracles: list[BoptestTrajectoryOracle] = Field(min_length=1, max_length=1_000)
-    steps: int = Field(ge=1, le=100_000)
-    step_seconds: float = Field(gt=0, le=86_400, allow_inf_nan=False)
-    start_time: float = Field(default=0.0, ge=0, allow_inf_nan=False)
-    warmup_period: float = Field(default=0.0, ge=0, allow_inf_nan=False)
+class BoptestQualificationRequest(BoptestQualificationPayload):
+    pass
 
 
 class AlfalfaQualificationRequest(AlfalfaQualificationPayload):
@@ -1502,6 +1497,11 @@ def create_app(
             )
         try:
             candidate = repository.get(run_id)
+            if candidate.status != RunStatus.READY_FOR_REVIEW:
+                raise HTTPException(
+                    status_code=409,
+                    detail="qualification requires a passing candidate awaiting review",
+                )
             if candidate.alfalfa_verification_path is not None:
                 raise HTTPException(
                     status_code=409,
@@ -1514,9 +1514,57 @@ def create_app(
             principal: Principal | None = getattr(http_request.state, "principal", None)
             record = qualification_jobs.create(
                 run_id=run_id,
+                candidate_artifact_sha256=candidate.artifact_sha256,
                 payload=request,
                 model_bytes=model_bytes,
                 model_filename=model_file.filename or "model.fmu",
+                actor_id=principal.subject if principal is not None else None,
+                tenant_id=principal.tenant_id if principal is not None else None,
+            )
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="run not found") from exc
+        except HTTPException:
+            raise
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        try:
+            dispatch_qualification.enqueue(record)
+        except Exception as exc:
+            failed = qualification_jobs.mark_failed(
+                record.id, f"Qualification queue dispatch failed: {type(exc).__name__}: {exc}"
+            )
+            raise HTTPException(
+                status_code=503,
+                detail={
+                    "message": "qualification queue is unavailable",
+                    "job": failed.model_dump(mode="json"),
+                },
+            ) from exc
+        return record.model_dump(mode="json")
+
+    @app.post("/api/runs/{run_id}/qualification-jobs/boptest", status_code=202)
+    def enqueue_boptest_qualification(
+        run_id: str,
+        request: BoptestQualificationRequest,
+        http_request: Request,
+    ) -> dict:
+        try:
+            candidate = repository.get(run_id)
+            if candidate.status != RunStatus.READY_FOR_REVIEW:
+                raise HTTPException(
+                    status_code=409,
+                    detail="qualification requires a passing candidate awaiting review",
+                )
+            if candidate.boptest_verification_path is not None:
+                raise HTTPException(
+                    status_code=409,
+                    detail="BOPTEST qualification is append-once; create a new candidate to retest",
+                )
+            principal: Principal | None = getattr(http_request.state, "principal", None)
+            record = qualification_jobs.create_boptest(
+                run_id=run_id,
+                candidate_artifact_sha256=candidate.artifact_sha256,
+                payload=request,
                 actor_id=principal.subject if principal is not None else None,
                 tenant_id=principal.tenant_id if principal is not None else None,
             )
