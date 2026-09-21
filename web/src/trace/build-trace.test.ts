@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { RunDetail, TestReport } from '../api/client';
-import { buildTrace, signalIdForOutput } from './build-trace';
+import { buildTrace, isRedundantSlot, phaseAt, signalIdForOutput } from './build-trace';
 
 const run = {
   id: 'r1',
@@ -94,6 +94,7 @@ describe('buildTrace', () => {
   it('classifies signals and types them from the graph', () => {
     expect(trace.signals.get('Enable')?.source).toBe('input');
     expect(trace.signals.get('Enable')?.kind).toBe('boolean');
+    expect(trace.signals.get('FanCommand')?.source).toBe('command');
     expect(trace.signals.get('ProofDelay.out')?.source).toBe('slot');
     expect(trace.signals.get('ProofDelay.out')?.blockId).toBe('ProofDelay');
     expect(trace.signals.get('fault.f1.active')?.source).toBe('fault');
@@ -144,10 +145,86 @@ describe('buildTrace', () => {
     expect(legacy.signals.get('DamperCommand')?.source).toBe('block');
   });
 
+  it('keeps assertions from scenarios that retained no samples', () => {
+    const sparse = buildTrace(
+      run,
+      {
+        ...report,
+        scenarios: [
+          report.scenarios[0],
+          { name: 'no samples', passed: false, assertions: [{ name: 'no samples: FanCommand', observed: 'x', expected: 'y', passed: false }], samples: [] },
+        ],
+      },
+      { graph },
+    );
+    expect(sparse.assertions).toHaveLength(2);
+    expect(sparse.assertions[1]).toMatchObject({ index: 2, phaseIndex: 1, passed: false });
+    expect(sparse.phases[1]).toMatchObject({ startIdx: 2, endIdx: 2, stepSeconds: 0 });
+    expect(sparse.time.length).toBe(3);
+  });
+
   it('resolves the signal carrying a link', () => {
     expect(signalIdForOutput(trace, 'ProofDelay', 'out', 'out')).toBe('ProofDelay.out');
     expect(signalIdForOutput(trace, 'Enable', 'out', 'out')).toBe('Enable.out');
     expect(signalIdForOutput(trace, 'FanProofAlarm', 'out', 'out')).toBe('FanProofAlarm');
     expect(signalIdForOutput(trace, 'Nope', 'out', 'out')).toBeUndefined();
+  });
+});
+
+describe('timeline scenarios', () => {
+  const timelineRun = {
+    ...run,
+    job: {
+      ...run.job,
+      acceptance_tests: [
+        {
+          name: 'proof cycle',
+          repeat: 1,
+          step_seconds: 1,
+          expectations: [],
+          faults: [],
+          timeline: [
+            { name: 'startup grace', repeat: 2, step_seconds: 1, expectations: [{ target: 'FanProofAlarm' }] },
+            { name: 'proof timeout', repeat: 1, step_seconds: 5, expectations: [{ target: 'FanProofAlarm' }] },
+          ],
+        },
+      ],
+    },
+  } as unknown as RunDetail;
+  const timelineReport: TestReport = {
+    engine: 'generic',
+    passed: false,
+    scenarios: [
+      {
+        name: 'proof cycle',
+        passed: false,
+        assertions: [
+          { name: 'proof cycle: startup grace: FanProofAlarm', observed: 'False', expected: 'eq False', passed: true },
+          { name: 'proof cycle: proof timeout: FanProofAlarm', observed: 'False', expected: 'eq True', passed: false },
+        ],
+        samples: [
+          { step: 1, phase: 'startup grace', phase_step: 1, FanProofAlarm: false },
+          { step: 2, phase: 'startup grace', phase_step: 2, FanProofAlarm: false },
+          { step: 3, phase: 'proof timeout', phase_step: 1, FanProofAlarm: false },
+        ],
+      },
+    ],
+  };
+  const trace = buildTrace(timelineRun, timelineReport, { graph });
+
+  it('splits sub-phases, uses their step, and places assertions at their own phase end', () => {
+    expect(trace.phases.map((phase) => phase.name)).toEqual(['proof cycle · startup grace', 'proof cycle · proof timeout']);
+    expect(Array.from(trace.time)).toEqual([0, 1, 6]);
+    expect(trace.assertions[0]).toMatchObject({ index: 1, phaseIndex: 0 });
+    expect(trace.assertions[1]).toMatchObject({ index: 2, phaseIndex: 1, passed: false });
+    expect(phaseAt(trace, 2)?.name).toBe('proof cycle · proof timeout');
+    expect(phaseAt(trace, 9)).toBeUndefined();
+  });
+
+  it('flags slot samples that duplicate the block sample', () => {
+    const base = buildTrace(run, report, { graph });
+    expect(isRedundantSlot(base, base.signals.get('ProofDelay.out')!)).toBe(true);
+    expect(isRedundantSlot(base, base.signals.get('ProofDelay.out')!, () => ['elapsed', 'passed'])).toBe(false);
+    expect(isRedundantSlot(base, base.signals.get('ProofDelay')!)).toBe(false);
   });
 });

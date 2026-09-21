@@ -51,14 +51,15 @@ test('jobs list facets real candidates and opens every stage', async ({ page }) 
   await axe(page);
 
   const stages = page.getByRole('navigation', { name: 'Job stages' });
-  for (const [label, heading] of [
-    ['Intake', 'Job'],
-    ['Test', 'Deterministic tests'],
-    ['Review', 'Decision'],
-    ['Release', 'Release'],
-  ] as const) {
+  const landmarks: Array<[string, () => import('@playwright/test').Locator]> = [
+    ['Intake', () => page.getByRole('heading', { name: 'Job', exact: true })],
+    ['Test', () => page.getByRole('group', { name: 'Master timeline' })],
+    ['Review', () => page.getByRole('heading', { name: 'Decision', exact: true })],
+    ['Release', () => page.getByRole('heading', { name: 'Release', exact: true })],
+  ];
+  for (const [label, landmark] of landmarks) {
     await stages.getByRole('link', { name: new RegExp(`^\\d ${label}`) }).click();
-    await expect(page.getByRole('heading', { name: heading, exact: true }).first()).toBeVisible();
+    await expect(landmark().first()).toBeVisible();
     await axe(page);
   }
 
@@ -117,7 +118,10 @@ test('wiresheet draws declared ports, animates values on the shared clock, and j
   await expect(readout).not.toHaveText(before ?? '');
   await page.getByRole('slider', { name: 'Scan position' }).focus();
   await page.keyboard.press('End');
-  const chip = page.locator('.react-flow__node .chip').first();
+  // Chips only update at a legible zoom (level of detail), so zoom to a block first.
+  await page.getByRole('textbox', { name: 'Find block' }).fill(graph.blocks[0].id);
+  await page.keyboard.press('Enter');
+  const chip = page.locator(`.react-flow__node[data-id="${graph.blocks[0].id}"] .chip`).first();
   await expect(chip).not.toHaveText('—');
 
   // Outline → inspector → jump highlights the upstream path.
@@ -247,6 +251,50 @@ test('wiresheet scrubs a 500-block synthetic sheet without dropping frames', asy
   const zoomed = await measure();
   report('500 blocks, zoomed to legible chips', zoomed.idle, zoomed.scrub);
   expect(p(zoomed.scrub, 0.95) - p(zoomed.idle, 0.95)).toBeLessThan(20);
+});
+
+test('test stage puts timeline, trends, and evidence on one clock', async ({ page }) => {
+  test.setTimeout(60_000);
+  const runs = (await (await page.request.get('/api/runs')).json()) as Run[];
+  const candidate = runs.find((run) => run.job.equipment_name === 'EF_1') ?? runs.find((run) => run.status === 'ready_for_review') ?? runs[0];
+  test.skip(!candidate, 'A retained candidate is required.');
+  const report = (await (await page.request.get(`/api/runs/${candidate.id}/report`)).json()) as {
+    scenarios: Array<{ assertions: Array<{ name: string }> }>;
+  };
+  const assertionCount = report.scenarios.reduce((sum, scenario) => sum + scenario.assertions.length, 0);
+
+  await page.goto(`/next/jobs/${candidate.id}/test`);
+  await expect(page.getByRole('group', { name: 'Master timeline' })).toBeVisible();
+  await expect(page.getByRole('listbox', { name: 'Signals' })).toBeVisible();
+  // A numeric pane, or boolean lanes when the sequence has no numeric signals.
+  await expect(page.locator('.uplot, [aria-label="Boolean state lanes"]').first()).toBeVisible();
+
+  // Every assertion from the report is listed, none dropped.
+  await expect(page.getByRole('tabpanel')).toContainText(`of ${assertionCount} assertions passed`);
+
+  // Clicking an assertion moves the shared clock.
+  const readout = page.getByRole('group', { name: 'Playback' }).getByText(/\d+\/\d+/);
+  await page.getByRole('slider', { name: 'Scan position' }).focus();
+  await page.keyboard.press('Home');
+  const before = await readout.textContent();
+  const last = page.getByRole('tabpanel').getByRole('button', { name: /observed/ }).last();
+  await last.click();
+  await expect(last).toHaveAttribute('aria-current', 'true');
+  await expect(readout).not.toHaveText(before ?? '');
+
+  // Rail toggles a signal off and on.
+  const option = page.getByRole('listbox', { name: 'Signals' }).getByRole('option').first();
+  const wasOn = (await option.getAttribute('aria-selected')) === 'true';
+  await option.click();
+  await expect(option).toHaveAttribute('aria-selected', String(!wasOn));
+  await option.click();
+  await expect(option).toHaveAttribute('aria-selected', String(wasOn));
+
+  for (const tab of ['Decision coverage', 'Faults', 'Qualification', 'Data']) {
+    await page.getByRole('tab', { name: tab }).click();
+    await expect(page.getByRole('tabpanel')).toBeVisible();
+  }
+  await axe(page);
 });
 
 test('legacy studio and simulation links redirect into the stage model', async ({ page }) => {

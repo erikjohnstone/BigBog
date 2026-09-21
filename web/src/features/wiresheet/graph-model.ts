@@ -167,9 +167,7 @@ export function buildFlow(input: BuildFlowInput): { nodes: BlockNode[]; edges: S
   const rank = materializeOrder(graph, feedback);
 
   const decisions = new Map<string, Coverage>();
-  const rawDecisions = (report?.coverage as { decisions?: Array<{ decision: string; both_outcomes: boolean; observed: unknown[] }> } | undefined)
-    ?.decisions;
-  for (const decision of rawDecisions ?? []) {
+  for (const decision of report?.coverage?.decisions ?? []) {
     const blockId = decision.decision.split('.')[0];
     decisions.set(blockId, { bothOutcomes: decision.both_outcomes, observed: decision.observed });
   }

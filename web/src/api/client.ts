@@ -200,6 +200,12 @@ const reportSchema = z.object({
     outcomes_observed: z.number().optional(),
     outcomes_possible: z.number().optional(),
     gaps: z.array(z.string()).optional(),
+    decision_count: z.number().optional(),
+    decisions: z.array(z.object({
+      decision: z.string(),
+      both_outcomes: z.boolean(),
+      observed: z.array(z.unknown()).default([]),
+    }).passthrough()).optional(),
     fault_injection: faultCoverageSchema.optional(),
     qualification_matrix: qualificationMatrixSchema.optional(),
   }).passthrough().nullable().optional(),

@@ -100,8 +100,8 @@ function classify(key: string, blockIds: Set<string>, run: RunDetail, graph?: Co
     return { source: 'effective', blockId: target, label: `${target} (effective)` };
   }
   if (block) {
-    const isInput = block.kind.endsWith('_input');
-    return { source: isInput ? 'input' : 'block', blockId: key, label: point?.label ?? block.label };
+    const source: SignalSource = block.kind.endsWith('_input') ? 'input' : block.kind.endsWith('_output') ? 'command' : 'block';
+    return { source, blockId: key, label: point?.label ?? block.label };
   }
   const dot = key.indexOf('.');
   if (dot > 0) {
@@ -189,7 +189,37 @@ export function buildTrace(run: RunDetail, report: TestReport, options: BuildTra
     const scenarioCase = cases.find((item) => item.name === scenario.name);
     const samples = scenario.samples as Sample[];
     const n = samples.length;
-    if (n === 0) return;
+    if (n === 0) {
+      // No retained samples: the assertions still count, pinned to the last
+      // sample so far on a zero-length phase the timeline draws as a mark.
+      const at = Math.max(0, cursor - 1);
+      const phase: Phase = {
+        index: phases.length,
+        name: scenario.name,
+        startIdx: at,
+        endIdx: at,
+        t0: time[at] ?? 0,
+        t1: time[at] ?? 0,
+        stepSeconds: 0,
+        faults: [],
+      };
+      phases.push(phase);
+      scenario.assertions.forEach((assertion, assertionIndex) => {
+        const targets = assertionTargets(assertion.name, scenarioCase, assertionIndex, scenario.assertions.length, blockIds);
+        assertions.push({
+          id: `${scenarioIndex}:${assertionIndex}`,
+          name: assertion.name,
+          passed: assertion.passed,
+          observed: assertion.observed,
+          expected: assertion.expected,
+          index: at,
+          phaseIndex: phase.index,
+          blockIds: targets,
+          signalId: targets[0],
+        });
+      });
+      return;
+    }
     const hasMinute = typeof samples[0].minute === 'number';
     if (hasMinute) legacy = true;
     const step = scenarioCase?.step_seconds ?? 1;
@@ -250,18 +280,24 @@ export function buildTrace(run: RunDetail, report: TestReport, options: BuildTra
       });
     }
     const lastPhaseIndex = phases.length - 1;
-    void firstPhaseIndex;
+    const scenarioPhases = phases.slice(firstPhaseIndex);
 
     scenario.assertions.forEach((assertion, assertionIndex) => {
       const targets = assertionTargets(assertion.name, scenarioCase, assertionIndex, scenario.assertions.length, blockIds);
+      // Timeline assertions name their sub-phase; place them at that phase's end.
+      const owner =
+        scenarioPhases.length > 1
+          ? scenarioPhases.find((phase) => assertion.name.includes(phase.name.slice(scenario.name.length + 3)))
+          : undefined;
+      const phase = owner ?? phases[lastPhaseIndex];
       assertions.push({
         id: `${scenarioIndex}:${assertionIndex}`,
         name: assertion.name,
         passed: assertion.passed,
         observed: assertion.observed,
         expected: assertion.expected,
-        index: end,
-        phaseIndex: lastPhaseIndex,
+        index: phase.endIdx,
+        phaseIndex: phase.index,
         blockIds: targets,
         signalId: targets[0],
       });
@@ -399,4 +435,21 @@ export function signalIdForOutput(trace: Trace | undefined, blockId: string, slo
   if (trace.signals.has(slotted)) return slotted;
   if ((slot === firstOutput || slot === 'out') && trace.signals.has(blockId)) return blockId;
   return undefined;
+}
+
+/** Phase containing a sample index. */
+export function phaseAt(trace: Trace | undefined, index: number): Phase | undefined {
+  return trace?.phases.find((phase) => index >= phase.startIdx && index <= phase.endIdx);
+}
+
+/**
+ * Slot samples that duplicate their block sample (`X.out` when `X` exists and
+ * is the block's only output) add nothing to a trend; hide them from rails.
+ */
+export function isRedundantSlot(trace: Trace, signal: Signal, outputsOf?: (blockId: string) => string[]): boolean {
+  if (signal.source !== 'slot' || !signal.blockId || !signal.slot) return false;
+  if (!trace.signals.has(signal.blockId)) return false;
+  const outputs = outputsOf?.(signal.blockId);
+  if (outputs && outputs.length > 1) return false;
+  return signal.slot === 'out' || (outputs?.[0] ?? 'out') === signal.slot;
 }
