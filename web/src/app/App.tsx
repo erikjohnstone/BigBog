@@ -36,9 +36,10 @@ export function App() {
             <Route path="/jobs/:runId" element={<JobStageIndexRedirect />} />
             <Route path="/jobs/:runId/:stage" element={<JobStage />} />
             <Route path="/intake" element={<GuidedIntake />} />
-            <Route path="/intake/:step" element={<GuidedIntake />} />
+            <Route path="/intake/design" element={<DesignFlow />} />
             <Route path="/intake/design/:templateId" element={<DesignFlow />} />
             <Route path="/intake/design/:templateId/:step" element={<DesignFlow />} />
+            <Route path="/intake/:step" element={<GuidedIntake />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/projects/:projectId" element={<Projects />} />
             <Route path="/projects/new" element={<Projects />} />

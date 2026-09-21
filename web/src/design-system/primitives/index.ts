@@ -2,6 +2,7 @@ export { Button, buttonClass } from './button';
 export type { ButtonProps, ButtonSize, ButtonVariant } from './button';
 export { Dialog } from './dialog';
 export { Field, Input, Textarea } from './field';
+export { NativeSelect } from './native-select';
 export { Popover } from './popover';
 export { Select } from './select';
 export type { SelectOption } from './select';

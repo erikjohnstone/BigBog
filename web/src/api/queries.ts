@@ -38,6 +38,10 @@ export const keys = {
   project: (id: string) => ['project', id] as const,
   projectReport: (id: string) => ['project', id, 'report'] as const,
   libraryCatalogs: ['library-catalogs'] as const,
+  ctrlFlowTemplates: ['ctrl-flow-templates'] as const,
+  ctrlFlowConfiguration: (templateId: string, selections: Record<string, unknown>) => ['ctrl-flow-configuration', templateId, selections] as const,
+  g36Parameters: (controllerId: string) => ['g36-parameters', controllerId] as const,
+  retainedDesign: ['retained-design'] as const,
   boptestCatalog: ['boptest-catalog'] as const,
 };
 
@@ -102,4 +106,18 @@ export function useProjectReport(id: string | undefined) {
 }
 export function useLibraryCatalogs() {
   return useQuery({ queryKey: keys.libraryCatalogs, queryFn: api.libraryCatalogs, staleTime: 5 * 60_000 });
+}
+export function useCtrlFlowTemplates() {
+  return useQuery({ queryKey: keys.ctrlFlowTemplates, queryFn: api.ctrlFlowTemplates, staleTime: 5 * 60_000 });
+}
+export function useCtrlFlowConfiguration(templateId: string | undefined, selections: Record<string, unknown>) {
+  return useQuery({
+    queryKey: keys.ctrlFlowConfiguration(templateId ?? '', selections),
+    queryFn: () => api.ctrlFlowConfigure(templateId!, selections),
+    enabled: Boolean(templateId),
+    placeholderData: (previous) => previous,
+  });
+}
+export function useG36Parameters(controllerId: string | undefined) {
+  return useQuery({ queryKey: keys.g36Parameters(controllerId ?? ''), queryFn: () => api.g36Parameters(controllerId!), enabled: Boolean(controllerId), staleTime: Infinity });
 }

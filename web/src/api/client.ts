@@ -777,6 +777,8 @@ const ctrlFlowFieldSchema = z.object({
 const ctrlFlowConfigurationSchema = z.object({
   schema: z.string(),
   configuration_digest: z.string(),
+  template: z.object({ name: z.string(), modelicaPath: z.string().optional() }).passthrough(),
+  rejected_selections: z.array(z.unknown()).default([]),
   accepted_selection_count: z.number(),
   rejected_selection_count: z.number(),
   selections: z.record(z.string(), z.unknown()),
@@ -1259,6 +1261,64 @@ const blockCatalogSchema = z.object({
 export type BlockCatalog = z.infer<typeof blockCatalogSchema>;
 export type BlockCatalogKind = BlockCatalog['kinds'][number];
 
+const ctrlFlowTemplateSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  family: z.string().optional(),
+  system_types: z.array(z.string()).optional(),
+  option_count: z.number().optional(),
+  visible_option_count: z.number().optional(),
+  product_status: z.string().optional(),
+}).passthrough();
+const ctrlFlowTemplateListSchema = z.object({
+  schema: z.string(),
+  source: z.string().optional(),
+  license: z.string().optional(),
+  revision: z.string().optional(),
+  template_count: z.number(),
+  templates: z.array(ctrlFlowTemplateSchema),
+}).passthrough();
+const reconciliationListSchema = z.object({
+  schema: z.string(),
+  count: z.number(),
+  reconciliations: z.array(z.object({
+    id: z.string(),
+    template_id: z.string(),
+    created_at: z.string(),
+    source_filename: z.string().nullable().optional(),
+    ready_for_sequence_reconciliation: z.boolean().optional(),
+  }).passthrough()),
+});
+const reviewListSchema = z.object({
+  schema: z.string(),
+  reviews: z.array(z.object({
+    review_id: z.string().optional(),
+    id: z.string().optional(),
+    template_id: z.string().optional(),
+    created_at: z.string().optional(),
+    reviewer: z.string().nullable().optional(),
+  }).passthrough()),
+}).passthrough();
+const oracleApprovalListSchema = z.object({
+  schema: z.string(),
+  approvals: z.array(z.object({
+    oracle_approval_id: z.string().optional(),
+    id: z.string().optional(),
+    review_id: z.string().optional(),
+    created_at: z.string().optional(),
+    author: z.string().nullable().optional(),
+  }).passthrough()).optional(),
+}).passthrough();
+
+export type CtrlFlowTemplate = z.infer<typeof ctrlFlowTemplateSchema>;
+export type CtrlFlowTemplateList = z.infer<typeof ctrlFlowTemplateListSchema>;
+export type CtrlFlowSequenceReconciliation = z.infer<typeof ctrlFlowSequenceReconciliationSchema>;
+export type CtrlFlowSequenceReview = z.infer<typeof ctrlFlowSequenceReviewSchema>;
+export type SequenceOracleApproval = z.infer<typeof sequenceOracleApprovalSchema>;
+export type SequenceCandidatePreflight = z.infer<typeof sequenceCandidatePreflightSchema>;
+export type SequenceCandidateGeneration = z.infer<typeof sequenceCandidateGenerationSchema>;
+export type G36Parameters = z.infer<typeof g36ParameterSchema>;
+
 export type ArtifactState<T> =
   | { state: 'available'; data: T }
   | { state: 'missing' }
@@ -1447,6 +1507,18 @@ export const api = {
       niagara: catalogSchema.parse(niagara),
       ctrlFlow: catalogSchema.parse(ctrlFlow),
     };
+  },
+  async ctrlFlowTemplates() {
+    return ctrlFlowTemplateListSchema.parse(await getJson('/api/library/ctrl-flow/templates'));
+  },
+  async listPointReconciliations() {
+    return reconciliationListSchema.parse(await getJson('/api/ctrl-flow-point-reconciliations'));
+  },
+  async listSequenceReviews() {
+    return reviewListSchema.parse(await getJson('/api/sequence-requirement-reviews'));
+  },
+  async listOracleApprovals() {
+    return oracleApprovalListSchema.parse(await getJson('/api/sequence-oracle-approvals'));
   },
   async ctrlFlowConfigure(templateId: string, selections: Record<string, unknown>) {
     return ctrlFlowConfigurationSchema.parse(await postJson(

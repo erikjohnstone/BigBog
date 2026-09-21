@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import path from 'node:path';
 
 type Run = { id: string; status: string; origin: string; job: { name: string; equipment_name: string } };
 
@@ -175,7 +176,8 @@ test('an AI proposal renders as a ghost diff over the parent wiresheet', async (
   await expect(page.locator('.wiresheet-node[data-diff="modified"]')).toHaveCount(1);
   // The server listed a change the graphs do not show; the UI says so rather than hiding it.
   await expect(page.getByText(/1 server-listed changes not visible/)).toBeVisible();
-  await page.getByRole('navigation', { name: 'Block outline' }).getByRole('button', { name: constBlock.label }).first().click();
+  const escaped = constBlock.label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  await page.getByRole('navigation', { name: 'Block outline' }).getByRole('button', { name: new RegExp(`^${escaped}( [~+])?$`) }).click();
   await expect(page.getByRole('heading', { name: 'Proposed change' })).toBeVisible();
   await expect(page.getByText('999')).toBeVisible();
   await axe(page);
@@ -402,6 +404,121 @@ test('assistant thread explains, proposes a separate candidate, and survives nav
   await expect(page.getByRole('complementary', { name: 'Assistant' }).getByRole('heading', { name: 'Proposal routed' })).toBeVisible();
 });
 
+test('guided intake normalizes a real points list and creates a candidate', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/next/intake');
+  await expect(page.getByRole('heading', { name: /what are we building/i })).toBeVisible();
+  await page.getByLabel('Job name').fill('E2E guided intake');
+  await page.getByLabel('Site').fill('Contractor test site');
+  await page.getByLabel('Equipment identifier').fill('VAV_E2E');
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  await expect(page.getByRole('heading', { name: /attach the contractor documents/i })).toBeVisible();
+  await page.getByLabel('Attach Points list').setInputFiles(path.resolve('../examples/vav-reheat-points.csv'));
+  await expect(page.getByText('vav-reheat-points.csv')).toBeVisible();
+  // AUTO needs a sequence document; the family can be chosen explicitly instead.
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled();
+  await page.getByRole('button', { name: /^\d Strategy/ }).isDisabled();
+  await page.getByLabel('Attach Sequence of operations').setInputFiles({ name: 'sequence.txt', mimeType: 'text/plain', buffer: Buffer.from('Guideline 36 VAV terminal with reheat. Occupied cooling modulates the damper; heating modulates the reheat valve.') });
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  await expect(page.getByRole('heading', { name: /review the normalized inputs/i })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Normalize step' }).getByRole('table')).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  await expect(page.getByRole('heading', { name: /choose the programming strategy/i })).toBeVisible();
+  await page.getByRole('radio', { name: /Guideline 36 VAV with reheat/ }).click();
+  await axe(page);
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  await expect(page.getByRole('heading', { name: /create the candidate/i })).toBeVisible();
+  await expect(page.getByText('G36_VAV_REHEAT')).toBeVisible();
+  await page.getByRole('button', { name: /create job and build/i }).click();
+  await expect(page).toHaveURL(/\/next\/jobs\/[0-9a-f]+\/build/, { timeout: 90_000 });
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('E2E guided intake');
+  await expect(page.getByRole('application', { name: 'Wiresheet' })).toBeVisible();
+});
+
+test('design pipeline walks configure, brief, points, sequence, review, and oracles', async ({ page }) => {
+  test.setTimeout(180_000);
+  const catalog = (await (await page.request.get('/api/library/ctrl-flow/templates')).json()) as { template_count: number; templates: Array<{ id: string }> };
+  test.skip(catalog.template_count === 0, 'The ctrl-flow template stack is not installed in this environment.');
+  const templateId = 'Buildings.Templates.AirHandlersFans.VAVMultiZone';
+  test.skip(!catalog.templates.some((template) => template.id === templateId), 'The multizone VAV template is required.');
+
+  await page.goto('/next/intake/design');
+  await expect(page.getByRole('heading', { name: /design from an lbnl system template/i })).toBeVisible();
+  await page.getByRole('link', { name: /Multiple-zone VAV/ }).click();
+  await expect(page.getByRole('heading', { name: 'Multiple-zone VAV' })).toBeVisible({ timeout: 60_000 });
+  await axe(page);
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Programming brief' })).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByText('Required points')).toBeVisible();
+  await expect(page.getByText('Why this is not deployable yet')).toBeVisible();
+  const brief = (await (await page.request.post(`/api/library/ctrl-flow/templates/${templateId}/programming-brief`, { data: { selections: {} } })).json()) as {
+    point_requirements: { points: Array<{ id: string; data_type: string; role: string; units: string | null; required: boolean }> };
+  };
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  const pointsCsv = [
+    'name,label,data_type,role,units,default,required',
+    ...brief.point_requirements.points.filter((point) => point.required).map((point) => [point.id, point.id, point.data_type, point.role, point.units ?? '', point.data_type === 'boolean' ? 'false' : '0', 'true'].join(',')),
+  ].join('\n');
+  await page.getByLabel('Attach points list').setInputFiles({ name: 'ahu-points.csv', mimeType: 'text/csv', buffer: Buffer.from(pointsCsv) });
+  await page.getByRole('button', { name: 'Check points' }).click();
+  await expect(page.getByText('Point contract satisfied')).toBeVisible({ timeout: 60_000 });
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  await page.getByLabel('Attach sequence document').setInputFiles({ name: 'thin-sequence.txt', mimeType: 'text/plain', buffer: Buffer.from('During occupied operation, the supply fan shall run.') });
+  await page.getByRole('button', { name: 'Check sequence' }).click();
+  await expect(page.getByText('Sequence gaps found')).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByRole('heading', { name: 'Structured requirement candidates' })).toBeVisible();
+  const reviewableSequence = [
+    'If mixed-air temperature falls below 38 °F for 5 minutes, close the outdoor-air damper.',
+    'If duct static pressure exceeds 1.5 in. w.c. for 10 seconds, stop the supply fan.',
+  ].join('\n');
+  await page.getByLabel('Attach sequence document').setInputFiles({ name: 'reviewable-sequence.txt', mimeType: 'text/plain', buffer: Buffer.from(reviewableSequence) });
+  await page.getByRole('button', { name: 'Check sequence' }).click();
+  await expect(page.getByText('Sequence gaps found')).toBeVisible({ timeout: 60_000 });
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Engineer requirement review' })).toBeVisible();
+  await page.getByLabel('Requirement reviewer').fill('E2E Controls Engineer');
+  const items = page.getByRole('list', { name: 'Requirement candidates' }).getByRole('listitem');
+  await expect(items).toHaveCount(6);
+  for (let index = 0; index < 6; index += 1) {
+    const decision = items.nth(index).getByRole('combobox', { name: /^Decision for/ });
+    const options = await decision.locator('option').allTextContents();
+    await decision.selectOption(options.includes('Approve candidate') ? 'approve' : 'resolve');
+    const resolution = items.nth(index).getByRole('textbox', { name: /^Resolution for/ });
+    if (await resolution.count()) await resolution.fill('Resolved in the revised source.');
+  }
+  const stopFan = items.filter({ hasText: 'stop supply fan' });
+  await stopFan.getByRole('combobox', { name: /^Point for/ }).selectOption('SupplyFanCommand');
+  await page.getByRole('button', { name: 'Submit 6 decisions' }).click();
+  await expect(page.getByText(/local test trajectories ready for independent authoring/)).toBeVisible({ timeout: 60_000 });
+  await axe(page);
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  await expect(page.getByRole('heading', { name: 'Independent acceptance trajectories' })).toBeVisible();
+  await page.getByLabel('Independent oracle author').fill('E2E Test Engineer');
+  const drafts = page.getByRole('list', { name: 'Oracle drafts' }).getByRole('listitem');
+  await expect(drafts).toHaveCount(2);
+  const mixed = drafts.filter({ hasText: 'MixedAirTemp' });
+  for (const [index, value] of ['60', '50', '30', '50', '100', '100', '100'].entries()) {
+    await mixed.locator('input[type="number"]').nth(index).fill(value);
+  }
+  const duct = drafts.filter({ hasText: 'DuctStatic' });
+  for (const [index, value] of ['2', '1', '2', '1'].entries()) {
+    await duct.locator('input[type="number"]').nth(index).fill(value);
+  }
+  for (const select of await duct.locator('fieldset select').all()) await select.selectOption('true');
+  await page.getByRole('button', { name: /Approve \d+ test trajectories/ }).click();
+  await expect(page.getByText(/Local oracles approved; whole-system coverage still blocked|Independent oracle gate passed/)).toBeVisible({ timeout: 60_000 });
+  await axe(page);
+});
+
 test('legacy studio and simulation links redirect into the stage model', async ({ page }) => {
   const runs = (await (await page.request.get('/api/runs')).json()) as Run[];
   test.skip(runs.length === 0, 'A retained candidate is required.');
@@ -422,6 +539,8 @@ test('command palette reaches jobs and the agent mode', async ({ page }) => {
   await expect(palette).toBeVisible();
   await palette.click();
   await palette.fill(runs[0].job.name);
+  // cmdk filters asynchronously; wait for the matching job before choosing it.
+  await expect(page.getByRole('option', { name: new RegExp(runs[0].id.slice(0, 8)) }).first()).toBeVisible();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(new RegExp(`/next/jobs/${runs[0].id}/build`));
   await page.keyboard.press('Escape');
@@ -457,7 +576,5 @@ test('projects, libraries, connections, and administration render real data', as
 
 // Rebuilt in later phases of the UI rewrite. Each is skipped by name so the
 // missing coverage is visible in every report until the journey returns.
-test.fixme('contractor intake normalizes a real points list before build (guided intake, phase 6)', async () => {});
 test.fixme('whole-building topology and high-fidelity evidence on one clock (phases 3, 4, 9)', async () => {});
 test.fixme('contractor can upload, preflight, compile, and assemble a complex building project (phase 9)', async () => {});
-test.fixme('ctrl-flow design pipeline from template to candidate (phase 6)', async () => {});
