@@ -2767,6 +2767,11 @@ def create_app(
             raise HTTPException(status_code=412, detail=str(exc)) from exc
         return FileResponse(path, filename=path.name, media_type="application/zip")
 
+    # The React workbench owns the root. The retired static workbench stays
+    # reachable at /legacy for one transition period; /next keeps old links
+    # working and serves the same bundle.
+    static_dir = Path(__file__).parent / "static"
+    app.mount("/legacy", StaticFiles(directory=static_dir, html=True), name="legacy-workbench")
     static_next_dir = Path(__file__).parent / "static-next"
     if static_next_dir.is_dir():
         app.mount(
@@ -2774,8 +2779,9 @@ def create_app(
             SPAStaticFiles(directory=static_next_dir, html=True),
             name="next-workbench",
         )
-    static_dir = Path(__file__).parent / "static"
-    app.mount("/", StaticFiles(directory=static_dir, html=True), name="workbench")
+        app.mount("/", SPAStaticFiles(directory=static_next_dir, html=True), name="workbench")
+    else:
+        app.mount("/", StaticFiles(directory=static_dir, html=True), name="workbench")
     return app
 
 

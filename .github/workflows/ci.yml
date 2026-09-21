@@ -197,10 +197,16 @@ jobs:
       - run: npm run build
         working-directory: web
 
+      # The shell must paint before any canvas runtime downloads: the eager
+      # chunks stay under budget and three/xyflow/uplot load lazily.
+      - run: npm run size
+        working-directory: web
+
       - run: npm run lint
         working-directory: web
 
-      - run: npm test
+      # Unit tests with the coverage gate on the trace engine, stores, and diff.
+      - run: npm run test:coverage
         working-directory: web
 
       - name: Generated API types are current

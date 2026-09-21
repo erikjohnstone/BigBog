@@ -8,7 +8,7 @@ web-install:
 	cd web && npm ci
 
 web-build:
-	cd web && npm run build
+	cd web && npm run build && npm run size
 
 web-test:
 	cd web && npm test

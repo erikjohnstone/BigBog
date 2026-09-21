@@ -191,7 +191,7 @@ def test_reject_api_records_named_decision_and_refuses_export(tmp_path: Path) ->
 
 def test_static_workbench_is_served(tmp_path: Path) -> None:
     client = TestClient(create_app(tmp_path / "runs"))
-    response = client.get("/")
+    response = client.get("/legacy/")
     assert response.status_code == 200
     assert "Controls Workbench" in response.text
     assert 'name="points_file"' in response.text
@@ -202,18 +202,21 @@ def test_static_workbench_is_served(tmp_path: Path) -> None:
     assert 'id="agent-loop-summary"' in response.text
     assert 'id="agent-attempts"' in response.text
     assert 'id="probe-bacnet-lab"' in response.text
-    script = client.get("/app.js")
+    script = client.get("/legacy/app.js")
     assert script.status_code == 200
     assert "renderAgentAttempts(run)" in script.text
     assert "run.agent_attempts" in script.text
 
-    next_response = client.get("/next/")
-    assert next_response.status_code == 200
-    assert "<title>BACTalk</title>" in next_response.text
-    assert 'id="root"' in next_response.text
-    deep_link = client.get("/next/studio/example-run/tests")
-    assert deep_link.status_code == 200
-    assert 'id="root"' in deep_link.text
+    # The React workbench owns the root; /next keeps older links working.
+    for prefix in ("", "/next"):
+        root_response = client.get(f"{prefix}/")
+        assert root_response.status_code == 200
+        assert "<title>BACTalk</title>" in root_response.text
+        assert 'id="root"' in root_response.text
+        deep_link = client.get(f"{prefix}/jobs/example-run/test")
+        assert deep_link.status_code == 200
+        assert 'id="root"' in deep_link.text
+    assert client.get("/api/health").status_code == 200
 
 
 def test_capability_and_readiness_ledgers_are_exposed(tmp_path: Path) -> None:

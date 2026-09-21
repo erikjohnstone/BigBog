@@ -27,7 +27,7 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <TooltipProvider delay={300}>
-          <BrowserRouter basename="/next">
+          <BrowserRouter>
             <App />
             <Toaster position="bottom-right" theme="system" toastOptions={{ className: 'floating text-sm' }} />
           </BrowserRouter>
