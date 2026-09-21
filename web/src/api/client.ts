@@ -455,6 +455,22 @@ const boptestRuntimeSchema = z.object({
       measurements: numericMap,
     }).passthrough()),
   }).passthrough();
+const trajectoryCounterexampleSchema = z.object({
+  schema: z.literal('bactalk.trajectory-counterexample/v1'),
+  violation_count: z.number().int().positive(),
+  first_violation_time: z.number(),
+  last_violation_time: z.number(),
+  peak_error_time: z.number(),
+  peak_error: z.number(),
+  peak_absolute_error: z.number().nonnegative(),
+  context_samples: z.number().int().nonnegative(),
+  window: z.object({
+    start_index: z.number().int().nonnegative(),
+    end_index: z.number().int().nonnegative(),
+    test_times: z.array(z.number()),
+    test_values: z.array(z.number()),
+  }).passthrough(),
+}).passthrough();
 const boptestOracleResultSchema = z.object({
     completed: z.boolean(),
     passed: z.boolean(),
@@ -462,6 +478,7 @@ const boptestOracleResultSchema = z.object({
     pyfunnel_status_code: z.number(),
     test_times: z.array(z.number()),
     test_values: z.array(z.number()),
+    counterexample: trajectoryCounterexampleSchema.nullable().optional(),
     oracle: z.object({
       id: z.string(),
       signal: z.string(),
@@ -546,6 +563,7 @@ const alfalfaEvidenceSchema = z.object({
     pyfunnel_status_code: z.number(),
     test_times: z.array(z.number()),
     test_values: z.array(z.number()),
+    counterexample: trajectoryCounterexampleSchema.nullable().optional(),
     report_directory: z.string(),
     oracle: z.object({
       id: z.string(),

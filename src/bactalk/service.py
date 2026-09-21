@@ -636,6 +636,18 @@ class WorkbenchService:
                 absolute_time_tolerance=oracle.absolute_time_tolerance,
                 absolute_value_tolerance=oracle.absolute_value_tolerance,
             )
+            counterexample = result.counterexample(test_times, test_values)
+            if counterexample is not None:
+                (output_directory / "counterexample.json").write_text(
+                    canonical_json(
+                        {
+                            "schema": "bactalk.oracle-counterexample/v1",
+                            "oracle": oracle.model_dump(mode="json"),
+                            "counterexample": counterexample,
+                        }
+                    ),
+                    encoding="utf-8",
+                )
             oracle_results.append(
                 {
                     "oracle": oracle.model_dump(mode="json"),
@@ -645,6 +657,7 @@ class WorkbenchService:
                     "completed": result.completed,
                     "passed": result.passed,
                     "max_error": result.max_error,
+                    "counterexample": counterexample,
                     "report_directory": output_directory.name,
                 }
             )
@@ -965,6 +978,18 @@ class WorkbenchService:
                 absolute_time_tolerance=oracle.absolute_time_tolerance,
                 absolute_value_tolerance=oracle.absolute_value_tolerance,
             )
+            counterexample = comparison.counterexample(test_times, test_values)
+            if counterexample is not None:
+                (output_directory / "counterexample.json").write_text(
+                    canonical_json(
+                        {
+                            "schema": "bactalk.oracle-counterexample/v1",
+                            "oracle": oracle.model_dump(mode="json"),
+                            "counterexample": counterexample,
+                        }
+                    ),
+                    encoding="utf-8",
+                )
             results.append(
                 {
                     "oracle": oracle.model_dump(mode="json"),
@@ -974,6 +999,7 @@ class WorkbenchService:
                     "completed": comparison.completed,
                     "passed": comparison.passed,
                     "max_error": comparison.max_error,
+                    "counterexample": counterexample,
                     "report_directory": output_directory.name,
                 }
             )

@@ -792,6 +792,14 @@ def test_failing_alfalfa_oracle_blocks_human_approval(tmp_path: Path) -> None:
     assert evidence["status"] == "fail"
     assert evidence["approval_allowed"] is False
     assert evidence["oracles"][0]["passed"] is False
+    counterexample = evidence["oracles"][0]["counterexample"]
+    assert counterexample["schema"] == "bactalk.trajectory-counterexample/v1"
+    assert counterexample["violation_count"] == 2
+    assert counterexample["window"]["test_values"] == [0.37, 0.37]
+    assert any(
+        path.endswith("counterexample.json")
+        for path in qualified.verification_artifact_paths
+    )
     with pytest.raises(ApprovalRequiredError):
         service.approve(candidate.id, "Alex Engineer")
     with pytest.raises(ApprovalRequiredError):

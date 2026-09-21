@@ -4,8 +4,17 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from bactalk.ai import AIEnvelope, ControllerChangeEnvelope, ConversationEnvelope
+from bactalk.agent import SequencePackPlanner
+from bactalk.ai import (
+    AIEnvelope,
+    ChatRequest,
+    ControllerChangeEnvelope,
+    ControlsChatAgent,
+    ConversationEnvelope,
+    summarize_verification_failures,
+)
 from bactalk.api import create_app
+from bactalk.demo import generalist_demo_job
 
 
 class FakeProvider:
@@ -30,6 +39,111 @@ class FakeProvider:
     def configure(self, messages: list[dict[str, str]]) -> ControllerChangeEnvelope:
         self.configuration_messages.append(messages)
         return self.configurations.pop(0)
+
+
+def _failed_oracle_artifact() -> dict:
+    return {
+        "schema": "bactalk.oracle-counterexample/v1",
+        "oracle": {
+            "id": "zone-temperature",
+            "signal_kind": "measurement",
+            "signal": "reaTZon_y",
+            "absolute_value_tolerance": 0.25,
+        },
+        "counterexample": {
+            "schema": "bactalk.trajectory-counterexample/v1",
+            "violation_count": 3,
+            "first_violation_time": 7200.0,
+            "last_violation_time": 7800.0,
+            "peak_error_time": 7500.0,
+            "peak_error": 1.75,
+            "peak_absolute_error": 1.75,
+            "context_samples": 1,
+            "window": {
+                "start_index": 11,
+                "end_index": 15,
+                "test_times": [6900.0, 7200.0, 7500.0, 7800.0, 8100.0],
+                "test_values": [294.0, 294.4, 295.1, 294.7, 294.1],
+            },
+        },
+    }
+
+
+def test_failed_verification_is_bounded_and_supplied_to_both_model_roles() -> None:
+    failures = summarize_verification_failures(
+        {"boptest/peak-cooling/oracle-001-zone-temperature": _failed_oracle_artifact()}
+    )
+
+    assert failures == [
+        {
+            "lane": "boptest",
+            "case_id": "peak-cooling",
+            "oracle_id": "zone-temperature",
+            "signal_kind": "measurement",
+            "signal": "reaTZon_y",
+            "absolute_value_tolerance": 0.25,
+            "max_error": 1.75,
+            "counterexample": {
+                **_failed_oracle_artifact()["counterexample"],
+                "window_truncated_for_model": False,
+            },
+        }
+    ]
+
+    provider = FakeProvider()
+    provider.conversations.append(
+        ConversationEnvelope(
+            intent="propose_change",
+            message="I will hand the failed trajectory to the coding model.",
+            assumptions=[],
+        )
+    )
+    job = generalist_demo_job()
+    graph = SequencePackPlanner().plan(job)
+    graph_payload = graph.model_dump_json()
+    provider.responses.append(
+        AIEnvelope(
+            intent="propose_change",
+            message="Prepared a repair candidate.",
+            graph_json=graph_payload,
+            assumptions=[],
+        )
+    )
+
+    agent = ControlsChatAgent(provider, provider)
+    result = agent.respond(
+        job,
+        graph,
+        ChatRequest(message="Repair the failed peak-cooling trajectory."),
+        verification_failures=failures,
+    )
+
+    assert result.intent == "propose_change"
+    for messages in (provider.chat_messages, provider.messages):
+        model_context = messages[0][-1]["content"]
+        assert '"retained_verification_failures"' in model_context
+        assert '"case_id":"peak-cooling"' in model_context
+        assert '"peak_absolute_error":1.75' in model_context
+
+
+def test_failed_verification_bounds_long_windows_around_peak() -> None:
+    artifact = _failed_oracle_artifact()
+    artifact["counterexample"]["peak_error_time"] = 50.0
+    artifact["counterexample"]["window"] = {
+        "start_index": 400,
+        "end_index": 499,
+        "test_times": list(range(100)),
+        "test_values": [float(value) for value in range(100)],
+    }
+
+    [failure] = summarize_verification_failures({"alfalfa/design-day/oracle": artifact})
+    counterexample = failure["counterexample"]
+
+    assert counterexample["window_truncated_for_model"] is True
+    assert len(counterexample["window"]["test_times"]) == 25
+    assert 50.0 in counterexample["window"]["test_times"]
+    assert counterexample["window"]["start_index"] == 438
+    assert counterexample["window"]["end_index"] == 462
 
 
 def test_chat_answers_without_mutating_run(tmp_path: Path) -> None:

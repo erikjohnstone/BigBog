@@ -27,6 +27,7 @@ from bactalk.ai import (
     ControlsChatAgent,
     ProposedGraphPlanner,
     StructuredChatProvider,
+    summarize_verification_failures,
 )
 from bactalk.capabilities import CapabilityRegistry
 from bactalk.ctrl_flow_point_repository import (
@@ -2314,9 +2315,35 @@ def create_app(
                 ),
             )
         try:
-            source_record = repository.get(run_id)
+            source_record = service.verify_integrity(run_id)
             source_graph = ControlGraph.model_validate_json(
                 Path(source_record.graph_path).read_text(encoding="utf-8")
+            )
+            counterexample_artifacts: dict[str, dict[str, Any]] = {}
+            for raw_path in source_record.verification_artifact_paths:
+                artifact_path = Path(raw_path)
+                if artifact_path.name != "counterexample.json":
+                    continue
+                lane = (
+                    "boptest"
+                    if "boptest-verification" in artifact_path.parts
+                    else "alfalfa"
+                    if "alfalfa-verification" in artifact_path.parts
+                    else "verification"
+                )
+                case_directory = artifact_path.parent.parent.name
+                case_id = (
+                    case_directory.split("-", 2)[2]
+                    if case_directory.startswith("case-")
+                    and len(case_directory.split("-", 2)) == 3
+                    else "single-run"
+                )
+                context_id = f"{lane}/{case_id}/{artifact_path.parent.name}"
+                counterexample_artifacts[context_id] = json.loads(
+                    artifact_path.read_text(encoding="utf-8")
+                )
+            verification_failures = summarize_verification_failures(
+                counterexample_artifacts
             )
             chat_agent = ControlsChatAgent(chat_provider, coding_provider)
             if source_record.job.sequence.library in {"plant_controls", "g36"}:
@@ -2333,11 +2360,17 @@ def create_app(
                     source_graph,
                     request,
                     parameter_schema=selected_library.parameter_schema(controller_id),
+                    verification_failures=verification_failures,
                 )
                 proposed_parameters = envelope.parameters()
                 proposal = None
             else:
-                envelope = chat_agent.respond(source_record.job, source_graph, request)
+                envelope = chat_agent.respond(
+                    source_record.job,
+                    source_graph,
+                    request,
+                    verification_failures=verification_failures,
+                )
                 proposed_parameters = None
                 proposal = envelope.graph()
             new_record = None
@@ -2398,6 +2431,8 @@ def create_app(
             raise HTTPException(status_code=404, detail="run not found") from exc
         except AIProviderError as exc:
             raise HTTPException(status_code=502, detail=str(exc)) from exc
+        except ArtifactChangedError as exc:
+            raise HTTPException(status_code=412, detail=str(exc)) from exc
         except (ValueError, RuntimeError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import os
 from typing import Any, Literal, Protocol, TypeVar
 
@@ -312,6 +313,7 @@ def _job_context(
     job: JobSpec,
     graph: ControlGraph | None,
     report: TestReport | None = None,
+    verification_failures: list[dict[str, Any]] | None = None,
 ) -> str:
     payload: dict[str, Any] = {
         "job": {
@@ -329,10 +331,16 @@ def _job_context(
         payload["current_graph"] = graph.model_dump(mode="json")
     if report is not None:
         payload["failed_test_report"] = report.model_dump(mode="json")
+    if verification_failures:
+        payload["retained_verification_failures"] = verification_failures
     return json.dumps(payload, separators=(",", ":"), sort_keys=True)
 
 
-def _library_job_context(job: JobSpec, graph: ControlGraph) -> str:
+def _library_job_context(
+    job: JobSpec,
+    graph: ControlGraph,
+    verification_failures: list[dict[str, Any]] | None = None,
+) -> str:
     """Keep large qualified plant graphs out of model context; topology is immutable."""
 
     inputs = [
@@ -368,7 +376,107 @@ def _library_job_context(job: JobSpec, graph: ControlGraph) -> str:
             "topology_editable_by_model": False,
         },
     }
+    if verification_failures:
+        payload["retained_verification_failures"] = verification_failures
     return json.dumps(payload, separators=(",", ":"), sort_keys=True)
+
+
+def summarize_verification_failures(
+    counterexamples_by_context: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Extract bounded failure evidence from already integrity-checked artifacts."""
+
+    def bounded_counterexample(value: object) -> dict[str, Any] | None:
+        if not isinstance(value, dict) or value.get("schema") != (
+            "bactalk.trajectory-counterexample/v1"
+        ):
+            return None
+        window = value.get("window")
+        if not isinstance(window, dict):
+            return None
+        raw_times = window.get("test_times")
+        raw_values = window.get("test_values")
+        if (
+            not isinstance(raw_times, list)
+            or not isinstance(raw_values, list)
+            or len(raw_times) != len(raw_values)
+            or not raw_times
+        ):
+            return None
+        if any(
+            isinstance(item, bool)
+            or not isinstance(item, (int, float))
+            or not math.isfinite(float(item))
+            for item in [*raw_times, *raw_values]
+        ):
+            return None
+        peak_time = value.get("peak_error_time")
+        if isinstance(peak_time, bool) or not isinstance(peak_time, (int, float)):
+            return None
+        peak_index = min(
+            range(len(raw_times)),
+            key=lambda index: abs(float(raw_times[index]) - float(peak_time)),
+        )
+        max_samples = 25
+        slice_start = max(0, peak_index - max_samples // 2)
+        slice_end = min(len(raw_times), slice_start + max_samples)
+        slice_start = max(0, slice_end - max_samples)
+        start_index = window.get("start_index")
+        if not isinstance(start_index, int) or isinstance(start_index, bool):
+            return None
+        kept_times = [float(item) for item in raw_times[slice_start:slice_end]]
+        kept_values = [float(item) for item in raw_values[slice_start:slice_end]]
+        return {
+            key: value.get(key)
+            for key in (
+                "schema",
+                "violation_count",
+                "first_violation_time",
+                "last_violation_time",
+                "peak_error_time",
+                "peak_error",
+                "peak_absolute_error",
+                "context_samples",
+            )
+        } | {
+            "window_truncated_for_model": len(raw_times) > max_samples,
+            "window": {
+                "start_index": start_index + slice_start,
+                "end_index": start_index + slice_end - 1,
+                "test_times": kept_times,
+                "test_values": kept_values,
+            },
+        }
+
+    summaries: list[dict[str, Any]] = []
+    for context, artifact in sorted(counterexamples_by_context.items()):
+        if (
+            not isinstance(artifact, dict)
+            or artifact.get("schema") != "bactalk.oracle-counterexample/v1"
+        ):
+            continue
+        oracle = artifact.get("oracle")
+        counterexample = bounded_counterexample(artifact.get("counterexample"))
+        if not isinstance(oracle, dict) or counterexample is None:
+            continue
+        context_parts = context.split("/", 2)
+        lane = context_parts[0]
+        case_id = context_parts[1] if len(context_parts) > 1 else "single-run"
+        summaries.append(
+            {
+                "lane": lane[:40],
+                "case_id": (case_id or "single-run")[:120],
+                "oracle_id": str(oracle.get("id", "unknown"))[:120],
+                "signal_kind": str(oracle.get("signal_kind", "unknown"))[:40],
+                "signal": str(oracle.get("signal", "unknown"))[:240],
+                "absolute_value_tolerance": oracle.get("absolute_value_tolerance"),
+                "max_error": counterexample.get("peak_absolute_error"),
+                "counterexample": counterexample,
+            }
+        )
+        if len(summaries) >= 100:
+            return summaries
+    return summaries
 
 
 class ControlsChatAgent:
@@ -385,6 +493,8 @@ class ControlsChatAgent:
         job: JobSpec,
         graph: ControlGraph,
         request: ChatRequest,
+        *,
+        verification_failures: list[dict[str, Any]] | None = None,
     ) -> AIEnvelope:
         if self.chat_provider is None:
             raise AIProviderError("The contractor chat model is not configured")
@@ -395,7 +505,7 @@ class ControlsChatAgent:
                 "role": "user",
                 "content": (
                     "Here is the immutable engineering context:\n"
-                    f"{_job_context(job, graph)}\n\n"
+                    f"{_job_context(job, graph, verification_failures=verification_failures)}\n\n"
                     f"Contractor request:\n{request.message}"
                 ),
             }
@@ -417,7 +527,7 @@ class ControlsChatAgent:
                     "Produce the complete replacement typed control graph for this requested "
                     "change. Preserve unaffected behavior and exact mapped point IDs. The human-"
                     "authored acceptance tests are immutable. Return intent=propose_change.\n"
-                    f"{_job_context(job, graph)}\n\n"
+                    f"{_job_context(job, graph, verification_failures=verification_failures)}\n\n"
                     f"Contractor change request:\n{request.message}"
                 ),
             },
@@ -439,12 +549,13 @@ class ControlsChatAgent:
         request: ChatRequest,
         *,
         parameter_schema: dict[str, Any],
+        verification_failures: list[dict[str, Any]] | None = None,
     ) -> ControllerChangeEnvelope:
         """Route a library job through constrained parameter selection, not graph synthesis."""
 
         if self.chat_provider is None:
             raise AIProviderError("The contractor chat model is not configured")
-        context = _library_job_context(job, graph)
+        context = _library_job_context(job, graph, verification_failures)
         schema_json = json.dumps(parameter_schema, separators=(",", ":"), sort_keys=True)
         chat_messages = [{"role": "system", "content": CHAT_SYSTEM_PROMPT}]
         chat_messages.extend(turn.model_dump() for turn in request.history)

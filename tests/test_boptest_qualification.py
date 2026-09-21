@@ -468,6 +468,23 @@ def test_failing_boptest_oracle_blocks_human_approval(tmp_path: Path) -> None:
 
     assert qualified.status == RunStatus.FAILED
     assert qualified.boptest_verification_path is not None
+    evidence = json.loads(Path(qualified.boptest_verification_path).read_text())
+    counterexample = evidence["oracles"][0]["counterexample"]
+    assert counterexample["schema"] == "bactalk.trajectory-counterexample/v1"
+    assert counterexample["violation_count"] == 2
+    assert counterexample["first_violation_time"] == 300.0
+    assert counterexample["last_violation_time"] == 600.0
+    assert counterexample["window"]["test_values"] == [1.0, 1.0]
+    counterexample_paths = [
+        Path(path)
+        for path in qualified.verification_artifact_paths
+        if path.endswith("counterexample.json")
+    ]
+    assert len(counterexample_paths) == 1
+    counterexample_artifact = json.loads(counterexample_paths[0].read_text())
+    assert counterexample_artifact["schema"] == "bactalk.oracle-counterexample/v1"
+    assert counterexample_artifact["oracle"]["id"] == "fan-command"
+    assert counterexample_artifact["counterexample"] == counterexample
     with pytest.raises(ApprovalRequiredError):
         service.approve(candidate.id, "Alex Engineer")
     with pytest.raises(ApprovalRequiredError):
