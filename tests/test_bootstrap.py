@@ -301,3 +301,60 @@ def test_blocked_findings_do_not_fail_the_report() -> None:
     assert report.ok is True
     report.add(doctor.Finding("python packages", "probe", doctor.MISSING, "absent"))
     assert report.ok is False
+
+
+# --------------------------------------------------------------------------
+# test tiering
+# --------------------------------------------------------------------------
+
+
+def test_every_declared_requirement_kind_is_understood() -> None:
+    """conftest must not carry a requirement it cannot evaluate."""
+    conftest = _load_conftest()
+    for module, requirements in conftest.MODULE_REQUIREMENTS.items():
+        for requirement in requirements:
+            kind = requirement.split(":", 1)[0]
+            assert kind in {"vendor", "venv", "node", "file", "tool", "module"}, (
+                f"{module} declares an unknown requirement kind: {requirement}"
+            )
+            # Must evaluate without raising, whatever this machine has.
+            conftest._missing(requirement)
+
+
+def test_requirements_reference_real_test_modules() -> None:
+    """A requirement for a module that no longer exists is dead configuration."""
+    conftest = _load_conftest()
+    present = {path.stem for path in (ROOT / "tests").glob("test_*.py")}
+    unknown = set(conftest.MODULE_REQUIREMENTS) - present
+    assert unknown == set(), f"requirements declared for missing test modules: {unknown}"
+    unknown_minimal = conftest.MINIMAL_MODULES - present
+    assert unknown_minimal == set()
+
+
+def test_strict_mode_is_off_by_default() -> None:
+    """A partially bootstrapped machine skips; only strict mode fails."""
+    conftest = _load_conftest()
+    import os
+
+    previous = os.environ.pop("BACTALK_REQUIRE_FULL_STACK", None)
+    try:
+        assert conftest._require_full_stack() is False
+        for value in ("1", "true", "YES"):
+            os.environ["BACTALK_REQUIRE_FULL_STACK"] = value
+            assert conftest._require_full_stack() is True
+        os.environ["BACTALK_REQUIRE_FULL_STACK"] = "0"
+        assert conftest._require_full_stack() is False
+    finally:
+        os.environ.pop("BACTALK_REQUIRE_FULL_STACK", None)
+        if previous is not None:
+            os.environ["BACTALK_REQUIRE_FULL_STACK"] = previous
+
+
+def _load_conftest():
+    spec = importlib.util.spec_from_file_location(
+        "bactalk_tests_conftest", ROOT / "tests" / "conftest.py"
+    )
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module

@@ -16,7 +16,9 @@ test('enterprise shell exposes workflow and safety boundary', async ({ page }) =
 
 test('legacy workbench remains available during migration', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Programming runs' })).toBeVisible();
+  // Exact match: an empty run store also renders "No programming runs yet",
+  // which a substring match would ambiguously resolve to.
+  await expect(page.getByRole('heading', { name: 'Programming runs', exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: /import contractor job/i })).toBeVisible();
 });
 
