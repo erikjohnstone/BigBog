@@ -12,13 +12,14 @@ from uuid import uuid4
 
 import httpx
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.routing import Match
 from starlette.types import Scope
 
+from bactalk import block_catalog
 from bactalk.ai import (
     AIProviderError,
     CerebrasProvider,
@@ -103,6 +104,7 @@ from bactalk.projects import (
     ProjectSpec,
 )
 from bactalk.qualification_jobs import (
+    TERMINAL_JOB_STATUSES,
     AlfalfaQualificationPayload,
     BoptestQualificationPayload,
     QualificationDispatcher,
@@ -621,6 +623,11 @@ def create_app(
     @app.get("/api/reference-stack")
     def get_reference_stack() -> dict:
         return reference_stack.inventory()
+
+    @app.get("/api/block-catalog")
+    def get_block_catalog() -> dict:
+        """Typed slots for every block kind, so the wiresheet draws declared ports."""
+        return block_catalog.catalog()
 
     @app.get("/api/system/readiness")
     def get_system_readiness() -> dict:
@@ -1839,6 +1846,80 @@ def create_app(
             raise HTTPException(status_code=404, detail="qualification job not found")
         return record.model_dump(mode="json")
 
+    @app.get("/api/qualification-jobs/{job_id}/events")
+    async def stream_qualification_job_events(
+        job_id: str,
+        http_request: Request,
+        limit: int | None = None,
+    ) -> StreamingResponse:
+        """Server-sent job progress: one event per second until the job ends.
+
+        The stream re-reads the retained record each tick, so it reports the
+        same status, progress, and heartbeat the polling endpoint does. A
+        ``limit`` caps the number of events, which tests and short-lived
+        clients use; the browser client falls back to polling when the
+        stream is unavailable.
+        """
+
+        def snapshot() -> tuple[str, bool]:
+            try:
+                record = qualification_jobs.get(job_id)
+                record = qualification_jobs.expire_stale(record.id)
+            except (KeyError, ValueError):
+                return (
+                    "event: gone\ndata: "
+                    + json.dumps({"detail": "qualification job not found"})
+                    + "\n\n",
+                    True,
+                )
+            except QualificationJobIntegrityError as exc:
+                return (
+                    "event: error\ndata: " + json.dumps({"detail": str(exc)}) + "\n\n",
+                    True,
+                )
+            if not qualification_job_visible(http_request, record.tenant_id):
+                return (
+                    "event: gone\ndata: "
+                    + json.dumps({"detail": "qualification job not found"})
+                    + "\n\n",
+                    True,
+                )
+            payload = {
+                "id": record.id,
+                "status": record.status.value,
+                "progress": record.progress.model_dump(mode="json"),
+                "heartbeat_at": (
+                    record.heartbeat_at.isoformat() if record.heartbeat_at else None
+                ),
+                "updated_at": record.updated_at.isoformat(),
+                "error": record.error,
+                "qualification_passed": record.qualification_passed,
+                "result_artifact_sha256": record.result_artifact_sha256,
+                "cancellation_requested": record.cancellation_requested,
+            }
+            return (
+                "event: progress\ndata: " + json.dumps(payload) + "\n\n",
+                record.status in TERMINAL_JOB_STATUSES,
+            )
+
+        async def events():
+            emitted = 0
+            while True:
+                chunk, done = snapshot()
+                yield chunk
+                emitted += 1
+                if done or (limit is not None and emitted >= limit):
+                    return
+                if await http_request.is_disconnected():
+                    return
+                await asyncio.sleep(1.0)
+
+        return StreamingResponse(
+            events(),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
+
     @app.post("/api/qualification-jobs/{job_id}/cancel")
     def cancel_qualification_job(job_id: str, http_request: Request) -> dict:
         try:
@@ -2686,6 +2767,11 @@ def create_app(
             raise HTTPException(status_code=412, detail=str(exc)) from exc
         return FileResponse(path, filename=path.name, media_type="application/zip")
 
+    # The React workbench owns the root. The retired static workbench stays
+    # reachable at /legacy for one transition period; /next keeps old links
+    # working and serves the same bundle.
+    static_dir = Path(__file__).parent / "static"
+    app.mount("/legacy", StaticFiles(directory=static_dir, html=True), name="legacy-workbench")
     static_next_dir = Path(__file__).parent / "static-next"
     if static_next_dir.is_dir():
         app.mount(
@@ -2693,8 +2779,9 @@ def create_app(
             SPAStaticFiles(directory=static_next_dir, html=True),
             name="next-workbench",
         )
-    static_dir = Path(__file__).parent / "static"
-    app.mount("/", StaticFiles(directory=static_dir, html=True), name="workbench")
+        app.mount("/", SPAStaticFiles(directory=static_next_dir, html=True), name="workbench")
+    else:
+        app.mount("/", StaticFiles(directory=static_dir, html=True), name="workbench")
     return app
 
 

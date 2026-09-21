@@ -200,6 +200,12 @@ const reportSchema = z.object({
     outcomes_observed: z.number().optional(),
     outcomes_possible: z.number().optional(),
     gaps: z.array(z.string()).optional(),
+    decision_count: z.number().optional(),
+    decisions: z.array(z.object({
+      decision: z.string(),
+      both_outcomes: z.boolean(),
+      observed: z.array(z.unknown()).default([]),
+    }).passthrough()).optional(),
     fault_injection: faultCoverageSchema.optional(),
     qualification_matrix: qualificationMatrixSchema.optional(),
   }).passthrough().nullable().optional(),
@@ -238,6 +244,7 @@ const intakeInspectionSchema = z.object({
 const readinessSchema = z.object({
   production_ready: z.boolean(),
   policy: z.string(),
+  stage_order: z.array(z.string()).default([]),
   components: z.array(z.object({
     id: z.string(),
     name: z.string(),
@@ -770,6 +777,8 @@ const ctrlFlowFieldSchema = z.object({
 const ctrlFlowConfigurationSchema = z.object({
   schema: z.string(),
   configuration_digest: z.string(),
+  template: z.object({ name: z.string(), modelicaPath: z.string().optional() }).passthrough(),
+  rejected_selections: z.array(z.unknown()).default([]),
   accepted_selection_count: z.number(),
   rejected_selection_count: z.number(),
   selections: z.record(z.string(), z.unknown()),
@@ -1235,16 +1244,101 @@ export type CtrlFlowBrief = z.infer<typeof ctrlFlowBriefSchema>;
 export type CtrlFlowReconciliation = z.infer<typeof ctrlFlowReconciliationSchema>;
 export type GraphicsModel = z.infer<typeof graphicsModelSchema>;
 export type GraphicsPlan = z.infer<typeof graphicsPlanSchema>;
+const blockSlotSchema = z.object({ name: z.string(), type: z.enum(['numeric', 'boolean']).or(z.string()) });
+const blockCatalogSchema = z.object({
+  schema: z.string(),
+  families: z.array(z.string()),
+  kinds: z.array(z.object({
+    kind: z.string(),
+    family: z.string(),
+    stateful: z.boolean(),
+    feedback: z.boolean(),
+    inputs: z.array(blockSlotSchema),
+    outputs: z.array(blockSlotSchema),
+  })),
+});
+
+export type BlockCatalog = z.infer<typeof blockCatalogSchema>;
+export type BlockCatalogKind = BlockCatalog['kinds'][number];
+
+const ctrlFlowTemplateSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  family: z.string().optional(),
+  system_types: z.array(z.string()).optional(),
+  option_count: z.number().optional(),
+  visible_option_count: z.number().optional(),
+  product_status: z.string().optional(),
+}).passthrough();
+const ctrlFlowTemplateListSchema = z.object({
+  schema: z.string(),
+  source: z.string().optional(),
+  license: z.string().optional(),
+  revision: z.string().optional(),
+  template_count: z.number(),
+  templates: z.array(ctrlFlowTemplateSchema),
+}).passthrough();
+const reconciliationListSchema = z.object({
+  schema: z.string(),
+  count: z.number(),
+  reconciliations: z.array(z.object({
+    id: z.string(),
+    template_id: z.string(),
+    created_at: z.string(),
+    source_filename: z.string().nullable().optional(),
+    ready_for_sequence_reconciliation: z.boolean().optional(),
+  }).passthrough()),
+});
+const reviewListSchema = z.object({
+  schema: z.string(),
+  reviews: z.array(z.object({
+    review_id: z.string().optional(),
+    id: z.string().optional(),
+    template_id: z.string().optional(),
+    created_at: z.string().optional(),
+    reviewer: z.string().nullable().optional(),
+  }).passthrough()),
+}).passthrough();
+const oracleApprovalListSchema = z.object({
+  schema: z.string(),
+  approvals: z.array(z.object({
+    oracle_approval_id: z.string().optional(),
+    id: z.string().optional(),
+    review_id: z.string().optional(),
+    created_at: z.string().optional(),
+    author: z.string().nullable().optional(),
+  }).passthrough()).optional(),
+}).passthrough();
+
+export type CtrlFlowTemplate = z.infer<typeof ctrlFlowTemplateSchema>;
+export type CtrlFlowTemplateList = z.infer<typeof ctrlFlowTemplateListSchema>;
+export type CtrlFlowSequenceReconciliation = z.infer<typeof ctrlFlowSequenceReconciliationSchema>;
+export type CtrlFlowSequenceReview = z.infer<typeof ctrlFlowSequenceReviewSchema>;
+export type SequenceOracleApproval = z.infer<typeof sequenceOracleApprovalSchema>;
+export type SequenceCandidatePreflight = z.infer<typeof sequenceCandidatePreflightSchema>;
+export type SequenceCandidateGeneration = z.infer<typeof sequenceCandidateGenerationSchema>;
+export type G36Parameters = z.infer<typeof g36ParameterSchema>;
+
 export type ArtifactState<T> =
   | { state: 'available'; data: T }
   | { state: 'missing' }
   | { state: 'invalid'; message: string };
 
+/** A failed request with its HTTP status, so callers can tell 409 from 412 from 403. */
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
+}
+
 async function getJson(path: string): Promise<unknown> {
   const response = await fetch(path, { headers: { Accept: 'application/json' } });
   if (!response.ok) {
     const body = await response.json().catch(() => null) as { detail?: string } | null;
-    throw new Error(body?.detail ?? `Request failed with status ${response.status}`);
+    throw new ApiError(body?.detail ?? `Request failed with status ${response.status}`, response.status);
   }
   return response.json();
 }
@@ -1258,7 +1352,7 @@ async function postJson(path: string, body: unknown): Promise<unknown> {
   if (!response.ok) {
     const payload = await response.json().catch(() => null) as { detail?: unknown; message?: unknown } | null;
     const detail = payload?.detail ?? payload?.message;
-    throw new Error(typeof detail === 'string' ? detail : detail ? JSON.stringify(detail) : `Request failed with status ${response.status}`);
+    throw new ApiError(typeof detail === 'string' ? detail : detail ? JSON.stringify(detail) : `Request failed with status ${response.status}`, response.status);
   }
   return response.json();
 }
@@ -1267,7 +1361,7 @@ async function postForm(path: string, body: FormData): Promise<unknown> {
   const response = await fetch(path, { method: 'POST', headers: { Accept: 'application/json' }, body });
   if (!response.ok) {
     const payload = await response.json().catch(() => null) as { detail?: string } | null;
-    throw new Error(payload?.detail ?? `Request failed with status ${response.status}`);
+    throw new ApiError(payload?.detail ?? `Request failed with status ${response.status}`, response.status);
   }
   return response.json();
 }
@@ -1334,6 +1428,9 @@ export const api = {
   async run(runId: string) {
     return runDetailSchema.parse(await getJson(`/api/runs/${runId}`));
   },
+  async blockCatalog() {
+    return blockCatalogSchema.parse(await getJson('/api/block-catalog'));
+  },
   async graph(runId: string) {
     return graphSchema.parse(await getJson(`/api/runs/${runId}/graph`));
   },
@@ -1375,6 +1472,9 @@ export const api = {
   },
   async latestQualificationJob(runId: string) {
     return getArtifact(`/api/runs/${runId}/qualification-jobs/latest`, qualificationJobSchema);
+  },
+  async qualificationJob(jobId: string) {
+    return qualificationJobSchema.parse(await getJson(`/api/qualification-jobs/${encodeURIComponent(jobId)}`));
   },
   async cancelQualificationJob(jobId: string) {
     return qualificationJobSchema.parse(
@@ -1420,6 +1520,18 @@ export const api = {
       niagara: catalogSchema.parse(niagara),
       ctrlFlow: catalogSchema.parse(ctrlFlow),
     };
+  },
+  async ctrlFlowTemplates() {
+    return ctrlFlowTemplateListSchema.parse(await getJson('/api/library/ctrl-flow/templates'));
+  },
+  async listPointReconciliations() {
+    return reconciliationListSchema.parse(await getJson('/api/ctrl-flow-point-reconciliations'));
+  },
+  async listSequenceReviews() {
+    return reviewListSchema.parse(await getJson('/api/sequence-requirement-reviews'));
+  },
+  async listOracleApprovals() {
+    return oracleApprovalListSchema.parse(await getJson('/api/sequence-oracle-approvals'));
   },
   async ctrlFlowConfigure(templateId: string, selections: Record<string, unknown>) {
     return ctrlFlowConfigurationSchema.parse(await postJson(
@@ -1485,8 +1597,11 @@ export const api = {
       request,
     ));
   },
-  async approve(runId: string, reviewer: string) {
-    return runDetailSchema.parse(await postJson(`/api/runs/${runId}/approve`, { reviewer }));
+  async approve(runId: string, decision: { reviewer: string | null; artifact_sha256: string }) {
+    return runDetailSchema.parse(await postJson(`/api/runs/${runId}/approve`, decision));
+  },
+  async reject(runId: string, decision: { reviewer: string | null; reason: string | null }) {
+    return runDetailSchema.parse(await postJson(`/api/runs/${runId}/reject`, decision));
   },
   async inspectIntake(body: FormData) {
     return intakeInspectionSchema.parse(await postForm('/api/intake/inspect', body));

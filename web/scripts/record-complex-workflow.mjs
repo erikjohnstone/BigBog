@@ -34,7 +34,7 @@ const page = await context.newPage();
 const pause = (milliseconds = 1500) => page.waitForTimeout(milliseconds);
 
 try {
-  await page.goto(`${baseURL}/next/projects/new`, { waitUntil: 'networkidle' });
+  await page.goto(`${baseURL}/projects/new`, { waitUntil: 'networkidle' });
   await expect(page.getByRole('heading', { name: /compile the full controls package/i })).toBeVisible();
   await pause(1800);
 
@@ -49,7 +49,7 @@ try {
   await pause(2800);
 
   await page.getByRole('button', { name: /build, assemble, and test/i }).click();
-  await expect(page).toHaveURL(/\/next\/projects\/[a-z0-9]+$/, { timeout: 90_000 });
+  await expect(page).toHaveURL(/\/projects\/[a-z0-9]+$/, { timeout: 90_000 });
   await expect(page.getByRole('heading', { name: /riverview integrated air and hydronic systems/i, level: 1 })).toBeVisible();
   const projectId = page.url().split('/').at(-1);
   if (!projectId) throw new Error('The project build did not return a project id.');
@@ -91,7 +91,7 @@ try {
   await page.getByLabel('Projects').click();
   await expect(page.getByRole('heading', { name: 'Projects', exact: true })).toBeVisible();
   await page.locator(`a.project-card[href$="/projects/${projectId}"]`).click();
-  await expect(page).toHaveURL(new RegExp(`/next/projects/${projectId}$`));
+  await expect(page).toHaveURL(new RegExp(`/projects/${projectId}$`));
   await page.getByRole('heading', { name: /review and release the exact building candidate/i }).scrollIntoViewIfNeeded();
   await pause(2600);
 

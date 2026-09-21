@@ -1,6 +1,23 @@
 # BACTalk Enterprise UI/UX Research and Production Plan
 
-Status: approved direction for the UI rewrite; backend control logic remains authoritative.
+Status: implemented. The React workbench owns `/`; the retired static workbench is served at `/legacy/`
+for one transition period. Backend control logic remains authoritative; the only backend additions were
+the block catalog, the qualification-job event stream, and the static mounts.
+
+Implementation record (web/src): one clock (`stores/timeCursor`), a typed-array trace store with
+frame fan-out and level-of-detail binding groups (`stores/trace`), trace builders for generic, legacy
+G36, BOPTEST, Alfalfa, and whole-project evidence (`trace/`), the wiresheet with catalog-declared ports,
+value chips, wire flow, tidy layout, materialize intro, and ghost diff (`features/wiresheet`), the
+master timeline and transport (`features/timeline`), uPlot trend panes with fault windows, oracle bands,
+counterexample windows, and boolean lanes (`features/trends`), parametric HVAC schematics and the
+system map (`features/schematic`), the AI thread with proposal cards (`features/assistant`), guided
+intake and the promoted ctrl-flow design pipeline (`features/intake`), the Simulation Center with live
+job progress (`features/simulation`), acknowledged review surfaces with digest-bound approval and
+rejection (`features/review`, `features/release`), the project cockpit with whole-building intake and
+lazy 3D massing (`features/projects`, `features/massing`), and the library, connection, and
+administration workspaces. Quality gates: vitest coverage thresholds on `trace/`, `stores/`, and
+`wiresheet/diff`; Playwright journeys on desktop and tablet with axe on every page and pixel baselines
+under reduced motion; a bundle budget with lazy canvas runtimes; a 500-block scrub performance harness.
 
 ## Executive decision
 
