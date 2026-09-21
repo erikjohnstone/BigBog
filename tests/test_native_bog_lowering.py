@@ -84,7 +84,6 @@ def test_module_rows_name_bactalk_g36_components() -> None:
         "TimerAccumulating",
         "MovingAverage",
         "TrimAndRespond",
-        "TrimAndRespondHold",
         "PIDWithReset",
     }
     assert expected <= {d.target.split(":")[1] for d in module_rows}

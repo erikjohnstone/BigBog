@@ -23,7 +23,7 @@ stack is present on the development box and the LBNL translation lane runs
 | N0 Clear the ground | **done** | `make test-native-bog` (21 passed), `make test-minimal` (257 passed, 1 skipped), `cd web && npx playwright test` (42 passed, 2 flaky-then-passed) | see N0 results |
 | N1 Catalog + validator | **done** | `make test-native-bog` (47 passed); integration: `test_native_bog_validator` drift + corpus tests | catalog is package data (docs/decisions/002) |
 | N2 Lowering matrix | **done** | `make test-native-bog` (matrix `--check` + 14 lowering tests; 61 native_bog tests total) | rows provisional until N7 (docs/decisions/003) |
-| N3 bactalkG36 kernels | not started | | Gate G-SDK written |
+| N3 bactalkG36 kernels | **done (CI part)** | `make kernels-check`; `tests/test_native_bog_kernels.py` in `make test-native-bog` | building and signing the real module is Gate G-SDK (WAITING_ON_HUMAN) |
 | N4 Native emitter | not started | | |
 | N5 Point linking | not started | | |
 | N6 Shadow Runtime | not started | | |
@@ -121,10 +121,39 @@ stack is present on the development box and the LBNL translation lane runs
   `Tstat`, `OneShot` and MultiVibrator composites are the rows most likely to
   move to `MODULE` once N7 measures them.
 
+## N3 results
+
+- **Module skeleton.** `niagara-module/bactalkG36/` in the nhaystack Gradle
+  layout: `settings.gradle.kts`, `build.gradle.kts` (default signing profile
+  refused), `gradle.properties`, `niagara-module.xml`, `bactalkG36-rt`
+  (kernels, 13 components, `module-include.xml`, lexicon) and `bactalkG36-wb`
+  (palette as a `bajaObjectGraph`). `README.md` says what CI proves and what it
+  cannot.
+- **Kernels.** 13 plain-Java kernels ported from the ProgramObject generator's
+  kernel members, parameterised at construction: `PidWithReset`, `TrueDelay`,
+  `Timer`, `TimerWithReset`, `TimerAccumulating`, `TrueFalseHold`, `Pre`,
+  `UnitDelay`, `FirstOrderHold`, `MovingAverage`, `TrimAndRespond` (hold variant
+  by `holdEnabled`), `BooleanInitialization`, `NumericChange`. `KernelHarness`
+  drives any of them from a line protocol.
+- **Pinned twice.** OCE golden rows (PID, Trim-and-Respond, Timer, UnitDelay,
+  FirstOrderHold) and a differential against the IR interpreter for 16
+  kind/configuration cases × 3 seeds on irregular steps, 1e-9 tolerance.
+- **Wrappers compile against stubs.** `niagara-module/stubs` is the minimal
+  `javax.baja` surface; `BKernelComponent` owns the ticket, the time base and
+  the null-status policy. `python -m bactalk.niagara.kernels --check` and CI
+  (`actions/setup-java`, Temurin 21) compile both.
+- **Registry.** `bactalk.niagara.module` declares each component's slots and
+  parameter bindings; `validate_bog(declared_types=declared_types())` accepts
+  `bactalkG36:*` (the palette validates; without the declaration it fails on
+  `type.known`). Tests fail on drift between the registry, the Java slots and
+  `module-include.xml`.
+- **Not claimed.** Nothing here has been loaded by a Niagara station. Gate
+  G-SDK lists the exact build, signing, palette and execution evidence.
+
 ## Gates
 
 | Gate | Status | File |
 |---|---|---|
-| G-SDK | WAITING_ON_HUMAN | `gates/G-SDK.md` |
+| G-SDK | WAITING_ON_HUMAN (ready to run after N3) | `gates/G-SDK.md` |
 | G-WB | WAITING_ON_HUMAN | `gates/G-WB.md` |
 | G-ENG | not yet needed (Tier 3+) | |

@@ -1,0 +1,20 @@
+<!--
+  bactalkG36 runtime types. Every type here is a MODULE row of
+  docs/niagara-lowering-matrix.md; the Python registry in
+  src/bactalk/niagara/module.py is tested to list exactly these.
+-->
+<types>
+  <type class="com.bactalk.g36.BTrueDelay" name="TrueDelay"/>
+  <type class="com.bactalk.g36.BTimer" name="Timer"/>
+  <type class="com.bactalk.g36.BTimerWithReset" name="TimerWithReset"/>
+  <type class="com.bactalk.g36.BTimerAccumulating" name="TimerAccumulating"/>
+  <type class="com.bactalk.g36.BTrueFalseHold" name="TrueFalseHold"/>
+  <type class="com.bactalk.g36.BPre" name="Pre"/>
+  <type class="com.bactalk.g36.BUnitDelay" name="UnitDelay"/>
+  <type class="com.bactalk.g36.BFirstOrderHold" name="FirstOrderHold"/>
+  <type class="com.bactalk.g36.BMovingAverage" name="MovingAverage"/>
+  <type class="com.bactalk.g36.BPidWithReset" name="PIDWithReset"/>
+  <type class="com.bactalk.g36.BTrimAndRespond" name="TrimAndRespond"/>
+  <type class="com.bactalk.g36.BBooleanInitialization" name="BooleanInitialization"/>
+  <type class="com.bactalk.g36.BNumericChange" name="NumericChange"/>
+</types>

@@ -72,9 +72,15 @@ jobs:
       # The native Niagara .bog contract (GOAL-NATIVE-BOG.md) runs in every tier
       # that can build a .bog; on the base install that is the units and validator
       # rules over the packs that still compile natively.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
       - name: Native .bog contract
         run: |
           python -m bactalk.niagara.lowering --check
+          python -m bactalk.niagara.kernels --check
           python -m pytest -m native_bog
 
       - name: Contractor workflow end to end

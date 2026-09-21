@@ -54,6 +54,8 @@ MODULE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "test_reference_stack": ("vendor:open-control-engine",),
     "test_cdl": ("vendor:modelica-json",),
     "test_rumoca": ("file:.vendor/bin/rumoca",),
+    # The bactalkG36 kernel contract compiles Java; CI installs a JDK for it.
+    "test_native_bog_kernels": ("tool:javac", "tool:java"),
     "test_ctrl_flow": ("vendor:ctrl-flow-dev",),
     "test_ctrl_flow_sequence": ("vendor:ctrl-flow-dev",),
     "test_ctrl_flow_reconciliation": ("vendor:ctrl-flow-dev",),

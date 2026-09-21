@@ -1,0 +1,14 @@
+# bactalkG36 display names
+TrueDelay.displayName=True Delay (CDL)
+Timer.displayName=Timer (CDL)
+TimerWithReset.displayName=Timer With Reset
+TimerAccumulating.displayName=Accumulating Timer (CDL)
+TrueFalseHold.displayName=True/False Hold (CDL)
+Pre.displayName=Pre (one-tick delay)
+UnitDelay.displayName=Unit Delay (CDL)
+FirstOrderHold.displayName=First Order Hold (CDL)
+MovingAverage.displayName=Moving Average (CDL)
+PIDWithReset.displayName=PID With Reset (CDL)
+TrimAndRespond.displayName=Trim And Respond (G36)
+BooleanInitialization.displayName=Boolean Initialization
+NumericChange.displayName=Numeric Change Detector

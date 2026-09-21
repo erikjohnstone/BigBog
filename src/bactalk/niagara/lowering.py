@@ -341,7 +341,11 @@ _ROWS: tuple[LoweringDecision, ...] = (
         "TrimAndRespond",
         "Kernel harvested from the ProgramObject generator.",
     ),
-    _module(BlockKind.TRIM_AND_RESPOND_HOLD, "TrimAndRespondHold"),
+    _module(
+        BlockKind.TRIM_AND_RESPOND_HOLD,
+        "TrimAndRespond",
+        "The same component with holdEnabled=true (the CDL have_hol variant).",
+    ),
     # --- plant composites (Tier 2, N8) -------------------------------------
     _unsupported(
         BlockKind.PLANT_EQUIPMENT_AVAILABILITY,

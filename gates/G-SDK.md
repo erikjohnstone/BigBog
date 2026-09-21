@@ -20,25 +20,37 @@ module has never been built until this gate passes.
 ## Steps
 
 1. Check out the repository at the commit named in `STATUS.md` under N3.
-2. Open `niagara-module/bactalkG36/` and set `niagara_home` and `niagara_user_home`
-   in `gradle.properties` to your installation (the file documents the keys).
-3. Run `gradlew build` from that directory. Expected result: `bactalkG36-rt.jar` and
-   `bactalkG36-wb.jar` under `build/`, with zero test failures.
-4. Sign both jars per Tridium's procedure (`gradlew moduleSign` when the signing
-   plugin is configured, or Workbench's module signing tool).
-5. Copy the signed jars into your Workbench `modules/` directory, restart Workbench,
-   and open the palette `bactalkG36`. Every block from
-   `docs/niagara-lowering-matrix.md` marked `MODULE` must appear.
-6. Drop one instance of each block on a wiresheet and confirm it executes (its
-   `out` slot updates when inputs change).
+2. In `niagara-module/bactalkG36/gradle.properties` set `niagara_home` (and
+   `niagara_user_home`) to your installation. If the Gradle plugins are not under
+   `niagara_home/etc/m2/repository`, set `gradlePluginHome` too.
+3. Put your signing profile outside version control and point
+   `bactalkSigningProfile` and `bactalkSigningAlias` at it (see `build.gradle.kts`;
+   the build refuses the default profile on purpose).
+4. From `niagara-module/bactalkG36/` run `./gradlew build` (Windows:
+   `gradlew.bat build`). Expected: `bactalkG36-rt/build/libs/bactalkG36-rt.jar`
+   and `bactalkG36-wb/build/libs/bactalkG36-wb.jar`, signed, with zero test
+   failures. The sources compile in CI against `niagara-module/stubs`; any error
+   the real SDK raises that the stubs did not is a finding to record.
+5. Copy both jars into Workbench's `modules/` directory, restart Workbench and open
+   the `bactalkG36` palette. The three folders (Timing, Discrete, Loops) and all 13
+   components in `bactalkG36-rt/module-include.xml` must appear.
+6. Drop one instance of each component on a wiresheet, set its parameters, drive
+   its inputs and confirm the outputs update: `TrueDelay` with `delayTime` 10 s
+   and `delayOnInit` false must pass an initially true input through at once;
+   `Timer` must count while `in` is true; `PIDWithReset` must move `out` when
+   `measurement` departs from `setpoint`. Set an input to null and confirm the
+   outputs go null and return to ok when the input is valid again.
 
 ## Evidence to return (commit under `gates/evidence/G-SDK/`)
 
 - `build.log`: the full Gradle output.
 - `bactalkG36-rt.jar.sha256` and `bactalkG36-wb.jar.sha256`.
 - `palette.png`: a Workbench screenshot of the palette.
-- `execution.txt`: for each block, the input values set and the output observed.
-- `environment.txt`: Workbench version, JDK version, OS.
+- `execution.txt`: for each component, the parameters set, the input values
+  applied and the outputs observed, including the null-status check.
+- `environment.txt`: Workbench version, JDK version, OS, Gradle plugin version.
+- `findings.md`: anything the SDK rejected that the CI stubs accepted, with the
+  compiler message verbatim (empty file if nothing).
 
 ## What passing means
 

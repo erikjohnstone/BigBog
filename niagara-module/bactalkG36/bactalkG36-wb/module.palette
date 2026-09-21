@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Workbench palette for bactalkG36. Written as a bajaObjectGraph so it validates
+  with bactalk.niagara.validate once the module's types are declared.
+-->
+<bajaObjectGraph version="4.0">
+<p m="b=baja bactalkG36=bactalkG36" t="b:UnrestrictedFolder">
+ <p n="Timing" t="b:Folder">
+  <p n="TrueDelay" t="bactalkG36:TrueDelay"/>
+  <p n="Timer" t="bactalkG36:Timer"/>
+  <p n="TimerWithReset" t="bactalkG36:TimerWithReset"/>
+  <p n="TimerAccumulating" t="bactalkG36:TimerAccumulating"/>
+  <p n="TrueFalseHold" t="bactalkG36:TrueFalseHold"/>
+  <p n="Pre" t="bactalkG36:Pre"/>
+ </p>
+ <p n="Discrete" t="b:Folder">
+  <p n="UnitDelay" t="bactalkG36:UnitDelay"/>
+  <p n="FirstOrderHold" t="bactalkG36:FirstOrderHold"/>
+  <p n="MovingAverage" t="bactalkG36:MovingAverage"/>
+  <p n="NumericChange" t="bactalkG36:NumericChange"/>
+  <p n="BooleanInitialization" t="bactalkG36:BooleanInitialization"/>
+ </p>
+ <p n="Loops" t="b:Folder">
+  <p n="PIDWithReset" t="bactalkG36:PIDWithReset"/>
+  <p n="TrimAndRespond" t="bactalkG36:TrimAndRespond"/>
+ </p>
+</p>
+</bajaObjectGraph>

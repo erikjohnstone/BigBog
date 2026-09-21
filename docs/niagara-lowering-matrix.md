@@ -71,7 +71,7 @@ claim of runtime qualification.
 | `pi_loop` | `STOCK_WITHIN_BANDS` | `kitControl:LoopPoint` | enable→loopEnable, controlled_variable→controlledVariable, setpoint→setpoint, direct→loopAction, out→out | — |
 | `pid_with_reset` | `MODULE` | `bactalkG36:PIDWithReset` | — | CDL-exact form with a reset trigger; kitControl:LoopPoint has no reset input and a different anti-windup form, so it is not used. |
 | `trim_and_respond` | `MODULE` | `bactalkG36:TrimAndRespond` | — | Kernel harvested from the ProgramObject generator. |
-| `trim_and_respond_hold` | `MODULE` | `bactalkG36:TrimAndRespondHold` | — | — |
+| `trim_and_respond_hold` | `MODULE` | `bactalkG36:TrimAndRespond` | — | The same component with holdEnabled=true (the CDL have_hol variant). |
 | `plant_equipment_availability` | `UNSUPPORTED` | — | — | Buildings.Templates plant composite; native lowering is decided in N8. |
 | `plant_enable` | `UNSUPPORTED` | — | — | Buildings.Templates plant composite; native lowering is decided in N8. |
 | `plant_hrc_enable` | `UNSUPPORTED` | — | — | Buildings.Templates plant composite; native lowering is decided in N8. |
@@ -192,8 +192,7 @@ Bounding scenarios:
 - `bactalkG36:Timer`: `timer`
 - `bactalkG36:TimerAccumulating`: `timer_accumulating`
 - `bactalkG36:TimerWithReset`: `timer_with_reset`
-- `bactalkG36:TrimAndRespond`: `trim_and_respond`
-- `bactalkG36:TrimAndRespondHold`: `trim_and_respond_hold`
+- `bactalkG36:TrimAndRespond`: `trim_and_respond`, `trim_and_respond_hold`
 - `bactalkG36:TrueFalseHold`: `boolean_true_false_hold`
 - `bactalkG36:UnitDelay`: `numeric_unit_delay`
 - `bactalkG36:TrueDelay`: `boolean_delay` (delay_on_init false)
