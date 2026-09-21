@@ -81,6 +81,21 @@ MODULE_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "test_volttron": (),
 }
 
+# Individual tests that need an upstream while the rest of their module does
+# not. Keyed by "<module>::<test name>" so a mostly-pure module is not pushed
+# wholesale into the integration tier.
+TEST_REQUIREMENTS: dict[str, tuple[str, ...]] = {
+    "test_service::test_plant_library_job_runs_tests_and_exports_signed_program_source_package": (
+        "vendor:modelica-buildings",
+    ),
+    "test_service::test_g36_library_controller_enters_the_same_human_gated_job_lane": (
+        "vendor:modelica-buildings",
+    ),
+    "test_ai_chat::test_library_chat_changes_parameters_then_rebuilds_and_retests": (
+        "vendor:modelica-buildings",
+    ),
+}
+
 # Modules that exercise only the base install and must run everywhere.
 MINIMAL_MODULES = {
     "test_minimal_install",
@@ -151,11 +166,18 @@ def pytest_collection_modifyitems(config, items):  # noqa: ARG001
     for item in items:
         module_name = Path(str(item.fspath)).stem
 
-        if module_name in MINIMAL_MODULES:
-            item.add_marker(pytest.mark.minimal)
-            continue
+        # A per-test requirement wins over the module default, so one
+        # upstream-dependent case does not drag its whole module out of the
+        # minimal tier.
+        test_key = f"{module_name}::{item.originalname or item.name}"
+        requirements = TEST_REQUIREMENTS.get(test_key)
 
-        requirements = MODULE_REQUIREMENTS.get(module_name)
+        if requirements is None:
+            if module_name in MINIMAL_MODULES:
+                item.add_marker(pytest.mark.minimal)
+                continue
+            requirements = MODULE_REQUIREMENTS.get(module_name)
+
         if not requirements:
             # No declared external requirement: runs on a base install.
             item.add_marker(pytest.mark.minimal)

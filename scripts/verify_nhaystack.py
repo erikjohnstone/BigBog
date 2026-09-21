@@ -129,6 +129,22 @@ public final class InstallerHarness {{
             )
 
 
+def _read_readme(vendor: Path) -> str:
+    """Read the upstream readme whatever case it is published in.
+
+    nHaystack ships `readme.md`; a hardcoded `README.md` resolves only on a
+    case-insensitive filesystem, so the contract failed on Linux.
+    """
+    for name in ("readme.md", "README.md", "ReadMe.md"):
+        candidate = vendor / name
+        if candidate.is_file():
+            return candidate.read_text(encoding="utf-8")
+    raise RuntimeError(
+        f"nHaystack readme is missing from {vendor}; the deployment contract "
+        "cannot be verified"
+    )
+
+
 def main() -> int:
     revision = subprocess.run(
         ["git", "rev-parse", "HEAD"],
@@ -147,7 +163,7 @@ def main() -> int:
     tag_manager = (
         VENDOR / "nhaystack-rt/src/nhaystack/server/TagManager.java"
     ).read_text(encoding="utf-8")
-    readme = (VENDOR / "README.md").read_text(encoding="utf-8")
+    readme = _read_readme(VENDOR)
     bhdict = (VENDOR / "nhaystack-rt/src/nhaystack/BHDict.java").read_text(encoding="utf-8")
     for anchor in (
         "createComponentTags(BComponent comp)",
