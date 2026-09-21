@@ -29,6 +29,7 @@ import socket
 import subprocess
 import sys
 from dataclasses import asdict, dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -289,27 +290,12 @@ def check_container_runtime(report: Report) -> None:
         )
     )
 
-    probe = subprocess.run(
-        ["docker", "manifest", "inspect", "redis:7.4-alpine"],
-        capture_output=True,
-        text=True,
-        timeout=120,
-    )
-    if probe.returncode == 0:
+    _, denied, reason = _registry_probe()
+    if reason == "registry reachable":
         report.add(
-            Finding(section, "container registry", READY, detail="registry reachable")
+            Finding(section, "container registry", READY, detail=reason)
         )
     else:
-        combined = (probe.stderr or probe.stdout or "").strip()
-        message = combined.splitlines()
-        reason = message[-1][:200] if message else "unknown error"
-        # Match against the whole output: registries put the denial token at
-        # the end of a very long signed URL, past any display truncation.
-        denied = any(
-            token in combined.lower() for token in ("403", "denied", "forbidden", "401")
-        )
-        if denied:
-            reason = "registry denied by this network's egress policy"
         report.add(
             Finding(
                 section,
@@ -670,10 +656,18 @@ def check_services(report: Report) -> None:
             )
 
 
-def _registry_is_blocked() -> bool:
-    """True when a container runtime exists but its registry is denied."""
+@lru_cache(maxsize=1)
+def _registry_probe() -> tuple[bool, bool, str]:
+    """Probe the container registry once per run.
+
+    Returns ``(runtime_available, denied, detail)``. Memoized because the
+    container-runtime section and each service check all need the answer, and
+    three independent probes can disagree when the network is slow -- which
+    previously let one section call a service "missing" while another called
+    it "blocked".
+    """
     if shutil.which("docker") is None:
-        return False
+        return False, False, "docker is not installed"
     info = subprocess.run(
         ["docker", "info", "--format", "{{.ServerVersion}}"],
         capture_output=True,
@@ -681,17 +675,29 @@ def _registry_is_blocked() -> bool:
         timeout=60,
     )
     if info.returncode != 0:
-        return False
+        return False, False, "no container runtime is running"
     probe = subprocess.run(
         ["docker", "manifest", "inspect", "redis:7.4-alpine"],
         capture_output=True,
         text=True,
-        timeout=120,
+        timeout=180,
     )
     if probe.returncode == 0:
-        return False
-    combined = (probe.stderr or probe.stdout or "").lower()
-    return any(token in combined for token in ("403", "denied", "forbidden", "401"))
+        return True, False, "registry reachable"
+    combined = (probe.stderr or probe.stdout or "").strip()
+    denied = any(
+        token in combined.lower() for token in ("403", "denied", "forbidden", "401")
+    )
+    if denied:
+        return True, True, "registry denied by this network's egress policy"
+    lines = combined.splitlines()
+    return True, False, lines[-1][:200] if lines else "registry unreachable"
+
+
+def _registry_is_blocked() -> bool:
+    """True when a container runtime exists but its registry is denied."""
+    _, denied, _ = _registry_probe()
+    return denied
 
 
 def check_environment_variables(report: Report) -> None:
