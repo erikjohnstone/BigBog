@@ -169,7 +169,10 @@ def pytest_collection_modifyitems(config, items):  # noqa: ARG001
         # A per-test requirement wins over the module default, so one
         # upstream-dependent case does not drag its whole module out of the
         # minimal tier.
-        test_key = f"{module_name}::{item.originalname or item.name}"
+        # originalname is the un-parametrized name on a Function item; fall
+        # back to name for item types that do not carry it.
+        base_name = getattr(item, "originalname", None) or item.name
+        test_key = f"{module_name}::{base_name}"
         requirements = TEST_REQUIREMENTS.get(test_key)
 
         if requirements is None:
