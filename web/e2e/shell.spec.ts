@@ -654,6 +654,65 @@ test('design pipeline walks configure, brief, points, sequence, review, and orac
   await axe(page);
 });
 
+test('review acknowledges every surface, binds approval to the digest, and can reject', async ({ page }) => {
+  test.setTimeout(90_000);
+  const approvable = (await (await page.request.post('/api/runs/demo')).json()) as Run & { artifact_sha256: string };
+  const rejectable = (await (await page.request.post('/api/runs/demo')).json()) as Run;
+  expect(approvable.status).toBe('ready_for_review');
+
+  await page.goto(`/next/jobs/${approvable.id}/review`);
+  await expect(page.getByRole('heading', { name: 'Decision', exact: true })).toBeVisible();
+  const approve = page.getByRole('button', { name: 'Approve' });
+  await expect(approve).toBeDisabled();
+  for (const surface of ['Tests', 'Decision coverage', 'Qualification matrix', 'Deliverables', 'Release summary', 'Blockers']) {
+    await page.getByRole('checkbox', { name: `Acknowledge ${surface}` }).check();
+  }
+  await expect(page.getByText('6/6 surfaces')).toBeVisible();
+  await expect(approve).toBeEnabled();
+  await axe(page);
+
+  // A stale digest is refused by the server and explained, never swallowed.
+  await page.route(`**/api/runs/${approvable.id}/approve`, (route) => route.fulfill({ status: 412, json: { detail: 'artifact changed since review' } }), { times: 1 });
+  await approve.click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toContainText(approvable.artifact_sha256);
+  await dialog.getByLabel('Reviewer').fill('Jordan Reviewer');
+  await dialog.getByRole('button', { name: 'Approve', exact: true }).click();
+  await expect(dialog.getByRole('alert')).toContainText(/artifact changed since you opened this review/i);
+  await expect(dialog.getByRole('button', { name: 'Reload the candidate' })).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  // The real approval carries the inspected digest and unlocks the hand-off.
+  const [request] = await Promise.all([
+    page.waitForRequest((req) => req.url().endsWith(`/api/runs/${approvable.id}/approve`) && req.method() === 'POST'),
+    (async () => {
+      await approve.click();
+      await page.getByRole('dialog').getByLabel('Reviewer').fill('Jordan Reviewer');
+      await page.getByRole('dialog').getByRole('button', { name: 'Approve', exact: true }).click();
+    })(),
+  ]);
+  expect(request.postDataJSON()).toMatchObject({ reviewer: 'Jordan Reviewer', artifact_sha256: approvable.artifact_sha256 });
+  await expect(page.getByRole('heading', { name: 'Decision', exact: true }).locator('..').getByText('Approved')).toBeVisible();
+  await expect(page.getByText(/Jordan Reviewer ·/)).toBeVisible();
+  await page.getByRole('navigation', { name: 'Job stages' }).getByRole('link', { name: /^5 Release/ }).click();
+  await expect(page.getByRole('link', { name: /Approved target/ })).toHaveAttribute('href', `/api/runs/${approvable.id}/export`);
+  await expect(page.getByText(/import it manually into a licensed workbench/i)).toBeVisible();
+  await axe(page);
+
+  // Rejection records the reviewer and the reason; downloads stay locked.
+  await page.goto(`/next/jobs/${rejectable.id}/review`);
+  await page.getByRole('button', { name: 'Reject' }).click();
+  const reject = page.getByRole('dialog');
+  await reject.getByLabel('Reviewer').fill('Jordan Reviewer');
+  await reject.getByLabel('Reason').fill('Damper minimum position disagrees with the sequence.');
+  await reject.getByRole('button', { name: 'Reject', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Decision', exact: true }).locator('..').getByText('Rejected')).toBeVisible();
+  await expect(page.getByText(/Damper minimum position disagrees/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Approve' })).toHaveCount(0);
+  await page.goto(`/next/jobs/${rejectable.id}/release`);
+  await expect(page.getByText(/downloads unlock only after approval/i)).toBeVisible();
+});
+
 test('legacy studio and simulation links redirect into the stage model', async ({ page }) => {
   const runs = (await (await page.request.get('/api/runs')).json()) as Run[];
   test.skip(runs.length === 0, 'A retained candidate is required.');

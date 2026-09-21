@@ -3,6 +3,7 @@ import { useReleaseSummary } from '../../api/queries';
 import { StatusPill } from '../../design-system/primitives';
 import { ErrorState, LoadingState } from '../../design-system/states';
 import { KeyValue, SectionCard, StageFrame } from '../shared/StageFrame';
+import { ExportHandoff } from './ExportHandoff';
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -10,7 +11,7 @@ function formatBytes(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-/** Release stage: the server's release summary, downloads only once approved. */
+/** Release stage: the server's release summary and the hand-off, downloads only once approved. */
 export function ReleaseStage({ run }: { run: RunDetail }) {
   const summary = useReleaseSummary(run.id);
   if (summary.isLoading) return <LoadingState label="Loading release summary" />;
@@ -86,16 +87,7 @@ export function ReleaseStage({ run }: { run: RunDetail }) {
         )}
       </SectionCard>
 
-      <SectionCard title="Downloads">
-        {data.downloads.available && data.downloads.target_url ? (
-          <div className="px-4 py-3 flex gap-3 text-sm">
-            <a className="text-accent" href={data.downloads.target_url}>Approved target</a>
-            {data.downloads.review_bundle_url && <a className="text-accent" href={data.downloads.review_bundle_url}>Review bundle</a>}
-          </div>
-        ) : (
-          <p className="px-4 py-3 text-sm text-fg-2">Downloads unlock only after approval. The server enforces this.</p>
-        )}
-      </SectionCard>
+      <ExportHandoff summary={data} />
     </StageFrame>
   );
 }

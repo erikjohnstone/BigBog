@@ -1324,11 +1324,21 @@ export type ArtifactState<T> =
   | { state: 'missing' }
   | { state: 'invalid'; message: string };
 
+/** A failed request with its HTTP status, so callers can tell 409 from 412 from 403. */
+export class ApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+  }
+}
+
 async function getJson(path: string): Promise<unknown> {
   const response = await fetch(path, { headers: { Accept: 'application/json' } });
   if (!response.ok) {
     const body = await response.json().catch(() => null) as { detail?: string } | null;
-    throw new Error(body?.detail ?? `Request failed with status ${response.status}`);
+    throw new ApiError(body?.detail ?? `Request failed with status ${response.status}`, response.status);
   }
   return response.json();
 }
@@ -1342,7 +1352,7 @@ async function postJson(path: string, body: unknown): Promise<unknown> {
   if (!response.ok) {
     const payload = await response.json().catch(() => null) as { detail?: unknown; message?: unknown } | null;
     const detail = payload?.detail ?? payload?.message;
-    throw new Error(typeof detail === 'string' ? detail : detail ? JSON.stringify(detail) : `Request failed with status ${response.status}`);
+    throw new ApiError(typeof detail === 'string' ? detail : detail ? JSON.stringify(detail) : `Request failed with status ${response.status}`, response.status);
   }
   return response.json();
 }
@@ -1351,7 +1361,7 @@ async function postForm(path: string, body: FormData): Promise<unknown> {
   const response = await fetch(path, { method: 'POST', headers: { Accept: 'application/json' }, body });
   if (!response.ok) {
     const payload = await response.json().catch(() => null) as { detail?: string } | null;
-    throw new Error(payload?.detail ?? `Request failed with status ${response.status}`);
+    throw new ApiError(payload?.detail ?? `Request failed with status ${response.status}`, response.status);
   }
   return response.json();
 }
@@ -1587,8 +1597,11 @@ export const api = {
       request,
     ));
   },
-  async approve(runId: string, reviewer: string) {
-    return runDetailSchema.parse(await postJson(`/api/runs/${runId}/approve`, { reviewer }));
+  async approve(runId: string, decision: { reviewer: string | null; artifact_sha256: string }) {
+    return runDetailSchema.parse(await postJson(`/api/runs/${runId}/approve`, decision));
+  },
+  async reject(runId: string, decision: { reviewer: string | null; reason: string | null }) {
+    return runDetailSchema.parse(await postJson(`/api/runs/${runId}/reject`, decision));
   },
   async inspectIntake(body: FormData) {
     return intakeInspectionSchema.parse(await postForm('/api/intake/inspect', body));
