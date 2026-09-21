@@ -45,6 +45,11 @@ CHECKS = [
     ("rumoca-modelica-flattener", ["make", "rumoca-contract"]),
     ("boptest-contract", ["make", "boptest-contract"]),
     ("volttron", ["make", "volttron-contract"]),
+    # The two end-to-end workflow proofs. These drive the real API and the
+    # real queue and worker rather than any single integration, so they are
+    # the closest thing the suite has to a product-level check.
+    ("contractor-workflow", ["make", "contractor-workflow"]),
+    ("simulation-workflow", ["make", "simulation-workflow"]),
 ]
 
 
