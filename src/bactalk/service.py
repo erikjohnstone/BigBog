@@ -63,6 +63,7 @@ from bactalk.integrations.niagara_station import assemble_station_bog
 from bactalk.integrations.niagara_template import NiagaraTemplateAnalyzer
 from bactalk.integrations.plant_controls_library import PlantControlsLibrary
 from bactalk.integrations.volttron import build_readonly_volttron_export
+from bactalk.niagara.validate import validate_bog
 from bactalk.repository import RunRepository
 
 
@@ -275,6 +276,12 @@ class WorkbenchService:
                 ),
                 units={point.name: point.units for point in job.points},
             )
+            # GOAL-NATIVE-BOG.md N1: nothing ships that fails static validation.
+            validation = validate_bog(bog_path, label=bog_path.name)
+            (run_dir / "niagara-validation.json").write_text(
+                canonical_json(validation.to_dict()), encoding="utf-8"
+            )
+            validation.raise_for_errors()
         else:
             if program_package_path is None or job.sequence.controller_id is None:
                 raise AssertionError("program source package target is incomplete")
@@ -461,6 +468,13 @@ class WorkbenchService:
                 )
                 assembled_bog_path = run_dir / "assembled-station.bog"
                 assembled_bog_path.write_bytes(assembly.content)
+                # The contractor's template brings station types the catalog
+                # does not hold; structure, handles and links are still checked.
+                validate_bog(
+                    assembled_bog_path,
+                    require_known_types=False,
+                    label=assembled_bog_path.name,
+                ).raise_for_errors()
                 station_assembly_manifest_path = run_dir / "station-assembly.json"
                 station_assembly_manifest_path.write_text(
                     canonical_json(assembly.manifest),

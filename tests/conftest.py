@@ -94,6 +94,15 @@ TEST_REQUIREMENTS: dict[str, tuple[str, ...]] = {
     "test_ai_chat::test_library_chat_changes_parameters_then_rebuilds_and_retests": (
         "vendor:modelica-buildings",
     ),
+    "test_native_bog_validator::test_committed_catalog_matches_a_fresh_harvest": (
+        "vendor:n4-hvac-optimization-blocks",
+        "vendor:nhaystack",
+        "vendor:pybog",
+    ),
+    "test_native_bog_validator::test_every_vendored_bog_passes_the_validator": (
+        "vendor:n4-hvac-optimization-blocks",
+        "vendor:nhaystack",
+    ),
 }
 
 # Modules that exercise only the base install and must run everywhere.

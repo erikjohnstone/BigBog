@@ -1,0 +1,357 @@
+{
+ "schema": "bactalk.niagara-catalog-supplement/v1",
+ "note": "Hand-written slots that no held .bog serializes with a value type. Every entry is marked doc-only and cites the Tridium guide it comes from; the validator trusts these for slot existence and data kind only. Slots that are actions or topics carry slot_kind instead of a value type and are exempt from kind matching.",
+ "types": {
+  "control:NumericWritable": {
+   "source": "Tridium Niagara 4 Control Module Guide, NumericWritable: sixteen priority inputs in1..in16 of StatusNumeric; out is StatusNumeric.",
+   "slot_ranges": [
+    {
+     "prefix": "in",
+     "from": 1,
+     "to": 16,
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   ],
+   "slots": {}
+  },
+  "control:BooleanWritable": {
+   "source": "Tridium Niagara 4 Control Module Guide, BooleanWritable: sixteen priority inputs in1..in16 of StatusBoolean; out is StatusBoolean.",
+   "slot_ranges": [
+    {
+     "prefix": "in",
+     "from": 1,
+     "to": 16,
+     "value_type": "baja:StatusBoolean",
+     "direction": "input"
+    }
+   ],
+   "slots": {}
+  },
+  "control:EnumWritable": {
+   "source": "Tridium Niagara 4 Control Module Guide, EnumWritable: sixteen priority inputs in1..in16 of StatusEnum; out is StatusEnum.",
+   "slot_ranges": [
+    {
+     "prefix": "in",
+     "from": 1,
+     "to": 16,
+     "value_type": "baja:StatusEnum",
+     "direction": "input"
+    }
+   ],
+   "slots": {
+    "out": {
+     "value_type": "baja:StatusEnum",
+     "direction": "output"
+    }
+   }
+  },
+  "control:StringWritable": {
+   "source": "Tridium Niagara 4 Control Module Guide, StringWritable: sixteen priority inputs in1..in16 of StatusString; out is StatusString.",
+   "slot_ranges": [
+    {
+     "prefix": "in",
+     "from": 1,
+     "to": 16,
+     "value_type": "baja:StatusString",
+     "direction": "input"
+    }
+   ],
+   "slots": {
+    "out": {
+     "value_type": "baja:StatusString",
+     "direction": "output"
+    }
+   }
+  },
+  "control:TimeTrigger": {
+   "source": "Tridium Niagara 4 Control Module Guide, TimeTrigger: fireTrigger is a Topic fired on the configured schedule.",
+   "slots": {
+    "fireTrigger": {
+     "slot_kind": "topic",
+     "direction": "output"
+    }
+   }
+  },
+  "kitControl:GreaterThan": {
+   "source": "Tridium kitControl Guide, Logic/Comparison: inA and inB are StatusNumeric; out is StatusBoolean.",
+   "slots": {
+    "inA": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    },
+    "inB": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   }
+  },
+  "kitControl:GreaterThanEqual": {
+   "source": "Tridium kitControl Guide, Logic/Comparison: inA and inB are StatusNumeric; out is StatusBoolean.",
+   "slots": {
+    "inA": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    },
+    "inB": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   }
+  },
+  "kitControl:LessThan": {
+   "source": "Tridium kitControl Guide, Logic/Comparison: inA and inB are StatusNumeric; out is StatusBoolean.",
+   "slots": {
+    "inA": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    },
+    "inB": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   }
+  },
+  "kitControl:LessThanEqual": {
+   "source": "Tridium kitControl Guide, Logic/Comparison: inA and inB are StatusNumeric; out is StatusBoolean.",
+   "slots": {
+    "inA": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    },
+    "inB": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   }
+  },
+  "kitControl:Equal": {
+   "source": "Tridium kitControl Guide, Logic/Comparison: inA and inB are StatusNumeric; out is StatusBoolean.",
+   "slots": {
+    "inA": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    },
+    "inB": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   }
+  },
+  "kitControl:NotEqual": {
+   "source": "Tridium kitControl Guide, Logic/Comparison: inA and inB are StatusNumeric; out is StatusBoolean.",
+   "slots": {
+    "inA": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    },
+    "inB": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   }
+  },
+  "kitControl:Multiply": {
+   "source": "Tridium kitControl Guide, Math: inA..inD are StatusNumeric; out is StatusNumeric.",
+   "slot_ranges": [
+    {
+     "prefix": "in",
+     "letters": "ABCD",
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   ],
+   "slots": {}
+  },
+  "kitControl:Divide": {
+   "source": "Tridium kitControl Guide, Math: inA..inD are StatusNumeric; out is StatusNumeric.",
+   "slot_ranges": [
+    {
+     "prefix": "in",
+     "letters": "ABCD",
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   ],
+   "slots": {}
+  },
+  "kitControl:Average": {
+   "source": "Tridium kitControl Guide, Math: inA..inD are StatusNumeric; out is StatusNumeric.",
+   "slot_ranges": [
+    {
+     "prefix": "in",
+     "letters": "ABCD",
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   ],
+   "slots": {}
+  },
+  "kitControl:Minimum": {
+   "source": "Tridium kitControl Guide, Math: inA..inD are StatusNumeric; out is StatusNumeric.",
+   "slot_ranges": [
+    {
+     "prefix": "in",
+     "letters": "ABCD",
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   ],
+   "slots": {}
+  },
+  "kitControl:Maximum": {
+   "source": "Tridium kitControl Guide, Math: inA..inD are StatusNumeric; out is StatusNumeric.",
+   "slot_ranges": [
+    {
+     "prefix": "in",
+     "letters": "ABCD",
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   ],
+   "slots": {}
+  },
+  "kitControl:Xor": {
+   "source": "Tridium kitControl Guide, Logic: inA..inD are StatusBoolean; out is StatusBoolean.",
+   "slot_ranges": [
+    {
+     "prefix": "in",
+     "letters": "ABCD",
+     "value_type": "baja:StatusBoolean",
+     "direction": "input"
+    }
+   ],
+   "slots": {}
+  },
+  "kitControl:BooleanSwitch": {
+   "source": "Tridium kitControl Guide, Select: inSwitch is StatusBoolean; inTrue, inFalse and out are StatusBoolean.",
+   "slots": {
+    "inSwitch": {
+     "value_type": "baja:StatusBoolean",
+     "direction": "input"
+    },
+    "inTrue": {
+     "value_type": "baja:StatusBoolean",
+     "direction": "input"
+    },
+    "inFalse": {
+     "value_type": "baja:StatusBoolean",
+     "direction": "input"
+    }
+   }
+  },
+  "kitControl:NumericSelect": {
+   "source": "Tridium kitControl Guide, Select: select is StatusEnum; inA..inJ are StatusNumeric; out is StatusNumeric.",
+   "slot_ranges": [
+    {
+     "prefix": "in",
+     "letters": "ABCDEFGHIJ",
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   ],
+   "slots": {}
+  },
+  "kitControl:NumericLatch": {
+   "source": "Tridium kitControl Guide, Latch: in is StatusNumeric, clock is StatusBoolean, out is StatusNumeric.",
+   "slots": {
+    "in": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   }
+  },
+  "kitControl:NumericDelay": {
+   "source": "Tridium kitControl Guide, Timer: NumericDelay in is StatusNumeric; out is StatusNumeric.",
+   "slots": {
+    "in": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "input"
+    }
+   }
+  },
+  "kitControl:LeadLagCycles": {
+   "source": "Tridium kitControl Guide, Control: outA..outJ are StatusBoolean.",
+   "slot_ranges": [
+    {
+     "prefix": "out",
+     "letters": "ABCDEFGHIJ",
+     "value_type": "baja:StatusBoolean",
+     "direction": "output"
+    }
+   ],
+   "slots": {}
+  },
+  "kitControl:LeadLagRuntime": {
+   "source": "Tridium kitControl Guide, Control: outA..outJ are StatusBoolean.",
+   "slot_ranges": [
+    {
+     "prefix": "out",
+     "letters": "ABCDEFGHIJ",
+     "value_type": "baja:StatusBoolean",
+     "direction": "output"
+    }
+   ],
+   "slots": {}
+  },
+  "kitControl:Counter": {
+   "source": "Tridium kitControl Guide, Math: Counter reset is an Action.",
+   "slots": {
+    "reset": {
+     "slot_kind": "action",
+     "direction": "input"
+    }
+   }
+  },
+  "kitControl:OneShot": {
+   "source": "Tridium kitControl Guide, Timer: OneShot fire is an Action.",
+   "slots": {
+    "fire": {
+     "slot_kind": "action",
+     "direction": "input"
+    }
+   }
+  },
+  "kitControl:Ramp": {
+   "source": "Tridium kitControl Guide, Util: Ramp out is StatusNumeric.",
+   "slots": {
+    "out": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "output"
+    }
+   }
+  },
+  "kitControl:Psychrometric": {
+   "source": "Tridium kitControl Guide, HVAC: Psychrometric outDewPoint is StatusNumeric.",
+   "slots": {
+    "outDewPoint": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "output"
+    }
+   }
+  },
+  "program:Program": {
+   "source": "Tridium Niagara 4 Program Module Guide: a Program component's frozen slots include the execute Action and the code ProgramCode property; its other slots are declared per instance.",
+   "slots": {
+    "execute": {
+     "slot_kind": "action",
+     "direction": "input"
+    },
+    "code": {
+     "value_type": "program:ProgramCode"
+    }
+   }
+  },
+  "history:HistoryConfig": {
+   "source": "Tridium Niagara 4 History Guide, HistoryConfig: capacity (history:Capacity) and fullPolicy (history:FullPolicy) are properties that real archives omit when left at their defaults.",
+   "slots": {
+    "capacity": {
+     "value_type": "history:Capacity"
+    },
+    "fullPolicy": {
+     "value_type": "history:FullPolicy"
+    }
+   }
+  }
+ }
+}
