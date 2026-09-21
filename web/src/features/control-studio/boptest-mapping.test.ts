@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { BoptestSignal, BoptestTestCaseContract, ControlGraph } from '../../api/client';
-import { boptestSignalLabel, buildBoptestMapping, buildBoptestOracles, buildBoptestQualification, exactBoptestSignalMatch, validateBoptestQualificationBoundary } from './boptest-mapping';
+import { boptestSignalLabel, buildBoptestMapping, buildBoptestOracles, buildBoptestQualification, buildBoptestScenario, exactBoptestSignalMatch, validateBoptestQualificationBoundary } from './boptest-mapping';
 
 const graphInputs: ControlGraph['blocks'] = [{ id: 'zone_temperature', kind: 'numeric_input', label: 'Zone Temperature', x: 0, y: 0, config: {} }];
 const graphOutputs: ControlGraph['blocks'] = [{ id: 'fan_command', kind: 'numeric_output', label: 'Fan Command', x: 0, y: 0, config: {} }];
@@ -93,5 +93,23 @@ describe('BOPTEST qualification authoring', () => {
     expect(() => validateBoptestQualificationBoundary({ ...qualification, mapping: { ...qualification.mapping, actuators: [{ ...qualification.mapping.actuators[0], actuator: 'missing' }] } }, graphOutputs, contract)).toThrow(/not advertised as a command/);
     expect(() => validateBoptestQualificationBoundary({ ...qualification, mapping: { ...qualification.mapping, actuators: [{ ...qualification.mapping.actuators[0], activation_actuator: 'missing' }] } }, graphOutputs, contract)).toThrow(/not advertised as an activation/);
     expect(() => validateBoptestQualificationBoundary({ ...qualification, oracles: [{ ...qualification.oracles[0], signal: 'missing' }] }, graphOutputs, contract)).toThrow(/unreviewed measurement/);
+  });
+
+  it('builds native peak-day, price, and seeded weather scenarios fail closed', () => {
+    expect(buildBoptestScenario({ timePeriod: 'peak_cool_day', electricityPrice: 'dynamic', temperatureUncertainty: 'medium', solarUncertainty: 'none', seed: '42' })).toEqual({
+      time_period: 'peak_cool_day', electricity_price: 'dynamic', temperature_uncertainty: 'medium', solar_uncertainty: 'none', seed: 42,
+    });
+    expect(buildBoptestScenario({ timePeriod: '', electricityPrice: '', temperatureUncertainty: '', solarUncertainty: '', seed: '' })).toBeUndefined();
+    expect(() => buildBoptestScenario({ timePeriod: 'Peak day', electricityPrice: '', temperatureUncertainty: '', solarUncertainty: '', seed: '' })).toThrow(/time period is invalid/);
+    expect(() => buildBoptestScenario({ timePeriod: '', electricityPrice: '', temperatureUncertainty: '', solarUncertainty: '', seed: '42' })).toThrow(/requires weather uncertainty/);
+  });
+
+  it('prevents an ambiguous explicit clock when a named time period is selected', () => {
+    const measurements = { zone_temperature: { measurement: 'zone', scale: '1', offset: '0' } };
+    const actuators = { fan_command: { actuator: 'fan', activation: '', scale: '1', offset: '0' } };
+    const oracles = [{ id: 'fan', signalKind: 'graph_output' as const, signal: 'fan_command', referenceValues: '1', timeTolerance: '0', valueTolerance: '0.1' }];
+    const scenario = { timePeriod: 'peak_heat_day', electricityPrice: '' as const, temperatureUncertainty: '' as const, solarUncertainty: '' as const, seed: '' };
+    expect(buildBoptestQualification('bestest_air', graphInputs, graphOutputs, measurements, actuators, oracles, 1, 300, '0', '0', scenario).scenario).toEqual({ time_period: 'peak_heat_day' });
+    expect(() => buildBoptestQualification('bestest_air', graphInputs, graphOutputs, measurements, actuators, oracles, 1, 300, '60', '0', scenario)).toThrow(/cannot be combined/);
   });
 });

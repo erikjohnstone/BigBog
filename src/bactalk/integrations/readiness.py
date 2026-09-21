@@ -102,6 +102,9 @@ class IntegrationReadiness:
         boptest_product_evidence = _load_json_object(
             self.root / ".bactalk/boptest-graph-runtime-evidence.json"
         )
+        boptest_scenario_evidence = _load_json_object(
+            self.root / ".bactalk/boptest-scenario-runtime-evidence.json"
+        )
         alfalfa_runtime_pass = (
             alfalfa_evidence.get("schema") == "bactalk.alfalfa-runtime-evidence/v1"
             and alfalfa_evidence.get("status") == "pass"
@@ -208,6 +211,42 @@ class IntegrationReadiness:
             and boptest_test_case_contract.get("initialized") is False
             and boptest_test_case_contract.get("test_case")
             in boptest_catalog["test_cases"]
+        )
+        boptest_scenario_request = boptest_scenario_evidence.get(
+            "scenario_request", {}
+        )
+        boptest_scenario_state = boptest_scenario_evidence.get("scenario_state", {})
+        boptest_scenario_job = boptest_scenario_evidence.get("qualification_job", {})
+        boptest_scenario_pass = (
+            boptest_scenario_evidence.get("schema")
+            == "bactalk.boptest-contractor-e2e/v2"
+            and boptest_scenario_evidence.get("status") == "pass"
+            and boptest_scenario_evidence.get("scenario_readback_verified") is True
+            and isinstance(boptest_scenario_request, dict)
+            and bool(boptest_scenario_request)
+            and isinstance(boptest_scenario_state, dict)
+            and all(
+                boptest_scenario_state.get(key)
+                == (
+                    None
+                    if key in {"temperature_uncertainty", "solar_uncertainty"}
+                    and value == "none"
+                    else value
+                )
+                for key, value in boptest_scenario_request.items()
+            )
+            and boptest_scenario_evidence.get("oracle_passed") is True
+            and boptest_scenario_evidence.get("room_temperature_changed") is True
+            and isinstance(boptest_scenario_job, dict)
+            and boptest_scenario_job.get("schema_version")
+            == "bactalk.qualification-job/v3"
+            and boptest_scenario_job.get("status") == "succeeded"
+            and boptest_scenario_job.get("qualification_passed") is True
+            and boptest_scenario_job.get("progress", {}).get("percent") == 100.0
+            and boptest_scenario_evidence.get("runtime_evidence", {})
+            .get("oracle_clock", {})
+            .get("basis")
+            == "elapsed_seconds_from_run_start"
         )
         durable_qualification_pass = (
             alfalfa_durable_qualification_pass
@@ -503,16 +542,22 @@ class IntegrationReadiness:
                     "signal contracts for visual review; BoptestGraphRunner then maps every "
                     "typed graph boundary explicitly, enforces advertised actuator bounds, "
                     "runs closed-loop FMU trajectories through the durable qualification "
-                    "worker plane, retains progress/cancellation and KPIs, and grades the "
-                    "command trace with pyfunnel"
+                    "worker plane, applies and verifies native peak-day/price/seeded-weather "
+                    "scenarios, retains progress/cancellation and KPIs, and grades elapsed-time "
+                    "command/building traces with pyfunnel"
                 ),
-                evidence_command="make boptest-graph-runtime",
+                evidence_command="make boptest-graph-runtime boptest-scenario-runtime",
                 blocker=(
                     "Install Docker/Podman to execute locally. " if not docker else ""
                 )
                 + (
                     "Run the retained queued BOPTEST product qualification on this host. "
                     if not boptest_durable_qualification_pass
+                    else ""
+                )
+                + (
+                    "Run the retained native BOPTEST scenario qualification. "
+                    if not boptest_scenario_pass
                     else ""
                 )
                 + (

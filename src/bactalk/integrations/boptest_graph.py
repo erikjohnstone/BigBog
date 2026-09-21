@@ -24,6 +24,10 @@ class BoptestRuntime(Protocol):
 
     def inputs(self, test_id: str) -> Any: ...
 
+    def set_scenario(self, test_id: str, scenario: dict[str, Any]) -> Any: ...
+
+    def get_scenario(self, test_id: str) -> Any: ...
+
     def advance(self, test_id: str, overrides: dict[str, float | int]) -> Any: ...
 
     def kpis(self, test_id: str) -> Any: ...
@@ -37,6 +41,31 @@ class BoptestQualificationCancelled(RuntimeError):
 
 BoptestProgressCallback = Callable[[str, int, int], None]
 BoptestCancellationCheck = Callable[[], bool]
+
+
+class BoptestScenario(BaseModel):
+    """A fail-closed request for BOPTEST's native weather/price scenario API."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    time_period: str | None = Field(
+        default=None, pattern=r"^[a-z][a-z0-9_]{0,119}$"
+    )
+    electricity_price: Literal["constant", "dynamic", "highly_dynamic"] | None = None
+    temperature_uncertainty: Literal["none", "low", "medium", "high"] | None = None
+    solar_uncertainty: Literal["none", "low", "medium", "high"] | None = None
+    seed: int | None = Field(default=None, ge=0, le=2_147_483_647)
+
+    @model_validator(mode="after")
+    def not_empty(self) -> BoptestScenario:
+        if not self.model_dump(exclude_none=True):
+            raise ValueError("BOPTEST scenario must select at least one condition")
+        if self.seed is not None and not (
+            self.temperature_uncertainty not in {None, "none"}
+            or self.solar_uncertainty not in {None, "none"}
+        ):
+            raise ValueError("BOPTEST scenario seed requires weather uncertainty")
+        return self
 
 
 class BoptestMeasurementBinding(BaseModel):
@@ -258,6 +287,21 @@ class BoptestGraphRunner:
                 overrides[binding.activation_actuator] = 1
         return overrides, outputs
 
+    @staticmethod
+    def _verify_scenario(request: BoptestScenario, state: dict[str, Any]) -> None:
+        for field, requested in request.model_dump(exclude_none=True).items():
+            expected = (
+                None
+                if field in {"temperature_uncertainty", "solar_uncertainty"}
+                and requested == "none"
+                else requested
+            )
+            if state.get(field) != expected:
+                raise ValueError(
+                    f"BOPTEST scenario did not apply {field}={requested!r}; "
+                    f"runtime reported {state.get(field)!r}"
+                )
+
     def run(
         self,
         *,
@@ -265,6 +309,7 @@ class BoptestGraphRunner:
         step_seconds: float,
         start_time: float = 0.0,
         warmup_period: float = 0.0,
+        scenario: BoptestScenario | None = None,
         progress_callback: BoptestProgressCallback | None = None,
         cancellation_requested: BoptestCancellationCheck | None = None,
     ) -> dict[str, Any]:
@@ -272,6 +317,13 @@ class BoptestGraphRunner:
             raise ValueError("steps must be an integer from 1 through 100000")
         if not math.isfinite(step_seconds) or step_seconds <= 0:
             raise ValueError("step_seconds must be positive and finite")
+        if scenario is not None and scenario.time_period is not None and (
+            start_time != 0.0 or warmup_period != 0.0
+        ):
+            raise ValueError(
+                "BOPTEST named time periods define their own start and warmup; "
+                "start_time and warmup_period must remain zero"
+            )
         if cancellation_requested is not None and cancellation_requested():
             raise BoptestQualificationCancelled(
                 "BOPTEST qualification was canceled before model selection"
@@ -280,15 +332,42 @@ class BoptestGraphRunner:
         version = self.client.version()
         test_id = self.client.select(self.mapping.test_case)
         stopped: Any = None
+        scenario_request = (
+            scenario.model_dump(mode="json", exclude_none=True)
+            if scenario is not None
+            else None
+        )
+        scenario_state: dict[str, Any] | None = None
+        scenario_initialized = False
         try:
-            initial = self._snapshot(
-                self.client.initialize(
-                    test_id,
-                    start_time=start_time,
-                    warmup_period=warmup_period,
-                ),
-                "initial",
-            )
+            if scenario is not None and scenario.time_period is not None:
+                scenario_response = self._snapshot(
+                    self.client.set_scenario(test_id, scenario_request or {}),
+                    "scenario response",
+                )
+                initial = self._snapshot(
+                    scenario_response.get("time_period"), "scenario initial"
+                )
+                scenario_initialized = True
+            else:
+                initial = self._snapshot(
+                    self.client.initialize(
+                        test_id,
+                        start_time=start_time,
+                        warmup_period=warmup_period,
+                    ),
+                    "initial",
+                )
+                if scenario is not None:
+                    self._snapshot(
+                        self.client.set_scenario(test_id, scenario_request or {}),
+                        "scenario response",
+                    )
+            if scenario is not None:
+                scenario_state = self._snapshot(
+                    self.client.get_scenario(test_id), "scenario state"
+                )
+                self._verify_scenario(scenario, scenario_state)
             step_contract = self.client.set_step(test_id, step_seconds)
             measurement_catalog = self._catalog(
                 self.client.measurements(test_id), "measurement"
@@ -371,6 +450,9 @@ class BoptestGraphRunner:
                 canonical_json(self.graph).encode("utf-8")
             ).hexdigest(),
             "mapping": self.mapping.model_dump(mode="json"),
+            "scenario_request": scenario_request,
+            "scenario_state": scenario_state,
+            "scenario_initialized_model": scenario_initialized,
             "step_seconds": step_seconds,
             "steps": steps,
             "step_contract": step_contract,

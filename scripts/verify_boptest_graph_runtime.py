@@ -144,6 +144,20 @@ def main() -> None:
     parser.add_argument("--base-url", default="http://127.0.0.1:8000")
     parser.add_argument("--steps", type=int, default=4)
     parser.add_argument("--step", type=float, default=300.0)
+    parser.add_argument("--time-period")
+    parser.add_argument(
+        "--electricity-price",
+        choices=["constant", "dynamic", "highly_dynamic"],
+    )
+    parser.add_argument(
+        "--temperature-uncertainty",
+        choices=["none", "low", "medium", "high"],
+    )
+    parser.add_argument(
+        "--solar-uncertainty",
+        choices=["none", "low", "medium", "high"],
+    )
+    parser.add_argument("--seed", type=int)
     parser.add_argument(
         "--output",
         type=Path,
@@ -229,6 +243,19 @@ def main() -> None:
         "start_time": 0.0,
         "warmup_period": 0.0,
     }
+    scenario = {
+        key: value
+        for key, value in {
+            "time_period": arguments.time_period,
+            "electricity_price": arguments.electricity_price,
+            "temperature_uncertainty": arguments.temperature_uncertainty,
+            "solar_uncertainty": arguments.solar_uncertainty,
+            "seed": arguments.seed,
+        }.items()
+        if value is not None
+    }
+    if scenario:
+        qualification["scenario"] = scenario
     queued = client.post(
         f"/api/runs/{run_id}/qualification-jobs/boptest",
         json=qualification,
@@ -285,6 +312,20 @@ def main() -> None:
     ]
     if len(set(room_temperatures)) <= 1:
         raise SystemExit("BOPTEST room temperature did not respond across the trajectory")
+    scenario_state = evidence["runtime"].get("scenario_state")
+    if scenario and not isinstance(scenario_state, dict):
+        raise SystemExit("BOPTEST qualification omitted requested scenario readback")
+    for key, value in scenario.items():
+        expected = (
+            None
+            if key in {"temperature_uncertainty", "solar_uncertainty"} and value == "none"
+            else value
+        )
+        if scenario_state.get(key) != expected:
+            raise SystemExit(
+                f"BOPTEST scenario readback mismatch for {key}: "
+                f"expected {expected!r}, got {scenario_state.get(key)!r}"
+            )
 
     approved = client.post(
         f"/api/runs/{run_id}/approve",
@@ -312,6 +353,7 @@ def main() -> None:
             "niagara_bog_generated",
             "preapproval_export_denied",
             "real_boptest_closed_loop_passed",
+            *(["native_boptest_scenario_applied_and_read_back"] if scenario else []),
             "pyfunnel_oracle_passed",
             "simulation_evidence_bound_to_artifact_digest",
             "test_identity_approved",
@@ -332,6 +374,9 @@ def main() -> None:
         "verification_artifact_count": len(qualified.json()["verification_artifact_paths"]),
         "room_temperature_changed": len(set(room_temperatures)) > 1,
         "room_temperatures_kelvin": room_temperatures,
+        "scenario_request": scenario or None,
+        "scenario_state": scenario_state,
+        "scenario_readback_verified": bool(scenario),
         "oracle_passed": evidence["oracles"][0]["passed"],
         "boptest_version": evidence["runtime"]["version"],
         "boptest_kpis": evidence["runtime"]["kpis"],

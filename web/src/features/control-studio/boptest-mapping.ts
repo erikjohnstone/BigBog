@@ -11,6 +11,20 @@ export type BoptestOracleDraft = {
   timeTolerance: string;
   valueTolerance: string;
 };
+export type BoptestScenarioDraft = {
+  timePeriod: string;
+  electricityPrice: '' | 'constant' | 'dynamic' | 'highly_dynamic';
+  temperatureUncertainty: '' | 'none' | 'low' | 'medium' | 'high';
+  solarUncertainty: '' | 'none' | 'low' | 'medium' | 'high';
+  seed: string;
+};
+export type BoptestScenario = {
+  time_period?: string;
+  electricity_price?: 'constant' | 'dynamic' | 'highly_dynamic';
+  temperature_uncertainty?: 'none' | 'low' | 'medium' | 'high';
+  solar_uncertainty?: 'none' | 'low' | 'medium' | 'high';
+  seed?: number;
+};
 
 export type BoptestMapping = {
   test_case: string;
@@ -35,6 +49,7 @@ export type BoptestQualification = {
   step_seconds: number;
   start_time: number;
   warmup_period: number;
+  scenario?: BoptestScenario;
 };
 
 export function boptestSignalLabel(signal: BoptestSignal): string {
@@ -61,6 +76,37 @@ function numericDraft(value: string, label: string): number {
 
 function unique(values: string[], label: string): void {
   if (new Set(values).size !== values.length) throw new Error(`BOPTEST mapping contains duplicate ${label}`);
+}
+
+export function buildBoptestScenario(draft?: BoptestScenarioDraft): BoptestScenario | undefined {
+  if (!draft) return undefined;
+  const scenario: BoptestScenario = {};
+  const timePeriod = draft.timePeriod.trim();
+  if (timePeriod) {
+    if (!/^[a-z][a-z0-9_]{0,119}$/.test(timePeriod)) throw new Error('BOPTEST time period is invalid');
+    scenario.time_period = timePeriod;
+  }
+  const prices = new Set(['constant', 'dynamic', 'highly_dynamic']);
+  if (draft.electricityPrice) {
+    if (!prices.has(draft.electricityPrice)) throw new Error('BOPTEST electricity price scenario is invalid');
+    scenario.electricity_price = draft.electricityPrice;
+  }
+  const uncertaintyLevels = new Set(['none', 'low', 'medium', 'high']);
+  if (draft.temperatureUncertainty) {
+    if (!uncertaintyLevels.has(draft.temperatureUncertainty)) throw new Error('BOPTEST temperature uncertainty is invalid');
+    scenario.temperature_uncertainty = draft.temperatureUncertainty;
+  }
+  if (draft.solarUncertainty) {
+    if (!uncertaintyLevels.has(draft.solarUncertainty)) throw new Error('BOPTEST solar uncertainty is invalid');
+    scenario.solar_uncertainty = draft.solarUncertainty;
+  }
+  if (draft.seed.trim()) {
+    const seed = Number(draft.seed);
+    if (!Number.isInteger(seed) || seed < 0 || seed > 2_147_483_647) throw new Error('BOPTEST uncertainty seed must be a nonnegative integer');
+    if (![scenario.temperature_uncertainty, scenario.solar_uncertainty].some((value) => value && value !== 'none')) throw new Error('BOPTEST uncertainty seed requires weather uncertainty');
+    scenario.seed = seed;
+  }
+  return Object.keys(scenario).length ? scenario : undefined;
 }
 
 export function buildBoptestMapping(
@@ -148,11 +194,14 @@ export function buildBoptestQualification(
   stepSeconds: number,
   startTime: string,
   warmupPeriod: string,
+  scenarioDraft?: BoptestScenarioDraft,
 ): BoptestQualification {
   const start_time = numericDraft(startTime, 'Start time');
   const warmup_period = numericDraft(warmupPeriod, 'Warmup period');
   if (start_time < 0) throw new Error('Start time cannot be negative');
   if (warmup_period < 0) throw new Error('Warmup period cannot be negative');
+  const scenario = buildBoptestScenario(scenarioDraft);
+  if (scenario?.time_period && (start_time !== 0 || warmup_period !== 0)) throw new Error('Named BOPTEST time periods cannot be combined with explicit start or warmup');
   return {
     mapping: buildBoptestMapping(testCase, graphInputs, graphOutputs, measurementDrafts, actuatorDrafts),
     oracles: buildBoptestOracles(oracleDrafts, steps, stepSeconds),
@@ -160,6 +209,7 @@ export function buildBoptestQualification(
     step_seconds: stepSeconds,
     start_time,
     warmup_period,
+    ...(scenario ? { scenario } : {}),
   };
 }
 

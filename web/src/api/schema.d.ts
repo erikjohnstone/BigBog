@@ -2028,6 +2028,7 @@ export interface components {
             mapping: components["schemas"]["BoptestGraphMap"];
             /** Oracles */
             oracles: components["schemas"]["BoptestTrajectoryOracle"][];
+            scenario?: components["schemas"]["BoptestScenario"] | null;
             /**
              * Start Time
              * @default 0
@@ -2042,6 +2043,22 @@ export interface components {
              * @default 0
              */
             warmup_period: number;
+        };
+        /**
+         * BoptestScenario
+         * @description A fail-closed request for BOPTEST's native weather/price scenario API.
+         */
+        BoptestScenario: {
+            /** Electricity Price */
+            electricity_price?: ("constant" | "dynamic" | "highly_dynamic") | null;
+            /** Seed */
+            seed?: number | null;
+            /** Solar Uncertainty */
+            solar_uncertainty?: ("none" | "low" | "medium" | "high") | null;
+            /** Temperature Uncertainty */
+            temperature_uncertainty?: ("none" | "low" | "medium" | "high") | null;
+            /** Time Period */
+            time_period?: string | null;
         };
         /**
          * BoptestTrajectoryOracle

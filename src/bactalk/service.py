@@ -49,6 +49,7 @@ from bactalk.integrations.boptest_graph import (
     BoptestProgressCallback,
     BoptestQualificationCancelled,
     BoptestRuntime,
+    BoptestScenario,
     BoptestTrajectoryOracle,
 )
 from bactalk.integrations.brick import build_and_validate_brick
@@ -568,6 +569,7 @@ class WorkbenchService:
         step_seconds: float,
         start_time: float = 0.0,
         warmup_period: float = 0.0,
+        scenario: BoptestScenario | None = None,
         scorer: FunnelScorer | None = None,
         progress_callback: BoptestProgressCallback | None = None,
         cancellation_requested: BoptestCancellationCheck | None = None,
@@ -610,6 +612,7 @@ class WorkbenchService:
             step_seconds=step_seconds,
             start_time=start_time,
             warmup_period=warmup_period,
+            scenario=scenario,
             progress_callback=progress_callback,
             cancellation_requested=cancellation_requested,
         )
@@ -628,7 +631,10 @@ class WorkbenchService:
             if progress_callback is not None:
                 progress_callback("scoring_oracles", steps, steps)
             trajectory = runtime_evidence["trajectory"]
-            test_times = [float(item["end_time"]) for item in trajectory]
+            oracle_time_origin = float(trajectory[0]["start_time"])
+            test_times = [
+                float(item["end_time"]) - oracle_time_origin for item in trajectory
+            ]
             for index, oracle in enumerate(oracles, start=1):
                 test_values: list[float] = []
                 section = (
@@ -683,6 +689,10 @@ class WorkbenchService:
                 "run_id": record.id,
                 "artifact_sha256_before_qualification": record.artifact_sha256,
                 "runtime": runtime_evidence,
+                "oracle_clock": {
+                    "basis": "elapsed_seconds_from_run_start",
+                    "runtime_time_origin": oracle_time_origin,
+                },
                 "oracles": oracle_results,
                 "approval_allowed": passed,
                 "live_building_writes": False,

@@ -33,6 +33,7 @@ from bactalk.integrations.boptest_graph import (
     BoptestGraphMap,
     BoptestQualificationCancelled,
     BoptestRuntime,
+    BoptestScenario,
     BoptestTrajectoryOracle,
 )
 from bactalk.repository import RunRepository
@@ -82,6 +83,17 @@ class BoptestQualificationPayload(BaseModel):
     step_seconds: float = Field(gt=0, le=86_400, allow_inf_nan=False)
     start_time: float = Field(default=0.0, ge=0, allow_inf_nan=False)
     warmup_period: float = Field(default=0.0, ge=0, allow_inf_nan=False)
+    scenario: BoptestScenario | None = None
+
+    @model_validator(mode="after")
+    def unambiguous_scenario_clock(self) -> BoptestQualificationPayload:
+        if self.scenario is not None and self.scenario.time_period is not None and (
+            self.start_time != 0.0 or self.warmup_period != 0.0
+        ):
+            raise ValueError(
+                "named BOPTEST time periods cannot be combined with explicit start or warmup"
+            )
+        return self
 
 
 class QualificationJobProgress(BaseModel):
@@ -910,6 +922,7 @@ class BoptestQualificationJobExecutor:
                     step_seconds=payload.step_seconds,
                     start_time=payload.start_time,
                     warmup_period=payload.warmup_period,
+                    scenario=payload.scenario,
                     progress_callback=progress,
                     cancellation_requested=canceled,
                     expected_artifact_sha256=record.candidate_artifact_sha256,
@@ -960,10 +973,13 @@ def execute_boptest_qualification_job(
     job_id: str, jobs_root: str, runs_root: str
 ) -> dict[str, Any]:
     base_url = os.getenv("BACTALK_BOPTEST_URL", "http://127.0.0.1:8000")
+    scenario_timeout = float(os.getenv("BACTALK_BOPTEST_SCENARIO_TIMEOUT_SECONDS", "900"))
     executor = BoptestQualificationJobExecutor(
         QualificationJobRepository(Path(jobs_root)),
         WorkbenchService(RunRepository(Path(runs_root))),
-        client_factory=lambda: BoptestClient(base_url),
+        client_factory=lambda: BoptestClient(
+            base_url, scenario_timeout=scenario_timeout
+        ),
     )
     return executor.execute(job_id).model_dump(mode="json")
 

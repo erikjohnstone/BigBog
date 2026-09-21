@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import zipfile
 from pathlib import Path
 
@@ -155,6 +156,7 @@ class _FakeBoptest:
         self.time = 0.0
         self.step = 0.0
         self.stopped = False
+        self.scenario_state: dict[str, object] = {}
 
     def version(self) -> dict[str, str]:
         return {"version": "qualification-test"}
@@ -182,6 +184,13 @@ class _FakeBoptest:
             "fcu_oveFan_u": {"Minimum": 0, "Maximum": 1},
             "fcu_oveFan_activate": {"Minimum": None, "Maximum": None},
         }
+
+    def set_scenario(self, test_id: str, scenario: dict[str, object]) -> dict[str, object]:
+        self.scenario_state = dict(scenario)
+        return dict(scenario)
+
+    def get_scenario(self, test_id: str) -> dict[str, object]:
+        return self.scenario_state
 
     def advance(self, test_id: str, overrides: dict[str, float | int]) -> dict:
         self.time += self.step
@@ -295,6 +304,29 @@ def test_boptest_accumulates_with_existing_alfalfa_tier_under_one_digest(
     service.verify_integrity(candidate.id)
 
 
+def test_boptest_oracle_clock_is_elapsed_for_nonzero_model_time(tmp_path: Path) -> None:
+    service = WorkbenchService(RunRepository(tmp_path / "runs"))
+    candidate = service.create_run(_job())
+
+    qualified = service.qualify_with_boptest(
+        candidate.id,
+        client=_FakeBoptest(),
+        mapping=_mapping(),
+        oracles=[_oracle()],
+        steps=2,
+        step_seconds=300.0,
+        start_time=1_000_000.0,
+    )
+
+    evidence = json.loads(Path(qualified.boptest_verification_path or "").read_text())
+    assert evidence["status"] == "pass"
+    assert evidence["oracle_clock"] == {
+        "basis": "elapsed_seconds_from_run_start",
+        "runtime_time_origin": 1_000_000.0,
+    }
+    assert evidence["oracles"][0]["test_times"] == [300.0, 600.0]
+
+
 def test_failing_boptest_oracle_blocks_human_approval(tmp_path: Path) -> None:
     service = WorkbenchService(RunRepository(tmp_path / "runs"))
     candidate = service.create_run(_job())
@@ -358,6 +390,7 @@ def test_boptest_qualification_is_available_through_the_product_api(tmp_path: Pa
             "oracles": [_oracle().model_dump(mode="json")],
             "steps": 2,
             "step_seconds": 300.0,
+            "scenario": {"electricity_price": "dynamic"},
         },
     )
 
@@ -367,6 +400,9 @@ def test_boptest_qualification_is_available_through_the_product_api(tmp_path: Pa
     retained = client.get(f"/api/runs/{run_id}/verify/boptest")
     assert retained.status_code == 200
     assert retained.json()["runtime"]["test_case"] == "bestest_air"
+    assert retained.json()["runtime"]["scenario_state"] == {
+        "electricity_price": "dynamic"
+    }
 
 
 def test_durable_boptest_executor_retains_progress_and_result(tmp_path: Path) -> None:

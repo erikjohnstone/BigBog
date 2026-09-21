@@ -178,6 +178,44 @@ def test_alfalfa_runtime_evidence_advances_readiness_without_claiming_production
     assert both_qualified["qualification-job-plane"]["stage"] == "product-wired"
     assert "queued BOPTEST" not in both_qualified["qualification-job-plane"]["blocker"]
     assert both_qualified["qualification-job-plane"]["production_ready"] is False
+    assert "native BOPTEST scenario" in both_qualified["boptest"]["blocker"]
+
+    (tmp_path / ".bactalk/boptest-scenario-runtime-evidence.json").write_text(
+        json.dumps(
+            {
+                "schema": "bactalk.boptest-contractor-e2e/v2",
+                "status": "pass",
+                "scenario_request": {
+                    "time_period": "peak_cool_day",
+                    "temperature_uncertainty": "medium",
+                    "seed": 42,
+                },
+                "scenario_state": {
+                    "time_period": "peak_cool_day",
+                    "temperature_uncertainty": "medium",
+                    "seed": 42,
+                },
+                "scenario_readback_verified": True,
+                "oracle_passed": True,
+                "room_temperature_changed": True,
+                "runtime_evidence": {
+                    "oracle_clock": {"basis": "elapsed_seconds_from_run_start"}
+                },
+                "qualification_job": {
+                    "schema_version": "bactalk.qualification-job/v3",
+                    "status": "succeeded",
+                    "qualification_passed": True,
+                    "progress": {"percent": 100.0},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    scenario_qualified = {
+        item["id"]: item for item in IntegrationReadiness(tmp_path).report()["components"]
+    }
+    assert "native BOPTEST scenario" not in scenario_qualified["boptest"]["blocker"]
+    assert "authoritative BOPTEST point maps" in scenario_qualified["boptest"]["blocker"]
 
 
 def test_readiness_api(tmp_path: Path) -> None:

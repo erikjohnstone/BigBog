@@ -16,6 +16,7 @@ from bactalk.integrations.boptest_graph import (
     BoptestGraphMap,
     BoptestGraphRunner,
     BoptestMeasurementBinding,
+    BoptestScenario,
 )
 
 
@@ -53,6 +54,46 @@ def test_boptest_stop_accepts_official_plain_text_response() -> None:
         client=httpx.Client(transport=httpx.MockTransport(handler)),
     )
     assert boptest.stop("test-123") == "OK"
+
+
+def test_boptest_client_sets_and_reads_native_scenario() -> None:
+    calls: list[tuple[str, str]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append((request.method, request.url.path))
+        if request.method == "PUT":
+            assert json.loads(request.content) == {
+                "time_period": "peak_cool_day",
+                "electricity_price": "dynamic",
+            }
+        return httpx.Response(
+            200,
+            json={
+                "status": 200,
+                "message": "ok",
+                "payload": {
+                    "time_period": "peak_cool_day",
+                    "electricity_price": "dynamic",
+                },
+            },
+        )
+
+    boptest = BoptestClient(
+        "http://boptest",
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+    requested = {"time_period": "peak_cool_day", "electricity_price": "dynamic"}
+    assert boptest.set_scenario("test-123", requested) == requested
+    assert boptest.get_scenario("test-123") == requested
+    assert calls == [
+        ("PUT", "/scenario/test-123"),
+        ("GET", "/scenario/test-123"),
+    ]
+
+
+def test_boptest_client_rejects_invalid_scenario_timeout() -> None:
+    with pytest.raises(ValueError, match="positive and finite"):
+        BoptestClient("http://boptest", scenario_timeout=0)
 
 
 def _fan_graph() -> ControlGraph:
@@ -117,6 +158,8 @@ class _FakeBoptest:
         self.time = 0.0
         self.commands: list[dict[str, float | int]] = []
         self.stopped = False
+        self.initialize_count = 0
+        self.scenario_state: dict[str, object] = {}
 
     def version(self) -> dict[str, str]:
         return {"version": "test"}
@@ -131,6 +174,7 @@ class _FakeBoptest:
     def initialize(self, test_id: str, *, start_time: float, warmup_period: float) -> dict:
         assert test_id == "test-123"
         assert warmup_period == 0.0
+        self.initialize_count += 1
         self.time = start_time
         return {"time": self.time, "zon_reaTRooAir_y": 293.15}
 
@@ -147,6 +191,22 @@ class _FakeBoptest:
             "fcu_oveFan_u": {"Minimum": 0, "Maximum": 1},
             "fcu_oveFan_activate": {"Minimum": None, "Maximum": None},
         }
+
+    def set_scenario(self, test_id: str, scenario: dict[str, object]) -> dict:
+        self.scenario_state = {
+            key: None if value == "none" else value for key, value in scenario.items()
+        }
+        response = {**self.scenario_state}
+        if scenario.get("time_period"):
+            self.time = 1_234_800.0
+            response["time_period"] = {
+                "time": self.time,
+                "zon_reaTRooAir_y": 297.15,
+            }
+        return response
+
+    def get_scenario(self, test_id: str) -> dict[str, object]:
+        return self.scenario_state
 
     def advance(self, test_id: str, overrides: dict[str, float | int]) -> dict:
         self.commands.append(overrides)
@@ -206,6 +266,68 @@ def test_graph_runner_executes_complete_closed_loop_mapping() -> None:
         {"fcu_oveFan_u": 1.0, "fcu_oveFan_activate": 1},
     ]
     assert client.stopped is True
+
+
+def test_graph_runner_applies_and_verifies_named_weather_scenario() -> None:
+    client = _FakeBoptest()
+    scenario = BoptestScenario(
+        time_period="peak_cool_day",
+        electricity_price="dynamic",
+        temperature_uncertainty="medium",
+        solar_uncertainty="none",
+        seed=42,
+    )
+    evidence = BoptestGraphRunner(client, _fan_graph(), _fan_map()).run(
+        steps=1,
+        step_seconds=300.0,
+        scenario=scenario,
+    )
+
+    assert client.initialize_count == 0
+    assert evidence["scenario_request"] == {
+        "time_period": "peak_cool_day",
+        "electricity_price": "dynamic",
+        "temperature_uncertainty": "medium",
+        "solar_uncertainty": "none",
+        "seed": 42,
+    }
+    assert evidence["scenario_state"] == {
+        "time_period": "peak_cool_day",
+        "electricity_price": "dynamic",
+        "temperature_uncertainty": "medium",
+        "solar_uncertainty": None,
+        "seed": 42,
+    }
+    assert evidence["scenario_initialized_model"] is True
+    assert evidence["trajectory"][0]["start_time"] == 1_234_800.0
+    assert client.stopped is True
+
+
+def test_graph_runner_fails_closed_when_scenario_readback_differs() -> None:
+    class MismatchBoptest(_FakeBoptest):
+        def get_scenario(self, test_id: str) -> dict[str, object]:
+            return {**self.scenario_state, "electricity_price": "constant"}
+
+    client = MismatchBoptest()
+    with pytest.raises(ValueError, match="did not apply electricity_price"):
+        BoptestGraphRunner(client, _fan_graph(), _fan_map()).run(
+            steps=1,
+            step_seconds=300.0,
+            scenario=BoptestScenario(electricity_price="dynamic"),
+        )
+    assert client.stopped is True
+
+
+def test_boptest_scenario_rejects_seed_without_uncertainty_and_ambiguous_clock() -> None:
+    with pytest.raises(ValueError, match="seed requires weather uncertainty"):
+        BoptestScenario(seed=42)
+    with pytest.raises(ValueError, match="define their own start and warmup"):
+        BoptestGraphRunner(_FakeBoptest(), _fan_graph(), _fan_map()).run(
+            steps=1,
+            step_seconds=300.0,
+            start_time=60.0,
+            scenario=BoptestScenario(time_period="peak_heat_day"),
+        )
 
 
 def test_graph_runner_rejects_incomplete_boundary_mapping() -> None:

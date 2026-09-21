@@ -338,9 +338,15 @@ def create_app(
     niagara_program_library = NiagaraProgramLibrary()
     security = security_config or SecurityConfig.from_environment()
     security_audit = AuditLog(root.parent / "audit" / "events.jsonl")
-    make_boptest_client = boptest_client_factory or (
-        lambda: BoptestClient(os.getenv("BACTALK_BOPTEST_URL", "http://127.0.0.1:8000"))
-    )
+    def configured_boptest_client() -> BoptestClient:
+        return BoptestClient(
+            os.getenv("BACTALK_BOPTEST_URL", "http://127.0.0.1:8000"),
+            scenario_timeout=float(
+                os.getenv("BACTALK_BOPTEST_SCENARIO_TIMEOUT_SECONDS", "900")
+            ),
+        )
+
+    make_boptest_client = boptest_client_factory or configured_boptest_client
     alfalfa_base_url = os.getenv("BACTALK_ALFALFA_URL", "http://127.0.0.1:8088")
     make_alfalfa_client = alfalfa_client_factory or (
         lambda: AlfalfaClient(alfalfa_base_url)
@@ -1682,6 +1688,7 @@ def create_app(
                 step_seconds=request.step_seconds,
                 start_time=request.start_time,
                 warmup_period=request.warmup_period,
+                scenario=request.scenario,
             )
             evidence = json.loads(service.boptest_verification_path(run_id).read_text())
             return {"run": record.model_dump(mode="json"), "evidence": evidence}

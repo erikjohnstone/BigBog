@@ -126,9 +126,13 @@ class BoptestClient:
         *,
         client: httpx.Client | None = None,
         timeout: float = 30.0,
+        scenario_timeout: float = 900.0,
     ):
         self.base_url = base_url.rstrip("/")
         self.client = client or httpx.Client(timeout=timeout)
+        if not math.isfinite(scenario_timeout) or scenario_timeout <= 0:
+            raise ValueError("BOPTEST scenario timeout must be positive and finite")
+        self.scenario_timeout = scenario_timeout
 
     def _payload(self, response: httpx.Response) -> Any:
         response.raise_for_status()
@@ -178,6 +182,18 @@ class BoptestClient:
 
     def inputs(self, test_id: str) -> Any:
         return self._payload(self.client.get(f"{self.base_url}/inputs/{test_id}"))
+
+    def set_scenario(self, test_id: str, scenario: dict[str, Any]) -> Any:
+        return self._payload(
+            self.client.put(
+                f"{self.base_url}/scenario/{test_id}",
+                json=scenario,
+                timeout=self.scenario_timeout,
+            )
+        )
+
+    def get_scenario(self, test_id: str) -> Any:
+        return self._payload(self.client.get(f"{self.base_url}/scenario/{test_id}"))
 
     def advance(self, test_id: str, overrides: dict[str, float | int]) -> Any:
         return self._payload(self.client.post(f"{self.base_url}/advance/{test_id}", json=overrides))

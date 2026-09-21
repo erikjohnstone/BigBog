@@ -431,6 +431,9 @@ const boptestSchema = z.object({
     steps: z.number(),
     measurement_catalog_count: z.number(),
     input_catalog_count: z.number(),
+    scenario_request: z.record(z.string(), z.unknown()).nullable().optional(),
+    scenario_state: z.record(z.string(), z.unknown()).nullable().optional(),
+    scenario_initialized_model: z.boolean().optional(),
     kpis: z.record(z.string(), z.number().nullable()),
     mapping: z.object({
       measurements: z.array(z.object({
@@ -1232,7 +1235,7 @@ export const api = {
       await postForm(`/api/runs/${runId}/qualification-jobs/alfalfa`, body),
     );
   },
-  async enqueueBoptestQualification(runId: string, qualification: { mapping: unknown; oracles: unknown[]; steps: number; step_seconds: number; start_time?: number; warmup_period?: number }) {
+  async enqueueBoptestQualification(runId: string, qualification: { mapping: unknown; oracles: unknown[]; steps: number; step_seconds: number; start_time?: number; warmup_period?: number; scenario?: Record<string, unknown> }) {
     return qualificationJobSchema.parse(
       await postJson(`/api/runs/${runId}/qualification-jobs/boptest`, qualification),
     );
