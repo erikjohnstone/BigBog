@@ -96,7 +96,12 @@ ctrl-flow-install:
 ctrl-flow-contract:
 	PYTHONPATH=src .venv/bin/python scripts/verify_ctrl_flow.py
 	PYTHONPATH=src .venv/bin/python scripts/verify_ctrl_flow_planning.py
-	MODELICA_DEPENDENCIES=$(CURDIR)/.vendor/ctrl-flow-dependencies npm --prefix .vendor/ctrl-flow-dev/server test -- --runInBand tests/integration/parser/template.test.ts
+# The upstream parser reads the moParser JVM's output as JSON, so any JVM
+# startup banner corrupts it. JAVA_TOOL_OPTIONS is commonly set in corporate
+# and proxied environments and makes every JVM print "Picked up
+# JAVA_TOOL_OPTIONS: ...". The parser reads local files and opens no network
+# connection, so unsetting it here loses no TLS or proxy configuration.
+	MODELICA_DEPENDENCIES=$(CURDIR)/.vendor/ctrl-flow-dependencies env -u JAVA_TOOL_OPTIONS -u _JAVA_OPTIONS npm --prefix .vendor/ctrl-flow-dev/server test -- --runInBand tests/integration/parser/template.test.ts
 
 dflexlibs-contract:
 	.venv/bin/python scripts/verify_dflexlibs.py

@@ -330,6 +330,40 @@ def step_python_suite(lock: StackLock) -> None:
 # --------------------------------------------------------------------------
 
 
+def build_modelica_parser(checkout: Path, component: str) -> None:
+    """Build modelica-json's Java parser jar.
+
+    The CDL/CXF translator shells out to `java -jar java/moParser.jar`. The
+    jar is produced by a Maven build, not shipped, so a checkout without it
+    fails at translation time with an unhelpful undefined-value error deep
+    inside the upstream app.
+    """
+    jar = checkout / "java" / "moParser.jar"
+    if jar.is_file():
+        return
+    makefile = checkout / "Makefile"
+    if not makefile.is_file() or "install-maven:" not in makefile.read_text():
+        # Not every pinned modelica-json revision builds a Java parser; the
+        # one the CXF lane uses does its work in JavaScript. Nothing to build.
+        return
+    if not have("mvn"):
+        raise BootstrapError(
+            f"{component}: Maven is required to build the modelica-json parser "
+            "(java/moParser.jar). Install Maven, then rerun `make bootstrap-full`."
+        )
+    if not have("java"):
+        raise BootstrapError(
+            f"{component}: a JDK is required to build the modelica-json parser."
+        )
+    run(["make", "install-maven"], cwd=checkout, timeout=3600)
+    run(["make", "compile"], cwd=checkout, timeout=3600)
+    if not jar.is_file():
+        raise BootstrapError(
+            f"{component}: the modelica-json build finished but "
+            f"{jar.relative_to(checkout)} is still missing."
+        )
+
+
 def step_modelica_buildings(lock: StackLock) -> None:
     component = lock.get("modelica-buildings")
     sparse_paths, no_cone = locked_sparse(component)
@@ -394,6 +428,7 @@ def step_modelica_json(lock: StackLock) -> None:
             cwd=destination,
             timeout=2400,
         )
+    build_modelica_parser(destination, "modelica-json")
 
 
 def step_open_control_engine(lock: StackLock) -> None:
@@ -560,6 +595,8 @@ def step_ctrl_flow(lock: StackLock) -> None:
             cwd=dependency_root / "modelica-json",
             timeout=2400,
         )
+    # ctrl-flow's parser tests invoke this checkout's own jar.
+    build_modelica_parser(dependency_root / "modelica-json", "ctrl-flow parser dependency")
 
 
 def step_rumoca(lock: StackLock) -> None:
@@ -766,6 +803,7 @@ def build_steps() -> list[Step]:
             "CDL/CXF translator with the tracked null-type patch",
             step_modelica_json,
             group="sources",
+            check=lambda: (VENDOR / "modelica-json" / "node_modules").is_dir(),
             requires_tools=("git", "npm"),
         ),
         Step(
@@ -863,6 +901,9 @@ def build_steps() -> list[Step]:
             "LBNL ctrl-flow Linkage Schema interpreter and its parser dependency",
             step_ctrl_flow,
             group="toolchains",
+            check=lambda: (
+                VENDOR / "ctrl-flow-dependencies" / "modelica-json" / "java" / "moParser.jar"
+            ).is_file(),
             requires_tools=("git", "npm"),
         ),
         Step(
