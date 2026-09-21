@@ -564,7 +564,7 @@ class IntegrationReadiness:
                     )
                     + (
                         "Production shared artifact storage, broker HA/TLS, worker autoscaling, "
-                        "dead-worker reconciliation, backup/restore qualification, and Linux "
+                        "broker-loss recovery drills, backup/restore qualification, and Linux "
                         "capacity evidence remain."
                     )
                 ),

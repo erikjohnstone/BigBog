@@ -7,9 +7,10 @@ import json
 import os
 import shutil
 import tempfile
+import threading
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from enum import StrEnum
 from importlib import metadata
 from pathlib import Path
@@ -45,6 +46,9 @@ TERMINAL_JOB_STATUSES = {
     QualificationJobStatus.SUCCEEDED,
     QualificationJobStatus.FAILED,
 }
+
+QUALIFICATION_HEARTBEAT_SECONDS = 10
+QUALIFICATION_LEASE_SECONDS = 300
 
 
 class QualificationJobIntegrityError(RuntimeError):
@@ -91,6 +95,8 @@ class QualificationJobRecord(BaseModel):
     updated_at: datetime
     started_at: datetime | None = None
     completed_at: datetime | None = None
+    heartbeat_at: datetime | None = None
+    lease_expires_at: datetime | None = None
     worker_id: str | None = Field(default=None, max_length=240)
     actor_id: str | None = Field(default=None, max_length=240)
     tenant_id: str | None = Field(default=None, max_length=240)
@@ -302,15 +308,69 @@ class QualificationJobRepository:
                 return record
             if record.status != QualificationJobStatus.QUEUED:
                 raise ValueError(f"qualification job {job_id} is {record.status}")
+            now = datetime.now(UTC)
             return self._save_unlocked(
                 record.model_copy(
                     update={
                         "status": QualificationJobStatus.RUNNING,
-                        "started_at": datetime.now(UTC),
+                        "started_at": now,
+                        "heartbeat_at": now,
+                        "lease_expires_at": now
+                        + timedelta(seconds=QUALIFICATION_LEASE_SECONDS),
                         "worker_id": worker_id,
                         "progress": QualificationJobProgress(
                             phase="starting", completed_steps=0,
                             total_steps=record.progress.total_steps, percent=0,
+                        ),
+                    }
+                )
+            )
+
+    def heartbeat(self, job_id: str) -> QualificationJobRecord:
+        with self._locked():
+            record = self._read_unlocked(job_id)
+            if record.status not in {
+                QualificationJobStatus.RUNNING,
+                QualificationJobStatus.CANCEL_REQUESTED,
+            }:
+                return record
+            now = datetime.now(UTC)
+            return self._save_unlocked(
+                record.model_copy(
+                    update={
+                        "heartbeat_at": now,
+                        "lease_expires_at": now
+                        + timedelta(seconds=QUALIFICATION_LEASE_SECONDS),
+                    }
+                )
+            )
+
+    def expire_stale(
+        self, job_id: str, *, now: datetime | None = None
+    ) -> QualificationJobRecord:
+        with self._locked():
+            record = self._read_unlocked(job_id)
+            if record.status not in {
+                QualificationJobStatus.RUNNING,
+                QualificationJobStatus.CANCEL_REQUESTED,
+            }:
+                return record
+            observed_at = now or datetime.now(UTC)
+            lease_expires_at = record.lease_expires_at
+            if lease_expires_at is None or observed_at <= lease_expires_at:
+                return record
+            return self._save_unlocked(
+                record.model_copy(
+                    update={
+                        "status": QualificationJobStatus.FAILED,
+                        "completed_at": observed_at,
+                        "lease_expires_at": None,
+                        "error": (
+                            "Qualification worker lease expired; the worker stopped "
+                            "heartbeating before it recorded a terminal result"
+                        ),
+                        "progress": record.progress.model_copy(
+                            update={"phase": "worker_lost"}
                         ),
                     }
                 )
@@ -356,6 +416,7 @@ class QualificationJobRepository:
                             "status": QualificationJobStatus.CANCELED,
                             "cancellation_requested": True,
                             "completed_at": now,
+                            "lease_expires_at": None,
                             "progress": record.progress.model_copy(
                                 update={"phase": "canceled"}
                             ),
@@ -388,6 +449,7 @@ class QualificationJobRepository:
                         "status": QualificationJobStatus.CANCELED,
                         "cancellation_requested": True,
                         "completed_at": datetime.now(UTC),
+                        "lease_expires_at": None,
                         "error": detail,
                         "progress": record.progress.model_copy(
                             update={"phase": "canceled"}
@@ -408,6 +470,7 @@ class QualificationJobRepository:
                     update={
                         "status": QualificationJobStatus.SUCCEEDED,
                         "completed_at": datetime.now(UTC),
+                        "lease_expires_at": None,
                         "result_artifact_sha256": artifact_sha256,
                         "qualification_passed": qualification_passed,
                         "progress": QualificationJobProgress(
@@ -430,6 +493,7 @@ class QualificationJobRepository:
                     update={
                         "status": QualificationJobStatus.FAILED,
                         "completed_at": datetime.now(UTC),
+                        "lease_expires_at": None,
                         "error": error[:4_000],
                         "progress": record.progress.model_copy(update={"phase": "failed"}),
                     }
@@ -528,9 +592,27 @@ class AlfalfaQualificationJobExecutor:
         record = self.jobs.mark_running(job_id, self.worker_id)
         if record.status == QualificationJobStatus.CANCELED:
             return record
-        payload = self.jobs.payload(job_id)
-        client = self.client_factory()
+        heartbeat_stop = threading.Event()
+
+        def maintain_lease() -> None:
+            while not heartbeat_stop.wait(QUALIFICATION_HEARTBEAT_SECONDS):
+                try:
+                    self.jobs.heartbeat(job_id)
+                except Exception:
+                    # The foreground path remains authoritative and will retain any failure.
+                    # A missed heartbeat becomes observable through lease expiry.
+                    continue
+
+        heartbeat_thread = threading.Thread(
+            target=maintain_lease,
+            name=f"qualification-heartbeat-{job_id[:8]}",
+            daemon=True,
+        )
+        heartbeat_thread.start()
+        client: AlfalfaClientLike | None = None
         try:
+            payload = self.jobs.payload(job_id)
+            client = self.client_factory()
             server_version = (
                 self.server_version_loader() if self.server_version_loader is not None else None
             )
@@ -590,7 +672,9 @@ class AlfalfaQualificationJobExecutor:
             self.jobs.mark_failed(job_id, f"{type(exc).__name__}: {exc}")
             raise
         finally:
-            close = getattr(client, "close", None)
+            heartbeat_stop.set()
+            heartbeat_thread.join(timeout=QUALIFICATION_HEARTBEAT_SECONDS)
+            close = getattr(client, "close", None) if client is not None else None
             if callable(close):
                 close()
 

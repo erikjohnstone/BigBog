@@ -1545,6 +1545,7 @@ def create_app(
     def latest_qualification_job(run_id: str, http_request: Request) -> dict:
         try:
             record = qualification_jobs.latest_for_run(run_id)
+            record = qualification_jobs.expire_stale(record.id)
         except KeyError as exc:
             raise HTTPException(status_code=404, detail="qualification job not found") from exc
         except QualificationJobIntegrityError as exc:
@@ -1557,6 +1558,7 @@ def create_app(
     def get_qualification_job(job_id: str, http_request: Request) -> dict:
         try:
             record = qualification_jobs.get(job_id)
+            record = qualification_jobs.expire_stale(record.id)
         except (KeyError, ValueError) as exc:
             raise HTTPException(status_code=404, detail="qualification job not found") from exc
         except QualificationJobIntegrityError as exc:

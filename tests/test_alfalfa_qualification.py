@@ -1042,6 +1042,36 @@ def test_durable_qualification_executor_retains_progress_and_result(tmp_path: Pa
     assert completed.result_artifact_sha256 == runs.get(candidate.id).artifact_sha256
 
 
+def test_running_qualification_job_renews_and_expires_its_worker_lease(
+    tmp_path: Path,
+) -> None:
+    jobs = QualificationJobRepository(tmp_path / "qualification-jobs")
+    job = jobs.create(
+        run_id="abc123",
+        payload=_qualification_payload(),
+        model_bytes=_fmu_bytes(),
+        model_filename="building.fmu",
+    )
+    running = jobs.mark_running(job.id, "lease-test-worker")
+
+    assert running.heartbeat_at is not None
+    assert running.lease_expires_at is not None
+    renewed = jobs.heartbeat(job.id)
+    assert renewed.lease_expires_at is not None
+    assert renewed.lease_expires_at >= running.lease_expires_at
+    assert jobs.expire_stale(job.id, now=renewed.lease_expires_at).status == "running"
+
+    expired = jobs.expire_stale(
+        job.id,
+        now=renewed.lease_expires_at + timedelta(microseconds=1),
+    )
+
+    assert expired.status == QualificationJobStatus.FAILED
+    assert expired.progress.phase == "worker_lost"
+    assert expired.lease_expires_at is None
+    assert "lease expired" in (expired.error or "")
+
+
 def test_running_qualification_job_cancels_cooperatively_and_stops_fmu(
     tmp_path: Path,
 ) -> None:
