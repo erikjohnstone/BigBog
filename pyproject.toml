@@ -22,6 +22,8 @@ dependencies = [
   "python-dotenv>=1.1,<2",
   "pyshacl>=0.31,<1",
   "rdflib>=7.3,<8",
+  "redis==8.1.0",
+  "rq==2.12.0",
   "tzdata>=2026.4,<2027",
   "uvicorn[standard]>=0.35,<1",
 ]

@@ -523,6 +523,37 @@ const alfalfaEvidenceSchema = z.object({
   }).passthrough()),
 }).passthrough();
 
+const qualificationJobSchema = z.object({
+  schema_version: z.literal('bactalk.qualification-job/v1'),
+  id: z.string(),
+  broker_job_id: z.string(),
+  run_id: z.string(),
+  kind: z.literal('alfalfa'),
+  transport: z.enum(['direct', 'bacnet_ip_loopback']),
+  status: z.enum(['queued', 'running', 'cancel_requested', 'canceled', 'succeeded', 'failed']),
+  model_filename: z.string(),
+  model_sha256: z.string(),
+  request_sha256: z.string(),
+  input_sha256: z.string(),
+  created_at: z.string(),
+  updated_at: z.string(),
+  started_at: z.string().nullable(),
+  completed_at: z.string().nullable(),
+  worker_id: z.string().nullable(),
+  actor_id: z.string().nullable(),
+  tenant_id: z.string().nullable(),
+  progress: z.object({
+    phase: z.string(),
+    completed_steps: z.number().int().nonnegative(),
+    total_steps: z.number().int().nonnegative(),
+    percent: z.number().min(0).max(100),
+  }),
+  cancellation_requested: z.boolean(),
+  error: z.string().nullable(),
+  result_artifact_sha256: z.string().nullable(),
+  qualification_passed: z.boolean().nullable(),
+}).passthrough();
+
 const fmiVariableSchema = z.object({
   name: z.string(),
   value_reference: z.string().nullable(),
@@ -1029,6 +1060,7 @@ export type BacnetLab = z.infer<typeof bacnetLabSchema>;
 export type BacnetProbe = z.infer<typeof probeSchema>;
 export type BoptestEvidence = z.infer<typeof boptestSchema>;
 export type AlfalfaEvidence = z.infer<typeof alfalfaEvidenceSchema>;
+export type QualificationJob = z.infer<typeof qualificationJobSchema>;
 export type FmiVariable = z.infer<typeof fmiVariableSchema>;
 export type FmiModel = z.infer<typeof fmiModelSchema>;
 export type Deliverables = z.infer<typeof deliverablesSchema>;
@@ -1152,12 +1184,20 @@ export const api = {
   async alfalfa(runId: string) {
     return getArtifact(`/api/runs/${runId}/verify/alfalfa`, alfalfaEvidenceSchema);
   },
-  async qualifyAlfalfa(runId: string, model: File, qualification: { mapping: unknown; oracles: unknown[]; steps: number; step_seconds: number; start: string; transport?: 'direct' | 'bacnet_ip_loopback' }) {
+  async enqueueAlfalfaQualification(runId: string, model: File, qualification: { mapping: unknown; oracles: unknown[]; steps: number; step_seconds: number; start: string; transport?: 'direct' | 'bacnet_ip_loopback' }) {
     const body = new FormData();
     body.append('model_file', model);
     body.append('qualification', JSON.stringify(qualification));
-    return z.object({ run: runDetailSchema, evidence: alfalfaEvidenceSchema }).parse(
-      await postForm(`/api/runs/${runId}/verify/alfalfa`, body),
+    return qualificationJobSchema.parse(
+      await postForm(`/api/runs/${runId}/qualification-jobs/alfalfa`, body),
+    );
+  },
+  async latestQualificationJob(runId: string) {
+    return getArtifact(`/api/runs/${runId}/qualification-jobs/latest`, qualificationJobSchema);
+  },
+  async cancelQualificationJob(jobId: string) {
+    return qualificationJobSchema.parse(
+      await postJson(`/api/qualification-jobs/${jobId}/cancel`, {}),
     );
   },
   async inspectAlfalfaFmu(model: File) {

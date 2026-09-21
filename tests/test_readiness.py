@@ -27,6 +27,7 @@ def test_readiness_is_conservative_and_complete() -> None:
         "boptest",
         "alfalfa",
         "alfalfa-client",
+        "qualification-job-plane",
         "pyfunnel",
         "brick",
         "haxall",
@@ -98,6 +99,9 @@ def test_alfalfa_runtime_evidence_advances_readiness_without_claiming_production
     assert "independent trajectory oracle" in graph_qualified["alfalfa"]["blocker"]
     assert graph_qualified["alfalfa"]["production_ready"] is False
 
+    queue_compose = tmp_path / "ops/qualification-queue.compose.yml"
+    queue_compose.parent.mkdir(parents=True)
+    queue_compose.write_text("services: {}\n", encoding="utf-8")
     (tmp_path / ".bactalk/alfalfa-product-evidence.json").write_text(
         json.dumps(
             {
@@ -111,6 +115,14 @@ def test_alfalfa_runtime_evidence_advances_readiness_without_claiming_production
                         {"completed": True, "passed": True, "pyfunnel_status_code": 0}
                     ],
                 },
+                "qualification_job": {
+                    "status": "succeeded",
+                    "worker_id": "worker-1",
+                    "progress": {"percent": 100.0},
+                    "qualification_passed": True,
+                    "input_sha256": "a" * 64,
+                    "result_artifact_sha256": "b" * 64,
+                },
             }
         ),
         encoding="utf-8",
@@ -121,6 +133,8 @@ def test_alfalfa_runtime_evidence_advances_readiness_without_claiming_production
 
     assert "independent trajectory oracle" not in oracle_qualified["alfalfa"]["blocker"]
     assert oracle_qualified["alfalfa"]["production_ready"] is False
+    assert oracle_qualified["qualification-job-plane"]["stage"] == "product-wired"
+    assert oracle_qualified["qualification-job-plane"]["production_ready"] is False
 
 
 def test_readiness_api(tmp_path: Path) -> None:

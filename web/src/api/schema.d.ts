@@ -775,6 +775,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/qualification-jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Qualification Job */
+        get: operations["get_qualification_job_api_qualification_jobs__job_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/qualification-jobs/{job_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel Qualification Job */
+        post: operations["cancel_qualification_job_api_qualification_jobs__job_id__cancel_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/reference-stack": {
         parameters: {
             query?: never;
@@ -1077,6 +1111,40 @@ export interface paths {
         };
         /** Get Niagara Graphics Plan */
         get: operations["get_niagara_graphics_plan_api_runs__run_id__niagara_graphics_plan_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/runs/{run_id}/qualification-jobs/alfalfa": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Enqueue Alfalfa Qualification */
+        post: operations["enqueue_alfalfa_qualification_api_runs__run_id__qualification_jobs_alfalfa_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/runs/{run_id}/qualification-jobs/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Latest Qualification Job */
+        get: operations["latest_qualification_job_api_runs__run_id__qualification_jobs_latest_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1746,6 +1814,13 @@ export interface components {
             project_json: string;
             /** Station Template */
             station_template: string;
+        };
+        /** Body_enqueue_alfalfa_qualification_api_runs__run_id__qualification_jobs_alfalfa_post */
+        Body_enqueue_alfalfa_qualification_api_runs__run_id__qualification_jobs_alfalfa_post: {
+            /** Model File */
+            model_file: string;
+            /** Qualification */
+            qualification: string;
         };
         /** Body_import_run_api_runs_import_post */
         Body_import_run_api_runs_import_post: {
@@ -4225,6 +4300,72 @@ export interface operations {
             };
         };
     };
+    get_qualification_job_api_qualification_jobs__job_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cancel_qualification_job_api_qualification_jobs__job_id__cancel_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_reference_stack_api_reference_stack_get: {
         parameters: {
             query?: never;
@@ -4789,6 +4930,76 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    enqueue_alfalfa_qualification_api_runs__run_id__qualification_jobs_alfalfa_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_enqueue_alfalfa_qualification_api_runs__run_id__qualification_jobs_alfalfa_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    latest_qualification_job_api_runs__run_id__qualification_jobs_latest_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Validation Error */

@@ -4,9 +4,13 @@ import argparse
 import hashlib
 import io
 import json
+import os
+import subprocess
+import sys
 import tempfile
 import zipfile
 from pathlib import Path
+from uuid import uuid4
 
 from fastapi.testclient import TestClient
 from run_alfalfa_graph import DEFAULT_MODEL, _graph, _mapping
@@ -134,6 +138,12 @@ def main() -> int:
     if not model.is_file():
         raise FileNotFoundError(model)
     with tempfile.TemporaryDirectory(prefix="bactalk-alfalfa-product-") as directory:
+        queue_url = os.getenv(
+            "BACTALK_QUEUE_URL",
+            "redis://:bactalk-queue-local-secret@127.0.0.1:6380/0",
+        )
+        queue_name = f"bactalk-qualification-smoke-{uuid4().hex}"
+        os.environ["BACTALK_QUALIFICATION_QUEUE"] = queue_name
         client = TestClient(create_app(Path(directory) / "runs"))
         with model.open("rb") as stream:
             inspected = client.post(
@@ -173,17 +183,53 @@ def main() -> int:
             "transport": "bacnet_ip_loopback",
         }
         with model.open("rb") as stream:
-            qualified = client.post(
-                f"/api/runs/{run_id}/verify/alfalfa",
+            queued = client.post(
+                f"/api/runs/{run_id}/qualification-jobs/alfalfa",
                 data={"qualification": json.dumps(qualification)},
                 files={"model_file": (model.name, stream, "application/zip")},
             )
-        _require(qualified, 200, "Alfalfa qualification")
+        _require(queued, 202, "Alfalfa qualification queue submission")
+        job_id = queued.json()["id"]
+        worker_environment = {
+            **os.environ,
+            "BACTALK_QUEUE_URL": queue_url,
+            "BACTALK_QUALIFICATION_QUEUE": queue_name,
+            "PYTHONPATH": str(ROOT / "src"),
+        }
+        worker = subprocess.run(
+            [
+                sys.executable,
+                "-m",
+                "bactalk.cli",
+                "qualification-worker",
+                "--burst",
+                "--queue",
+                queue_name,
+                "--output",
+                str(Path(directory) / "runs"),
+                "--jobs",
+                str(Path(directory) / "qualification-jobs"),
+            ],
+            cwd=ROOT,
+            env=worker_environment,
+            capture_output=True,
+            text=True,
+            timeout=1_800,
+        )
+        if worker.returncode != 0:
+            raise RuntimeError(
+                "qualification worker failed: "
+                f"stdout={worker.stdout[-4_000:]}, stderr={worker.stderr[-4_000:]}"
+            )
+        job = client.get(f"/api/qualification-jobs/{job_id}")
+        _require(job, 200, "retained qualification job")
+        if job.json()["status"] != "succeeded":
+            raise RuntimeError(f"qualification job did not succeed: {job.json()}")
 
         retained = client.get(f"/api/runs/{run_id}/verify/alfalfa")
         _require(retained, 200, "retained Alfalfa evidence")
-        if retained.json() != qualified.json()["evidence"]:
-            raise RuntimeError("retained Alfalfa evidence differs from qualification response")
+        qualified_run = client.get(f"/api/runs/{run_id}")
+        _require(qualified_run, 200, "qualified candidate")
 
         approved = client.post(
             f"/api/runs/{run_id}/approve",
@@ -213,7 +259,8 @@ def main() -> int:
             "fmu_inspection": inspected.json(),
             "run_id": run_id,
             "preapproval_export_denied": True,
-            "qualified_run": qualified.json()["run"],
+            "qualification_job": job.json(),
+            "qualified_run": qualified_run.json(),
             "runtime_evidence": retained.json(),
             "approved_run": approved.json(),
             "approved_export": {

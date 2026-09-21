@@ -144,6 +144,26 @@ class IntegrationReadiness:
                 for oracle in alfalfa_product_oracles
             )
         )
+        qualification_job = alfalfa_product_evidence.get("qualification_job", {})
+        durable_qualification_pass = (
+            isinstance(qualification_job, dict)
+            and qualification_job.get("status") == "succeeded"
+            and qualification_job.get("qualification_passed") is True
+            and isinstance(qualification_job.get("worker_id"), str)
+            and bool(qualification_job["worker_id"])
+            and qualification_job.get("progress", {}).get("percent") == 100.0
+            and isinstance(qualification_job.get("input_sha256"), str)
+            and len(qualification_job["input_sha256"]) == 64
+            and isinstance(qualification_job.get("result_artifact_sha256"), str)
+            and len(qualification_job["result_artifact_sha256"]) == 64
+        )
+        rq_version = _package_version("rq", "rq")
+        redis_version = _package_version("redis", "redis")
+        qualification_queue_installed = (
+            rq_version is not None
+            and redis_version is not None
+            and (self.root / "ops/qualification-queue.compose.yml").is_file()
+        )
         components = [
             _component(
                 "aixocat",
@@ -508,6 +528,44 @@ class IntegrationReadiness:
                         "Production Linux capacity, job-specific model/map authority, "
                         "licensed Niagara controller coupling, HA, and field qualification "
                         "remain."
+                    )
+                ),
+            ),
+            _component(
+                "qualification-job-plane",
+                "RQ / Valkey qualification job plane",
+                stage=(
+                    "product-wired"
+                    if qualification_queue_installed and durable_qualification_pass
+                    else "executable" if qualification_queue_installed else "discovered"
+                ),
+                installed=qualification_queue_installed,
+                version=(
+                    f"RQ {rq_version} / redis-py {redis_version} / Valkey 8.1.10"
+                    if qualification_queue_installed
+                    else None
+                ),
+                license_name="BSD-2-Clause / MIT / BSD-3-Clause",
+                role=(
+                    "Durable external execution, progress, cancellation, and retained state "
+                    "for long-running building-physics qualifications"
+                ),
+                product_path=(
+                    "Alfalfa qualification submissions persist digest-bound FMU/request "
+                    "inputs before JSON-only RQ dispatch; a separate SpawnWorker updates "
+                    "progress and terminal evidence while the UI polls or requests cancellation"
+                ),
+                evidence_command="make qualification-queue-up alfalfa-product-smoke",
+                blocker=(
+                    (
+                        "Run the retained queued whole-building product workflow. "
+                        if not durable_qualification_pass
+                        else ""
+                    )
+                    + (
+                        "Production shared artifact storage, broker HA/TLS, worker autoscaling, "
+                        "dead-worker reconciliation, backup/restore qualification, and Linux "
+                        "capacity evidence remain."
                     )
                 ),
             ),

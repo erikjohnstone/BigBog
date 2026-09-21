@@ -34,8 +34,11 @@ from bactalk.integrations.alfalfa_bacnet import (
     prepare_runtime_bacnet_lab,
 )
 from bactalk.integrations.alfalfa_graph import (
+    AlfalfaCancellationCheck,
     AlfalfaGraphMap,
     AlfalfaGraphRunner,
+    AlfalfaProgressCallback,
+    AlfalfaQualificationCancelled,
     AlfalfaTrajectoryOracle,
 )
 from bactalk.integrations.bacnet_lab import build_bacnet_lab_export
@@ -793,6 +796,8 @@ class WorkbenchService:
         server_version: object = None,
         client_version: str | None = None,
         scorer: FunnelScorer | None = None,
+        progress_callback: AlfalfaProgressCallback | None = None,
+        cancellation_requested: AlfalfaCancellationCheck | None = None,
     ) -> RunRecord:
         """Attach one signed, graph-coupled Alfalfa FMU run to a candidate.
 
@@ -845,7 +850,15 @@ class WorkbenchService:
                 start=start,
                 server_version=server_version,
                 client_version=client_version,
+                progress_callback=progress_callback,
+                cancellation_requested=cancellation_requested,
             )
+            if cancellation_requested is not None and cancellation_requested():
+                raise AlfalfaQualificationCancelled(
+                    "Alfalfa qualification was canceled before trajectory scoring"
+                )
+            if progress_callback is not None:
+                progress_callback("scoring_oracles", steps, steps)
             oracle_results, passed = self._score_alfalfa_oracles(
                 evidence,
                 oracles,
@@ -904,6 +917,8 @@ class WorkbenchService:
         server_version: object = None,
         client_version: str | None = None,
         scorer: FunnelScorer | None = None,
+        progress_callback: AlfalfaProgressCallback | None = None,
+        cancellation_requested: AlfalfaCancellationCheck | None = None,
     ) -> RunRecord:
         """Qualify a graph/FMU loop through the run's signed virtual BACnet devices."""
 
@@ -957,7 +972,15 @@ class WorkbenchService:
                 start=start,
                 server_version=server_version,
                 client_version=client_version,
+                progress_callback=progress_callback,
+                cancellation_requested=cancellation_requested,
             )
+            if cancellation_requested is not None and cancellation_requested():
+                raise AlfalfaQualificationCancelled(
+                    "Alfalfa qualification was canceled before trajectory scoring"
+                )
+            if progress_callback is not None:
+                progress_callback("scoring_oracles", steps, steps)
             oracle_results, passed = self._score_alfalfa_oracles(
                 evidence,
                 oracles,

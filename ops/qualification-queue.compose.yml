@@ -1,0 +1,31 @@
+name: bactalk-qualification-queue
+
+services:
+  valkey:
+    image: valkey/valkey@sha256:d2e18f3410b6f616de1417f570fa55261af2898b9c5b2cfb6781ce2373ea43d1
+    command:
+      - valkey-server
+      - --appendonly
+      - "yes"
+      - --appendfsync
+      - everysec
+      - --requirepass
+      - ${BACTALK_QUEUE_PASSWORD:-bactalk-queue-local-secret}
+    ports:
+      - "127.0.0.1:6380:6379"
+    volumes:
+      - qualification-valkey-data:/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - valkey-cli -a "$${BACTALK_QUEUE_PASSWORD:-bactalk-queue-local-secret}" ping | grep PONG
+      interval: 2s
+      timeout: 2s
+      retries: 20
+      start_period: 3s
+    environment:
+      BACTALK_QUEUE_PASSWORD: ${BACTALK_QUEUE_PASSWORD:-bactalk-queue-local-secret}
+    restart: unless-stopped
+
+volumes:
+  qualification-valkey-data:

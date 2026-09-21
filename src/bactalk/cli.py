@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -30,6 +31,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     clean = subparsers.add_parser("clean", help="remove generated local runs")
     clean.add_argument("--output", type=Path, default=Path(".bactalk/runs"))
+
+    worker = subparsers.add_parser(
+        "qualification-worker",
+        help="run the isolated RQ worker for long building-physics qualifications",
+    )
+    worker.add_argument("--output", type=Path, default=Path(".bactalk/runs"))
+    worker.add_argument("--jobs", type=Path, default=Path(".bactalk/qualification-jobs"))
+    worker.add_argument("--queue")
+    worker.add_argument("--burst", action="store_true")
 
     translate = subparsers.add_parser(
         "translate-cxf",
@@ -60,6 +70,32 @@ def main() -> None:
     if args.command == "clean":
         RunRepository(args.output).clean()
         print(f"Removed generated runs under {args.output.resolve()}")
+        return
+    if args.command == "qualification-worker":
+        load_dotenv(Path(".env"), override=False)
+        from redis import Redis
+        from rq import Queue, SpawnWorker
+        from rq.serializers import JSONSerializer
+
+        queue_url = os.getenv(
+            "BACTALK_QUEUE_URL",
+            "redis://:bactalk-queue-local-secret@127.0.0.1:6380/0",
+        )
+        connection = Redis.from_url(queue_url)
+        connection.ping()
+        queue_name = args.queue or os.getenv(
+            "BACTALK_QUALIFICATION_QUEUE", "bactalk-qualification"
+        )
+        queue = Queue(queue_name, connection=connection, serializer=JSONSerializer)
+        os.environ["BACTALK_RUNS"] = str(args.output.resolve())
+        os.environ["BACTALK_QUALIFICATION_JOBS"] = str(args.jobs.resolve())
+        worker = SpawnWorker(
+            [queue],
+            connection=connection,
+            serializer=JSONSerializer,
+            name=f"bactalk-qualification-{os.getpid()}",
+        )
+        worker.work(burst=args.burst, logging_level="INFO")
         return
     if args.command == "translate-cxf":
         importer = CxfImporter()

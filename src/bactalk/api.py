@@ -5,7 +5,6 @@ import json
 import os
 import socket
 from collections.abc import Callable
-from datetime import datetime
 from importlib import metadata
 from pathlib import Path
 from typing import Annotated, Any, Literal
@@ -53,7 +52,6 @@ from bactalk.intake import (
 )
 from bactalk.integrations.aixocat import AixocatError, AixocatLibrary
 from bactalk.integrations.alfalfa import AlfalfaClientLike
-from bactalk.integrations.alfalfa_graph import AlfalfaGraphMap, AlfalfaTrajectoryOracle
 from bactalk.integrations.bacnet_lab import VirtualBacnetLab, probe_manifest_with_bac0
 from bactalk.integrations.boptest import BoptestClient, BoptestError
 from bactalk.integrations.boptest_graph import (
@@ -92,6 +90,13 @@ from bactalk.projects import (
     ProjectBuildService,
     ProjectPreflight,
     ProjectSpec,
+)
+from bactalk.qualification_jobs import (
+    AlfalfaQualificationPayload,
+    QualificationDispatcher,
+    QualificationJobIntegrityError,
+    QualificationJobRepository,
+    RqQualificationDispatcher,
 )
 from bactalk.repository import RunRepository
 from bactalk.security import AuditLog, Principal, SecurityConfig, required_role
@@ -153,13 +158,8 @@ class BoptestQualificationRequest(BaseModel):
     warmup_period: float = Field(default=0.0, ge=0, allow_inf_nan=False)
 
 
-class AlfalfaQualificationRequest(BaseModel):
-    mapping: AlfalfaGraphMap
-    oracles: list[AlfalfaTrajectoryOracle] = Field(min_length=1, max_length=1_000)
-    steps: int = Field(ge=1, le=100_000)
-    step_seconds: float = Field(gt=0, le=86_400, allow_inf_nan=False)
-    start: datetime
-    transport: Literal["direct", "bacnet_ip_loopback"] = "direct"
+class AlfalfaQualificationRequest(AlfalfaQualificationPayload):
+    pass
 
 
 class HaxallValidationRequest(BaseModel):
@@ -274,10 +274,21 @@ def create_app(
     security_config: SecurityConfig | None = None,
     boptest_client_factory: Callable[[], BoptestRuntime] | None = None,
     alfalfa_client_factory: Callable[[], AlfalfaClientLike] | None = None,
+    qualification_dispatcher: QualificationDispatcher | None = None,
 ) -> FastAPI:
     root = run_root or Path(os.getenv("BACTALK_RUNS", ".bactalk/runs"))
     repository = RunRepository(root)
     service = WorkbenchService(repository)
+    qualification_jobs = QualificationJobRepository(root.parent / "qualification-jobs")
+    dispatch_qualification = qualification_dispatcher or RqQualificationDispatcher(
+        queue_url=os.getenv(
+            "BACTALK_QUEUE_URL",
+            "redis://:bactalk-queue-local-secret@127.0.0.1:6380/0",
+        ),
+        jobs_root=qualification_jobs.root,
+        runs_root=root,
+        queue_name=os.getenv("BACTALK_QUALIFICATION_QUEUE", "bactalk-qualification"),
+    )
     if ai_provider is not None and (ai_chat_provider is not None or ai_coding_provider is not None):
         raise ValueError("ai_provider cannot be combined with role-specific AI providers")
     if ai_provider is not None:
@@ -393,6 +404,12 @@ def create_app(
             principal is not None
             and record.result.get("approval", {}).get("tenant_id") == principal.tenant_id
         )
+
+    def qualification_job_visible(http_request: Request, tenant_id: str | None) -> bool:
+        if not security.enabled:
+            return True
+        principal: Principal | None = getattr(http_request.state, "principal", None)
+        return principal is not None and tenant_id == principal.tenant_id
 
     @app.middleware("http")
     async def enforce_identity_and_audit(request: Request, call_next):
@@ -1462,6 +1479,105 @@ def create_app(
             return service.create_run(job).model_dump(mode="json")
         except (ValueError, RuntimeError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.post("/api/runs/{run_id}/qualification-jobs/alfalfa", status_code=202)
+    async def enqueue_alfalfa_qualification(
+        run_id: str,
+        http_request: Request,
+        model_file: Annotated[UploadFile, File()],
+        qualification: Annotated[str, Form(min_length=2, max_length=5_000_000)],
+    ) -> dict:
+        try:
+            request = AlfalfaQualificationRequest.model_validate_json(qualification)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=422,
+                detail=f"Alfalfa qualification request is invalid: {exc}",
+            ) from exc
+        model_bytes = await model_file.read(MAX_ALFALFA_MODEL_BYTES + 1)
+        if len(model_bytes) > MAX_ALFALFA_MODEL_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Alfalfa FMU exceeds the {MAX_ALFALFA_MODEL_BYTES}-byte limit",
+            )
+        try:
+            candidate = repository.get(run_id)
+            if candidate.alfalfa_verification_path is not None:
+                raise HTTPException(
+                    status_code=409,
+                    detail="Alfalfa qualification is append-once; create a new candidate to retest",
+                )
+            inspect_fmu_archive(
+                model_bytes,
+                filename=model_file.filename or "model.fmu",
+            )
+            principal: Principal | None = getattr(http_request.state, "principal", None)
+            record = qualification_jobs.create(
+                run_id=run_id,
+                payload=request,
+                model_bytes=model_bytes,
+                model_filename=model_file.filename or "model.fmu",
+                actor_id=principal.subject if principal is not None else None,
+                tenant_id=principal.tenant_id if principal is not None else None,
+            )
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="run not found") from exc
+        except HTTPException:
+            raise
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        try:
+            dispatch_qualification.enqueue(record)
+        except Exception as exc:
+            failed = qualification_jobs.mark_failed(
+                record.id, f"Qualification queue dispatch failed: {type(exc).__name__}: {exc}"
+            )
+            raise HTTPException(
+                status_code=503,
+                detail={
+                    "message": "qualification queue is unavailable",
+                    "job": failed.model_dump(mode="json"),
+                },
+            ) from exc
+        return record.model_dump(mode="json")
+
+    @app.get("/api/runs/{run_id}/qualification-jobs/latest")
+    def latest_qualification_job(run_id: str, http_request: Request) -> dict:
+        try:
+            record = qualification_jobs.latest_for_run(run_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="qualification job not found") from exc
+        except QualificationJobIntegrityError as exc:
+            raise HTTPException(status_code=412, detail=str(exc)) from exc
+        if not qualification_job_visible(http_request, record.tenant_id):
+            raise HTTPException(status_code=404, detail="qualification job not found")
+        return record.model_dump(mode="json")
+
+    @app.get("/api/qualification-jobs/{job_id}")
+    def get_qualification_job(job_id: str, http_request: Request) -> dict:
+        try:
+            record = qualification_jobs.get(job_id)
+        except (KeyError, ValueError) as exc:
+            raise HTTPException(status_code=404, detail="qualification job not found") from exc
+        except QualificationJobIntegrityError as exc:
+            raise HTTPException(status_code=412, detail=str(exc)) from exc
+        if not qualification_job_visible(http_request, record.tenant_id):
+            raise HTTPException(status_code=404, detail="qualification job not found")
+        return record.model_dump(mode="json")
+
+    @app.post("/api/qualification-jobs/{job_id}/cancel")
+    def cancel_qualification_job(job_id: str, http_request: Request) -> dict:
+        try:
+            current = qualification_jobs.get(job_id)
+            if not qualification_job_visible(http_request, current.tenant_id):
+                raise HTTPException(status_code=404, detail="qualification job not found")
+            updated = qualification_jobs.request_cancel(job_id)
+            dispatch_qualification.cancel(updated)
+            return updated.model_dump(mode="json")
+        except (KeyError, ValueError) as exc:
+            raise HTTPException(status_code=404, detail="qualification job not found") from exc
+        except QualificationJobIntegrityError as exc:
+            raise HTTPException(status_code=412, detail=str(exc)) from exc
 
     @app.post("/api/runs/{run_id}/verify/boptest")
     def qualify_run_with_boptest(

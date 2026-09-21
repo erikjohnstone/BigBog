@@ -34,6 +34,14 @@ from bactalk.integrations.alfalfa_graph import (
     AlfalfaOutputBinding,
     AlfalfaTrajectoryOracle,
 )
+from bactalk.qualification_jobs import (
+    AlfalfaQualificationJobExecutor,
+    AlfalfaQualificationPayload,
+    QualificationJobIntegrityError,
+    QualificationJobRecord,
+    QualificationJobRepository,
+    QualificationJobStatus,
+)
 from bactalk.repository import RunRepository
 from bactalk.service import ApprovalRequiredError, ArtifactChangedError, WorkbenchService
 
@@ -277,6 +285,18 @@ class _FakeAlfalfa:
 
     def stop(self, _run_id: str, wait_for_status: bool = True) -> None:
         self.stopped = True
+
+
+class _CapturingQualificationDispatcher:
+    def __init__(self) -> None:
+        self.enqueued: list[str] = []
+        self.canceled: list[str] = []
+
+    def enqueue(self, record: QualificationJobRecord) -> None:
+        self.enqueued.append(record.id)
+
+    def cancel(self, record: QualificationJobRecord) -> None:
+        self.canceled.append(record.id)
 
 
 class _FakeBooleanAlfalfa(_FakeAlfalfa):
@@ -956,3 +976,157 @@ def test_fmu_inspection_is_available_through_product_api(tmp_path: Path) -> None
         "hvac_oveAhu_yFan_y",
     ]
     assert payload["live_building_writes"] is False
+
+
+def _qualification_payload() -> AlfalfaQualificationPayload:
+    return AlfalfaQualificationPayload(
+        mapping=_mapping(),
+        oracles=[_oracle()],
+        steps=2,
+        step_seconds=60.0,
+        start=datetime(2019, 1, 1),
+    )
+
+
+def test_durable_qualification_job_inputs_are_unique_and_tamper_evident(
+    tmp_path: Path,
+) -> None:
+    jobs = QualificationJobRepository(tmp_path / "qualification-jobs")
+    record = jobs.create(
+        run_id="abc123",
+        payload=_qualification_payload(),
+        model_bytes=_fmu_bytes(),
+        model_filename="building.fmu",
+    )
+
+    assert jobs.get(record.id).status == QualificationJobStatus.QUEUED
+    with pytest.raises(ValueError, match="already has active qualification job"):
+        jobs.create(
+            run_id="abc123",
+            payload=_qualification_payload(),
+            model_bytes=_fmu_bytes(),
+            model_filename="building.fmu",
+        )
+
+    jobs.request_cancel(record.id)
+    jobs.request_path(record.id).write_text("{}", encoding="utf-8")
+    with pytest.raises(QualificationJobIntegrityError, match="request digest changed"):
+        jobs.get(record.id)
+
+
+def test_durable_qualification_executor_retains_progress_and_result(tmp_path: Path) -> None:
+    runs = RunRepository(tmp_path / "runs")
+    service = WorkbenchService(runs)
+    candidate = service.create_run(_job())
+    jobs = QualificationJobRepository(tmp_path / "qualification-jobs")
+    job = jobs.create(
+        run_id=candidate.id,
+        payload=_qualification_payload(),
+        model_bytes=_fmu_bytes(),
+        model_filename="contractor-building.fmu",
+    )
+
+    completed = AlfalfaQualificationJobExecutor(
+        jobs,
+        service,
+        client_factory=_FakeAlfalfa,
+        client_version="test-client",
+        worker_id="test-worker",
+    ).execute(job.id)
+
+    assert completed.status == QualificationJobStatus.SUCCEEDED
+    assert completed.worker_id == "test-worker"
+    assert completed.progress.phase == "completed"
+    assert completed.progress.percent == 100
+    assert completed.qualification_passed is True
+    assert completed.result_artifact_sha256 == runs.get(candidate.id).artifact_sha256
+
+
+def test_running_qualification_job_cancels_cooperatively_and_stops_fmu(
+    tmp_path: Path,
+) -> None:
+    runs = RunRepository(tmp_path / "runs")
+    service = WorkbenchService(runs)
+    candidate = service.create_run(_job())
+    jobs = QualificationJobRepository(tmp_path / "qualification-jobs")
+    job = jobs.create(
+        run_id=candidate.id,
+        payload=_qualification_payload(),
+        model_bytes=_fmu_bytes(),
+        model_filename="contractor-building.fmu",
+    )
+    fake = _FakeAlfalfa()
+    original_advance = fake.advance
+
+    def advance_and_cancel(run_id: str) -> None:
+        original_advance(run_id)
+        jobs.request_cancel(job.id)
+
+    fake.advance = advance_and_cancel  # type: ignore[method-assign]
+    canceled = AlfalfaQualificationJobExecutor(
+        jobs,
+        service,
+        client_factory=lambda: fake,
+        worker_id="cancel-test-worker",
+    ).execute(job.id)
+
+    assert canceled.status == QualificationJobStatus.CANCELED
+    assert canceled.cancellation_requested is True
+    assert fake.stopped is True
+    assert runs.get(candidate.id).alfalfa_verification_path is None
+
+
+def test_qualification_queue_api_persists_polls_and_cancels_jobs(tmp_path: Path) -> None:
+    dispatcher = _CapturingQualificationDispatcher()
+    client = TestClient(
+        create_app(
+            tmp_path / "runs",
+            qualification_dispatcher=dispatcher,
+        )
+    )
+    created = client.post("/api/runs", json=_job().model_dump(mode="json"))
+    run_id = created.json()["id"]
+    response = client.post(
+        f"/api/runs/{run_id}/qualification-jobs/alfalfa",
+        data={"qualification": _qualification_payload().model_dump_json()},
+        files={"model_file": ("building.fmu", _fmu_bytes(), "application/zip")},
+    )
+
+    assert response.status_code == 202, response.text
+    queued = response.json()
+    assert queued["status"] == "queued"
+    assert dispatcher.enqueued == [queued["id"]]
+    latest = client.get(f"/api/runs/{run_id}/qualification-jobs/latest")
+    assert latest.status_code == 200
+    assert latest.json()["input_sha256"] == queued["input_sha256"]
+
+    canceled = client.post(f"/api/qualification-jobs/{queued['id']}/cancel")
+    assert canceled.status_code == 200
+    assert canceled.json()["status"] == "canceled"
+    assert dispatcher.canceled == [queued["id"]]
+
+
+def test_latest_qualification_job_exposes_changed_input_as_precondition_failure(
+    tmp_path: Path,
+) -> None:
+    dispatcher = _CapturingQualificationDispatcher()
+    client = TestClient(
+        create_app(
+            tmp_path / "runs",
+            qualification_dispatcher=dispatcher,
+        )
+    )
+    run_id = client.post("/api/runs", json=_job().model_dump(mode="json")).json()["id"]
+    queued = client.post(
+        f"/api/runs/{run_id}/qualification-jobs/alfalfa",
+        data={"qualification": _qualification_payload().model_dump_json()},
+        files={"model_file": ("building.fmu", _fmu_bytes(), "application/zip")},
+    ).json()
+
+    request_path = tmp_path / "qualification-jobs" / queued["id"] / "request.json"
+    request_path.write_text("{}", encoding="utf-8")
+
+    response = client.get(f"/api/runs/{run_id}/qualification-jobs/latest")
+
+    assert response.status_code == 412
+    assert "request digest changed" in response.json()["detail"]

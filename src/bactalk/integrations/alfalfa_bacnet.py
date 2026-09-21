@@ -12,7 +12,13 @@ from typing import Any
 
 from bactalk.domain import BlockKind, ControlGraph, canonical_json
 from bactalk.integrations.alfalfa import AlfalfaClientLike
-from bactalk.integrations.alfalfa_graph import AlfalfaGraphMap, AlfalfaGraphRunner
+from bactalk.integrations.alfalfa_graph import (
+    AlfalfaCancellationCheck,
+    AlfalfaGraphMap,
+    AlfalfaGraphRunner,
+    AlfalfaProgressCallback,
+    AlfalfaQualificationCancelled,
+)
 from bactalk.integrations.bacnet_lab import (
     BacnetLabManifest,
     LabDeviceConfig,
@@ -340,6 +346,8 @@ class AlfalfaBacnetGraphRunner:
         start: datetime,
         server_version: Any = None,
         client_version: str | None = None,
+        progress_callback: AlfalfaProgressCallback | None = None,
+        cancellation_requested: AlfalfaCancellationCheck | None = None,
     ) -> dict[str, Any]:
         if (
             isinstance(steps, bool)
@@ -363,6 +371,10 @@ class AlfalfaBacnetGraphRunner:
         trajectory: list[dict[str, Any]] = []
         end = start + timedelta(seconds=steps * step_seconds)
         try:
+            if cancellation_requested is not None and cancellation_requested():
+                raise AlfalfaQualificationCancelled("Alfalfa qualification was canceled")
+            if progress_callback is not None:
+                progress_callback("starting_bacnet_lab", 0, steps)
             await self.lab.start()
             application = self._controller_application()
             await asyncio.sleep(0.05)
@@ -394,6 +406,10 @@ class AlfalfaBacnetGraphRunner:
             interpreter = GraphInterpreter(self.graph)
             previous_time = self.client.get_sim_time(run_id)
             for index in range(steps):
+                if cancellation_requested is not None and cancellation_requested():
+                    raise AlfalfaQualificationCancelled(
+                        f"Alfalfa qualification was canceled before step {index + 1}"
+                    )
                 injected_inputs, initial_output_values = self.core._graph_inputs(
                     current_outputs,
                     allow_initial_values=index == 0,
@@ -504,6 +520,8 @@ class AlfalfaBacnetGraphRunner:
                         "bacnet_writes": protocol_writes,
                     }
                 )
+                if progress_callback is not None:
+                    progress_callback("running_bacnet_trajectory", index + 1, steps)
                 current_outputs = advanced_outputs
                 previous_time = advanced_time
         finally:

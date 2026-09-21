@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { api, type AlfalfaEvidence, type ArtifactState, type BacnetLab, type BoptestEvidence, type ControlGraph, type FmiModel, type FmiVariable, type RunDetail } from '../../api/client';
+import { api, type AlfalfaEvidence, type ArtifactState, type BacnetLab, type BoptestEvidence, type ControlGraph, type FmiModel, type FmiVariable, type QualificationJob, type RunDetail } from '../../api/client';
 import { buildAlfalfaMapping, buildAlfalfaOracles, exactSignalMatch, signalLabel, type AlfalfaOracleDraft, type AlfalfaOracleSignalKind, type CommandBindingDraft, type SensorBindingDraft } from './alfalfa-mapping';
 
 echarts.use([AriaComponent, GridComponent, LegendComponent, TooltipComponent, LineChart, CanvasRenderer]);
@@ -31,6 +31,14 @@ export function SimulationLab({ run }: { run: RunDetail }) {
   const boptest = useQuery({ queryKey: ['boptest', run.id], queryFn: () => api.boptest(run.id) });
   const bacnet = useQuery({ queryKey: ['bacnet-lab', run.id], queryFn: () => api.bacnetLab(run.id) });
   const alfalfa = useQuery({ queryKey: ['alfalfa', run.id], queryFn: () => api.alfalfa(run.id) });
+  const qualificationJob = useQuery({
+    queryKey: ['qualification-job', run.id],
+    queryFn: () => api.latestQualificationJob(run.id),
+    refetchInterval: (query) => {
+      const value = query.state.data;
+      return value?.state === 'available' && ['queued', 'running', 'cancel_requested'].includes(value.data.status) ? 1_000 : false;
+    },
+  });
   const graph = useQuery({ queryKey: ['graph', run.id], queryFn: () => api.graph(run.id) });
   const probe = useMutation({
     mutationFn: () => api.probeBacnetLab(run.id),
@@ -38,20 +46,39 @@ export function SimulationLab({ run }: { run: RunDetail }) {
     onError: (error) => toast.error(error instanceof Error ? error.message : 'Loopback proof failed'),
   });
   const qualifyAlfalfa = useMutation({
-    mutationFn: ({ model, qualification }: { model: File; qualification: AlfalfaQualification }) => api.qualifyAlfalfa(run.id, model, qualification),
-    onSuccess: async (result) => {
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['alfalfa', run.id] }),
-        queryClient.invalidateQueries({ queryKey: ['runs'] }),
-        queryClient.invalidateQueries({ queryKey: ['run', run.id] }),
-      ]);
-      if (result.evidence.status === 'pass') toast.success('Exact-FMU qualification passed and entered the approval boundary');
-      else toast.error('FMU run completed, but its trajectory oracle failed. Approval is blocked.');
+    mutationFn: ({ model, qualification }: { model: File; qualification: AlfalfaQualification }) => api.enqueueAlfalfaQualification(run.id, model, qualification),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['qualification-job', run.id] });
+      toast.success('Qualification queued. It will continue if this page closes.');
     },
     onError: (error) => toast.error(error instanceof Error ? error.message : 'Alfalfa qualification failed'),
   });
+  const cancelQualification = useMutation({
+    mutationFn: (jobId: string) => api.cancelQualificationJob(jobId),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['qualification-job', run.id] });
+      toast.info('Qualification cancellation requested');
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : 'Could not cancel qualification'),
+  });
+  const reportedTerminalJob = useRef<string | null>(null);
+  useEffect(() => {
+    const state = qualificationJob.data;
+    if (state?.state !== 'available' || !['succeeded', 'failed', 'canceled'].includes(state.data.status)) return;
+    const notification = `${state.data.id}:${state.data.status}`;
+    if (reportedTerminalJob.current === notification) return;
+    reportedTerminalJob.current = notification;
+    void Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['alfalfa', run.id] }),
+      queryClient.invalidateQueries({ queryKey: ['runs'] }),
+      queryClient.invalidateQueries({ queryKey: ['run', run.id] }),
+    ]);
+    if (state.data.status === 'succeeded' && state.data.qualification_passed) toast.success('Exact-FMU qualification passed and entered the approval boundary');
+    else if (state.data.status === 'succeeded') toast.error('FMU execution completed, but its trajectory oracle failed. Approval is blocked.');
+    else if (state.data.status === 'failed') toast.error(state.data.error ?? 'Qualification worker failed');
+  }, [qualificationJob.data, queryClient, run.id]);
 
-  if (boptest.isLoading || bacnet.isLoading || alfalfa.isLoading || graph.isLoading) return <div className="simulation-state"><div className="studio-state-spinner" /><strong>Loading retained simulation evidence…</strong></div>;
+  if (boptest.isLoading || bacnet.isLoading || alfalfa.isLoading || qualificationJob.isLoading || graph.isLoading) return <div className="simulation-state"><div className="studio-state-spinner" /><strong>Loading retained simulation evidence…</strong></div>;
   return (
     <div className="simulation-lab">
       <section className="simulation-hero">
@@ -66,7 +93,7 @@ export function SimulationLab({ run }: { run: RunDetail }) {
       {bacnet.data?.state === 'invalid' && <IntegrityWarning label="Virtual BACnet evidence could not be validated" message={bacnet.data.message} />}
       {alfalfa.data?.state === 'invalid' && <IntegrityWarning label="Alfalfa FMU evidence failed validation" message={alfalfa.data.message} />}
 
-      <AlfalfaPanel evidence={alfalfa.data} graph={graph.data} bacnetAvailable={bacnet.data?.state === 'available'} canQualify={run.status === 'ready_for_review'} onQualify={(model, qualification) => qualifyAlfalfa.mutateAsync({ model, qualification })} qualifying={qualifyAlfalfa.isPending} />
+      <AlfalfaPanel evidence={alfalfa.data} job={qualificationJob.data} graph={graph.data} bacnetAvailable={bacnet.data?.state === 'available'} canQualify={run.status === 'ready_for_review'} onQualify={(model, qualification) => qualifyAlfalfa.mutateAsync({ model, qualification })} qualifying={qualifyAlfalfa.isPending} onCancel={(jobId) => cancelQualification.mutate(jobId)} canceling={cancelQualification.isPending} />
 
       <div className="simulation-grid">
         <BoptestPanel evidence={boptest.data} />
@@ -89,8 +116,8 @@ function FidelityRail({ run, boptest, bacnet, alfalfa }: { run: RunDetail; bopte
 
 type AlfalfaQualification = { mapping: unknown; oracles: unknown[]; steps: number; step_seconds: number; start: string; transport: 'direct' | 'bacnet_ip_loopback' };
 
-function AlfalfaPanel({ evidence, graph, bacnetAvailable, canQualify, onQualify, qualifying }: { evidence?: ArtifactState<AlfalfaEvidence>; graph?: ControlGraph; bacnetAvailable: boolean; canQualify: boolean; onQualify: (model: File, qualification: AlfalfaQualification) => Promise<unknown>; qualifying: boolean }) {
-  if (!evidence || evidence.state === 'missing') return <AlfalfaQualificationPanel graph={graph} bacnetAvailable={bacnetAvailable} canQualify={canQualify} onQualify={onQualify} qualifying={qualifying} />;
+function AlfalfaPanel({ evidence, job, graph, bacnetAvailable, canQualify, onQualify, qualifying, onCancel, canceling }: { evidence?: ArtifactState<AlfalfaEvidence>; job?: ArtifactState<QualificationJob>; graph?: ControlGraph; bacnetAvailable: boolean; canQualify: boolean; onQualify: (model: File, qualification: AlfalfaQualification) => Promise<unknown>; qualifying: boolean; onCancel: (jobId: string) => void; canceling: boolean }) {
+  if (!evidence || evidence.state === 'missing') return <AlfalfaQualificationPanel job={job?.state === 'available' ? job.data : undefined} graph={graph} bacnetAvailable={bacnetAvailable} canQualify={canQualify} onQualify={onQualify} qualifying={qualifying} onCancel={onCancel} canceling={canceling} />;
   if (evidence.state === 'invalid') return <section className="simulation-panel empty-tier failed alfalfa-panel"><CircleAlert size={28} /><span className="eyebrow">ALFALFA FMU CLOSED LOOP</span><h2>Evidence is not trustworthy</h2><p>{evidence.message}</p><span className="qualification-chip failed">Release blocked</span></section>;
   const data = evidence.data;
   const samples = data.trajectory;
@@ -110,7 +137,7 @@ function AlfalfaPanel({ evidence, graph, bacnetAvailable, canQualify, onQualify,
   );
 }
 
-function AlfalfaQualificationPanel({ graph, bacnetAvailable, canQualify, onQualify, qualifying }: { graph?: ControlGraph; bacnetAvailable: boolean; canQualify: boolean; onQualify: (model: File, qualification: AlfalfaQualification) => Promise<unknown>; qualifying: boolean }) {
+function AlfalfaQualificationPanel({ job, graph, bacnetAvailable, canQualify, onQualify, qualifying, onCancel, canceling }: { job?: QualificationJob; graph?: ControlGraph; bacnetAvailable: boolean; canQualify: boolean; onQualify: (model: File, qualification: AlfalfaQualification) => Promise<unknown>; qualifying: boolean; onCancel: (jobId: string) => void; canceling: boolean }) {
   const [model, setModel] = useState<File | null>(null);
   const [mappingFile, setMappingFile] = useState<File | null>(null);
   const [sensorBindings, setSensorBindings] = useState<Record<string, SensorBindingDraft>>({});
@@ -122,6 +149,8 @@ function AlfalfaQualificationPanel({ graph, bacnetAvailable, canQualify, onQuali
   const [transport, setTransport] = useState<'direct' | 'bacnet_ip_loopback'>(bacnetAvailable ? 'bacnet_ip_loopback' : 'direct');
   const [oracleDrafts, setOracleDrafts] = useState<AlfalfaOracleDraft[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const jobActive = job ? ['queued', 'running', 'cancel_requested'].includes(job.status) : false;
+  const busy = qualifying || jobActive;
   const graphInputs = useMemo(() => graph?.blocks.filter((block) => block.kind === 'numeric_input' || block.kind === 'boolean_input') ?? [], [graph]);
   const graphOutputs = useMemo(() => graph?.blocks.filter((block) => block.kind === 'numeric_output' || block.kind === 'boolean_output') ?? [], [graph]);
   const inspectFmu = useMutation({
@@ -182,10 +211,11 @@ function AlfalfaQualificationPanel({ graph, bacnetAvailable, canQualify, onQuali
   };
   return (
     <section className="simulation-panel alfalfa-panel alfalfa-qualification">
-      <div className="simulation-panel-head"><div><span className="eyebrow">ALFALFA EXACT-FMU CLOSED LOOP</span><h2>Qualify this exact candidate against a building model</h2><p>The FMU and reviewed signal map become signed artifacts. This operation never connects to a live building.</p></div><span className="qualification-chip missing">Not run</span></div>
+      <div className="simulation-panel-head"><div><span className="eyebrow">ALFALFA EXACT-FMU CLOSED LOOP</span><h2>Qualify this exact candidate against a building model</h2><p>The FMU and reviewed signal map become signed artifacts. This operation never connects to a live building.</p></div><span className={`qualification-chip ${job?.status ?? 'missing'}`}>{job ? job.status.replaceAll('_', ' ') : 'Not run'}</span></div>
+      {job && <div className={`qualification-job-card ${job.status}`}><div><strong>{job.model_filename}</strong><span>{job.progress.phase.replaceAll('_', ' ')} · {job.progress.completed_steps}/{job.progress.total_steps} steps</span><small>Worker {job.worker_id ?? 'awaiting assignment'} · input {job.input_sha256.slice(0, 12)}</small></div><div className="qualification-job-progress"><i style={{ width: `${job.progress.percent}%` }} /></div><b>{job.progress.percent.toFixed(0)}%</b>{jobActive && <button disabled={canceling || job.status === 'cancel_requested'} onClick={() => onCancel(job.id)} type="button">{job.status === 'cancel_requested' ? 'Stopping safely…' : canceling ? 'Requesting…' : 'Cancel run'}</button>}{job.error && <p>{job.error}</p>}</div>}
       <div className="alfalfa-qualification-grid">
-        <label className={model ? 'selected' : ''}><FileUp size={20} /><span><strong>{model?.name ?? 'Building model (.fmu)'}</strong><small>{inspectFmu.isPending ? 'Inspecting FMI contract…' : model ? `${(model.size / 1024 / 1024).toFixed(1)} MiB · ${contract ? `${contract.inputs.length} inputs · ${contract.outputs.length} outputs` : 'inspection failed'}` : 'FMI archive, maximum 512 MiB'}</small></span><input accept=".fmu,application/zip" disabled={!canQualify || qualifying} onChange={(event) => selectModel(event.target.files?.[0] ?? null)} type="file" /></label>
-        <label className={mappingFile ? 'selected' : ''}><Network size={20} /><span><strong>{mappingFile?.name ?? 'Optional reviewed map (.json)'}</strong><small>{mappingFile ? 'Imported map will be validated at execution' : 'Or build the map visually below'}</small></span><input accept=".json,application/json" disabled={!canQualify || qualifying || !contract} onChange={(event) => setMappingFile(event.target.files?.[0] ?? null)} type="file" /></label>
+        <label className={model ? 'selected' : ''}><FileUp size={20} /><span><strong>{model?.name ?? 'Building model (.fmu)'}</strong><small>{inspectFmu.isPending ? 'Inspecting FMI contract…' : model ? `${(model.size / 1024 / 1024).toFixed(1)} MiB · ${contract ? `${contract.inputs.length} inputs · ${contract.outputs.length} outputs` : 'inspection failed'}` : 'FMI archive, maximum 512 MiB'}</small></span><input accept=".fmu,application/zip" disabled={!canQualify || busy} onChange={(event) => selectModel(event.target.files?.[0] ?? null)} type="file" /></label>
+        <label className={mappingFile ? 'selected' : ''}><Network size={20} /><span><strong>{mappingFile?.name ?? 'Optional reviewed map (.json)'}</strong><small>{mappingFile ? 'Imported map will be validated at execution' : 'Or build the map visually below'}</small></span><input accept=".json,application/json" disabled={!canQualify || busy || !contract} onChange={(event) => setMappingFile(event.target.files?.[0] ?? null)} type="file" /></label>
       </div>
       {contract && <FmiContractSummary contract={contract} />}
       {contract && <div className="alfalfa-mapper">
@@ -201,7 +231,7 @@ function AlfalfaQualificationPanel({ graph, bacnetAvailable, canQualify, onQuali
         <label className="alfalfa-observed"><span><strong>Additional observed outputs</strong><small>Optional building-response signals to retain in every trajectory step</small></span><select multiple onChange={(event) => setObservedOutputs(Array.from(event.target.selectedOptions, (option) => option.value))} value={observedOutputs}>{contract.outputs.map((variable) => <option key={variable.name} value={variable.name}>{signalLabel(variable)}</option>)}</select></label>
         <section className="alfalfa-oracle-builder"><div className="alfalfa-mapper-heading"><strong>Independent pass/fail trajectory</strong><small>One value repeats for every step; otherwise enter exactly {steps} comma-separated values</small></div><div className="alfalfa-map-table"><table><thead><tr><th>Oracle ID</th><th>Signal kind</th><th>Reviewed signal</th><th>Expected values</th><th>Value tolerance</th><th /></tr></thead><tbody>{oracleDrafts.map((draft, index) => <tr key={`${index}-${draft.id}`}><td><input aria-label={`Oracle ${index + 1} ID`} onChange={(event) => setOracleDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, id: event.target.value } : item))} value={draft.id} /></td><td><select aria-label={`Oracle ${index + 1} signal kind`} onChange={(event) => { const signalKind = event.target.value as AlfalfaOracleSignalKind; const signal = oracleSignals(signalKind)[0]?.value ?? ''; setOracleDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, signalKind, signal } : item)); }} value={draft.signalKind}><option value="graph_output">Graph output</option><option value="graph_input">Graph input</option><option value="fmu_output">FMU output</option><option value="fmu_input">FMU input</option></select></td><td><select aria-label={`Oracle ${index + 1} signal`} onChange={(event) => setOracleDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, signal: event.target.value } : item))} value={draft.signal}><option value="">Select signal…</option>{oracleSignals(draft.signalKind).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></td><td><input aria-label={`Oracle ${index + 1} expected values`} onChange={(event) => setOracleDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, referenceValues: event.target.value } : item))} placeholder={`1 value or ${steps} values`} value={draft.referenceValues} /></td><td><input aria-label={`Oracle ${index + 1} value tolerance`} min={0} onChange={(event) => setOracleDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, valueTolerance: event.target.value } : item))} type="number" value={draft.valueTolerance} /></td><td><button aria-label={`Remove oracle ${index + 1}`} disabled={oracleDrafts.length === 1} onClick={() => setOracleDrafts((current) => current.filter((_, itemIndex) => itemIndex !== index))} type="button">Remove</button></td></tr>)}</tbody></table></div><button onClick={() => setOracleDrafts((current) => [...current, { id: `behavior-${current.length + 1}`, signalKind: 'graph_output', signal: graphOutputs[0]?.id ?? '', referenceValues: '', timeTolerance: '0', valueTolerance: '0.1' }])} type="button">Add trajectory oracle</button></section>
       </div>}
-      <div className="alfalfa-run-settings"><label><span>Control transport</span><select disabled={!canQualify || qualifying} onChange={(event) => setTransport(event.target.value as 'direct' | 'bacnet_ip_loopback')} value={transport}><option value="direct">Direct typed graph</option>{bacnetAvailable && <option value="bacnet_ip_loopback">BACnet/IP loopback</option>}</select></label><label><span>Model start</span><input disabled={!canQualify || qualifying} onChange={(event) => setStart(event.target.value)} type="datetime-local" value={start} /></label><label><span>Steps</span><input disabled={!canQualify || qualifying} min={1} max={100000} onChange={(event) => setSteps(Number(event.target.value))} type="number" value={steps} /></label><label><span>Seconds / step</span><input disabled={!canQualify || qualifying} min={0.001} onChange={(event) => setStepSeconds(Number(event.target.value))} type="number" value={stepSeconds} /></label><button disabled={!canQualify || !model || !contract || (!mappingFile && !mappingReady) || !oracleReady || qualifying || steps < 1 || stepSeconds <= 0} onClick={submit} type="button"><Play size={15} />{qualifying ? transport === 'bacnet_ip_loopback' ? 'Running FMU + BACnet…' : 'Running exact FMU…' : 'Run and sign qualification'}</button></div>
+      <div className="alfalfa-run-settings"><label><span>Control transport</span><select disabled={!canQualify || busy} onChange={(event) => setTransport(event.target.value as 'direct' | 'bacnet_ip_loopback')} value={transport}><option value="direct">Direct typed graph</option>{bacnetAvailable && <option value="bacnet_ip_loopback">BACnet/IP loopback</option>}</select></label><label><span>Model start</span><input disabled={!canQualify || busy} onChange={(event) => setStart(event.target.value)} type="datetime-local" value={start} /></label><label><span>Steps</span><input disabled={!canQualify || busy} min={1} max={100000} onChange={(event) => setSteps(Number(event.target.value))} type="number" value={steps} /></label><label><span>Seconds / step</span><input disabled={!canQualify || busy} min={0.001} onChange={(event) => setStepSeconds(Number(event.target.value))} type="number" value={stepSeconds} /></label><button disabled={!canQualify || !model || !contract || (!mappingFile && !mappingReady) || !oracleReady || busy || steps < 1 || stepSeconds <= 0} onClick={submit} type="button"><Play size={15} />{jobActive ? job?.status === 'cancel_requested' ? 'Stopping safely…' : 'Qualification running…' : qualifying ? 'Queueing qualification…' : 'Queue and sign qualification'}</button></div>
       {bacnetAvailable && transport === 'bacnet_ip_loopback' && <div className="alfalfa-form-message"><Network size={16} />Every graph sensor and command must have an exact BACnet object. Qualification performs real loopback UDP reads, priority writes, and readbacks between each FMU step.</div>}
       {!canQualify && <div className="alfalfa-form-message"><CircleAlert size={16} />Only a passing candidate awaiting review can start a new qualification.</div>}
       {inspectFmu.isError && <div className="alfalfa-form-message error"><CircleAlert size={16} />{inspectFmu.error instanceof Error ? inspectFmu.error.message : 'FMU inspection failed'}</div>}

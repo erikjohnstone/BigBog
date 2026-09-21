@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Literal
@@ -139,6 +140,14 @@ class AlfalfaTrajectoryOracle(BaseModel):
         return self
 
 
+class AlfalfaQualificationCancelled(RuntimeError):
+    """Raised after a cooperative cancellation request and clean runtime stop."""
+
+
+AlfalfaProgressCallback = Callable[[str, int, int], None]
+AlfalfaCancellationCheck = Callable[[], bool]
+
+
 class AlfalfaGraphRunner:
     """Execute a complete typed BACTalk graph in closed loop with an Alfalfa FMU.
 
@@ -266,6 +275,8 @@ class AlfalfaGraphRunner:
         start: datetime,
         server_version: Any = None,
         client_version: str | None = None,
+        progress_callback: AlfalfaProgressCallback | None = None,
+        cancellation_requested: AlfalfaCancellationCheck | None = None,
     ) -> dict[str, Any]:
         if (
             isinstance(steps, bool)
@@ -284,6 +295,10 @@ class AlfalfaGraphRunner:
         stopped_status: str | None = None
         end = start + timedelta(seconds=steps * step_seconds)
         try:
+            if cancellation_requested is not None and cancellation_requested():
+                raise AlfalfaQualificationCancelled("Alfalfa qualification was canceled")
+            if progress_callback is not None:
+                progress_callback("starting_fmu", 0, steps)
             run_id = str(self.client.submit(str(model_path)))
             self.client.start(run_id, start, end, external_clock=True)
             started = True
@@ -312,6 +327,10 @@ class AlfalfaGraphRunner:
             trajectory: list[dict[str, Any]] = []
             previous_time = self.client.get_sim_time(run_id)
             for index in range(steps):
+                if cancellation_requested is not None and cancellation_requested():
+                    raise AlfalfaQualificationCancelled(
+                        f"Alfalfa qualification was canceled before step {index + 1}"
+                    )
                 graph_inputs, initial_output_values = self._graph_inputs(
                     current_outputs,
                     allow_initial_values=index == 0,
@@ -373,6 +392,8 @@ class AlfalfaGraphRunner:
                         },
                     }
                 )
+                if progress_callback is not None:
+                    progress_callback("running_trajectory", index + 1, steps)
                 current_outputs = advanced_outputs
                 previous_time = advanced_time
         finally:
