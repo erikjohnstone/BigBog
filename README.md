@@ -76,7 +76,7 @@ it any time and it skips what is already installed.
 
 ```bash
 make doctor             # what this machine has, and how to fix what it lacks
-make bootstrap-full     # ~30-60 minutes on a warm network, ~15 GB
+make bootstrap-full     # ~30-60 minutes on a warm network, ~9 GB installed
 make doctor             # confirm every selected capability is ready
 make test-integration   # everything that does not need containers
 ```
@@ -101,9 +101,13 @@ anything missing, so run it first on a new machine.
 | Step | Time | Disk |
 | --- | --- | --- |
 | `make install` | 1-3 min | ~400 MB |
-| `make bootstrap-full` | 30-60 min | ~15 GB under `.vendor/` and the venvs |
-| `make test-integration` | 10-25 min | - |
+| `make bootstrap-full` | 30-60 min | ~9 GB installed; allow ~20 GB free, since the Rust builds peak higher before their caches are cleaned |
+| `make test-integration` | 8-15 min | - |
+| `make suite-contract` | 25-40 min | - |
 | BOPTEST / Alfalfa images | 20-60 min | ~20 GB additional |
+
+Measured on a 4-core Linux host: `.vendor/` 5.9 GB, the five virtual
+environments 2.3 GB, `node_modules` 464 MB, Rust build output 69 MB.
 
 Nothing `bootstrap-full` downloads is committed: `.vendor/`, every virtual
 environment, and `node_modules/` are ignored by git. A clean clone plus
