@@ -159,6 +159,11 @@ def main() -> None:
     )
     parser.add_argument("--seed", type=int)
     parser.add_argument(
+        "--suite",
+        action="store_true",
+        help="Qualify peak cooling and peak heating as one digest-bound matrix",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=Path(".bactalk/boptest-graph-runtime-evidence.json"),
@@ -235,14 +240,6 @@ def main() -> None:
 
     denied = client.get(f"/api/runs/{run_id}/export")
     _require(denied, 403, "pre-approval export")
-    qualification = {
-        "mapping": mapping.model_dump(mode="json"),
-        "oracles": [oracle.model_dump(mode="json")],
-        "steps": arguments.steps,
-        "step_seconds": arguments.step,
-        "start_time": 0.0,
-        "warmup_period": 0.0,
-    }
     scenario = {
         key: value
         for key, value in {
@@ -254,8 +251,51 @@ def main() -> None:
         }.items()
         if value is not None
     }
-    if scenario:
-        qualification["scenario"] = scenario
+    if arguments.suite:
+        if scenario:
+            raise SystemExit("--suite defines its own scenarios; do not combine scenario flags")
+        suite_scenarios = [
+            {
+                "time_period": "peak_cool_day",
+                "electricity_price": "dynamic",
+                "temperature_uncertainty": "medium",
+                "solar_uncertainty": "low",
+                "seed": 42,
+            },
+            {
+                "time_period": "peak_heat_day",
+                "electricity_price": "constant",
+            },
+        ]
+        qualification = {
+            "mapping": mapping.model_dump(mode="json"),
+            "cases": [
+                {
+                    "id": case_id,
+                    "oracles": [oracle.model_dump(mode="json")],
+                    "steps": arguments.steps,
+                    "step_seconds": arguments.step,
+                    "start_time": 0.0,
+                    "warmup_period": 0.0,
+                    "scenario": case_scenario,
+                }
+                for case_id, case_scenario in zip(
+                    ("peak-cooling", "peak-heating"), suite_scenarios, strict=True
+                )
+            ],
+        }
+    else:
+        suite_scenarios = []
+        qualification = {
+            "mapping": mapping.model_dump(mode="json"),
+            "oracles": [oracle.model_dump(mode="json")],
+            "steps": arguments.steps,
+            "step_seconds": arguments.step,
+            "start_time": 0.0,
+            "warmup_period": 0.0,
+        }
+        if scenario:
+            qualification["scenario"] = scenario
     queued = client.post(
         f"/api/runs/{run_id}/qualification-jobs/boptest",
         json=qualification,
@@ -306,26 +346,57 @@ def main() -> None:
     _require(qualified, 200, "qualified candidate")
     if qualified.json()["status"] != "ready_for_review":
         raise SystemExit("BOPTEST trajectory oracle failed")
-    trajectory = evidence["runtime"]["trajectory"]
-    room_temperatures = [
-        float(row["measurements"]["zon_reaTRooAir_y"]) for row in trajectory
-    ]
-    if len(set(room_temperatures)) <= 1:
-        raise SystemExit("BOPTEST room temperature did not respond across the trajectory")
-    scenario_state = evidence["runtime"].get("scenario_state")
-    if scenario and not isinstance(scenario_state, dict):
-        raise SystemExit("BOPTEST qualification omitted requested scenario readback")
-    for key, value in scenario.items():
-        expected = (
-            None
-            if key in {"temperature_uncertainty", "solar_uncertainty"} and value == "none"
-            else value
-        )
-        if scenario_state.get(key) != expected:
+    runtime_cases = (
+        evidence["cases"]
+        if arguments.suite
+        else [
+            {
+                "id": "single-run",
+                "runtime": evidence["runtime"],
+                "oracles": evidence["oracles"],
+            }
+        ]
+    )
+    requested_scenarios = suite_scenarios if arguments.suite else ([scenario] if scenario else [])
+    room_temperatures_by_case: dict[str, list[float]] = {}
+    scenario_states: list[dict[str, object]] = []
+    for index, case in enumerate(runtime_cases):
+        trajectory = case["runtime"]["trajectory"]
+        temperatures = [
+            float(row["measurements"]["zon_reaTRooAir_y"]) for row in trajectory
+        ]
+        room_temperatures_by_case[case["id"]] = temperatures
+        if len(set(temperatures)) <= 1:
             raise SystemExit(
-                f"BOPTEST scenario readback mismatch for {key}: "
-                f"expected {expected!r}, got {scenario_state.get(key)!r}"
+                f"BOPTEST room temperature did not respond in case {case['id']}"
             )
+        if index < len(requested_scenarios):
+            scenario_state = case["runtime"].get("scenario_state")
+            if not isinstance(scenario_state, dict):
+                raise SystemExit(
+                    f"BOPTEST case {case['id']} omitted requested scenario readback"
+                )
+            for key, value in requested_scenarios[index].items():
+                expected = (
+                    None
+                    if key in {"temperature_uncertainty", "solar_uncertainty"}
+                    and value == "none"
+                    else value
+                )
+                if scenario_state.get(key) != expected:
+                    raise SystemExit(
+                        f"BOPTEST scenario readback mismatch in {case['id']} for {key}: "
+                        f"expected {expected!r}, got {scenario_state.get(key)!r}"
+                    )
+            scenario_states.append(scenario_state)
+    room_temperatures = [
+        value for values in room_temperatures_by_case.values() for value in values
+    ]
+    all_oracles_passed = all(
+        oracle_result["passed"]
+        for case in runtime_cases
+        for oracle_result in case["oracles"]
+    )
 
     approved = client.post(
         f"/api/runs/{run_id}/approve",
@@ -353,7 +424,16 @@ def main() -> None:
             "niagara_bog_generated",
             "preapproval_export_denied",
             "real_boptest_closed_loop_passed",
-            *(["native_boptest_scenario_applied_and_read_back"] if scenario else []),
+            *(
+                ["multi_scenario_matrix_passed"]
+                if arguments.suite
+                else []
+            ),
+            *(
+                ["native_boptest_scenario_applied_and_read_back"]
+                if requested_scenarios
+                else []
+            ),
             "pyfunnel_oracle_passed",
             "simulation_evidence_bound_to_artifact_digest",
             "test_identity_approved",
@@ -374,12 +454,24 @@ def main() -> None:
         "verification_artifact_count": len(qualified.json()["verification_artifact_paths"]),
         "room_temperature_changed": len(set(room_temperatures)) > 1,
         "room_temperatures_kelvin": room_temperatures,
+        "room_temperatures_by_case_kelvin": room_temperatures_by_case,
         "scenario_request": scenario or None,
-        "scenario_state": scenario_state,
-        "scenario_readback_verified": bool(scenario),
-        "oracle_passed": evidence["oracles"][0]["passed"],
-        "boptest_version": evidence["runtime"]["version"],
-        "boptest_kpis": evidence["runtime"]["kpis"],
+        "scenario_state": scenario_states[0] if len(scenario_states) == 1 else None,
+        "scenario_cases": [
+            {
+                "id": case["id"],
+                "request": requested_scenarios[index],
+                "state": scenario_states[index],
+            }
+            for index, case in enumerate(runtime_cases[: len(requested_scenarios)])
+        ],
+        "scenario_readback_verified": bool(requested_scenarios),
+        "scenario_matrix_verified": arguments.suite and len(runtime_cases) == 2,
+        "oracle_passed": all_oracles_passed,
+        "boptest_version": runtime_cases[0]["runtime"]["version"],
+        "boptest_kpis": {
+            case["id"]: case["runtime"]["kpis"] for case in runtime_cases
+        },
         "approved_run": approved.json(),
         "approved_artifact": {
             "bytes": len(exported.content),

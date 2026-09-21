@@ -215,7 +215,55 @@ def test_alfalfa_runtime_evidence_advances_readiness_without_claiming_production
         item["id"]: item for item in IntegrationReadiness(tmp_path).report()["components"]
     }
     assert "native BOPTEST scenario" not in scenario_qualified["boptest"]["blocker"]
+    assert "multi-scenario BOPTEST" in scenario_qualified["boptest"]["blocker"]
     assert "authoritative BOPTEST point maps" in scenario_qualified["boptest"]["blocker"]
+
+    (tmp_path / ".bactalk/boptest-scenario-suite-runtime-evidence.json").write_text(
+        json.dumps(
+            {
+                "schema": "bactalk.boptest-contractor-e2e/v2",
+                "status": "pass",
+                "scenario_matrix_verified": True,
+                "scenario_readback_verified": True,
+                "oracle_passed": True,
+                "room_temperature_changed": True,
+                "qualification_job": {
+                    "schema_version": "bactalk.qualification-job/v3",
+                    "status": "succeeded",
+                    "qualification_passed": True,
+                    "progress": {"percent": 100.0},
+                },
+                "runtime_evidence": {
+                    "schema": "bactalk.boptest-qualification-suite/v1",
+                    "case_count": 2,
+                    "cases": [
+                        {
+                            "id": case_id,
+                            "status": "pass",
+                            "oracle_clock": {
+                                "basis": "elapsed_seconds_from_run_start"
+                            },
+                            "oracles": [{"passed": True}],
+                            "runtime": {
+                                "scenario_request": {"time_period": period},
+                                "scenario_state": {"time_period": period},
+                                "trajectory": [{"end_time": 300.0}],
+                            },
+                        }
+                        for case_id, period in (
+                            ("peak-cooling", "peak_cool_day"),
+                            ("peak-heating", "peak_heat_day"),
+                        )
+                    ],
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+    matrix_qualified = {
+        item["id"]: item for item in IntegrationReadiness(tmp_path).report()["components"]
+    }
+    assert "multi-scenario BOPTEST" not in matrix_qualified["boptest"]["blocker"]
 
 
 def test_readiness_api(tmp_path: Path) -> None:

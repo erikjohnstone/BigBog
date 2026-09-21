@@ -42,7 +42,7 @@ export type BoptestOracle = {
   absolute_value_tolerance: number;
 };
 
-export type BoptestQualification = {
+export type BoptestSingleQualification = {
   mapping: BoptestMapping;
   oracles: BoptestOracle[];
   steps: number;
@@ -51,6 +51,17 @@ export type BoptestQualification = {
   warmup_period: number;
   scenario?: BoptestScenario;
 };
+
+export type BoptestQualificationCase = Omit<BoptestSingleQualification, 'mapping'> & {
+  id: string;
+};
+
+export type BoptestQualificationSuite = {
+  mapping: BoptestMapping;
+  cases: BoptestQualificationCase[];
+};
+
+export type BoptestQualification = BoptestSingleQualification | BoptestQualificationSuite;
 
 export function boptestSignalLabel(signal: BoptestSignal): string {
   const bounds = signal.minimum !== null || signal.maximum !== null ? `${signal.minimum ?? '−∞'}…${signal.maximum ?? '∞'}` : null;
@@ -195,7 +206,7 @@ export function buildBoptestQualification(
   startTime: string,
   warmupPeriod: string,
   scenarioDraft?: BoptestScenarioDraft,
-): BoptestQualification {
+): BoptestSingleQualification {
   const start_time = numericDraft(startTime, 'Start time');
   const warmup_period = numericDraft(warmupPeriod, 'Warmup period');
   if (start_time < 0) throw new Error('Start time cannot be negative');
@@ -211,6 +222,39 @@ export function buildBoptestQualification(
     warmup_period,
     ...(scenario ? { scenario } : {}),
   };
+}
+
+export function buildBoptestQualificationCase(
+  id: string,
+  qualification: BoptestSingleQualification,
+): BoptestQualificationCase {
+  const reviewedId = id.trim();
+  if (!/^[A-Za-z][A-Za-z0-9_.-]{0,119}$/.test(reviewedId)) {
+    throw new Error(`Qualification case ID ${reviewedId || '(blank)'} is invalid`);
+  }
+  return {
+    id: reviewedId,
+    oracles: qualification.oracles,
+    steps: qualification.steps,
+    step_seconds: qualification.step_seconds,
+    start_time: qualification.start_time,
+    warmup_period: qualification.warmup_period,
+    ...(qualification.scenario ? { scenario: qualification.scenario } : {}),
+  };
+}
+
+export function buildBoptestQualificationSuite(
+  mapping: BoptestMapping,
+  cases: BoptestQualificationCase[],
+): BoptestQualificationSuite {
+  if (!cases.length) throw new Error('A BOPTEST qualification suite requires at least one operating condition');
+  if (cases.length > 50) throw new Error('A BOPTEST qualification suite cannot exceed 50 operating conditions');
+  const ids = cases.map((item) => item.id);
+  if (new Set(ids).size !== ids.length) throw new Error('BOPTEST qualification case IDs must be unique');
+  if (cases.reduce((total, item) => total + item.steps, 0) > 1_000_000) {
+    throw new Error('A BOPTEST qualification suite cannot exceed 1,000,000 simulation steps');
+  }
+  return { mapping, cases };
 }
 
 export function validateBoptestQualificationBoundary(
@@ -229,10 +273,13 @@ export function validateBoptestQualificationBoundary(
     if (!commands.has(binding.actuator)) throw new Error(`${binding.actuator} is not advertised as a command input by ${contract.test_case}`);
     if (binding.activation_actuator !== null && !activations.has(binding.activation_actuator)) throw new Error(`${binding.activation_actuator} is not advertised as an activation input by ${contract.test_case}`);
   }
-  for (const oracle of qualification.oracles) {
-    const present = oracle.signal_kind === 'graph_output'
-      ? graphOutputs.some((block) => block.id === oracle.signal)
-      : measurements.has(oracle.signal);
-    if (!present) throw new Error(`Oracle ${oracle.id} references an unreviewed ${oracle.signal_kind.replace('_', ' ')} signal`);
+  const cases = 'cases' in qualification ? qualification.cases : [qualification];
+  for (const qualificationCase of cases) {
+    for (const oracle of qualificationCase.oracles) {
+      const present = oracle.signal_kind === 'graph_output'
+        ? graphOutputs.some((block) => block.id === oracle.signal)
+        : measurements.has(oracle.signal);
+      if (!present) throw new Error(`Oracle ${oracle.id} references an unreviewed ${oracle.signal_kind.replace('_', ' ')} signal`);
+    }
   }
 }

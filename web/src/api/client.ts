@@ -416,13 +416,7 @@ const boptestTestCaseContractSchema = z.object({
   initialized: z.literal(false),
   live_building_writes: z.literal(false),
 });
-const boptestSchema = z.object({
-  schema: z.string(),
-  status: z.enum(['pass', 'fail']),
-  run_id: z.string(),
-  approval_allowed: z.boolean(),
-  live_building_writes: z.literal(false),
-  runtime: z.object({
+const boptestRuntimeSchema = z.object({
     runtime: z.string(),
     test_case: z.string(),
     graph_name: z.string(),
@@ -460,8 +454,8 @@ const boptestSchema = z.object({
       overrides: numericMap,
       measurements: numericMap,
     }).passthrough()),
-  }).passthrough(),
-  oracles: z.array(z.object({
+  }).passthrough();
+const boptestOracleResultSchema = z.object({
     completed: z.boolean(),
     passed: z.boolean(),
     max_error: z.number().nullable(),
@@ -477,8 +471,37 @@ const boptestSchema = z.object({
       absolute_time_tolerance: z.number(),
       absolute_value_tolerance: z.number(),
     }).passthrough(),
-  }).passthrough()).default([]),
+  }).passthrough();
+const boptestEvidenceBase = {
+  status: z.enum(['pass', 'fail']),
+  run_id: z.string(),
+  approval_allowed: z.boolean(),
+  live_building_writes: z.literal(false),
+};
+const boptestSingleSchema = z.object({
+  schema: z.literal('bactalk.boptest-qualification/v1'),
+  ...boptestEvidenceBase,
+  runtime: boptestRuntimeSchema,
+  oracles: z.array(boptestOracleResultSchema).default([]),
 }).passthrough();
+const boptestSuiteSchema = z.object({
+  schema: z.literal('bactalk.boptest-qualification-suite/v1'),
+  ...boptestEvidenceBase,
+  case_count: z.number().int().positive(),
+  total_steps: z.number().int().positive(),
+  cases: z.array(z.object({
+    id: z.string(),
+    status: z.enum(['pass', 'fail']),
+    runtime: boptestRuntimeSchema,
+    oracles: z.array(boptestOracleResultSchema).default([]),
+    oracle_clock: z.object({
+      basis: z.literal('elapsed_seconds_from_run_start'),
+      runtime_time_origin: z.number(),
+    }).passthrough(),
+    report_directory: z.string(),
+  }).passthrough()).min(1),
+}).passthrough();
+const boptestSchema = z.discriminatedUnion('schema', [boptestSingleSchema, boptestSuiteSchema]);
 
 const alfalfaEvidenceSchema = z.object({
   schema: z.literal('bactalk.alfalfa-graph-run/v1'),
@@ -1235,7 +1258,7 @@ export const api = {
       await postForm(`/api/runs/${runId}/qualification-jobs/alfalfa`, body),
     );
   },
-  async enqueueBoptestQualification(runId: string, qualification: { mapping: unknown; oracles: unknown[]; steps: number; step_seconds: number; start_time?: number; warmup_period?: number; scenario?: Record<string, unknown> }) {
+  async enqueueBoptestQualification(runId: string, qualification: { mapping: unknown; cases?: unknown[]; oracles?: unknown[]; steps?: number; step_seconds?: number; start_time?: number; warmup_period?: number; scenario?: Record<string, unknown> }) {
     return qualificationJobSchema.parse(
       await postJson(`/api/runs/${runId}/qualification-jobs/boptest`, qualification),
     );

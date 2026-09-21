@@ -2023,9 +2023,13 @@ export interface components {
              */
             scale: number;
         };
-        /** BoptestQualificationRequest */
-        BoptestQualificationRequest: {
-            mapping: components["schemas"]["BoptestGraphMap"];
+        /**
+         * BoptestQualificationCase
+         * @description One independently scored operating condition in a qualification suite.
+         */
+        BoptestQualificationCase: {
+            /** Id */
+            id: string;
             /** Oracles */
             oracles: components["schemas"]["BoptestTrajectoryOracle"][];
             scenario?: components["schemas"]["BoptestScenario"] | null;
@@ -2038,6 +2042,29 @@ export interface components {
             step_seconds: number;
             /** Steps */
             steps: number;
+            /**
+             * Warmup Period
+             * @default 0
+             */
+            warmup_period: number;
+        };
+        /** BoptestQualificationRequest */
+        BoptestQualificationRequest: {
+            /** Cases */
+            cases?: components["schemas"]["BoptestQualificationCase"][];
+            mapping: components["schemas"]["BoptestGraphMap"];
+            /** Oracles */
+            oracles?: components["schemas"]["BoptestTrajectoryOracle"][];
+            scenario?: components["schemas"]["BoptestScenario"] | null;
+            /**
+             * Start Time
+             * @default 0
+             */
+            start_time: number;
+            /** Step Seconds */
+            step_seconds?: number | null;
+            /** Steps */
+            steps?: number | null;
             /**
              * Warmup Period
              * @default 0

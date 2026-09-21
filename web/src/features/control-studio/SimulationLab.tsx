@@ -23,7 +23,7 @@ import { toast } from 'sonner';
 
 import { api, type AlfalfaEvidence, type ArtifactState, type BacnetLab, type BoptestEvidence, type ControlGraph, type FmiModel, type FmiVariable, type QualificationJob, type RunDetail } from '../../api/client';
 import { buildAlfalfaMapping, buildAlfalfaOracles, exactSignalMatch, signalLabel, type AlfalfaOracleDraft, type AlfalfaOracleSignalKind, type CommandBindingDraft, type SensorBindingDraft } from './alfalfa-mapping';
-import { boptestSignalLabel, buildBoptestQualification, exactBoptestSignalMatch, validateBoptestQualificationBoundary, type BoptestActuatorBindingDraft, type BoptestMeasurementBindingDraft, type BoptestOracleDraft, type BoptestOracleSignalKind, type BoptestQualification, type BoptestScenarioDraft } from './boptest-mapping';
+import { boptestSignalLabel, buildBoptestQualification, buildBoptestQualificationCase, buildBoptestQualificationSuite, exactBoptestSignalMatch, validateBoptestQualificationBoundary, type BoptestActuatorBindingDraft, type BoptestMeasurementBindingDraft, type BoptestOracleDraft, type BoptestOracleSignalKind, type BoptestQualification, type BoptestQualificationCase, type BoptestScenarioDraft } from './boptest-mapping';
 
 echarts.use([AriaComponent, GridComponent, LegendComponent, TooltipComponent, LineChart, CanvasRenderer]);
 
@@ -279,6 +279,8 @@ function BoptestQualificationPanel({ job, graph, canQualify, otherQualificationA
   const [startTime, setStartTime] = useState('0');
   const [warmupPeriod, setWarmupPeriod] = useState('0');
   const [scenarioDraft, setScenarioDraft] = useState<BoptestScenarioDraft>({ timePeriod: '', electricityPrice: '', temperatureUncertainty: '', solarUncertainty: '', seed: '' });
+  const [caseId, setCaseId] = useState('condition-1');
+  const [suiteCases, setSuiteCases] = useState<BoptestQualificationCase[]>([]);
   const [error, setError] = useState<string | null>(null);
   const jobActive = Boolean(job && ['queued', 'running', 'cancel_requested'].includes(job.status));
   const busy = qualifying || jobActive || otherQualificationActive;
@@ -294,6 +296,8 @@ function BoptestQualificationPanel({ job, graph, canQualify, otherQualificationA
     setStartTime('0');
     setWarmupPeriod('0');
     setScenarioDraft({ timePeriod: '', electricityPrice: '', temperatureUncertainty: '', solarUncertainty: '', seed: '' });
+    setCaseId('condition-1');
+    setSuiteCases([]);
     setError(null);
   };
   const inspectTestCase = useMutation({
@@ -317,25 +321,49 @@ function BoptestQualificationPanel({ job, graph, canQualify, otherQualificationA
       return { qualification: null, message: reason instanceof Error ? reason.message : 'Qualification contract is incomplete' };
     }
   }, [actuatorBindings, graphInputs, graphOutputs, measurementBindings, oracleDrafts, scenarioDraft, selectedTestCase, startTime, stepSeconds, steps, warmupPeriod]);
+  const qualificationToSubmit = useMemo(() => {
+    if (!authoring.qualification) return null;
+    try {
+      return suiteCases.length
+        ? buildBoptestQualificationSuite(authoring.qualification.mapping, suiteCases)
+        : authoring.qualification;
+    } catch {
+      return null;
+    }
+  }, [authoring.qualification, suiteCases]);
   const boundaryReady = useMemo(() => {
-    const qualification = authoring.qualification;
+    const qualification = qualificationToSubmit;
     if (!qualification || !testCaseContract) return false;
     try { validateBoptestQualificationBoundary(qualification, graphOutputs, testCaseContract); return true; } catch { return false; }
-  }, [authoring.qualification, graphOutputs, testCaseContract]);
-  const contractReady = Boolean(authoring.qualification && boundaryReady);
-  const canonicalContract = authoring.qualification ? JSON.stringify(authoring.qualification, null, 2) : '';
+  }, [graphOutputs, qualificationToSubmit, testCaseContract]);
+  const contractReady = Boolean(qualificationToSubmit && boundaryReady);
+  const canonicalContract = qualificationToSubmit ? JSON.stringify(qualificationToSubmit, null, 2) : '';
   const oracleSignals = (kind: BoptestOracleSignalKind) => kind === 'graph_output'
     ? graphOutputs.map((block) => ({ value: block.id, label: `${block.label} (${block.id})` }))
     : testCaseContract?.measurements.map((signal) => ({ value: signal.name, label: boptestSignalLabel(signal) })) ?? [];
   const submit = async () => {
     setError(null);
     try {
-      const qualification = buildBoptestQualification(selectedTestCase, graphInputs, graphOutputs, measurementBindings, actuatorBindings, oracleDrafts, steps, stepSeconds, startTime, warmupPeriod, scenarioDraft);
+      if (!qualificationToSubmit) throw new Error('Complete the qualification contract first');
       if (!testCaseContract) throw new Error('Inspect this BOPTEST case before queueing');
-      validateBoptestQualificationBoundary(qualification, graphOutputs, testCaseContract);
-      await onQualify(qualification);
+      validateBoptestQualificationBoundary(qualificationToSubmit, graphOutputs, testCaseContract);
+      await onQualify(qualificationToSubmit);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'The BOPTEST contract is invalid');
+    }
+  };
+  const addCurrentCase = () => {
+    setError(null);
+    try {
+      if (!authoring.qualification || !testCaseContract) throw new Error('Complete and inspect this operating condition first');
+      validateBoptestQualificationBoundary(authoring.qualification, graphOutputs, testCaseContract);
+      const nextCase = buildBoptestQualificationCase(caseId, authoring.qualification);
+      const nextCases = [...suiteCases, nextCase];
+      buildBoptestQualificationSuite(authoring.qualification.mapping, nextCases);
+      setSuiteCases(nextCases);
+      setCaseId(`condition-${nextCases.length + 1}`);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'Could not add this operating condition');
     }
   };
   const importContract = async (file: File | null) => {
@@ -343,7 +371,8 @@ function BoptestQualificationPanel({ job, graph, canQualify, otherQualificationA
     setError(null);
     try {
       const parsed = JSON.parse(await file.text()) as BoptestQualification;
-      if (!parsed.mapping?.test_case || !Array.isArray(parsed.mapping.measurements) || !Array.isArray(parsed.mapping.actuators) || !Array.isArray(parsed.oracles)) throw new Error('Missing mapping or oracle fields');
+      const importedCase = 'cases' in parsed ? parsed.cases[0] : parsed;
+      if (!parsed.mapping?.test_case || !Array.isArray(parsed.mapping.measurements) || !Array.isArray(parsed.mapping.actuators) || !importedCase || !Array.isArray(importedCase.oracles)) throw new Error('Missing mapping, case, or oracle fields');
       const importedMeasurements = Object.fromEntries(graphInputs.map((block) => {
         const binding = parsed.mapping.measurements.find((item) => item.graph_input === block.id);
         return [block.id, { measurement: binding?.measurement ?? '', scale: String(binding?.scale ?? 1), offset: String(binding?.offset ?? 0) }];
@@ -352,31 +381,34 @@ function BoptestQualificationPanel({ job, graph, canQualify, otherQualificationA
         const binding = parsed.mapping.actuators.find((item) => item.graph_output === block.id);
         return [block.id, { actuator: binding?.actuator ?? '', activation: binding?.activation_actuator ?? '', scale: String(binding?.scale ?? 1), offset: String(binding?.offset ?? 0) }];
       }));
-      const importedOracles = parsed.oracles.map((oracle) => {
+      const importedOracles = importedCase.oracles.map((oracle) => {
         if (!Array.isArray(oracle.reference_values)) throw new Error(`Oracle ${oracle.id ?? '(unknown)'} has no reference values`);
         return { id: oracle.id, signalKind: oracle.signal_kind, signal: oracle.signal, referenceValues: oracle.reference_values.join(', '), timeTolerance: String(oracle.absolute_time_tolerance), valueTolerance: String(oracle.absolute_value_tolerance) };
       });
-      const importedStart = String(parsed.start_time ?? 0);
-      const importedWarmup = String(parsed.warmup_period ?? 0);
+      const importedStart = String(importedCase.start_time ?? 0);
+      const importedWarmup = String(importedCase.warmup_period ?? 0);
       const importedScenario: BoptestScenarioDraft = {
-        timePeriod: parsed.scenario?.time_period ?? '',
-        electricityPrice: parsed.scenario?.electricity_price ?? '',
-        temperatureUncertainty: parsed.scenario?.temperature_uncertainty ?? '',
-        solarUncertainty: parsed.scenario?.solar_uncertainty ?? '',
-        seed: parsed.scenario?.seed === undefined ? '' : String(parsed.scenario.seed),
+        timePeriod: importedCase.scenario?.time_period ?? '',
+        electricityPrice: importedCase.scenario?.electricity_price ?? '',
+        temperatureUncertainty: importedCase.scenario?.temperature_uncertainty ?? '',
+        solarUncertainty: importedCase.scenario?.solar_uncertainty ?? '',
+        seed: importedCase.scenario?.seed === undefined ? '' : String(importedCase.scenario.seed),
       };
-      const qualification = buildBoptestQualification(parsed.mapping.test_case, graphInputs, graphOutputs, importedMeasurements, importedActuators, importedOracles, parsed.steps, parsed.step_seconds, importedStart, importedWarmup, importedScenario);
+      const qualification = buildBoptestQualification(parsed.mapping.test_case, graphInputs, graphOutputs, importedMeasurements, importedActuators, importedOracles, importedCase.steps, importedCase.step_seconds, importedStart, importedWarmup, importedScenario);
       const inspected = await inspectTestCase.mutateAsync({ testCase: parsed.mapping.test_case, preserveDraft: true });
       validateBoptestQualificationBoundary(qualification, graphOutputs, inspected);
+      validateBoptestQualificationBoundary(parsed, graphOutputs, inspected);
       setSelectedTestCase(parsed.mapping.test_case);
       setMeasurementBindings(importedMeasurements);
       setActuatorBindings(importedActuators);
       setOracleDrafts(importedOracles);
-      setSteps(parsed.steps);
-      setStepSeconds(parsed.step_seconds);
+      setSteps(importedCase.steps);
+      setStepSeconds(importedCase.step_seconds);
       setStartTime(importedStart);
       setWarmupPeriod(importedWarmup);
       setScenarioDraft(importedScenario);
+      setSuiteCases('cases' in parsed ? parsed.cases : []);
+      setCaseId('cases' in parsed ? `condition-${parsed.cases.length + 1}` : 'condition-1');
     } catch (reason) { setError(reason instanceof Error ? `Could not import contract: ${reason.message}` : 'The BOPTEST contract is not valid JSON'); }
   };
   return <section className="simulation-panel boptest-qualification">
@@ -392,6 +424,7 @@ function BoptestQualificationPanel({ job, graph, canQualify, otherQualificationA
       <fieldset className="boptest-authoring-fields" disabled={busy || !canQualify}>
       <section className="alfalfa-mapper-section"><div className="alfalfa-mapper-heading"><strong>Measurements → graph inputs</strong><small>Every controller input selects an exact advertised signal and explicit unit transform</small></div><div className="alfalfa-map-table"><table><thead><tr><th>Graph input</th><th>BOPTEST measurement</th><th>Scale</th><th>Offset</th></tr></thead><tbody>{graphInputs.map((block) => { const binding = measurementBindings[block.id] ?? { measurement: '', scale: '1', offset: '0' }; return <tr key={block.id}><th><strong>{block.label}</strong><code>{block.id}</code></th><td><select onChange={(event) => setMeasurementBindings((current) => ({ ...current, [block.id]: { ...binding, measurement: event.target.value } }))} value={binding.measurement}><option value="">Select exact measurement…</option>{testCaseContract.measurements.map((signal) => <option key={signal.name} value={signal.name}>{boptestSignalLabel(signal)}</option>)}</select></td><td><input aria-label={`${block.id} measurement scale`} onChange={(event) => setMeasurementBindings((current) => ({ ...current, [block.id]: { ...binding, scale: event.target.value } }))} value={binding.scale} /></td><td><input aria-label={`${block.id} measurement offset`} onChange={(event) => setMeasurementBindings((current) => ({ ...current, [block.id]: { ...binding, offset: event.target.value } }))} value={binding.offset} /></td></tr>; })}</tbody></table></div></section>
       <section className="alfalfa-mapper-section"><div className="alfalfa-mapper-heading"><strong>Graph outputs → BOPTEST inputs</strong><small>Command and activation channels are reviewed separately</small></div><div className="alfalfa-map-table"><table><thead><tr><th>Graph output</th><th>Command input</th><th>Activation input</th><th>Scale</th><th>Offset</th></tr></thead><tbody>{graphOutputs.map((block) => { const binding = actuatorBindings[block.id] ?? { actuator: '', activation: '', scale: '1', offset: '0' }; return <tr key={block.id}><th><strong>{block.label}</strong><code>{block.id}</code></th><td><select onChange={(event) => setActuatorBindings((current) => ({ ...current, [block.id]: { ...binding, actuator: event.target.value } }))} value={binding.actuator}><option value="">Select exact actuator…</option>{testCaseContract.inputs.filter((signal) => !signal.activation_signal).map((signal) => <option key={signal.name} value={signal.name}>{boptestSignalLabel(signal)}</option>)}</select></td><td><select onChange={(event) => setActuatorBindings((current) => ({ ...current, [block.id]: { ...binding, activation: event.target.value } }))} value={binding.activation}><option value="">No activation input</option>{testCaseContract.inputs.filter((signal) => signal.activation_signal).map((signal) => <option key={signal.name} value={signal.name}>{boptestSignalLabel(signal)}</option>)}</select></td><td><input aria-label={`${block.id} actuator scale`} onChange={(event) => setActuatorBindings((current) => ({ ...current, [block.id]: { ...binding, scale: event.target.value } }))} value={binding.scale} /></td><td><input aria-label={`${block.id} actuator offset`} onChange={(event) => setActuatorBindings((current) => ({ ...current, [block.id]: { ...binding, offset: event.target.value } }))} value={binding.offset} /></td></tr>; })}</tbody></table></div></section>
+      <section className="alfalfa-mapper-section boptest-suite-builder"><div className="alfalfa-mapper-heading"><strong>Acceptance matrix</strong><small>Stage independently scored operating conditions under one approval decision</small></div><div className="boptest-suite-controls"><label><span>Condition ID</span><input onChange={(event) => setCaseId(event.target.value)} placeholder="peak-cooling" value={caseId} /></label><button onClick={addCurrentCase} type="button">Add current condition</button>{suiteCases.length > 0 && <button onClick={() => { setSuiteCases([]); setCaseId('condition-1'); }} type="button">Return to single run</button>}</div>{suiteCases.length > 0 && <div className="boptest-suite-cases">{suiteCases.map((item, index) => <article key={item.id}><div><strong>{item.id}</strong><small>{item.scenario?.time_period?.replaceAll('_', ' ') ?? 'Explicit/default model clock'} · {item.steps} steps · {item.oracles.length} oracle{item.oracles.length === 1 ? '' : 's'}</small></div><button aria-label={`Remove ${item.id}`} onClick={() => setSuiteCases((current) => current.filter((_, itemIndex) => itemIndex !== index))} type="button">Remove</button></article>)}</div>}<p className="boptest-scenario-note">Edit the scenario, horizon, and expected behavior below, then add each condition. Once the matrix contains a condition, only staged conditions are submitted.</p></section>
       <section className="alfalfa-mapper-section boptest-scenario-builder"><div className="alfalfa-mapper-heading"><strong>Native building scenario</strong><small>Optional peak-day, price, and repeatable weather conditions are applied and read back from BOPTEST</small></div><div className="boptest-scenario-settings"><label><span>Named time period</span><input list="boptest-time-periods" onChange={(event) => { const timePeriod = event.target.value; setScenarioDraft((current) => ({ ...current, timePeriod })); if (timePeriod) { setStartTime('0'); setWarmupPeriod('0'); } }} placeholder="No named period" value={scenarioDraft.timePeriod} /><datalist id="boptest-time-periods"><option value="peak_heat_day" /><option value="peak_cool_day" /><option value="typical_heat_day" /><option value="typical_cool_day" /><option value="mix_day" /><option value="test_day" /></datalist></label><label><span>Electricity price</span><select onChange={(event) => setScenarioDraft((current) => ({ ...current, electricityPrice: event.target.value as BoptestScenarioDraft['electricityPrice'] }))} value={scenarioDraft.electricityPrice}><option value="">Model default</option><option value="constant">Constant</option><option value="dynamic">Dynamic</option><option value="highly_dynamic">Highly dynamic</option></select></label><label><span>Temperature uncertainty</span><select onChange={(event) => setScenarioDraft((current) => ({ ...current, temperatureUncertainty: event.target.value as BoptestScenarioDraft['temperatureUncertainty'] }))} value={scenarioDraft.temperatureUncertainty}><option value="">Model default</option><option value="none">Deterministic</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label><label><span>Solar uncertainty</span><select onChange={(event) => setScenarioDraft((current) => ({ ...current, solarUncertainty: event.target.value as BoptestScenarioDraft['solarUncertainty'] }))} value={scenarioDraft.solarUncertainty}><option value="">Model default</option><option value="none">Deterministic</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label><label><span>Uncertainty seed</span><input min="0" onChange={(event) => setScenarioDraft((current) => ({ ...current, seed: event.target.value }))} placeholder="Required for repeatability" step="1" type="number" value={scenarioDraft.seed} /></label></div><p className="boptest-scenario-note">Scenario availability is model-specific. The worker fails closed unless the running model applies and reports every requested condition exactly.</p></section>
       <section className="alfalfa-mapper-section boptest-run-builder"><div className="alfalfa-mapper-heading"><strong>Simulation horizon</strong><small>Oracle time is elapsed from the applied scenario or explicit start</small></div><div className="boptest-run-settings"><label><span>Steps</span><input min="1" onChange={(event) => setSteps(Number(event.target.value))} type="number" value={steps} /></label><label><span>Seconds / step</span><input min="0.001" onChange={(event) => setStepSeconds(Number(event.target.value))} step="any" type="number" value={stepSeconds} /></label><label><span>Explicit start time (s)</span><input disabled={Boolean(scenarioDraft.timePeriod)} min="0" onChange={(event) => setStartTime(event.target.value)} step="any" type="number" value={startTime} /></label><label><span>Explicit warmup (s)</span><input disabled={Boolean(scenarioDraft.timePeriod)} min="0" onChange={(event) => setWarmupPeriod(event.target.value)} step="any" type="number" value={warmupPeriod} /></label></div></section>
       <section className="alfalfa-mapper-section alfalfa-oracle-builder"><div className="alfalfa-mapper-heading"><strong>Independent expected behavior</strong><small>One steady value repeats, or enter exactly {steps} comma-separated trajectory values</small></div><div className="alfalfa-map-table"><table><thead><tr><th>Oracle ID</th><th>Signal type</th><th>Reviewed signal</th><th>Expected values</th><th>Value tolerance</th><th>Time tolerance</th><th /></tr></thead><tbody>{oracleDrafts.map((oracle, index) => <tr key={`${index}-${oracle.id}`}><td><input aria-label={`Oracle ${index + 1} ID`} onChange={(event) => setOracleDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, id: event.target.value } : item))} value={oracle.id} /></td><td><select onChange={(event) => setOracleDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, signalKind: event.target.value as BoptestOracleSignalKind, signal: '' } : item))} value={oracle.signalKind}><option value="graph_output">Controller output</option><option value="measurement">Building measurement</option></select></td><td><select onChange={(event) => setOracleDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, signal: event.target.value } : item))} value={oracle.signal}><option value="">Select reviewed signal…</option>{oracleSignals(oracle.signalKind).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></td><td><input aria-label={`${oracle.id} expected values`} onChange={(event) => setOracleDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, referenceValues: event.target.value } : item))} placeholder="e.g. 0, 0.2, 0.5" value={oracle.referenceValues} /></td><td><input aria-label={`${oracle.id} value tolerance`} min="0" onChange={(event) => setOracleDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, valueTolerance: event.target.value } : item))} step="any" type="number" value={oracle.valueTolerance} /></td><td><input aria-label={`${oracle.id} time tolerance`} min="0" onChange={(event) => setOracleDrafts((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, timeTolerance: event.target.value } : item))} step="any" type="number" value={oracle.timeTolerance} /></td><td><button disabled={oracleDrafts.length === 1} onClick={() => setOracleDrafts((current) => current.filter((_, itemIndex) => itemIndex !== index))} type="button">Remove</button></td></tr>)}</tbody></table></div><button onClick={() => setOracleDrafts((current) => [...current, { id: `behavior-${current.length + 1}`, signalKind: 'graph_output', signal: graphOutputs[0]?.id ?? '', referenceValues: '', timeTolerance: '0', valueTolerance: '0.1' }])} type="button">Add expected behavior</button></section>
@@ -405,29 +438,38 @@ function BoptestQualificationPanel({ job, graph, canQualify, otherQualificationA
   </section>;
 }
 
+type BoptestSingleEvidence = Extract<BoptestEvidence, { schema: 'bactalk.boptest-qualification/v1' }>;
+type BoptestRuntimeEvidence = BoptestSingleEvidence['runtime'];
+
 function BoptestPanel({ evidence, job, graph, canQualify, otherQualificationActive, onQualify, qualifying, onCancel, canceling }: { evidence?: ArtifactState<BoptestEvidence>; job?: QualificationJob; graph?: ControlGraph; canQualify: boolean; otherQualificationActive: boolean; onQualify: (qualification: BoptestQualification) => Promise<unknown>; qualifying: boolean; onCancel: (jobId: string) => void; canceling: boolean }) {
+  const [selectedCaseId, setSelectedCaseId] = useState('');
   if (!evidence || evidence.state === 'missing') return <BoptestQualificationPanel job={job} graph={graph} canQualify={canQualify} otherQualificationActive={otherQualificationActive} onQualify={onQualify} qualifying={qualifying} onCancel={onCancel} canceling={canceling} />;
   if (evidence.state === 'invalid') return <section className="simulation-panel empty-tier failed"><CircleAlert size={28} /><span className="eyebrow">BOPTEST PHYSICS</span><h2>Evidence is not trustworthy</h2><p>{evidence.message}</p><span className="qualification-chip failed">Release blocked</span></section>;
   const data = evidence.data;
-  const samples = data.runtime.trajectory;
-  const series = traceSeries(data);
-  const kpis = Object.entries(data.runtime.kpis).filter(([, value]) => value !== null);
-  const scenario = data.runtime.scenario_state;
+  const cases = data.schema === 'bactalk.boptest-qualification-suite/v1'
+    ? data.cases
+    : [{ id: 'single-run', status: data.status, runtime: data.runtime, oracles: data.oracles }];
+  const activeCase = cases.find((item) => item.id === selectedCaseId) ?? cases[0];
+  const samples = activeCase.runtime.trajectory;
+  const series = traceSeries(activeCase.runtime);
+  const kpis = Object.entries(activeCase.runtime.kpis).filter(([, value]) => value !== null);
+  const scenario = activeCase.runtime.scenario_state;
   return (
     <section className="simulation-panel boptest-panel">
-      <div className="simulation-panel-head"><div><span className="eyebrow">BOPTEST CLOSED LOOP</span><h2>{data.runtime.test_case}</h2><p>{data.runtime.steps} steps · {formatDuration(data.runtime.step_seconds)} per step · exact graph {data.runtime.graph_sha256.slice(0, 10)}</p></div><span className={`qualification-chip ${data.status}`}>{data.status === 'pass' ? <CheckCircle2 size={13} /> : <CircleAlert size={13} />}{data.status === 'pass' ? 'Physics passed' : 'Physics failed'}</span></div>
+      <div className="simulation-panel-head"><div><span className="eyebrow">BOPTEST CLOSED LOOP</span><h2>{activeCase.runtime.test_case}</h2><p>{data.schema === 'bactalk.boptest-qualification-suite/v1' ? `${data.case_count} operating conditions · ${data.total_steps} total steps` : `${activeCase.runtime.steps} steps`} · {formatDuration(activeCase.runtime.step_seconds)} per step · exact graph {activeCase.runtime.graph_sha256.slice(0, 10)}</p></div><span className={`qualification-chip ${data.status}`}>{data.status === 'pass' ? <CheckCircle2 size={13} /> : <CircleAlert size={13} />}{data.status === 'pass' ? 'Physics passed' : 'Physics failed'}</span></div>
+      {cases.length > 1 && <div className="boptest-suite-cases" aria-label="Qualification operating conditions">{cases.map((item) => <button className={item.id === activeCase.id ? 'active' : ''} key={item.id} onClick={() => setSelectedCaseId(item.id)} type="button"><span>{item.status === 'pass' ? <CheckCircle2 size={14} /> : <CircleAlert size={14} />}</span><div><strong>{item.id}</strong><small>{item.runtime.scenario_state?.time_period ? String(item.runtime.scenario_state.time_period).replaceAll('_', ' ') : `${item.runtime.steps} steps`}</small></div></button>)}</div>}
       {scenario && Object.keys(scenario).length > 0 && <div className="alfalfa-safety"><Waves size={18} /><div><strong>Native scenario applied and read back</strong><span>{Object.entries(scenario).map(([name, value]) => `${name.replaceAll('_', ' ')}: ${value === null ? 'deterministic' : String(value)}`).join(' · ')}</span></div></div>}
       <div className="boptest-kpis" aria-label="BOPTEST KPIs">{kpis.slice(0, 6).map(([name, value]) => <div key={name}><span>{name.replaceAll('_', ' ')}</span><strong>{formatNumber(value)}</strong></div>)}</div>
       <div className="trace-card"><div className="trace-card-head"><span><Activity size={15} />Closed-loop trajectory</span><small>Controller command + building response</small></div><TraceChart timeLabels={samples.map((sample) => formatDuration(sample.end_time))} series={series} /></div>
       <details className="simulation-data-table"><summary>Accessible step-by-step trace</summary><div><table><thead><tr><th>Step</th><th>Time</th>{series.map((item) => <th key={item.name}>{item.name}</th>)}</tr></thead><tbody>{samples.map((sample, index) => <tr key={sample.index}><th>{sample.index + 1}</th><td>{formatDuration(sample.end_time)}</td>{series.map((item) => <td key={item.name}>{formatNumber(item.values[index])}</td>)}</tr>)}</tbody></table></div></details>
-      <div className="oracle-section"><div className="trace-card-head"><span><Gauge size={15} />Independent trajectory oracles</span><small>pyfunnel tolerance scoring</small></div>{data.oracles.map((result) => <article className={result.passed ? 'pass' : 'fail'} key={result.oracle.id}><span>{result.passed ? <CheckCircle2 size={16} /> : <CircleAlert size={16} />}</span><div><strong>{result.oracle.id}</strong><small>{result.oracle.signal_kind.replaceAll('_', ' ')} · {result.oracle.signal}</small></div><dl><div><dt>Max error</dt><dd>{result.max_error === null ? '—' : formatNumber(result.max_error)}</dd></div><div><dt>Value tolerance</dt><dd>{result.oracle.absolute_value_tolerance}</dd></div><div><dt>Status</dt><dd>{result.passed ? 'Pass' : 'Fail'}</dd></div></dl></article>)}</div>
+      <div className="oracle-section"><div className="trace-card-head"><span><Gauge size={15} />Independent trajectory oracles</span><small>pyfunnel tolerance scoring · {activeCase.id}</small></div>{activeCase.oracles.map((result) => <article className={result.passed ? 'pass' : 'fail'} key={result.oracle.id}><span>{result.passed ? <CheckCircle2 size={16} /> : <CircleAlert size={16} />}</span><div><strong>{result.oracle.id}</strong><small>{result.oracle.signal_kind.replaceAll('_', ' ')} · {result.oracle.signal}</small></div><dl><div><dt>Max error</dt><dd>{result.max_error === null ? '—' : formatNumber(result.max_error)}</dd></div><div><dt>Value tolerance</dt><dd>{result.oracle.absolute_value_tolerance}</dd></div><div><dt>Status</dt><dd>{result.passed ? 'Pass' : 'Fail'}</dd></div></dl></article>)}</div>
     </section>
   );
 }
 
 type Trace = { name: string; values: Array<number | null>; lane: 'input' | 'output' | 'measurement' };
-function traceSeries(evidence: BoptestEvidence): Trace[] {
-  const trajectory = evidence.runtime.trajectory;
+function traceSeries(runtime: BoptestRuntimeEvidence): Trace[] {
+  const trajectory = runtime.trajectory;
   if (!trajectory.length) return [];
   const definitions: Array<{ section: 'graph_inputs' | 'controller_outputs' | 'measurements'; lane: Trace['lane'] }> = [
     { section: 'graph_inputs', lane: 'input' },

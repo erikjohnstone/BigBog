@@ -1683,12 +1683,13 @@ def create_app(
                 run_id,
                 client=client,
                 mapping=request.mapping,
-                oracles=request.oracles,
+                oracles=request.oracles or None,
                 steps=request.steps,
                 step_seconds=request.step_seconds,
                 start_time=request.start_time,
                 warmup_period=request.warmup_period,
                 scenario=request.scenario,
+                cases=request.cases or None,
             )
             evidence = json.loads(service.boptest_verification_path(run_id).read_text())
             return {"run": record.model_dump(mode="json"), "evidence": evidence}

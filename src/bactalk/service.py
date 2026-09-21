@@ -48,6 +48,7 @@ from bactalk.integrations.boptest_graph import (
     BoptestGraphRunner,
     BoptestProgressCallback,
     BoptestQualificationCancelled,
+    BoptestQualificationCase,
     BoptestRuntime,
     BoptestScenario,
     BoptestTrajectoryOracle,
@@ -558,18 +559,118 @@ class WorkbenchService:
         self.repository.commit_staged(run_dir, record)
         return record
 
+    @staticmethod
+    def _validate_boptest_oracles(oracles: list[BoptestTrajectoryOracle]) -> None:
+        if not oracles:
+            raise ValueError("BOPTEST qualification requires at least one trajectory oracle")
+        oracle_ids = [oracle.id for oracle in oracles]
+        if len(oracle_ids) != len(set(oracle_ids)):
+            raise ValueError("BOPTEST trajectory oracle ids must be unique")
+
+    @classmethod
+    def _score_boptest_oracles(
+        cls,
+        runtime_evidence: dict[str, object],
+        oracles: list[BoptestTrajectoryOracle],
+        output_root: Path,
+        *,
+        scorer: FunnelScorer | None = None,
+    ) -> tuple[list[dict[str, object]], dict[str, object], bool]:
+        cls._validate_boptest_oracles(oracles)
+        raw_trajectory = runtime_evidence.get("trajectory")
+        if not isinstance(raw_trajectory, list) or not raw_trajectory:
+            raise ValueError("BOPTEST runtime evidence has no valid trajectory clock")
+        first = raw_trajectory[0]
+        if not isinstance(first, dict) or not isinstance(
+            first.get("start_time"), (int, float)
+        ):
+            raise ValueError("BOPTEST runtime trajectory has an invalid start clock")
+        oracle_time_origin = float(first["start_time"])
+        test_times: list[float] = []
+        for sample in raw_trajectory:
+            if not isinstance(sample, dict) or not isinstance(
+                sample.get("end_time"), (int, float)
+            ):
+                raise ValueError("BOPTEST runtime trajectory has an invalid sample clock")
+            test_times.append(float(sample["end_time"]) - oracle_time_origin)
+
+        scorer = scorer or FunnelScorer()
+        oracle_results: list[dict[str, object]] = []
+        for index, oracle in enumerate(oracles, start=1):
+            test_values: list[float] = []
+            section = (
+                "controller_outputs"
+                if oracle.signal_kind == "graph_output"
+                else "measurements"
+            )
+            for sample in raw_trajectory:
+                if not isinstance(sample, dict) or not isinstance(sample.get(section), dict):
+                    raise ValueError(f"BOPTEST trajectory section {section!r} is invalid")
+                signals = sample[section]
+                if oracle.signal not in signals:
+                    raise ValueError(
+                        f"BOPTEST trajectory does not contain {oracle.signal_kind} "
+                        f"signal {oracle.signal!r}"
+                    )
+                raw = signals[oracle.signal]
+                if isinstance(raw, bool):
+                    value = float(raw)
+                elif isinstance(raw, (int, float)):
+                    value = float(raw)
+                else:
+                    raise ValueError(
+                        f"BOPTEST oracle signal {oracle.signal!r} is not numeric"
+                    )
+                if not math.isfinite(value):
+                    raise ValueError(
+                        f"BOPTEST oracle signal {oracle.signal!r} is not finite"
+                    )
+                test_values.append(value)
+            output_directory = output_root / f"oracle-{index:03d}-{oracle.id}"
+            result = scorer.compare(
+                oracle.reference_times,
+                oracle.reference_values,
+                test_times,
+                test_values,
+                output_directory,
+                absolute_time_tolerance=oracle.absolute_time_tolerance,
+                absolute_value_tolerance=oracle.absolute_value_tolerance,
+            )
+            oracle_results.append(
+                {
+                    "oracle": oracle.model_dump(mode="json"),
+                    "test_times": test_times,
+                    "test_values": test_values,
+                    "pyfunnel_status_code": result.status_code,
+                    "completed": result.completed,
+                    "passed": result.passed,
+                    "max_error": result.max_error,
+                    "report_directory": output_directory.name,
+                }
+            )
+        clock: dict[str, object] = {
+            "basis": "elapsed_seconds_from_run_start",
+            "runtime_time_origin": oracle_time_origin,
+        }
+        return (
+            oracle_results,
+            clock,
+            all(bool(item["passed"]) for item in oracle_results),
+        )
+
     def qualify_with_boptest(
         self,
         run_id: str,
         *,
         client: BoptestRuntime,
         mapping: BoptestGraphMap,
-        oracles: list[BoptestTrajectoryOracle],
-        steps: int,
-        step_seconds: float,
+        oracles: list[BoptestTrajectoryOracle] | None = None,
+        steps: int | None = None,
+        step_seconds: float | None = None,
         start_time: float = 0.0,
         warmup_period: float = 0.0,
         scenario: BoptestScenario | None = None,
+        cases: list[BoptestQualificationCase] | None = None,
         scorer: FunnelScorer | None = None,
         progress_callback: BoptestProgressCallback | None = None,
         cancellation_requested: BoptestCancellationCheck | None = None,
@@ -598,105 +699,168 @@ class WorkbenchService:
         self._verify_integrity(record)
         if record.boptest_verification_path:
             raise ValueError("BOPTEST qualification is append-once; create a new run to retest")
-        if not oracles:
-            raise ValueError("BOPTEST qualification requires at least one trajectory oracle")
-        oracle_ids = [oracle.id for oracle in oracles]
-        if len(oracle_ids) != len(set(oracle_ids)):
-            raise ValueError("BOPTEST trajectory oracle ids must be unique")
+        suite_mode = bool(cases)
+        if suite_mode:
+            if (
+                oracles is not None
+                or steps is not None
+                or step_seconds is not None
+                or start_time != 0.0
+                or warmup_period != 0.0
+                or scenario is not None
+            ):
+                raise ValueError(
+                    "BOPTEST suite cases cannot be combined with single-run fields"
+                )
+            assert cases is not None
+            if len(cases) > 50:
+                raise ValueError(
+                    "BOPTEST qualification suites cannot exceed 50 cases"
+                )
+            if sum(case.steps for case in cases) > 1_000_000:
+                raise ValueError(
+                    "BOPTEST qualification suites cannot exceed 1000000 steps"
+                )
+            case_ids = [case.id for case in cases]
+            if len(case_ids) != len(set(case_ids)):
+                raise ValueError("BOPTEST qualification case ids must be unique")
+        else:
+            if cases is not None:
+                raise ValueError("BOPTEST qualification cases cannot be empty")
+            if oracles is None or steps is None or step_seconds is None:
+                raise ValueError(
+                    "BOPTEST qualification requires oracles, steps, and step_seconds"
+                )
+            self._validate_boptest_oracles(oracles)
 
         graph = ControlGraph.model_validate_json(
             Path(record.graph_path).read_text(encoding="utf-8")
         )
-        runtime_evidence = BoptestGraphRunner(client, graph, mapping).run(
-            steps=steps,
-            step_seconds=step_seconds,
-            start_time=start_time,
-            warmup_period=warmup_period,
-            scenario=scenario,
-            progress_callback=progress_callback,
-            cancellation_requested=cancellation_requested,
-        )
-        if cancellation_requested is not None and cancellation_requested():
-            raise BoptestQualificationCancelled(
-                "BOPTEST qualification was canceled before trajectory scoring"
-            )
         run_dir = self.repository.run_directory(record.id)
         destination = run_dir / "boptest-verification"
         if destination.exists():
             raise ValueError("BOPTEST verification directory already exists")
         staging = Path(tempfile.mkdtemp(prefix=".boptest-verification.", dir=run_dir))
         scorer = scorer or FunnelScorer()
-        oracle_results: list[dict[str, object]] = []
         try:
-            if progress_callback is not None:
-                progress_callback("scoring_oracles", steps, steps)
-            trajectory = runtime_evidence["trajectory"]
-            oracle_time_origin = float(trajectory[0]["start_time"])
-            test_times = [
-                float(item["end_time"]) - oracle_time_origin for item in trajectory
-            ]
-            for index, oracle in enumerate(oracles, start=1):
-                test_values: list[float] = []
-                section = (
-                    "controller_outputs"
-                    if oracle.signal_kind == "graph_output"
-                    else "measurements"
-                )
-                for sample in trajectory:
-                    signals = sample[section]
-                    if oracle.signal not in signals:
-                        raise ValueError(
-                            f"BOPTEST trajectory does not contain {oracle.signal_kind} "
-                            f"signal {oracle.signal!r}"
+            runner = BoptestGraphRunner(client, graph, mapping)
+            if suite_mode:
+                assert cases is not None
+                total_steps = sum(case.steps for case in cases)
+                completed_before = 0
+                case_results: list[dict[str, object]] = []
+                for index, case in enumerate(cases, start=1):
+                    if cancellation_requested is not None and cancellation_requested():
+                        raise BoptestQualificationCancelled(
+                            f"BOPTEST qualification was canceled before case {case.id}"
                         )
-                    raw = signals[oracle.signal]
-                    if isinstance(raw, bool):
-                        value = float(raw)
-                    elif isinstance(raw, (int, float)):
-                        value = float(raw)
-                    else:
-                        raise ValueError(f"BOPTEST oracle signal {oracle.signal!r} is not numeric")
-                    if not math.isfinite(value):
-                        raise ValueError(f"BOPTEST oracle signal {oracle.signal!r} is not finite")
-                    test_values.append(value)
-                output_directory = staging / f"oracle-{index:03d}-{oracle.id}"
-                result = scorer.compare(
-                    oracle.reference_times,
-                    oracle.reference_values,
-                    test_times,
-                    test_values,
-                    output_directory,
-                    absolute_time_tolerance=oracle.absolute_time_tolerance,
-                    absolute_value_tolerance=oracle.absolute_value_tolerance,
-                )
-                oracle_results.append(
-                    {
-                        "oracle": oracle.model_dump(mode="json"),
-                        "test_times": test_times,
-                        "test_values": test_values,
-                        "pyfunnel_status_code": result.status_code,
-                        "completed": result.completed,
-                        "passed": result.passed,
-                        "max_error": result.max_error,
-                        "report_directory": output_directory.name,
-                    }
-                )
 
-            passed = all(bool(item["passed"]) for item in oracle_results)
-            evidence = {
-                "schema": "bactalk.boptest-qualification/v1",
-                "status": "pass" if passed else "fail",
-                "run_id": record.id,
-                "artifact_sha256_before_qualification": record.artifact_sha256,
-                "runtime": runtime_evidence,
-                "oracle_clock": {
-                    "basis": "elapsed_seconds_from_run_start",
-                    "runtime_time_origin": oracle_time_origin,
-                },
-                "oracles": oracle_results,
-                "approval_allowed": passed,
-                "live_building_writes": False,
-            }
+                    def case_progress(
+                        phase: str,
+                        completed: int,
+                        _total: int,
+                        *,
+                        offset: int = completed_before,
+                        case_index: int = index,
+                    ) -> None:
+                        if progress_callback is not None:
+                            progress_callback(
+                                f"case_{case_index:02d}:{phase}",
+                                offset + completed,
+                                total_steps,
+                            )
+
+                    runtime_evidence = runner.run(
+                        steps=case.steps,
+                        step_seconds=case.step_seconds,
+                        start_time=case.start_time,
+                        warmup_period=case.warmup_period,
+                        scenario=case.scenario,
+                        progress_callback=case_progress,
+                        cancellation_requested=cancellation_requested,
+                    )
+                    if cancellation_requested is not None and cancellation_requested():
+                        raise BoptestQualificationCancelled(
+                            f"BOPTEST qualification was canceled before scoring case {case.id}"
+                        )
+                    if progress_callback is not None:
+                        progress_callback(
+                            f"case_{index:02d}:scoring_oracles",
+                            completed_before + case.steps,
+                            total_steps,
+                        )
+                    case_directory = staging / f"case-{index:03d}-{case.id}"
+                    oracle_results, oracle_clock, case_passed = (
+                        self._score_boptest_oracles(
+                            runtime_evidence,
+                            case.oracles,
+                            case_directory,
+                            scorer=scorer,
+                        )
+                    )
+                    case_results.append(
+                        {
+                            "id": case.id,
+                            "status": "pass" if case_passed else "fail",
+                            "request": case.model_dump(
+                                mode="json", exclude={"oracles"}
+                            ),
+                            "runtime": runtime_evidence,
+                            "oracle_clock": oracle_clock,
+                            "oracles": oracle_results,
+                            "report_directory": case_directory.name,
+                        }
+                    )
+                    completed_before += case.steps
+                passed = all(item["status"] == "pass" for item in case_results)
+                evidence = {
+                    "schema": "bactalk.boptest-qualification-suite/v1",
+                    "status": "pass" if passed else "fail",
+                    "run_id": record.id,
+                    "artifact_sha256_before_qualification": record.artifact_sha256,
+                    "mapping": mapping.model_dump(mode="json"),
+                    "case_count": len(case_results),
+                    "total_steps": total_steps,
+                    "cases": case_results,
+                    "approval_allowed": passed,
+                    "live_building_writes": False,
+                }
+            else:
+                assert oracles is not None
+                assert steps is not None
+                assert step_seconds is not None
+                runtime_evidence = runner.run(
+                    steps=steps,
+                    step_seconds=step_seconds,
+                    start_time=start_time,
+                    warmup_period=warmup_period,
+                    scenario=scenario,
+                    progress_callback=progress_callback,
+                    cancellation_requested=cancellation_requested,
+                )
+                if cancellation_requested is not None and cancellation_requested():
+                    raise BoptestQualificationCancelled(
+                        "BOPTEST qualification was canceled before trajectory scoring"
+                    )
+                if progress_callback is not None:
+                    progress_callback("scoring_oracles", steps, steps)
+                oracle_results, oracle_clock, passed = self._score_boptest_oracles(
+                    runtime_evidence,
+                    oracles,
+                    staging,
+                    scorer=scorer,
+                )
+                evidence = {
+                    "schema": "bactalk.boptest-qualification/v1",
+                    "status": "pass" if passed else "fail",
+                    "run_id": record.id,
+                    "artifact_sha256_before_qualification": record.artifact_sha256,
+                    "runtime": runtime_evidence,
+                    "oracle_clock": oracle_clock,
+                    "oracles": oracle_results,
+                    "approval_allowed": passed,
+                    "live_building_writes": False,
+                }
             evidence_path = staging / "evidence.json"
             evidence_path.write_text(canonical_json(evidence), encoding="utf-8")
             staged_paths = sorted(path for path in staging.rglob("*") if path.is_file())

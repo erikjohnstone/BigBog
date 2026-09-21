@@ -105,6 +105,9 @@ class IntegrationReadiness:
         boptest_scenario_evidence = _load_json_object(
             self.root / ".bactalk/boptest-scenario-runtime-evidence.json"
         )
+        boptest_scenario_suite_evidence = _load_json_object(
+            self.root / ".bactalk/boptest-scenario-suite-runtime-evidence.json"
+        )
         alfalfa_runtime_pass = (
             alfalfa_evidence.get("schema") == "bactalk.alfalfa-runtime-evidence/v1"
             and alfalfa_evidence.get("status") == "pass"
@@ -247,6 +250,74 @@ class IntegrationReadiness:
             .get("oracle_clock", {})
             .get("basis")
             == "elapsed_seconds_from_run_start"
+        )
+        boptest_suite_job = boptest_scenario_suite_evidence.get(
+            "qualification_job", {}
+        )
+        boptest_suite_runtime = boptest_scenario_suite_evidence.get(
+            "runtime_evidence", {}
+        )
+        boptest_suite_cases = (
+            boptest_suite_runtime.get("cases", [])
+            if isinstance(boptest_suite_runtime, dict)
+            else []
+        )
+        boptest_suite_periods = {
+            case.get("runtime", {}).get("scenario_state", {}).get("time_period")
+            for case in boptest_suite_cases
+            if isinstance(case, dict)
+            and isinstance(case.get("runtime"), dict)
+            and isinstance(case["runtime"].get("scenario_state"), dict)
+        }
+        boptest_scenario_suite_pass = (
+            boptest_scenario_suite_evidence.get("schema")
+            == "bactalk.boptest-contractor-e2e/v2"
+            and boptest_scenario_suite_evidence.get("status") == "pass"
+            and boptest_scenario_suite_evidence.get("scenario_matrix_verified") is True
+            and boptest_scenario_suite_evidence.get("scenario_readback_verified") is True
+            and boptest_scenario_suite_evidence.get("oracle_passed") is True
+            and boptest_scenario_suite_evidence.get("room_temperature_changed") is True
+            and isinstance(boptest_suite_job, dict)
+            and boptest_suite_job.get("schema_version")
+            == "bactalk.qualification-job/v3"
+            and boptest_suite_job.get("status") == "succeeded"
+            and boptest_suite_job.get("qualification_passed") is True
+            and boptest_suite_job.get("progress", {}).get("percent") == 100.0
+            and isinstance(boptest_suite_runtime, dict)
+            and boptest_suite_runtime.get("schema")
+            == "bactalk.boptest-qualification-suite/v1"
+            and boptest_suite_runtime.get("case_count", 0) >= 2
+            and isinstance(boptest_suite_cases, list)
+            and len(boptest_suite_cases) >= 2
+            and all(
+                isinstance(case, dict)
+                and case.get("status") == "pass"
+                and case.get("oracle_clock", {}).get("basis")
+                == "elapsed_seconds_from_run_start"
+                and isinstance(case.get("oracles"), list)
+                and bool(case["oracles"])
+                and all(
+                    isinstance(oracle, dict) and oracle.get("passed") is True
+                    for oracle in case["oracles"]
+                )
+                and isinstance(case.get("runtime", {}).get("scenario_state"), dict)
+                and isinstance(case.get("runtime", {}).get("scenario_request"), dict)
+                and bool(case["runtime"]["scenario_request"])
+                and all(
+                    case["runtime"]["scenario_state"].get(key)
+                    == (
+                        None
+                        if key in {"temperature_uncertainty", "solar_uncertainty"}
+                        and value == "none"
+                        else value
+                    )
+                    for key, value in case["runtime"]["scenario_request"].items()
+                )
+                and isinstance(case.get("runtime", {}).get("trajectory"), list)
+                and bool(case["runtime"]["trajectory"])
+                for case in boptest_suite_cases
+            )
+            and {"peak_cool_day", "peak_heat_day"} <= boptest_suite_periods
         )
         durable_qualification_pass = (
             alfalfa_durable_qualification_pass
@@ -546,7 +617,10 @@ class IntegrationReadiness:
                     "scenarios, retains progress/cancellation and KPIs, and grades elapsed-time "
                     "command/building traces with pyfunnel"
                 ),
-                evidence_command="make boptest-graph-runtime boptest-scenario-runtime",
+                evidence_command=(
+                    "make boptest-graph-runtime boptest-scenario-runtime "
+                    "boptest-scenario-suite-runtime"
+                ),
                 blocker=(
                     "Install Docker/Podman to execute locally. " if not docker else ""
                 )
@@ -558,6 +632,11 @@ class IntegrationReadiness:
                 + (
                     "Run the retained native BOPTEST scenario qualification. "
                     if not boptest_scenario_pass
+                    else ""
+                )
+                + (
+                    "Run the retained multi-scenario BOPTEST qualification matrix. "
+                    if not boptest_scenario_suite_pass
                     else ""
                 )
                 + (

@@ -26,6 +26,7 @@ from bactalk.integrations.boptest_graph import (
     BoptestActuatorBinding,
     BoptestGraphMap,
     BoptestMeasurementBinding,
+    BoptestQualificationCase,
     BoptestTrajectoryOracle,
 )
 from bactalk.qualification_jobs import (
@@ -157,6 +158,7 @@ class _FakeBoptest:
         self.step = 0.0
         self.stopped = False
         self.scenario_state: dict[str, object] = {}
+        self.scenario_history: list[dict[str, object]] = []
 
     def version(self) -> dict[str, str]:
         return {"version": "qualification-test"}
@@ -187,6 +189,15 @@ class _FakeBoptest:
 
     def set_scenario(self, test_id: str, scenario: dict[str, object]) -> dict[str, object]:
         self.scenario_state = dict(scenario)
+        self.scenario_history.append(dict(scenario))
+        if "time_period" in scenario:
+            self.time = float(len(self.scenario_history) * 1_000_000)
+            return {
+                "time_period": {
+                    "time": self.time,
+                    "zon_reaTRooAir_y": 293.15,
+                }
+            }
         return dict(scenario)
 
     def get_scenario(self, test_id: str) -> dict[str, object]:
@@ -223,6 +234,121 @@ def _qualification_payload() -> BoptestQualificationPayload:
         steps=2,
         step_seconds=300.0,
     )
+
+
+def _suite_cases(*, second_expected: float = 1.0) -> list[BoptestQualificationCase]:
+    return [
+        BoptestQualificationCase(
+            id="peak-cooling",
+            oracles=[_oracle()],
+            steps=2,
+            step_seconds=300.0,
+            scenario={
+                "time_period": "peak_cool_day",
+                "electricity_price": "dynamic",
+                "temperature_uncertainty": "medium",
+                "seed": 42,
+            },
+        ),
+        BoptestQualificationCase(
+            id="peak-heating",
+            oracles=[_oracle(expected=second_expected)],
+            steps=2,
+            step_seconds=300.0,
+            scenario={
+                "time_period": "peak_heat_day",
+                "electricity_price": "constant",
+            },
+        ),
+    ]
+
+
+def test_boptest_payload_requires_one_unambiguous_qualification_mode() -> None:
+    with pytest.raises(ValueError, match="requires either cases or single-run"):
+        BoptestQualificationPayload(mapping=_mapping())
+    with pytest.raises(ValueError, match="cannot be combined"):
+        BoptestQualificationPayload(
+            mapping=_mapping(),
+            cases=_suite_cases(),
+            oracles=[_oracle()],
+            steps=2,
+            step_seconds=300.0,
+        )
+    with pytest.raises(ValueError, match="case ids must be unique"):
+        BoptestQualificationPayload(
+            mapping=_mapping(),
+            cases=[_suite_cases()[0], _suite_cases()[0]],
+        )
+
+
+def test_multi_scenario_boptest_suite_is_one_signed_approval_boundary(
+    tmp_path: Path,
+) -> None:
+    service = WorkbenchService(RunRepository(tmp_path / "runs"))
+    candidate = service.create_run(_job())
+    fake = _FakeBoptest()
+    progress: list[tuple[str, int, int]] = []
+
+    qualified = service.qualify_with_boptest(
+        candidate.id,
+        client=fake,
+        mapping=_mapping(),
+        cases=_suite_cases(),
+        progress_callback=lambda phase, completed, total: progress.append(
+            (phase, completed, total)
+        ),
+    )
+
+    assert qualified.status == RunStatus.READY_FOR_REVIEW
+    evidence = json.loads(Path(qualified.boptest_verification_path or "").read_text())
+    assert evidence["schema"] == "bactalk.boptest-qualification-suite/v1"
+    assert evidence["status"] == "pass"
+    assert evidence["approval_allowed"] is True
+    assert evidence["case_count"] == 2
+    assert evidence["total_steps"] == 4
+    assert [case["id"] for case in evidence["cases"]] == [
+        "peak-cooling",
+        "peak-heating",
+    ]
+    assert [case["runtime"]["scenario_state"]["time_period"] for case in evidence["cases"]] == [
+        "peak_cool_day",
+        "peak_heat_day",
+    ]
+    assert [case["oracle_clock"]["runtime_time_origin"] for case in evidence["cases"]] == [
+        1_000_000.0,
+        2_000_000.0,
+    ]
+    assert progress[-1] == ("case_02:scoring_oracles", 4, 4)
+    assert fake.scenario_history == [
+        {
+            "time_period": "peak_cool_day",
+            "electricity_price": "dynamic",
+            "temperature_uncertainty": "medium",
+            "seed": 42,
+        },
+        {"time_period": "peak_heat_day", "electricity_price": "constant"},
+    ]
+    service.verify_integrity(candidate.id)
+
+
+def test_one_failed_boptest_suite_case_blocks_the_whole_candidate(tmp_path: Path) -> None:
+    service = WorkbenchService(RunRepository(tmp_path / "runs"))
+    candidate = service.create_run(_job())
+
+    qualified = service.qualify_with_boptest(
+        candidate.id,
+        client=_FakeBoptest(),
+        mapping=_mapping(),
+        cases=_suite_cases(second_expected=0.0),
+    )
+
+    assert qualified.status == RunStatus.FAILED
+    evidence = json.loads(Path(qualified.boptest_verification_path or "").read_text())
+    assert evidence["status"] == "fail"
+    assert [case["status"] for case in evidence["cases"]] == ["pass", "fail"]
+    assert evidence["approval_allowed"] is False
+    with pytest.raises(ApprovalRequiredError):
+        service.approve(candidate.id, "Alex Engineer")
 
 
 def test_passing_boptest_qualification_is_signed_reviewable_and_tamper_evident(
@@ -405,6 +531,35 @@ def test_boptest_qualification_is_available_through_the_product_api(tmp_path: Pa
     }
 
 
+def test_multi_scenario_boptest_suite_is_available_through_the_product_api(
+    tmp_path: Path,
+) -> None:
+    client = TestClient(
+        create_app(tmp_path / "runs", boptest_client_factory=_FakeBoptest)
+    )
+    run_id = client.post("/api/runs", json=_job().model_dump(mode="json")).json()["id"]
+
+    response = client.post(
+        f"/api/runs/{run_id}/verify/boptest",
+        json={
+            "mapping": _mapping().model_dump(mode="json"),
+            "cases": [case.model_dump(mode="json") for case in _suite_cases()],
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    assert response.json()["run"]["status"] == "ready_for_review"
+    assert response.json()["evidence"]["schema"] == (
+        "bactalk.boptest-qualification-suite/v1"
+    )
+    assert response.json()["evidence"]["case_count"] == 2
+    retained = client.get(f"/api/runs/{run_id}/verify/boptest")
+    assert [case["id"] for case in retained.json()["cases"]] == [
+        "peak-cooling",
+        "peak-heating",
+    ]
+
+
 def test_durable_boptest_executor_retains_progress_and_result(tmp_path: Path) -> None:
     runs = RunRepository(tmp_path / "runs")
     service = WorkbenchService(runs)
@@ -431,6 +586,37 @@ def test_durable_boptest_executor_retains_progress_and_result(tmp_path: Path) ->
     assert completed.progress.percent == 100
     assert completed.qualification_passed is True
     assert completed.result_artifact_sha256 == runs.get(candidate.id).artifact_sha256
+
+
+def test_durable_boptest_executor_runs_the_complete_scenario_matrix(
+    tmp_path: Path,
+) -> None:
+    runs = RunRepository(tmp_path / "runs")
+    service = WorkbenchService(runs)
+    candidate = service.create_run(_job())
+    jobs = QualificationJobRepository(tmp_path / "qualification-jobs")
+    payload = BoptestQualificationPayload(mapping=_mapping(), cases=_suite_cases())
+    job = jobs.create_boptest(
+        run_id=candidate.id,
+        candidate_artifact_sha256=candidate.artifact_sha256,
+        payload=payload,
+    )
+
+    assert job.progress.total_steps == 4
+    assert jobs.payload(job.id) == payload
+    completed = BoptestQualificationJobExecutor(
+        jobs,
+        service,
+        client_factory=_FakeBoptest,
+        worker_id="matrix-worker",
+    ).execute(job.id)
+
+    assert completed.status == QualificationJobStatus.SUCCEEDED
+    assert completed.qualification_passed is True
+    assert completed.progress.completed_steps == 4
+    assert completed.progress.total_steps == 4
+    evidence = json.loads(service.boptest_verification_path(candidate.id).read_text())
+    assert evidence["case_count"] == 2
 
 
 def test_durable_boptest_refuses_a_candidate_changed_after_submission(

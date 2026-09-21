@@ -161,6 +161,33 @@ class BoptestTrajectoryOracle(BaseModel):
         return self
 
 
+class BoptestQualificationCase(BaseModel):
+    """One independently scored operating condition in a qualification suite."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(pattern=r"^[A-Za-z][A-Za-z0-9_.-]{0,119}$")
+    oracles: list[BoptestTrajectoryOracle] = Field(min_length=1, max_length=1_000)
+    steps: int = Field(ge=1, le=100_000)
+    step_seconds: float = Field(gt=0, le=86_400, allow_inf_nan=False)
+    start_time: float = Field(default=0.0, ge=0, allow_inf_nan=False)
+    warmup_period: float = Field(default=0.0, ge=0, allow_inf_nan=False)
+    scenario: BoptestScenario | None = None
+
+    @model_validator(mode="after")
+    def valid_case(self) -> BoptestQualificationCase:
+        oracle_ids = [oracle.id for oracle in self.oracles]
+        if len(oracle_ids) != len(set(oracle_ids)):
+            raise ValueError("BOPTEST trajectory oracle ids must be unique within a case")
+        if self.scenario is not None and self.scenario.time_period is not None and (
+            self.start_time != 0.0 or self.warmup_period != 0.0
+        ):
+            raise ValueError(
+                "named BOPTEST time periods cannot be combined with explicit start or warmup"
+            )
+        return self
+
+
 class BoptestGraphRunner:
     """Run one complete typed BACTalk graph against a real BOPTEST FMU.
 

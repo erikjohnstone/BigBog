@@ -32,6 +32,7 @@ from bactalk.integrations.boptest import BoptestClient
 from bactalk.integrations.boptest_graph import (
     BoptestGraphMap,
     BoptestQualificationCancelled,
+    BoptestQualificationCase,
     BoptestRuntime,
     BoptestScenario,
     BoptestTrajectoryOracle,
@@ -78,15 +79,45 @@ class BoptestQualificationPayload(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     mapping: BoptestGraphMap
-    oracles: list[BoptestTrajectoryOracle] = Field(min_length=1, max_length=1_000)
-    steps: int = Field(ge=1, le=100_000)
-    step_seconds: float = Field(gt=0, le=86_400, allow_inf_nan=False)
+    oracles: list[BoptestTrajectoryOracle] = Field(default_factory=list, max_length=1_000)
+    steps: int | None = Field(default=None, ge=1, le=100_000)
+    step_seconds: float | None = Field(
+        default=None, gt=0, le=86_400, allow_inf_nan=False
+    )
     start_time: float = Field(default=0.0, ge=0, allow_inf_nan=False)
     warmup_period: float = Field(default=0.0, ge=0, allow_inf_nan=False)
     scenario: BoptestScenario | None = None
+    cases: list[BoptestQualificationCase] = Field(default_factory=list, max_length=50)
 
     @model_validator(mode="after")
-    def unambiguous_scenario_clock(self) -> BoptestQualificationPayload:
+    def valid_qualification_mode(self) -> BoptestQualificationPayload:
+        if self.cases:
+            if (
+                self.oracles
+                or self.steps is not None
+                or self.step_seconds is not None
+                or self.start_time != 0.0
+                or self.warmup_period != 0.0
+                or self.scenario is not None
+            ):
+                raise ValueError(
+                    "BOPTEST suite cases cannot be combined with legacy single-run fields"
+                )
+            case_ids = [case.id for case in self.cases]
+            if len(case_ids) != len(set(case_ids)):
+                raise ValueError("BOPTEST qualification case ids must be unique")
+            if sum(case.steps for case in self.cases) > 1_000_000:
+                raise ValueError("BOPTEST qualification suites cannot exceed 1000000 steps")
+            return self
+
+        if not self.oracles or self.steps is None or self.step_seconds is None:
+            raise ValueError(
+                "BOPTEST qualification requires either cases or single-run oracles, steps, "
+                "and step_seconds"
+            )
+        oracle_ids = [oracle.id for oracle in self.oracles]
+        if len(oracle_ids) != len(set(oracle_ids)):
+            raise ValueError("BOPTEST trajectory oracle ids must be unique")
         if self.scenario is not None and self.scenario.time_period is not None and (
             self.start_time != 0.0 or self.warmup_period != 0.0
         ):
@@ -94,6 +125,14 @@ class BoptestQualificationPayload(BaseModel):
                 "named BOPTEST time periods cannot be combined with explicit start or warmup"
             )
         return self
+
+    @property
+    def total_steps(self) -> int:
+        if self.cases:
+            return sum(case.steps for case in self.cases)
+        if self.steps is None:  # pragma: no cover - guarded by model validation
+            raise ValueError("single-run BOPTEST payload has no step count")
+        return self.steps
 
 
 class QualificationJobProgress(BaseModel):
@@ -425,7 +464,7 @@ class QualificationJobRepository:
                     progress=QualificationJobProgress(
                         phase="queued",
                         completed_steps=0,
-                        total_steps=payload.steps,
+                        total_steps=payload.total_steps,
                         percent=0,
                     ),
                 )
@@ -917,12 +956,13 @@ class BoptestQualificationJobExecutor:
                     record.run_id,
                     client=client,
                     mapping=payload.mapping,
-                    oracles=payload.oracles,
+                    oracles=payload.oracles or None,
                     steps=payload.steps,
                     step_seconds=payload.step_seconds,
                     start_time=payload.start_time,
                     warmup_period=payload.warmup_period,
                     scenario=payload.scenario,
+                    cases=payload.cases or None,
                     progress_callback=progress,
                     cancellation_requested=canceled,
                     expected_artifact_sha256=record.candidate_artifact_sha256,

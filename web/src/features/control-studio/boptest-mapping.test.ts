@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { BoptestSignal, BoptestTestCaseContract, ControlGraph } from '../../api/client';
-import { boptestSignalLabel, buildBoptestMapping, buildBoptestOracles, buildBoptestQualification, buildBoptestScenario, exactBoptestSignalMatch, validateBoptestQualificationBoundary } from './boptest-mapping';
+import { boptestSignalLabel, buildBoptestMapping, buildBoptestOracles, buildBoptestQualification, buildBoptestQualificationCase, buildBoptestQualificationSuite, buildBoptestScenario, exactBoptestSignalMatch, validateBoptestQualificationBoundary } from './boptest-mapping';
 
 const graphInputs: ControlGraph['blocks'] = [{ id: 'zone_temperature', kind: 'numeric_input', label: 'Zone Temperature', x: 0, y: 0, config: {} }];
 const graphOutputs: ControlGraph['blocks'] = [{ id: 'fan_command', kind: 'numeric_output', label: 'Fan Command', x: 0, y: 0, config: {} }];
@@ -111,5 +111,26 @@ describe('BOPTEST qualification authoring', () => {
     const scenario = { timePeriod: 'peak_heat_day', electricityPrice: '' as const, temperatureUncertainty: '' as const, solarUncertainty: '' as const, seed: '' };
     expect(buildBoptestQualification('bestest_air', graphInputs, graphOutputs, measurements, actuators, oracles, 1, 300, '0', '0', scenario).scenario).toEqual({ time_period: 'peak_heat_day' });
     expect(() => buildBoptestQualification('bestest_air', graphInputs, graphOutputs, measurements, actuators, oracles, 1, 300, '60', '0', scenario)).toThrow(/cannot be combined/);
+  });
+
+  it('builds a bounded multi-condition qualification suite with one shared mapping', () => {
+    const measurements = { zone_temperature: { measurement: 'zone', scale: '1', offset: '0' } };
+    const actuators = { fan_command: { actuator: 'fan', activation: '', scale: '1', offset: '0' } };
+    const oracles = [{ id: 'fan', signalKind: 'graph_output' as const, signal: 'fan_command', referenceValues: '1', timeTolerance: '0', valueTolerance: '0.1' }];
+    const cool = buildBoptestQualification('bestest_air', graphInputs, graphOutputs, measurements, actuators, oracles, 2, 300, '0', '0', { timePeriod: 'peak_cool_day', electricityPrice: 'dynamic', temperatureUncertainty: '', solarUncertainty: '', seed: '' });
+    const heat = buildBoptestQualification('bestest_air', graphInputs, graphOutputs, measurements, actuators, oracles, 3, 300, '0', '0', { timePeriod: 'peak_heat_day', electricityPrice: 'constant', temperatureUncertainty: '', solarUncertainty: '', seed: '' });
+    const suite = buildBoptestQualificationSuite(cool.mapping, [
+      buildBoptestQualificationCase('peak-cooling', cool),
+      buildBoptestQualificationCase('peak-heating', heat),
+    ]);
+    expect(suite).toMatchObject({
+      mapping: { test_case: 'bestest_air' },
+      cases: [
+        { id: 'peak-cooling', steps: 2, scenario: { time_period: 'peak_cool_day' } },
+        { id: 'peak-heating', steps: 3, scenario: { time_period: 'peak_heat_day' } },
+      ],
+    });
+    expect(() => buildBoptestQualificationSuite(cool.mapping, [suite.cases[0], suite.cases[0]])).toThrow(/unique/);
+    expect(() => buildBoptestQualificationCase('bad id', cool)).toThrow(/invalid/);
   });
 });
