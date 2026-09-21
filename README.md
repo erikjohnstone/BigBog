@@ -53,7 +53,7 @@ This repository is an expanding product foundation, **not yet a program-any-buil
 
 ### Minimal install
 
-A base install is a supported configuration. It needs only Python 3.11+ and
+A base install is a supported configuration. It needs only Python 3.11 to 3.13 (3.14 is not supported yet; if `python3` is 3.14, run `make install PYTHON=python3.13`) and
 gives you the whole contractor workflow -- intake, typed graph generation,
 deterministic tests, review, approval, and export -- with the optional
 simulation and AI capabilities reported as unavailable rather than crashing.
@@ -85,7 +85,7 @@ Prerequisites, and what each unlocks:
 
 | Prerequisite | Needed for | Install |
 | --- | --- | --- |
-| Python 3.11+ | everything | your platform's package manager |
+| Python 3.11 to 3.13 | everything | your platform's package manager (`brew install python@3.13` on macOS) |
 | Node.js 20+ and npm | frontend, ctrl-flow, modelica-json, Haxall | <https://nodejs.org> |
 | Rust with `rustup` | Open Control Engine runner, Rumoca flattener | <https://rustup.rs> |
 | JDK with `javac` | compiling generated ProgramObject qualification kernels | `apt install default-jdk` |

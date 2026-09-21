@@ -19,8 +19,14 @@ web-lint:
 web-sbom:
 	cd web && npm run sbom
 
+# Override with `make install PYTHON=python3.13` when `python3` is a version the
+# stack has not been proven on (3.14 hangs while loading the Brick ontology on macOS).
+PYTHON ?= python3
+
 install:
-	python3 -m venv .venv
+	@$(PYTHON) -c 'import sys; v=sys.version_info; ok=(3,11)<=v[:2]<(3,14); print(f"using Python {v.major}.{v.minor} at {sys.executable}"); sys.exit(0 if ok else 1)' \
+		|| { echo "BACTalk supports Python 3.11 to 3.13; run: make install PYTHON=python3.13"; exit 1; }
+	$(PYTHON) -m venv .venv
 	.venv/bin/python -m pip install -e '.[test]'
 
 install-suite:

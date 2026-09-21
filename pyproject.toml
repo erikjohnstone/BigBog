@@ -7,7 +7,7 @@ name = "bactalk"
 version = "0.1.0"
 description = "A human-gated AI programming workbench for building controls"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.14"
 dependencies = [
   "fastapi>=0.116,<1",
   "brickschema>=0.7.8,<1",

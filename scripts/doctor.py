@@ -107,14 +107,23 @@ def which_version(tool: str, args: list[str] | None = None) -> str | None:
 def check_interpreters(report: Report) -> None:
     section = "interpreters"
     major, minor = sys.version_info[:2]
+    supported = (3, 11) <= (major, minor) < (3, 14)
+    remediation = ""
+    if (major, minor) < (3, 11):
+        remediation = "Install Python 3.11 to 3.13"
+    elif (major, minor) >= (3, 14):
+        remediation = (
+            "Python 3.14 is not supported yet (loading the Brick ontology hangs on macOS); "
+            "install Python 3.13 and run `make install PYTHON=python3.13`"
+        )
     report.add(
         Finding(
             section,
             "python",
-            READY if (major, minor) >= (3, 11) else MISSING,
+            READY if supported else MISSING,
             detail=f"{sys.version.split()[0]} at {sys.executable}",
-            remediation="" if (major, minor) >= (3, 11) else "Install Python 3.11 or newer",
-            expected=">=3.11",
+            remediation=remediation,
+            expected=">=3.11,<3.14",
             actual=f"{major}.{minor}",
         )
     )
