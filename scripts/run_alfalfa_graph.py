@@ -160,7 +160,7 @@ def main() -> int:
     }
     evidence["not_proven"] = [
         "Niagara import, execution, restart, or readback",
-        "BACnet protocol attachment or controller hardware-in-loop behavior",
+        "BACnet protocol attachment in this direct graph-only smoke lane",
         "production Linux capacity or high availability",
         "job-specific model and signal-map authority",
         "field-equipment or occupied-building behavior",

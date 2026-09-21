@@ -14,6 +14,9 @@ from run_alfalfa_graph import DEFAULT_MODEL, _graph, _mapping
 from bactalk.api import create_app
 from bactalk.domain import (
     AcceptanceCase,
+    BacnetDeviceSpec,
+    BacnetObjectSpec,
+    BacnetScan,
     DataType,
     JobSpec,
     OutputExpectation,
@@ -59,6 +62,8 @@ def _job() -> JobSpec:
                 role=PointRole.SENSOR,
                 units="K",
                 default=294.0,
+                bacnet_device_instance=120_001,
+                bacnet_object="analog-input,1",
             ),
             PointSpec(
                 name="fan_command",
@@ -67,6 +72,8 @@ def _job() -> JobSpec:
                 role=PointRole.COMMAND,
                 units="fraction",
                 default=0.0,
+                bacnet_device_instance=120_001,
+                bacnet_object="analog-output,1",
             ),
         ],
         control_graph=graph,
@@ -77,6 +84,34 @@ def _job() -> JobSpec:
                 expectations=[OutputExpectation(target="fan_command", value=0.37)],
             )
         ],
+        bacnet_scan=BacnetScan(
+            source="isolated Alfalfa product qualification fixture",
+            devices=[
+                BacnetDeviceSpec(
+                    device_instance=120_001,
+                    address="192.0.2.101/24:47808",
+                    name="Whole-building AHU virtual controller",
+                    vendor_id=999,
+                    objects=[
+                        BacnetObjectSpec(
+                            object_id="analog-input,1",
+                            name="Zone Temperature",
+                            data_type=DataType.NUMERIC,
+                            units="K",
+                            present_value=294.0,
+                        ),
+                        BacnetObjectSpec(
+                            object_id="analog-output,1",
+                            name="Fan Command",
+                            data_type=DataType.NUMERIC,
+                            writable=True,
+                            units="noUnits",
+                            present_value=0.0,
+                        ),
+                    ],
+                )
+            ],
+        ),
     )
 
 
@@ -118,6 +153,7 @@ def main() -> int:
             "steps": 5,
             "step_seconds": 60.0,
             "start": "2019-01-01T00:00:00",
+            "transport": "bacnet_ip_loopback",
         }
         with model.open("rb") as stream:
             qualified = client.post(
@@ -173,6 +209,11 @@ def main() -> int:
             },
             "live_building_writes": False,
         }
+        transport = retained.json().get("control_transport")
+        if not isinstance(transport, dict) or transport.get("kind") != "bacnet_ip_loopback":
+            raise RuntimeError("product qualification did not traverse BACnet/IP loopback")
+        if not transport.get("readbacks_matched"):
+            raise RuntimeError("BACnet/IP qualification did not retain matched command readbacks")
         write_evidence_atomic(arguments.output, evidence)
         print(json.dumps(evidence, indent=2, sort_keys=True))
     return 0

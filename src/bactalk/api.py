@@ -158,6 +158,7 @@ class AlfalfaQualificationRequest(BaseModel):
     steps: int = Field(ge=1, le=100_000)
     step_seconds: float = Field(gt=0, le=86_400, allow_inf_nan=False)
     start: datetime
+    transport: Literal["direct", "bacnet_ip_loopback"] = "direct"
 
 
 class HaxallValidationRequest(BaseModel):
@@ -1532,18 +1533,32 @@ def create_app(
                 response.raise_for_status()
                 body = response.json()
                 server_version = body.get("payload", body) if isinstance(body, dict) else body
-            record = service.qualify_with_alfalfa(
-                run_id,
-                client=client,
-                mapping=request.mapping,
-                model_bytes=model_bytes,
-                model_filename=model_file.filename or "model.fmu",
-                steps=request.steps,
-                step_seconds=request.step_seconds,
-                start=request.start,
-                server_version=server_version,
-                client_version=metadata.version("alfalfa-client"),
-            )
+            if request.transport == "bacnet_ip_loopback":
+                record = await service.qualify_with_alfalfa_bacnet(
+                    run_id,
+                    client=client,
+                    mapping=request.mapping,
+                    model_bytes=model_bytes,
+                    model_filename=model_file.filename or "model.fmu",
+                    steps=request.steps,
+                    step_seconds=request.step_seconds,
+                    start=request.start,
+                    server_version=server_version,
+                    client_version=metadata.version("alfalfa-client"),
+                )
+            else:
+                record = service.qualify_with_alfalfa(
+                    run_id,
+                    client=client,
+                    mapping=request.mapping,
+                    model_bytes=model_bytes,
+                    model_filename=model_file.filename or "model.fmu",
+                    steps=request.steps,
+                    step_seconds=request.step_seconds,
+                    start=request.start,
+                    server_version=server_version,
+                    client_version=metadata.version("alfalfa-client"),
+                )
             evidence = json.loads(service.alfalfa_verification_path(run_id).read_text())
             return {"run": record.model_dump(mode="json"), "evidence": evidence}
         except KeyError as exc:

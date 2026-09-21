@@ -424,10 +424,13 @@ class IntegrationReadiness:
                 product_path=(
                     "Digest-pinned isolated service plus hardened scalar-output worker; "
                     "external-clock FMU lifecycle and typed graph coupling retain signal, "
-                    "command/echo, trajectory, and clean-stop evidence"
+                    "command/echo, trajectory, and clean-stop evidence; the contractor lane "
+                    "can close every graph input/output through fresh-port, loopback-only "
+                    "BACnet/IP reads, priority writes, and readbacks"
                 ),
                 evidence_command=(
-                    "make alfalfa-runtime-up alfalfa-runtime-smoke alfalfa-graph-smoke"
+                    "make alfalfa-runtime-up alfalfa-runtime-smoke alfalfa-graph-smoke "
+                    "alfalfa-product-smoke"
                 ),
                 blocker=(
                     (
@@ -447,7 +450,8 @@ class IntegrationReadiness:
                     )
                     + (
                         "Production Linux capacity, job-specific model/map authority, "
-                        "Niagara/BACnet attachment, HA, and field qualification remain."
+                        "licensed Niagara controller attachment, external-controller HIL, "
+                        "HA, and field qualification remain."
                     )
                 ),
             ),
@@ -460,13 +464,16 @@ class IntegrationReadiness:
                 license_name="BSD-3-Clause",
                 role="Client API for Alfalfa virtual buildings",
                 product_path="AlfalfaClient-backed retained FMU and typed-graph qualification",
-                evidence_command="make alfalfa-runtime-smoke alfalfa-graph-smoke",
+                evidence_command=(
+                    "make alfalfa-runtime-smoke alfalfa-graph-smoke alfalfa-product-smoke"
+                ),
                 blocker=(
                     "Needs a pinned running Alfalfa service and retained trajectory evidence."
                     if not alfalfa_runtime_pass
                     else (
-                        "Production Linux capacity, job-specific model/map authority, and "
-                        "Niagara/BACnet target coupling remain."
+                        "Production Linux capacity, job-specific model/map authority, "
+                        "licensed Niagara controller coupling, HA, and field qualification "
+                        "remain."
                     )
                 ),
             ),

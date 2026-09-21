@@ -29,6 +29,10 @@ from bactalk.domain import (
 )
 from bactalk.intake import validate_template_bog
 from bactalk.integrations.alfalfa import AlfalfaClientLike
+from bactalk.integrations.alfalfa_bacnet import (
+    AlfalfaBacnetGraphRunner,
+    prepare_runtime_bacnet_lab,
+)
 from bactalk.integrations.alfalfa_graph import AlfalfaGraphMap, AlfalfaGraphRunner
 from bactalk.integrations.bacnet_lab import build_bacnet_lab_export
 from bactalk.integrations.boptest_graph import (
@@ -740,6 +744,106 @@ class WorkbenchService:
             model_path.write_bytes(model_bytes)
             inspect_fmu_archive(model_path)
             evidence = AlfalfaGraphRunner(client, graph, mapping).run(
+                model_path,
+                steps=steps,
+                step_seconds=step_seconds,
+                start=start,
+                server_version=server_version,
+                client_version=client_version,
+            )
+            evidence.update(
+                {
+                    "bactalk_run_id": record.id,
+                    "artifact_sha256_before_qualification": record.artifact_sha256,
+                    "model_original_filename": model_filename,
+                    "approval_allowed": True,
+                }
+            )
+            evidence_path = staging / "evidence.json"
+            evidence_path.write_text(canonical_json(evidence), encoding="utf-8")
+            staged_paths = sorted(path for path in staging.rglob("*") if path.is_file())
+            os.replace(staging, destination)
+        except BaseException:
+            if staging.exists():
+                shutil.rmtree(staging)
+            raise
+
+        final_paths = [destination / path.relative_to(staging) for path in staged_paths]
+        final_evidence_path = destination / "evidence.json"
+        digest = artifact_hash(*self._record_artifact_paths(record), *final_paths)
+        updated = record.model_copy(
+            update={
+                "alfalfa_verification_path": str(final_evidence_path),
+                "verification_artifact_paths": [str(path) for path in final_paths],
+                "artifact_sha256": digest,
+            }
+        )
+        try:
+            self.repository.save(updated)
+        except BaseException:
+            shutil.rmtree(destination)
+            raise
+        return updated
+
+    async def qualify_with_alfalfa_bacnet(
+        self,
+        run_id: str,
+        *,
+        client: AlfalfaClientLike,
+        mapping: AlfalfaGraphMap,
+        model_bytes: bytes,
+        model_filename: str,
+        steps: int,
+        step_seconds: float,
+        start: datetime,
+        server_version: object = None,
+        client_version: str | None = None,
+    ) -> RunRecord:
+        """Qualify a graph/FMU loop through the run's signed virtual BACnet devices."""
+
+        record = self.repository.get(run_id)
+        if record.status != RunStatus.READY_FOR_REVIEW:
+            raise ApprovalRequiredError(
+                "Alfalfa BACnet qualification requires a passing candidate awaiting review"
+            )
+        self._verify_integrity(record)
+        if (
+            record.verification_artifact_paths
+            or record.boptest_verification_path
+            or record.alfalfa_verification_path
+        ):
+            raise ValueError("runtime qualification is append-once; create a new run to retest")
+        if record.bacnet_lab_manifest_path is None:
+            raise ValueError(
+                "BACnet-coupled Alfalfa qualification requires a mapped BACnet scan"
+            )
+        if not model_bytes:
+            raise ValueError("Alfalfa FMU is empty")
+        if len(model_bytes) > MAX_ALFALFA_MODEL_BYTES:
+            raise ValueError(
+                f"Alfalfa FMU exceeds the {MAX_ALFALFA_MODEL_BYTES}-byte admission limit"
+            )
+        safe_name = _safe_source_name(model_filename)
+        if Path(safe_name).suffix.lower() != ".fmu":
+            raise ValueError("Alfalfa model must use the .fmu extension")
+
+        graph = ControlGraph.model_validate_json(
+            Path(record.graph_path).read_text(encoding="utf-8")
+        )
+        run_dir = self.repository.run_directory(record.id)
+        destination = run_dir / "alfalfa-verification"
+        if destination.exists():
+            raise ValueError("Alfalfa verification directory already exists")
+        staging = Path(tempfile.mkdtemp(prefix=".alfalfa-verification.", dir=run_dir))
+        try:
+            model_path = staging / safe_name
+            model_path.write_bytes(model_bytes)
+            inspect_fmu_archive(model_path)
+            lab = prepare_runtime_bacnet_lab(
+                Path(record.bacnet_lab_manifest_path),
+                staging / "bacnet-runtime",
+            )
+            evidence = await AlfalfaBacnetGraphRunner(client, graph, mapping, lab).run(
                 model_path,
                 steps=steps,
                 step_seconds=step_seconds,

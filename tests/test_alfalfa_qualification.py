@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import io
 import json
 import zipfile
@@ -12,6 +13,9 @@ from fastapi.testclient import TestClient
 from bactalk.api import create_app
 from bactalk.domain import (
     AcceptanceCase,
+    BacnetDeviceSpec,
+    BacnetObjectSpec,
+    BacnetScan,
     Block,
     BlockKind,
     ControlGraph,
@@ -132,6 +136,54 @@ def _mapping() -> AlfalfaGraphMap:
     )
 
 
+def _bacnet_job() -> JobSpec:
+    job = _job()
+    points = [
+        point.model_copy(
+            update={
+                "bacnet_device_instance": 120_001,
+                "bacnet_object": (
+                    "analog-input,1" if point.name == "room_temp" else "analog-output,1"
+                ),
+            }
+        )
+        for point in job.points
+    ]
+    return job.model_copy(
+        update={
+            "points": points,
+            "bacnet_scan": BacnetScan(
+                source="isolated Alfalfa BACnet qualification fixture",
+                devices=[
+                    BacnetDeviceSpec(
+                        device_instance=120_001,
+                        address="192.0.2.101/24:47808",
+                        name="AHU-1 virtual controller",
+                        vendor_id=999,
+                        objects=[
+                            BacnetObjectSpec(
+                                object_id="analog-input,1",
+                                name="Room Temperature",
+                                data_type=DataType.NUMERIC,
+                                units="K",
+                                present_value=293.15,
+                            ),
+                            BacnetObjectSpec(
+                                object_id="analog-output,1",
+                                name="Fan Command",
+                                data_type=DataType.NUMERIC,
+                                writable=True,
+                                units="percent",
+                                present_value=0.0,
+                            ),
+                        ],
+                    )
+                ],
+            ),
+        }
+    )
+
+
 def _fmu_bytes() -> bytes:
     stream = io.BytesIO()
     with zipfile.ZipFile(stream, "w", compression=zipfile.ZIP_DEFLATED) as archive:
@@ -213,6 +265,228 @@ class _FakeAlfalfa:
 
     def stop(self, _run_id: str, wait_for_status: bool = True) -> None:
         self.stopped = True
+
+
+class _FakeBooleanAlfalfa(_FakeAlfalfa):
+    def get_inputs(self, _run_id: str) -> list[str]:
+        return ["run_u"]
+
+    def set_inputs(self, _run_id: str, inputs: dict[str, float]) -> None:
+        self.command = inputs["run_u"]
+
+    def get_outputs(self, _run_id: str) -> dict[str, float | bool]:
+        return {"enable_status": True, "run_y": self.command}
+
+
+class _FakeModeAlfalfa(_FakeAlfalfa):
+    def get_inputs(self, _run_id: str) -> list[str]:
+        return ["mode_u"]
+
+    def set_inputs(self, _run_id: str, inputs: dict[str, float]) -> None:
+        self.command = inputs["mode_u"]
+
+    def get_outputs(self, _run_id: str) -> dict[str, float]:
+        return {"mode_status": 2.0, "mode_y": self.command}
+
+
+def _boolean_job() -> JobSpec:
+    graph = ControlGraph(
+        name="BooleanBacnetController",
+        blocks=[
+            Block(
+                id="enable_status",
+                kind=BlockKind.BOOLEAN_INPUT,
+                label="Enable status",
+                config={"default": True},
+            ),
+            Block(
+                id="run_command",
+                kind=BlockKind.BOOLEAN_OUTPUT,
+                label="Run command",
+            ),
+        ],
+        links=[Link(source="enable_status", target="run_command", target_slot="in")],
+    )
+    return JobSpec(
+        name="Boolean BACnet Alfalfa qualification",
+        site="Alfalfa lab",
+        equipment_name="EF_1",
+        sequence=SequenceSpec(family="CUSTOM_BOOLEAN", version="1"),
+        points=[
+            PointSpec(
+                name="enable_status",
+                label="Enable status",
+                data_type=DataType.BOOLEAN,
+                role=PointRole.STATUS,
+                default=True,
+                bacnet_device_instance=120_002,
+                bacnet_object="binary-input,1",
+            ),
+            PointSpec(
+                name="run_command",
+                label="Run command",
+                data_type=DataType.BOOLEAN,
+                role=PointRole.COMMAND,
+                default=False,
+                bacnet_device_instance=120_002,
+                bacnet_object="binary-output,1",
+            ),
+        ],
+        control_graph=graph,
+        acceptance_tests=[
+            AcceptanceCase(
+                name="enable drives run command",
+                inputs={"enable_status": True},
+                expectations=[OutputExpectation(target="run_command", value=True)],
+            )
+        ],
+        bacnet_scan=BacnetScan(
+            source="isolated Boolean qualification fixture",
+            devices=[
+                BacnetDeviceSpec(
+                    device_instance=120_002,
+                    address="192.0.2.102/24:47808",
+                    name="EF-1 virtual controller",
+                    objects=[
+                        BacnetObjectSpec(
+                            object_id="binary-input,1",
+                            name="Enable Status",
+                            data_type=DataType.BOOLEAN,
+                            present_value=True,
+                        ),
+                        BacnetObjectSpec(
+                            object_id="binary-output,1",
+                            name="Run Command",
+                            data_type=DataType.BOOLEAN,
+                            writable=True,
+                            present_value=False,
+                        ),
+                    ],
+                )
+            ],
+        ),
+    )
+
+
+def _boolean_mapping() -> AlfalfaGraphMap:
+    return AlfalfaGraphMap(
+        outputs=[
+            AlfalfaOutputBinding(
+                graph_input="enable_status",
+                output="enable_status",
+            )
+        ],
+        inputs=[
+            AlfalfaInputBinding(
+                graph_output="run_command",
+                input="run_u",
+                minimum=0.0,
+                maximum=1.0,
+            )
+        ],
+        observed_outputs=["run_y"],
+        command_echoes={"run_u": "run_y"},
+    )
+
+
+def _mode_job() -> JobSpec:
+    graph = ControlGraph(
+        name="MultiStateBacnetController",
+        blocks=[
+            Block(
+                id="mode_status",
+                kind=BlockKind.NUMERIC_INPUT,
+                label="Operating mode status",
+                config={"default": 2.0},
+            ),
+            Block(
+                id="mode_command",
+                kind=BlockKind.NUMERIC_OUTPUT,
+                label="Operating mode command",
+            ),
+        ],
+        links=[Link(source="mode_status", target="mode_command", target_slot="in")],
+    )
+    return JobSpec(
+        name="Multi-state BACnet Alfalfa qualification",
+        site="Alfalfa lab",
+        equipment_name="AHU_MODE_1",
+        sequence=SequenceSpec(family="CUSTOM_MODE", version="1"),
+        points=[
+            PointSpec(
+                name="mode_status",
+                label="Operating mode status",
+                data_type=DataType.NUMERIC,
+                role=PointRole.STATUS,
+                default=2.0,
+                bacnet_device_instance=120_003,
+                bacnet_object="multi-state-input,1",
+            ),
+            PointSpec(
+                name="mode_command",
+                label="Operating mode command",
+                data_type=DataType.NUMERIC,
+                role=PointRole.COMMAND,
+                default=1.0,
+                bacnet_device_instance=120_003,
+                bacnet_object="multi-state-output,1",
+            ),
+        ],
+        control_graph=graph,
+        acceptance_tests=[
+            AcceptanceCase(
+                name="mode passes through",
+                inputs={"mode_status": 2.0},
+                expectations=[OutputExpectation(target="mode_command", value=2.0)],
+            )
+        ],
+        bacnet_scan=BacnetScan(
+            source="isolated multi-state qualification fixture",
+            devices=[
+                BacnetDeviceSpec(
+                    device_instance=120_003,
+                    address="192.0.2.103/24:47808",
+                    name="AHU mode virtual controller",
+                    objects=[
+                        BacnetObjectSpec(
+                            object_id="multi-state-input,1",
+                            name="Mode Status",
+                            data_type=DataType.NUMERIC,
+                            present_value=2.0,
+                        ),
+                        BacnetObjectSpec(
+                            object_id="multi-state-output,1",
+                            name="Mode Command",
+                            data_type=DataType.NUMERIC,
+                            writable=True,
+                            present_value=1.0,
+                        ),
+                    ],
+                )
+            ],
+        ),
+    )
+
+
+def _mode_mapping() -> AlfalfaGraphMap:
+    return AlfalfaGraphMap(
+        outputs=[
+            AlfalfaOutputBinding(
+                graph_input="mode_status",
+                output="mode_status",
+            )
+        ],
+        inputs=[
+            AlfalfaInputBinding(
+                graph_output="mode_command",
+                input="mode_u",
+                minimum=1.0,
+                maximum=16.0,
+            )
+        ],
+        observed_outputs=["mode_y"],
+        command_echoes={"mode_u": "mode_y"},
+    )
 
 
 def _qualify(service: WorkbenchService, run_id: str) -> object:
@@ -382,6 +656,214 @@ def test_alfalfa_qualification_is_available_through_product_api(tmp_path: Path) 
     retained = client.get(f"/api/runs/{run_id}/verify/alfalfa")
     assert retained.status_code == 200
     assert retained.json()["steps"] == 2
+
+
+def test_alfalfa_qualification_closes_loop_through_real_bacnet_udp(
+    tmp_path: Path,
+) -> None:
+    service = WorkbenchService(RunRepository(tmp_path / "runs"))
+    candidate = service.create_run(_bacnet_job())
+
+    qualified = asyncio.run(
+        service.qualify_with_alfalfa_bacnet(
+            candidate.id,
+            client=_FakeAlfalfa(),
+            mapping=_mapping(),
+            model_bytes=_fmu_bytes(),
+            model_filename="contractor-building.fmu",
+            steps=2,
+            step_seconds=60.0,
+            start=datetime(2019, 1, 1),
+            server_version={"version": "test"},
+            client_version="1.0.0",
+        )
+    )
+
+    evidence = json.loads(Path(qualified.alfalfa_verification_path or "").read_text())
+    transport = evidence["control_transport"]
+    assert transport["kind"] == "bacnet_ip_loopback"
+    assert transport["read_transaction_count"] == 2
+    assert transport["write_transaction_count"] == 2
+    assert transport["readbacks_matched"] is True
+    assert transport["live_network_routes_allowed"] is False
+    assert transport["licensed_niagara_runtime"] is False
+    assert evidence["trajectory"][0]["bacnet_reads"]["room_temp"]["matched"] is True
+    write = evidence["trajectory"][0]["bacnet_writes"]["fan_command"]
+    assert write["priority"] == 8
+    assert write["command"] == pytest.approx(0.37)
+    assert write["readback"] == pytest.approx(0.37)
+    assert write["matched"] is True
+    service.verify_integrity(candidate.id)
+
+
+def test_bacnet_coupled_alfalfa_qualification_is_available_through_product_api(
+    tmp_path: Path,
+) -> None:
+    client = TestClient(
+        create_app(
+            tmp_path / "runs",
+            alfalfa_client_factory=_FakeAlfalfa,
+        )
+    )
+    created = client.post("/api/runs", json=_bacnet_job().model_dump(mode="json"))
+    assert created.status_code == 201, created.text
+    run_id = created.json()["id"]
+    qualification = {
+        "mapping": _mapping().model_dump(mode="json"),
+        "steps": 2,
+        "step_seconds": 60.0,
+        "start": "2019-01-01T00:00:00",
+        "transport": "bacnet_ip_loopback",
+    }
+
+    response = client.post(
+        f"/api/runs/{run_id}/verify/alfalfa",
+        data={"qualification": json.dumps(qualification)},
+        files={
+            "model_file": (
+                "contractor-building.fmu",
+                _fmu_bytes(),
+                "application/zip",
+            )
+        },
+    )
+
+    assert response.status_code == 200, response.text
+    evidence = response.json()["evidence"]
+    assert evidence["status"] == "pass"
+    assert evidence["control_transport"]["kind"] == "bacnet_ip_loopback"
+    assert evidence["control_transport"]["read_transaction_count"] == 2
+    assert evidence["control_transport"]["write_transaction_count"] == 2
+
+
+def test_bacnet_coupled_alfalfa_supports_boolean_input_and_command_objects(
+    tmp_path: Path,
+) -> None:
+    service = WorkbenchService(RunRepository(tmp_path / "runs"))
+    candidate = service.create_run(_boolean_job())
+
+    qualified = asyncio.run(
+        service.qualify_with_alfalfa_bacnet(
+            candidate.id,
+            client=_FakeBooleanAlfalfa(),
+            mapping=_boolean_mapping(),
+            model_bytes=_fmu_bytes(),
+            model_filename="boolean-building.fmu",
+            steps=1,
+            step_seconds=60.0,
+            start=datetime(2019, 1, 1),
+        )
+    )
+
+    evidence = json.loads(Path(qualified.alfalfa_verification_path or "").read_text())
+    sample = evidence["trajectory"][0]
+    assert sample["graph_inputs"] == {"enable_status": True}
+    assert sample["controller_outputs"] == {"run_command": True}
+    assert sample["fmu_inputs"] == {"run_u": 1.0}
+    assert sample["bacnet_reads"]["enable_status"]["matched"] is True
+    write = sample["bacnet_writes"]["run_command"]
+    assert write["command"] is True
+    assert write["readback"] is True
+    assert write["priority"] == 8
+    assert write["matched"] is True
+
+
+def test_bacnet_coupled_alfalfa_supports_multistate_modes(tmp_path: Path) -> None:
+    service = WorkbenchService(RunRepository(tmp_path / "runs"))
+    candidate = service.create_run(_mode_job())
+
+    qualified = asyncio.run(
+        service.qualify_with_alfalfa_bacnet(
+            candidate.id,
+            client=_FakeModeAlfalfa(),
+            mapping=_mode_mapping(),
+            model_bytes=_fmu_bytes(),
+            model_filename="mode-building.fmu",
+            steps=1,
+            step_seconds=60.0,
+            start=datetime(2019, 1, 1),
+        )
+    )
+
+    evidence = json.loads(Path(qualified.alfalfa_verification_path or "").read_text())
+    sample = evidence["trajectory"][0]
+    assert sample["graph_inputs"] == {"mode_status": 2.0}
+    assert sample["controller_outputs"] == {"mode_command": 2.0}
+    assert sample["fmu_inputs"] == {"mode_u": 2.0}
+    write = sample["bacnet_writes"]["mode_command"]
+    assert write["command"] == 2.0
+    assert write["readback"] == 2.0
+    assert write["priority"] == 8
+    assert write["matched"] is True
+
+
+def test_bacnet_coupled_alfalfa_requires_a_complete_exact_protocol_boundary(
+    tmp_path: Path,
+) -> None:
+    service = WorkbenchService(RunRepository(tmp_path / "runs"))
+    job = _bacnet_job()
+    job = job.model_copy(
+        update={
+            "points": [
+                point.model_copy(
+                    update={"bacnet_device_instance": None, "bacnet_object": None}
+                )
+                if point.name == "fan_command"
+                else point
+                for point in job.points
+            ]
+        }
+    )
+    candidate = service.create_run(job)
+
+    with pytest.raises(ValueError, match="graph output 'fan_command' has no BACnet object"):
+        asyncio.run(
+            service.qualify_with_alfalfa_bacnet(
+                candidate.id,
+                client=_FakeAlfalfa(),
+                mapping=_mapping(),
+                model_bytes=_fmu_bytes(),
+                model_filename="contractor-building.fmu",
+                steps=1,
+                step_seconds=60.0,
+                start=datetime(2019, 1, 1),
+            )
+        )
+
+    retained = service.verify_integrity(candidate.id)
+    assert retained.alfalfa_verification_path is None
+    assert not (tmp_path / "runs" / candidate.id / "alfalfa-verification").exists()
+
+
+def test_bacnet_coupled_alfalfa_rejects_a_job_without_a_bacnet_scan(
+    tmp_path: Path,
+) -> None:
+    client = TestClient(
+        create_app(
+            tmp_path / "runs",
+            alfalfa_client_factory=_FakeAlfalfa,
+        )
+    )
+    created = client.post("/api/runs", json=_job().model_dump(mode="json"))
+    run_id = created.json()["id"]
+    response = client.post(
+        f"/api/runs/{run_id}/verify/alfalfa",
+        data={
+            "qualification": json.dumps(
+                {
+                    "mapping": _mapping().model_dump(mode="json"),
+                    "steps": 1,
+                    "step_seconds": 60.0,
+                    "start": "2019-01-01T00:00:00",
+                    "transport": "bacnet_ip_loopback",
+                }
+            )
+        },
+        files={"model_file": ("building.fmu", _fmu_bytes(), "application/zip")},
+    )
+
+    assert response.status_code == 422
+    assert "requires a mapped BACnet scan" in response.json()["detail"]
 
 
 def test_fmu_inspection_is_available_through_product_api(tmp_path: Path) -> None:

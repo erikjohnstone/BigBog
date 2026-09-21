@@ -38,7 +38,7 @@ export function SimulationLab({ run }: { run: RunDetail }) {
     onError: (error) => toast.error(error instanceof Error ? error.message : 'Loopback proof failed'),
   });
   const qualifyAlfalfa = useMutation({
-    mutationFn: ({ model, qualification }: { model: File; qualification: { mapping: unknown; steps: number; step_seconds: number; start: string } }) => api.qualifyAlfalfa(run.id, model, qualification),
+    mutationFn: ({ model, qualification }: { model: File; qualification: AlfalfaQualification }) => api.qualifyAlfalfa(run.id, model, qualification),
     onSuccess: async () => {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['alfalfa', run.id] }),
@@ -65,7 +65,7 @@ export function SimulationLab({ run }: { run: RunDetail }) {
       {bacnet.data?.state === 'invalid' && <IntegrityWarning label="Virtual BACnet evidence could not be validated" message={bacnet.data.message} />}
       {alfalfa.data?.state === 'invalid' && <IntegrityWarning label="Alfalfa FMU evidence failed validation" message={alfalfa.data.message} />}
 
-      <AlfalfaPanel evidence={alfalfa.data} graph={graph.data} canQualify={run.status === 'ready_for_review'} onQualify={(model, qualification) => qualifyAlfalfa.mutateAsync({ model, qualification })} qualifying={qualifyAlfalfa.isPending} />
+      <AlfalfaPanel evidence={alfalfa.data} graph={graph.data} bacnetAvailable={bacnet.data?.state === 'available'} canQualify={run.status === 'ready_for_review'} onQualify={(model, qualification) => qualifyAlfalfa.mutateAsync({ model, qualification })} qualifying={qualifyAlfalfa.isPending} />
 
       <div className="simulation-grid">
         <BoptestPanel evidence={boptest.data} />
@@ -86,10 +86,10 @@ function FidelityRail({ run, boptest, bacnet, alfalfa }: { run: RunDetail; bopte
   return <section className="fidelity-rail" aria-label="Validation fidelity ladder">{levels.map(({ name, detail, state, icon: Icon }, index) => <div className={`fidelity-step ${state}`} key={name}><span className="fidelity-index">{index + 1}</span><Icon size={17} /><div><strong>{name}</strong><small>{detail}</small></div><b>{state === 'passed' ? 'Qualified' : state === 'failed' ? 'Blocked' : 'Not run'}</b></div>)}</section>;
 }
 
-type AlfalfaQualification = { mapping: unknown; steps: number; step_seconds: number; start: string };
+type AlfalfaQualification = { mapping: unknown; steps: number; step_seconds: number; start: string; transport: 'direct' | 'bacnet_ip_loopback' };
 
-function AlfalfaPanel({ evidence, graph, canQualify, onQualify, qualifying }: { evidence?: ArtifactState<AlfalfaEvidence>; graph?: ControlGraph; canQualify: boolean; onQualify: (model: File, qualification: AlfalfaQualification) => Promise<unknown>; qualifying: boolean }) {
-  if (!evidence || evidence.state === 'missing') return <AlfalfaQualificationPanel graph={graph} canQualify={canQualify} onQualify={onQualify} qualifying={qualifying} />;
+function AlfalfaPanel({ evidence, graph, bacnetAvailable, canQualify, onQualify, qualifying }: { evidence?: ArtifactState<AlfalfaEvidence>; graph?: ControlGraph; bacnetAvailable: boolean; canQualify: boolean; onQualify: (model: File, qualification: AlfalfaQualification) => Promise<unknown>; qualifying: boolean }) {
+  if (!evidence || evidence.state === 'missing') return <AlfalfaQualificationPanel graph={graph} bacnetAvailable={bacnetAvailable} canQualify={canQualify} onQualify={onQualify} qualifying={qualifying} />;
   if (evidence.state === 'invalid') return <section className="simulation-panel empty-tier failed alfalfa-panel"><CircleAlert size={28} /><span className="eyebrow">ALFALFA FMU CLOSED LOOP</span><h2>Evidence is not trustworthy</h2><p>{evidence.message}</p><span className="qualification-chip failed">Release blocked</span></section>;
   const data = evidence.data;
   const samples = data.trajectory;
@@ -100,7 +100,7 @@ function AlfalfaPanel({ evidence, graph, canQualify, onQualify, qualifying }: { 
     <section className="simulation-panel alfalfa-panel">
       <div className="simulation-panel-head"><div><span className="eyebrow">ALFALFA EXACT-FMU CLOSED LOOP</span><h2>{data.model_name}</h2><p>{data.graph_name} · graph {data.graph_sha256.slice(0, 10)} · model {data.model_sha256.slice(0, 10)}</p></div><span className="qualification-chip pass"><CheckCircle2 size={13} />FMU passed</span></div>
       <div className="alfalfa-metrics" aria-label="Alfalfa runtime facts"><div><span>Simulation steps</span><strong>{data.steps}</strong><small>{formatDuration(data.step_seconds)} each</small></div><div><span>FMU boundary</span><strong>{data.runtime_input_count} / {data.runtime_output_count}</strong><small>inputs / outputs</small></div><div><span>Command echoes</span><strong>{echoCount}</strong><small>all matched</small></div><div><span>Runtime stop</span><strong>{data.clean_stop ? 'Clean' : 'Failed'}</strong><small>{data.status_after_stop}</small></div></div>
-      <div className="alfalfa-safety"><ShieldCheck size={18} /><div><strong>Signed offline evidence</strong><span>The uploaded FMU, exact graph, signal map, complete trajectory, and hashes are inside the approval boundary. Live-building writes remained disabled.</span></div></div>
+      <div className="alfalfa-safety"><ShieldCheck size={18} /><div><strong>{data.control_transport ? 'Signed BACnet/IP + building-physics evidence' : 'Signed offline evidence'}</strong><span>{data.control_transport ? `${data.control_transport.read_transaction_count} real UDP reads and ${data.control_transport.write_transaction_count} priority-${data.control_transport.write_priority} writes passed exact readback checks on ${data.control_transport.bind_scope}. The controller runtime is ${data.control_transport.controller_runtime}; this does not claim licensed Niagara execution.` : 'The uploaded FMU, exact graph, signal map, complete trajectory, and hashes are inside the approval boundary. Live-building writes remained disabled.'}</span></div></div>
       <div className="trace-card"><div className="trace-card-head"><span><Activity size={15} />Graph-to-FMU trajectory</span><small>Inputs, controller outputs, and building response</small></div><TraceChart timeLabels={samples.map((sample) => formatTimestamp(sample.end_time))} series={series} description="Alfalfa exact-FMU graph and building response trajectory." /></div>
       <details className="simulation-data-table"><summary>Inspect command echoes and step evidence</summary><div><table><thead><tr><th>Step</th><th>FMU time</th><th>Controller command</th><th>FMU feedback</th><th>Echo</th><th>Initial substitute</th></tr></thead><tbody>{samples.flatMap((sample) => { const echoes = Object.entries(sample.command_echoes); return (echoes.length ? echoes : [["—", null] as const]).map(([input, echo], echoIndex) => <tr key={`${sample.index}-${input}`}><th>{sample.index + 1}{echoIndex ? '' : ''}</th><td>{formatTimestamp(sample.end_time)}</td><td>{echo ? `${input} = ${formatNumber(echo.command)}` : '—'}</td><td>{echo ? `${echo.output} = ${formatNumber(echo.feedback)}` : '—'}</td><td>{echo ? echo.matched ? 'Matched' : 'Mismatch' : 'No echo mapped'}</td><td>{Object.keys(sample.initial_output_values).length ? Object.entries(sample.initial_output_values).map(([name, value]) => `${name}=${formatNumber(value)}`).join(', ') : 'None'}</td></tr>); })}</tbody></table></div></details>
       <div className="alfalfa-footer"><span><CheckCircle2 size={15} /><strong>External-clock timing exact</strong>{data.start} → {data.end}</span><span><ShieldCheck size={15} /><strong>No hidden startup data</strong>{initialValueCount ? `${initialValueCount} reviewed tick-zero substitute${initialValueCount === 1 ? '' : 's'}` : 'All outputs supplied by FMU'}</span></div>
@@ -108,7 +108,7 @@ function AlfalfaPanel({ evidence, graph, canQualify, onQualify, qualifying }: { 
   );
 }
 
-function AlfalfaQualificationPanel({ graph, canQualify, onQualify, qualifying }: { graph?: ControlGraph; canQualify: boolean; onQualify: (model: File, qualification: AlfalfaQualification) => Promise<unknown>; qualifying: boolean }) {
+function AlfalfaQualificationPanel({ graph, bacnetAvailable, canQualify, onQualify, qualifying }: { graph?: ControlGraph; bacnetAvailable: boolean; canQualify: boolean; onQualify: (model: File, qualification: AlfalfaQualification) => Promise<unknown>; qualifying: boolean }) {
   const [model, setModel] = useState<File | null>(null);
   const [mappingFile, setMappingFile] = useState<File | null>(null);
   const [sensorBindings, setSensorBindings] = useState<Record<string, SensorBindingDraft>>({});
@@ -117,6 +117,7 @@ function AlfalfaQualificationPanel({ graph, canQualify, onQualify, qualifying }:
   const [steps, setSteps] = useState(12);
   const [stepSeconds, setStepSeconds] = useState(60);
   const [start, setStart] = useState('2019-01-01T00:00');
+  const [transport, setTransport] = useState<'direct' | 'bacnet_ip_loopback'>(bacnetAvailable ? 'bacnet_ip_loopback' : 'direct');
   const [error, setError] = useState<string | null>(null);
   const graphInputs = useMemo(() => graph?.blocks.filter((block) => block.kind === 'numeric_input' || block.kind === 'boolean_input') ?? [], [graph]);
   const graphOutputs = useMemo(() => graph?.blocks.filter((block) => block.kind === 'numeric_output' || block.kind === 'boolean_output') ?? [], [graph]);
@@ -152,7 +153,7 @@ function AlfalfaQualificationPanel({ graph, canQualify, onQualify, qualifying }:
       const mappingValue: unknown = mappingFile
         ? JSON.parse(await mappingFile.text())
         : buildAlfalfaMapping(graphInputs, graphOutputs, sensorBindings, commandBindings, observedOutputs);
-      await onQualify(model, { mapping: mappingValue, steps, step_seconds: stepSeconds, start: `${start}:00` });
+      await onQualify(model, { mapping: mappingValue, steps, step_seconds: stepSeconds, start: `${start}:00`, transport });
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'The reviewed mapping is invalid');
     }
@@ -177,7 +178,8 @@ function AlfalfaQualificationPanel({ graph, canQualify, onQualify, qualifying }:
         </section>
         <label className="alfalfa-observed"><span><strong>Additional observed outputs</strong><small>Optional building-response signals to retain in every trajectory step</small></span><select multiple onChange={(event) => setObservedOutputs(Array.from(event.target.selectedOptions, (option) => option.value))} value={observedOutputs}>{contract.outputs.map((variable) => <option key={variable.name} value={variable.name}>{signalLabel(variable)}</option>)}</select></label>
       </div>}
-      <div className="alfalfa-run-settings"><label><span>Model start</span><input disabled={!canQualify || qualifying} onChange={(event) => setStart(event.target.value)} type="datetime-local" value={start} /></label><label><span>Steps</span><input disabled={!canQualify || qualifying} min={1} max={100000} onChange={(event) => setSteps(Number(event.target.value))} type="number" value={steps} /></label><label><span>Seconds / step</span><input disabled={!canQualify || qualifying} min={0.001} onChange={(event) => setStepSeconds(Number(event.target.value))} type="number" value={stepSeconds} /></label><button disabled={!canQualify || !model || !contract || (!mappingFile && !mappingReady) || qualifying || steps < 1 || stepSeconds <= 0} onClick={submit} type="button"><Play size={15} />{qualifying ? 'Running exact FMU…' : 'Run and sign qualification'}</button></div>
+      <div className="alfalfa-run-settings"><label><span>Control transport</span><select disabled={!canQualify || qualifying} onChange={(event) => setTransport(event.target.value as 'direct' | 'bacnet_ip_loopback')} value={transport}><option value="direct">Direct typed graph</option>{bacnetAvailable && <option value="bacnet_ip_loopback">BACnet/IP loopback</option>}</select></label><label><span>Model start</span><input disabled={!canQualify || qualifying} onChange={(event) => setStart(event.target.value)} type="datetime-local" value={start} /></label><label><span>Steps</span><input disabled={!canQualify || qualifying} min={1} max={100000} onChange={(event) => setSteps(Number(event.target.value))} type="number" value={steps} /></label><label><span>Seconds / step</span><input disabled={!canQualify || qualifying} min={0.001} onChange={(event) => setStepSeconds(Number(event.target.value))} type="number" value={stepSeconds} /></label><button disabled={!canQualify || !model || !contract || (!mappingFile && !mappingReady) || qualifying || steps < 1 || stepSeconds <= 0} onClick={submit} type="button"><Play size={15} />{qualifying ? transport === 'bacnet_ip_loopback' ? 'Running FMU + BACnet…' : 'Running exact FMU…' : 'Run and sign qualification'}</button></div>
+      {bacnetAvailable && transport === 'bacnet_ip_loopback' && <div className="alfalfa-form-message"><Network size={16} />Every graph sensor and command must have an exact BACnet object. Qualification performs real loopback UDP reads, priority writes, and readbacks between each FMU step.</div>}
       {!canQualify && <div className="alfalfa-form-message"><CircleAlert size={16} />Only a passing candidate awaiting review can start a new qualification.</div>}
       {inspectFmu.isError && <div className="alfalfa-form-message error"><CircleAlert size={16} />{inspectFmu.error instanceof Error ? inspectFmu.error.message : 'FMU inspection failed'}</div>}
       {error && <div className="alfalfa-form-message error"><CircleAlert size={16} />{error}</div>}

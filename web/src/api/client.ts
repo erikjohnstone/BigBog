@@ -472,6 +472,21 @@ const alfalfaEvidenceSchema = z.object({
   step_seconds: z.number().positive(),
   steps: z.number().int().positive(),
   clean_stop: z.literal(true),
+  control_transport: z.object({
+    kind: z.literal('bacnet_ip_loopback'),
+    protocol: z.string(),
+    controller_runtime: z.string(),
+    write_priority: z.number().int(),
+    manifest_sha256: z.string(),
+    mapped_point_count: z.number().int().nonnegative(),
+    read_transaction_count: z.number().int().nonnegative(),
+    write_transaction_count: z.number().int().nonnegative(),
+    readbacks_matched: z.literal(true),
+    bind_scope: z.string(),
+    live_network_routes_allowed: z.literal(false),
+    writes_affect_virtual_objects_only: z.literal(true),
+    licensed_niagara_runtime: z.literal(false),
+  }).passthrough().optional(),
   trajectory: z.array(z.object({
     index: z.number().int().nonnegative(),
     start_time: z.string(),
@@ -1119,7 +1134,7 @@ export const api = {
   async alfalfa(runId: string) {
     return getArtifact(`/api/runs/${runId}/verify/alfalfa`, alfalfaEvidenceSchema);
   },
-  async qualifyAlfalfa(runId: string, model: File, qualification: { mapping: unknown; steps: number; step_seconds: number; start: string }) {
+  async qualifyAlfalfa(runId: string, model: File, qualification: { mapping: unknown; steps: number; step_seconds: number; start: string; transport?: 'direct' | 'bacnet_ip_loopback' }) {
     const body = new FormData();
     body.append('model_file', model);
     body.append('qualification', JSON.stringify(qualification));
