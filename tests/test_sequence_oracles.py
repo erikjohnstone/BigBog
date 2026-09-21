@@ -416,10 +416,31 @@ def test_oracle_approval_api_persists_and_retrieves_exact_gate(tmp_path: Path) -
         "sequence-oracle-coverage-incomplete",
     }
     assert preflight_payload["translation"]["attempted"] is False
+    generation = client.post(
+        f"/api/sequence-oracle-approvals/{approved['oracle_approval_id']}/candidate",
+        json={
+            "oracle_artifact_digest": approved["retention"]["artifact_digest"],
+            "controller_parameters": {},
+            "point_bindings": {},
+            "name": "Approved AHU candidate",
+            "site": "Test Campus",
+            "equipment_name": "AHU_1",
+        },
+    )
+    assert generation.status_code == 409, generation.text
+    assert generation.json()["schema"] == "bactalk.sequence-candidate-blocked/v1"
+    assert generation.json()["preflight"]["translation"]["attempted"] is False
     assert (
         required_role(
             "POST",
             f"/api/sequence-oracle-approvals/{approved['oracle_approval_id']}/candidate-preflight",
+        )
+        is Role.PROGRAMMER
+    )
+    assert (
+        required_role(
+            "POST",
+            f"/api/sequence-oracle-approvals/{approved['oracle_approval_id']}/candidate",
         )
         is Role.PROGRAMMER
     )

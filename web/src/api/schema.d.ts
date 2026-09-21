@@ -1464,6 +1464,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/sequence-oracle-approvals/{approval_id}/candidate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Generate Sequence Candidate */
+        post: operations["generate_sequence_candidate_api_sequence_oracle_approvals__approval_id__candidate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/sequence-oracle-approvals/{approval_id}/candidate-preflight": {
         parameters: {
             query?: never;
@@ -2628,6 +2645,35 @@ export interface components {
             timezone: string;
             /** Weekly Periods */
             weekly_periods?: components["schemas"]["WeeklySchedulePeriod"][];
+        };
+        /** SequenceCandidateGenerationRequest */
+        SequenceCandidateGenerationRequest: {
+            /** Controller Parameters */
+            controller_parameters?: {
+                [key: string]: unknown;
+            };
+            /** Equipment Brick Class */
+            equipment_brick_class?: string | null;
+            /** Equipment Name */
+            equipment_name: string;
+            /**
+             * Execution Profile
+             * @default modelica_exact
+             * @enum {string}
+             */
+            execution_profile: "modelica_exact" | "host_tick_v1";
+            /** Name */
+            name: string;
+            /** Notes */
+            notes?: string | null;
+            /** Oracle Artifact Digest */
+            oracle_artifact_digest: string;
+            /** Point Bindings */
+            point_bindings?: {
+                [key: string]: string;
+            };
+            /** Site */
+            site: string;
         };
         /** SequenceCandidatePreflightRequest */
         SequenceCandidatePreflightRequest: {
@@ -5719,6 +5765,41 @@ export interface operations {
                     "application/json": {
                         [key: string]: unknown;
                     };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    generate_sequence_candidate_api_sequence_oracle_approvals__approval_id__candidate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                approval_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SequenceCandidateGenerationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

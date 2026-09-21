@@ -1061,6 +1061,73 @@ const sequenceOracleApprovalSchema = z.object({
   }),
 }).passthrough();
 
+const g36ParameterSchema = z.object({
+  schema: z.literal('bactalk.g36-parameter-schema/v1'),
+  controller: z.object({ id: z.string(), name: z.string() }).passthrough(),
+  parameterization: z.object({
+    required_parameters: z.array(z.string()),
+    parameters: z.array(z.object({
+      name: z.string(),
+      data_type: z.string(),
+      is_array: z.boolean(),
+      required: z.boolean(),
+      value: z.unknown().nullable(),
+      description: z.string().nullable(),
+      unit: z.string().nullable(),
+    }).passthrough()),
+  }).passthrough(),
+}).passthrough();
+
+const sequenceCandidatePreflightSchema = z.object({
+  schema: z.literal('bactalk.sequence-candidate-preflight/v1'),
+  oracle_approval_id: z.string(),
+  controller_id: z.string(),
+  execution_profile: z.string(),
+  parameter_contract: g36ParameterSchema,
+  provided_parameter_names: z.array(z.string()),
+  point_bindings: z.record(z.string(), z.string()),
+  translation: z.record(z.string(), z.unknown()),
+  candidate_graph: z.object({
+    sha256: z.string(),
+    block_count: z.number(),
+    link_count: z.number(),
+    boundary_count: z.number(),
+  }).passthrough().nullable(),
+  graph_boundary_contract: z.array(z.object({
+    id: z.string(),
+    label: z.string(),
+    direction: z.enum(['input', 'output']),
+    data_type: z.enum(['numeric', 'boolean']),
+    selected_design_point: z.string().nullable().optional(),
+    compatible_design_points: z.array(z.string()),
+  }).passthrough()).optional(),
+  boundary_bindings: z.array(z.object({
+    design_point: z.string(),
+    graph_boundary: z.string(),
+    contractor_source: z.string(),
+  }).passthrough()).optional(),
+  test_report: reportSchema.nullable(),
+  blockers: z.array(z.object({
+    code: z.string(),
+    message: z.string(),
+    details: z.record(z.string(), z.unknown()),
+  }).passthrough()),
+  ready_for_candidate_generation: z.boolean(),
+  ready_for_deployment: z.literal(false),
+}).passthrough();
+
+const sequenceCandidateGenerationSchema = z.object({
+  schema: z.literal('bactalk.sequence-candidate-generation/v1'),
+  preflight: sequenceCandidatePreflightSchema,
+  run: runDetailSchema,
+  safety: z.object({
+    live_writes_enabled: z.literal(false),
+    human_approval_required: z.literal(true),
+    candidate_retained: z.literal(true),
+    candidate_authorizes_deployment: z.literal(false),
+  }).passthrough(),
+}).passthrough();
+
 const graphicsModelSchema = z.object({
   schema: z.string(),
   equipment_name: z.string(),
@@ -1168,8 +1235,9 @@ async function postJson(path: string, body: unknown): Promise<unknown> {
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    const payload = await response.json().catch(() => null) as { detail?: string } | null;
-    throw new Error(payload?.detail ?? `Request failed with status ${response.status}`);
+    const payload = await response.json().catch(() => null) as { detail?: unknown; message?: unknown } | null;
+    const detail = payload?.detail ?? payload?.message;
+    throw new Error(typeof detail === 'string' ? detail : detail ? JSON.stringify(detail) : `Request failed with status ${response.status}`);
   }
   return response.json();
 }
@@ -1374,6 +1442,23 @@ export const api = {
     return sequenceOracleApprovalSchema.parse(await postJson(
       `/api/sequence-requirement-reviews/${encodeURIComponent(reviewId)}/oracles/approve`,
       approval,
+    ));
+  },
+  async g36Parameters(controllerId: string) {
+    return g36ParameterSchema.parse(await getJson(
+      `/api/library/g36/controllers/${encodeURIComponent(controllerId)}/parameters`,
+    ));
+  },
+  async preflightSequenceCandidate(approvalId: string, request: Record<string, unknown>) {
+    return sequenceCandidatePreflightSchema.parse(await postJson(
+      `/api/sequence-oracle-approvals/${encodeURIComponent(approvalId)}/candidate-preflight`,
+      request,
+    ));
+  },
+  async generateSequenceCandidate(approvalId: string, request: Record<string, unknown>) {
+    return sequenceCandidateGenerationSchema.parse(await postJson(
+      `/api/sequence-oracle-approvals/${encodeURIComponent(approvalId)}/candidate`,
+      request,
     ));
   },
   async approve(runId: string, reviewer: string) {

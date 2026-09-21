@@ -24,7 +24,7 @@ import {
   ServerCog,
   ShieldCheck,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { api, type ArtifactState, type Catalog, type Deliverables, type RunSummary } from '../../api/client';
 import './workspace-pages.css';
@@ -125,6 +125,7 @@ export function LibraryWorkspace() {
 }
 
 function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
+  const navigate = useNavigate();
   const templates = catalogRows(catalog);
   const [templateId, setTemplateId] = useState(() => stringValue(templates[0]?.id));
   const [selections, setSelections] = useState<Record<string, unknown>>({});
@@ -135,6 +136,11 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
   const [oracleAuthor, setOracleAuthor] = useState('');
   const [oracleDrafts, setOracleDrafts] = useState<Record<string, OracleAuthoringDraft>>({});
   const [facetOracleDrafts, setFacetOracleDrafts] = useState<Record<string, FacetOracleDraft>>({});
+  const [candidateParameters, setCandidateParameters] = useState<Record<string, string>>({});
+  const [boundarySelections, setBoundarySelections] = useState<Record<string, string>>({});
+  const [candidateName, setCandidateName] = useState('');
+  const [candidateSite, setCandidateSite] = useState('');
+  const [candidateEquipment, setCandidateEquipment] = useState('');
   const configuration = useQuery({
     queryKey: ['ctrl-flow-configuration', templateId, selections],
     queryFn: () => api.ctrlFlowConfigure(templateId, selections),
@@ -142,6 +148,11 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
   });
   const effectiveSelections = configuration.data?.selections ?? selections;
   const brief = useMutation({ mutationFn: () => api.ctrlFlowProgrammingBrief(templateId, effectiveSelections) });
+  const controllerParameters = useQuery({
+    queryKey: ['g36-controller-parameters', brief.data?.design_binding.controller_id],
+    queryFn: () => api.g36Parameters(brief.data!.design_binding.controller_id),
+    enabled: Boolean(brief.data?.design_binding.controller_id),
+  });
   const reconciliation = useMutation({ mutationFn: () => {
     if (!pointsFile) throw new Error('Choose a points CSV or XLSX file first.');
     return api.inspectCtrlFlowPoints(templateId, effectiveSelections, pointsFile);
@@ -239,6 +250,53 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
       facet_cases,
     });
   } });
+  const requiredCandidateParameters = controllerParameters.data?.parameterization.parameters.filter((parameter) => parameter.required) ?? [];
+  const candidateRequest = (includeMetadata: boolean) => {
+    const approval = oracleApproval.data;
+    if (!approval?.ready_for_graph_generation) throw new Error('The independent oracle gate must pass first.');
+    const parsedParameters = Object.fromEntries(requiredCandidateParameters.map((parameter) => {
+      const raw = candidateParameters[parameter.name]?.trim() ?? '';
+      if (!raw) throw new Error(`Supply required controller parameter ${parameter.name}.`);
+      if (parameter.is_array) return [parameter.name, JSON.parse(raw)];
+      if (parameter.data_type === 'Real' || parameter.data_type === 'Integer') {
+        const value = Number(raw);
+        if (!Number.isFinite(value) || (parameter.data_type === 'Integer' && !Number.isInteger(value))) throw new Error(`${parameter.name} must be a valid ${parameter.data_type.toLowerCase()}.`);
+        return [parameter.name, value];
+      }
+      if (parameter.data_type === 'Boolean') {
+        if (!['true', 'false'].includes(raw.toLowerCase())) throw new Error(`${parameter.name} must be true or false.`);
+        return [parameter.name, raw.toLowerCase() === 'true'];
+      }
+      return [parameter.name, raw];
+    }));
+    const selectedDesignPoints = Object.values(boundarySelections).filter(Boolean);
+    if (new Set(selectedDesignPoints).size !== selectedDesignPoints.length) throw new Error('Each contractor design point can bind to only one graph boundary.');
+    const pointBindings = Object.fromEntries(Object.entries(boundarySelections).filter(([, designPoint]) => Boolean(designPoint)).map(([boundary, designPoint]) => [designPoint, boundary]));
+    return {
+      oracle_artifact_digest: approval.retention.artifact_digest,
+      controller_parameters: parsedParameters,
+      point_bindings: pointBindings,
+      execution_profile: 'modelica_exact',
+      ...(includeMetadata ? {
+        name: candidateName,
+        site: candidateSite,
+        equipment_name: candidateEquipment,
+      } : {}),
+    };
+  };
+  const candidatePreflight = useMutation({
+    mutationFn: () => api.preflightSequenceCandidate(oracleApproval.data!.oracle_approval_id, candidateRequest(false)),
+    onSuccess: (result) => setBoundarySelections((current) => ({
+      ...Object.fromEntries((result.graph_boundary_contract ?? []).filter((boundary) => boundary.selected_design_point).map((boundary) => [boundary.id, boundary.selected_design_point!])),
+      ...current,
+    })),
+  });
+  const candidateGeneration = useMutation({
+    mutationFn: () => api.generateSequenceCandidate(oracleApproval.data!.oracle_approval_id, candidateRequest(true)),
+    onSuccess: (result) => navigate(`/studio/${result.run.id}/wiresheet`),
+  });
+  const requiredCandidateParametersComplete = requiredCandidateParameters.every((parameter) => Boolean(candidateParameters[parameter.name]?.trim()));
+  const candidateMetadataComplete = Boolean(candidateName.trim() && candidateSite.trim() && /^[A-Za-z_][A-Za-z0-9_]*$/.test(candidateEquipment));
   const updateReview = (id: string, patch: Partial<(typeof reviewDecisions)[string]>) => setReviewDecisions((current) => ({ ...current, [id]: { ...current[id], ...patch } as (typeof reviewDecisions)[string] }));
   const reviewComplete = reviewer.trim().length >= 2 && reviewItems.length > 0 && reviewItems.every((item) => {
     const decision = reviewDecisions[item.id];
@@ -271,11 +329,18 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
     setOracleAuthor('');
     setOracleDrafts({});
     setFacetOracleDrafts({});
+    setCandidateParameters({});
+    setBoundarySelections({});
+    setCandidateName('');
+    setCandidateSite('');
+    setCandidateEquipment('');
     brief.reset();
     reconciliation.reset();
     sequenceReconciliation.reset();
     sequenceReview.reset();
     oracleApproval.reset();
+    candidatePreflight.reset();
+    candidateGeneration.reset();
   };
   const chooseValue = (path: string, value: unknown) => {
     setSelections({ ...(configuration.data?.selections ?? selections), [path]: value });
@@ -285,8 +350,12 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
     setReviewDecisions({});
     setOracleDrafts({});
     setFacetOracleDrafts({});
+    setCandidateParameters({});
+    setBoundarySelections({});
     sequenceReview.reset();
     oracleApproval.reset();
+    candidatePreflight.reset();
+    candidateGeneration.reset();
   };
   return <div className="ctrl-flow-configurator">
     <aside className="ctrl-flow-controls">
@@ -342,9 +411,21 @@ function CtrlFlowConfigurator({ catalog }: { catalog: Catalog }) {
               {sequenceReview.data.manual_facet_oracle_requirements.some((requirement) => requirement.authoring_allowed) && <section className="ctrl-flow-facet-oracles"><header><strong>Event and mode trajectories</strong><span>Source-mentioned facets without numeric extraction still require explicit I/O transitions.</span></header>{sequenceReview.data.manual_facet_oracle_requirements.filter((requirement) => requirement.authoring_allowed).map((requirement) => { const id = `${requirement.scenario_id}/${requirement.facet_id}`; const authored = facetOracleDrafts[id]; if (!authored) return null; const inputPoint = sequenceReview.data.point_contract.points.find((point) => point.id === authored.inputPoint); const outputPoint = sequenceReview.data.point_contract.points.find((point) => point.id === authored.outputPoint); return <article key={id}><header><div><b>{requirement.scenario_title}</b><strong>{requirement.facet_label}</strong></div><span>{requirement.source_evidence[0]?.excerpt}</span></header><div className="facet-oracle-bindings"><label><span>Trigger input point</span><select onChange={(event) => updateFacetOracle(id, { inputPoint: event.target.value, baselineInput: '', triggerInput: '', recoveryInput: '' })} value={authored.inputPoint}><option value="">Select input…</option>{sequenceReview.data.point_contract.points.filter((point) => requirement.input_point_candidates.includes(point.id)).map((point) => <option key={point.id} value={point.id}>{point.id} · {point.data_type}</option>)}</select></label><label><span>Observed output point</span><select onChange={(event) => updateFacetOracle(id, { outputPoint: event.target.value, baselineOutput: '', triggerOutput: '', recoveryOutput: '' })} value={authored.outputPoint}><option value="">Select output…</option>{sequenceReview.data.point_contract.points.filter((point) => requirement.output_point_candidates.includes(point.id)).map((point) => <option key={point.id} value={point.id}>{point.id} · {point.data_type}</option>)}</select></label><label><span>Step seconds</span><input min="0.001" onChange={(event) => updateFacetOracle(id, { stepSeconds: event.target.value })} step="any" type="number" value={authored.stepSeconds} /></label></div>{inputPoint && <fieldset><legend>{inputPoint.id} stimulus</legend><label><span>Baseline</span><OracleValueInput booleanValue={inputPoint.data_type === 'boolean'} onChange={(value) => updateFacetOracle(id, { baselineInput: value })} value={authored.baselineInput} /></label><label><span>Trigger</span><OracleValueInput booleanValue={inputPoint.data_type === 'boolean'} onChange={(value) => updateFacetOracle(id, { triggerInput: value })} value={authored.triggerInput} /></label><label><span>Recovery</span><OracleValueInput booleanValue={inputPoint.data_type === 'boolean'} onChange={(value) => updateFacetOracle(id, { recoveryInput: value })} value={authored.recoveryInput} /></label></fieldset>}{outputPoint && <fieldset><legend>{outputPoint.id} expected response</legend><label><span>Baseline</span><OracleValueInput booleanValue={outputPoint.data_type === 'boolean'} onChange={(value) => updateFacetOracle(id, { baselineOutput: value })} value={authored.baselineOutput} /></label><label><span>Trigger</span><OracleValueInput booleanValue={outputPoint.data_type === 'boolean'} onChange={(value) => updateFacetOracle(id, { triggerOutput: value })} value={authored.triggerOutput} /></label><label><span>Recovery</span><OracleValueInput booleanValue={outputPoint.data_type === 'boolean'} onChange={(value) => updateFacetOracle(id, { recoveryOutput: value })} value={authored.recoveryOutput} /></label></fieldset>}</article>; })}</section>}
             <button className="ctrl-flow-review-submit" disabled={!oracleComplete || oracleApproval.isPending} onClick={() => oracleApproval.mutate()} type="button">{oracleApproval.isPending ? 'Validating independent trajectories…' : `Approve ${sequenceReview.data.oracle_draft_count + sequenceReview.data.manual_facet_oracle_requirements.filter((requirement) => requirement.authoring_allowed).length} test trajectories`}<ChevronRight size={15} /></button>
             {oracleApproval.data && <div className={`ctrl-flow-review-outcome ${oracleApproval.data.ready_for_graph_generation ? 'ready' : 'blocked'}`}><strong>{oracleApproval.data.ready_for_graph_generation ? 'Whole-system sequence requirement gate passed' : 'Local oracles approved; whole-system coverage still blocked'}</strong><span>Oracle approval {oracleApproval.data.oracle_approval_id.slice(0, 12)} · {oracleApproval.data.case_count} executable timelines · {oracleApproval.data.scenario_oracle_gap_count ?? 0} scenario facets still lack executable oracles · deployment remains blocked</span></div>}
-            {oracleApproval.isError && <div className="ctrl-flow-review-outcome blocked"><strong>Oracle approval rejected</strong><span>{oracleApproval.error.message}</span></div>}
-          </section>}
-        </section>}
+	            {oracleApproval.isError && <div className="ctrl-flow-review-outcome blocked"><strong>Oracle approval rejected</strong><span>{oracleApproval.error.message}</span></div>}
+	          </section>}
+	          {oracleApproval.data?.ready_for_graph_generation && <section className="ctrl-flow-candidate" aria-label="Executable candidate generation">
+	            <header><div><strong>Compile the approved document chain</strong><span>Bind every controller boundary, replay every independent oracle, then retain one reviewable Niagara candidate.</span></div><Code2 size={18} /></header>
+	            {controllerParameters.isLoading && <div className="ctrl-flow-state">Loading the pinned controller parameter contract…</div>}
+	            {controllerParameters.isError && <div className="ctrl-flow-review-outcome blocked"><strong>Controller contract unavailable</strong><span>{controllerParameters.error.message}</span></div>}
+	            {requiredCandidateParameters.length > 0 && <div className="candidate-parameter-grid">{requiredCandidateParameters.map((parameter) => <label key={parameter.name}><span>{parameter.name}<small>{parameter.description || parameter.data_type} · {parameter.unit || parameter.data_type}</small></span><input aria-label={`Controller parameter ${parameter.name}`} onChange={(event) => { setCandidateParameters((current) => ({ ...current, [parameter.name]: event.target.value })); candidatePreflight.reset(); candidateGeneration.reset(); }} placeholder={parameter.data_type === 'Real' ? 'Numeric design value' : parameter.data_type.includes('VentilationStandard') ? 'ASHRAE62_1 or Title24' : parameter.data_type} type={parameter.data_type === 'Real' || parameter.data_type === 'Integer' ? 'number' : 'text'} value={candidateParameters[parameter.name] ?? ''} /></label>)}</div>}
+	            <button className="ctrl-flow-review-submit" disabled={!requiredCandidateParametersComplete || candidatePreflight.isPending} onClick={() => candidatePreflight.mutate()} type="button">{candidatePreflight.isPending ? 'Translating and checking the exact interface…' : candidatePreflight.data ? 'Re-run complete candidate preflight' : 'Inspect executable controller interface'}<ChevronRight size={15} /></button>
+	            {candidatePreflight.data?.graph_boundary_contract && <div className="candidate-boundary-map"><header><strong>Contractor point → controller boundary</strong><span>{candidatePreflight.data.graph_boundary_contract.length} exact typed ports · every output must have an independent oracle</span></header>{candidatePreflight.data.graph_boundary_contract.map((boundary) => <label key={boundary.id}><span><b>{boundary.label}</b><code>{boundary.id}</code><small>{boundary.direction} · {boundary.data_type}</small></span><select aria-label={`Point binding for ${boundary.id}`} onChange={(event) => { setBoundarySelections((current) => ({ ...current, [boundary.id]: event.target.value })); candidatePreflight.reset(); candidateGeneration.reset(); }} value={boundarySelections[boundary.id] ?? boundary.selected_design_point ?? ''}><option value="">Select retained contractor point…</option>{boundary.compatible_design_points.map((point) => <option key={point} value={point}>{point}</option>)}</select></label>)}</div>}
+	            {candidatePreflight.data && <div className={`ctrl-flow-review-outcome ${candidatePreflight.data.ready_for_candidate_generation ? 'ready' : 'blocked'}`}><strong>{candidatePreflight.data.ready_for_candidate_generation ? 'Exact graph, target, bindings, and oracle replay passed' : `${candidatePreflight.data.blockers.length} compiler gate${candidatePreflight.data.blockers.length === 1 ? '' : 's'} remain`}</strong><span>{candidatePreflight.data.candidate_graph ? `${candidatePreflight.data.candidate_graph.block_count} blocks · ${candidatePreflight.data.candidate_graph.link_count} links · digest ${candidatePreflight.data.candidate_graph.sha256.slice(0, 12)}` : 'Translation has not reached an executable graph.'}</span>{candidatePreflight.data.blockers.length > 0 && <ul>{candidatePreflight.data.blockers.map((blocker) => <li key={blocker.code}><b>{blocker.code.replaceAll('-', ' ')}</b> · {blocker.message}</li>)}</ul>}</div>}
+	            {candidatePreflight.isError && <div className="ctrl-flow-review-outcome blocked"><strong>Candidate preflight stopped</strong><span>{candidatePreflight.error.message}</span></div>}
+	            {candidatePreflight.data?.ready_for_candidate_generation && <><div className="candidate-metadata"><label><span>Candidate name</span><input onChange={(event) => setCandidateName(event.target.value)} placeholder="AHU-1 approved controls" value={candidateName} /></label><label><span>Site</span><input onChange={(event) => setCandidateSite(event.target.value)} placeholder="Campus or building" value={candidateSite} /></label><label><span>Equipment ID</span><input onChange={(event) => setCandidateEquipment(event.target.value)} placeholder="AHU_1" value={candidateEquipment} /></label></div><button className="ctrl-flow-review-submit candidate-generate" disabled={!candidateMetadataComplete || candidateGeneration.isPending} onClick={() => candidateGeneration.mutate()} type="button">{candidateGeneration.isPending ? 'Replaying tests and packaging Niagara target…' : 'Retain tested Niagara candidate'}<PackageCheck size={15} /></button></>}
+	            {candidateGeneration.isError && <div className="ctrl-flow-review-outcome blocked"><strong>Candidate retention failed</strong><span>{candidateGeneration.error.message}</span></div>}
+	          </section>}
+	        </section>}
       </div>}
       {sequenceReconciliation.isError && <div className="ctrl-flow-sequence-result blocked"><header><CircleAlert size={18} /><div><strong>Sequence inspection stopped</strong><span>{sequenceReconciliation.error.message}</span></div></header></div>}
     </section>

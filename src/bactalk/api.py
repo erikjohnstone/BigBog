@@ -45,6 +45,7 @@ from bactalk.domain import (
     RunOrigin,
     RunStatus,
     SequenceSpec,
+    canonical_json,
 )
 from bactalk.intake import (
     IntakeError,
@@ -107,7 +108,9 @@ from bactalk.qualification_jobs import (
 from bactalk.repository import RunRepository
 from bactalk.security import AuditLog, Principal, SecurityConfig, required_role
 from bactalk.sequence_candidate import (
+    SequenceCandidateGenerationRequest,
     SequenceCandidatePreflightRequest,
+    build_sequence_candidate_job,
     compile_sequence_candidate_preflight,
 )
 from bactalk.sequence_oracles import (
@@ -411,6 +414,39 @@ def create_app(
             principal is not None
             and record.result.get("approval", {}).get("tenant_id") == principal.tenant_id
         )
+
+    def load_sequence_candidate_evidence(
+        approval_id: str,
+        http_request: Request,
+    ) -> tuple[
+        SequenceOracleApprovalRecord,
+        SequenceRequirementReviewRecord,
+        CtrlFlowPointReconciliationRecord,
+        dict[str, Any],
+    ]:
+        oracle_record = sequence_oracle_repository.get(approval_id)
+        if not retained_oracle_visible(http_request, oracle_record):
+            raise HTTPException(
+                status_code=404, detail="sequence oracle approval not found"
+            )
+        review_record = sequence_review_repository.get(oracle_record.review_id)
+        if not retained_review_visible(http_request, review_record):
+            raise HTTPException(
+                status_code=404, detail="sequence requirement review not found"
+            )
+        point_evidence = review_record.result.get(
+            "contractor_point_reconciliation", {}
+        )
+        point_record = ctrl_flow_point_repository.get(str(point_evidence.get("id", "")))
+        if not retained_point_reconciliation_visible(http_request, point_record):
+            raise HTTPException(
+                status_code=404, detail="ctrl-flow point reconciliation not found"
+            )
+        brief = ctrl_flow.programming_brief(
+            review_record.template_id,
+            review_record.selections,
+        )
+        return oracle_record, review_record, point_record, brief
 
     def qualification_job_visible(http_request: Request, tenant_id: str | None) -> bool:
         if not security.enabled:
@@ -1005,27 +1041,8 @@ def create_app(
         http_request: Request,
     ) -> dict:
         try:
-            oracle_record = sequence_oracle_repository.get(approval_id)
-            if not retained_oracle_visible(http_request, oracle_record):
-                raise HTTPException(
-                    status_code=404, detail="sequence oracle approval not found"
-                )
-            review_record = sequence_review_repository.get(oracle_record.review_id)
-            if not retained_review_visible(http_request, review_record):
-                raise HTTPException(
-                    status_code=404, detail="sequence requirement review not found"
-                )
-            point_evidence = review_record.result.get(
-                "contractor_point_reconciliation", {}
-            )
-            point_record = ctrl_flow_point_repository.get(str(point_evidence.get("id", "")))
-            if not retained_point_reconciliation_visible(http_request, point_record):
-                raise HTTPException(
-                    status_code=404, detail="ctrl-flow point reconciliation not found"
-                )
-            brief = ctrl_flow.programming_brief(
-                review_record.template_id,
-                review_record.selections,
+            oracle_record, review_record, point_record, brief = (
+                load_sequence_candidate_evidence(approval_id, http_request)
             )
             return compile_sequence_candidate_preflight(
                 oracle_record=oracle_record.model_dump(mode="json", by_alias=True),
@@ -1048,6 +1065,101 @@ def create_app(
         ) as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
         except (CtrlFlowError, ValueError) as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/sequence-oracle-approvals/{approval_id}/candidate",
+        status_code=201,
+    )
+    def generate_sequence_candidate(
+        approval_id: str,
+        request: SequenceCandidateGenerationRequest,
+        http_request: Request,
+    ) -> Response:
+        try:
+            oracle_record, review_record, point_record, brief = (
+                load_sequence_candidate_evidence(approval_id, http_request)
+            )
+            preflight, job = build_sequence_candidate_job(
+                oracle_record=oracle_record.model_dump(mode="json", by_alias=True),
+                review_record=review_record.model_dump(mode="json", by_alias=True),
+                point_record=point_record.model_dump(mode="json", by_alias=True),
+                programming_brief=brief,
+                request=request,
+                g36_library=g36_library,
+            )
+            if job is None:
+                return JSONResponse(
+                    status_code=409,
+                    content={
+                        "schema": "bactalk.sequence-candidate-blocked/v1",
+                        "message": (
+                            "The approved document chain does not produce a complete candidate."
+                        ),
+                        "preflight": preflight,
+                    },
+                )
+
+            evidence = {
+                "schema": "bactalk.sequence-candidate-source-chain/v1",
+                "oracle_approval": {
+                    "id": oracle_record.id,
+                    "artifact_digest": oracle_record.artifact_digest,
+                    "oracle_digest": oracle_record.oracle_digest,
+                },
+                "requirement_review": {
+                    "id": review_record.id,
+                    "artifact_digest": review_record.artifact_digest,
+                    "result_digest": review_record.result_digest,
+                    "source_sha256": review_record.source_sha256,
+                },
+                "point_reconciliation": {
+                    "id": point_record.id,
+                    "artifact_digest": point_record.artifact_digest,
+                    "result_digest": point_record.result_digest,
+                    "source_sha256": point_record.source_sha256,
+                },
+                "configuration_digest": brief["configuration_digest"],
+                "generation_request": request.model_dump(mode="json"),
+                "preflight": preflight,
+            }
+            source_documents = {
+                f"points-{point_record.source_filename}": (
+                    ctrl_flow_point_repository.source(point_record.id)
+                ),
+                f"sequence-{review_record.source_filename}": (
+                    sequence_review_repository.source(review_record.id)
+                ),
+                "approved-sequence-evidence.json": canonical_json(evidence).encode("utf-8"),
+            }
+            run = service.create_run(job, source_documents=source_documents)
+            return JSONResponse(
+                status_code=201,
+                content={
+                    "schema": "bactalk.sequence-candidate-generation/v1",
+                    "preflight": preflight,
+                    "run": run.model_dump(mode="json"),
+                    "safety": {
+                        "live_writes_enabled": False,
+                        "human_approval_required": True,
+                        "candidate_retained": True,
+                        "candidate_authorizes_deployment": False,
+                    },
+                },
+            )
+        except KeyError as exc:
+            raise HTTPException(
+                status_code=404, detail="candidate generation evidence chain is incomplete"
+            ) from exc
+        except HTTPException:
+            raise
+        except (
+            CtrlFlowPointIntegrityError,
+            SequenceReviewIntegrityError,
+            SequenceOracleIntegrityError,
+        ) as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except (CtrlFlowError, ValueError, RuntimeError) as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     @app.post("/api/library/g36/controllers/{controller_id}/translate")
