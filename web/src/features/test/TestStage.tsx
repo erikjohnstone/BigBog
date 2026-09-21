@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import type { RunDetail } from '../../api/client';
 import { useBlockCatalog, useGraph, useReport } from '../../api/queries';
+import { PanelRightClose, PanelRightOpen } from 'lucide-react';
+
 import { Button, StatusPill, Tab, TabList, TabPanel, Tabs } from '../../design-system/primitives';
 import { ErrorState, LoadingState } from '../../design-system/states';
 import { traceStore, useTrace } from '../../stores/trace';
@@ -14,6 +16,7 @@ import { buildTrace, traceIdForRun } from '../../trace/build-trace';
 import { DecisionMatrix } from '../coverage/DecisionMatrix';
 import { FaultMatrix } from '../coverage/FaultMatrix';
 import { QualificationMatrix } from '../coverage/QualificationMatrix';
+import { SchematicPanel } from '../schematic/SchematicPanel';
 import { MasterTimeline } from '../timeline/MasterTimeline';
 import { Transport } from '../timeline/Transport';
 import { SignalRail } from '../trends/SignalRail';
@@ -26,7 +29,7 @@ import { DataTable } from './DataTable';
 
 const LAYOUT_KEY = 'test';
 const defaultOuter = { top: 64, evidence: 36 };
-const defaultInner = { rail: 20, trends: 80 };
+const defaultInner = { rail: 18, trends: 52, schematic: 30 };
 
 /**
  * Test stage: master timeline, trend panes, and boolean lanes on the shared
@@ -57,6 +60,8 @@ function TestBody({
   const trace = useTrace(traceId);
   const panelSizes = useUi((state) => state.panelSizes);
   const savePanelSizes = useUi((state) => state.savePanelSizes);
+  const schematicOpen = useUi((state) => state.schematicOpen);
+  const setSchematicOpen = useUi((state) => state.setSchematicOpen);
   const trends = useTrends((state) => state.byTrace[traceId]);
   const ensure = useTrends((state) => state.ensure);
   const toggleSignal = useTrends((state) => state.toggleSignal);
@@ -99,7 +104,10 @@ function TestBody({
     <div className="h-full flex flex-col">
       <Group orientation="vertical" className="flex-1 min-h-0" defaultLayout={panelSizes[`${LAYOUT_KEY}:outer`] ?? defaultOuter} onLayoutChanged={(layout) => savePanelSizes(`${LAYOUT_KEY}:outer`, layout)}>
         <Panel id="top" defaultSize={defaultOuter.top} minSize="30" className="min-h-0">
-          <Group orientation="horizontal" className="h-full" defaultLayout={panelSizes[`${LAYOUT_KEY}:inner`] ?? defaultInner} onLayoutChanged={(layout) => savePanelSizes(`${LAYOUT_KEY}:inner`, layout)}>
+          <Group orientation="horizontal" className="h-full" key={schematicOpen ? 'with-schematic' : 'no-schematic'}
+            defaultLayout={panelSizes[`${LAYOUT_KEY}:inner:${schematicOpen ? 3 : 2}`] ?? (schematicOpen ? defaultInner : { rail: 22, trends: 78 })}
+            onLayoutChanged={(layout) => savePanelSizes(`${LAYOUT_KEY}:inner:${schematicOpen ? 3 : 2}`, layout)}
+          >
             <Panel id="rail" defaultSize={defaultInner.rail} minSize="12" className="hairline-r min-w-0">
               <SignalRail trace={trace} trends={trends} onToggle={onToggle} outputsOf={outputsOf} />
             </Panel>
@@ -115,6 +123,9 @@ function TestBody({
                 <span className="text-2xs text-fg-2 hidden md:inline">Drag on the timeline to zoom · drag in a pane to scrub</span>
                 <Button size="xs" variant="ghost" onClick={() => reset(traceId, () => composeDefaultTrends(trace, outputsOf))}>
                   Reset panes
+                </Button>
+                <Button size="xs" variant={schematicOpen ? 'secondary' : 'outline'} onClick={() => setSchematicOpen(!schematicOpen)} aria-pressed={schematicOpen} title="Show the equipment schematic">
+                  {schematicOpen ? <PanelRightClose size={12} /> : <PanelRightOpen size={12} />} Schematic
                 </Button>
               </div>
               <MasterTimeline trace={trace} />
@@ -138,6 +149,14 @@ function TestBody({
                 )}
               </div>
             </Panel>
+            {schematicOpen && (
+              <>
+                <Separator className="w-px bg-line-1 hover:bg-accent transition-colors" />
+                <Panel id="schematic" defaultSize={defaultInner.schematic} minSize="16" className="min-w-0 bg-bg-1">
+                  <SchematicPanel run={run} trace={trace} />
+                </Panel>
+              </>
+            )}
           </Group>
         </Panel>
         <Separator className="h-px bg-line-1 hover:bg-accent transition-colors" />

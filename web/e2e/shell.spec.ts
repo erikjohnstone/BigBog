@@ -297,6 +297,40 @@ test('test stage puts timeline, trends, and evidence on one clock', async ({ pag
   await axe(page);
 });
 
+test('schematic builds from the job and animates from the clock', async ({ page }) => {
+  test.setTimeout(60_000);
+  const runs = (await (await page.request.get('/api/runs')).json()) as Run[];
+  const candidate = runs.find((run) => run.job.equipment_name === 'AHU_1') ?? runs[0];
+  test.skip(!candidate, 'A retained candidate is required.');
+  await page.goto(`/next/jobs/${candidate.id}/test`);
+  const toggle = page.getByRole('button', { name: /^Schematic$/ });
+  if ((await toggle.getAttribute('aria-pressed')) !== 'true') await toggle.click();
+  const schematic = page.getByRole('img', { name: /air handling unit|points|vav|exhaust|pump/i }).first();
+  await expect(schematic).toBeVisible();
+  // Bound symbols carry live values once the clock moves.
+  await page.getByRole('slider', { name: 'Scan position' }).focus();
+  await page.keyboard.press('End');
+  const value = schematic.locator('[data-slot="dischargeTemp"] [data-live-value]');
+  await expect(value).not.toHaveText('—');
+  const fan = schematic.locator('[data-slot="fanCommand"]').first();
+  await expect(fan).toHaveAttribute('data-on', /true|false/);
+  // Bindings are inspectable and overridable.
+  await page.getByRole('button', { name: /bound$/ }).click();
+  await expect(page.getByRole('combobox', { name: 'Signal for Supply fan command' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await axe(page);
+});
+
+test('project system map draws equipment, relationships, and bindings', async ({ page }) => {
+  const projects = (await (await page.request.get('/api/projects')).json()) as Array<{ id: string; project: { name: string; equipment: unknown[] } }>;
+  test.skip(projects.length === 0, 'A retained project is required.');
+  await page.goto(`/next/projects/${projects[0].id}`);
+  const map = page.getByRole('group', { name: `System map for ${projects[0].project.name}` });
+  await expect(map).toBeVisible();
+  await expect(map.getByRole('button')).toHaveCount(projects[0].project.equipment.length);
+  await axe(page);
+});
+
 test('legacy studio and simulation links redirect into the stage model', async ({ page }) => {
   const runs = (await (await page.request.get('/api/runs')).json()) as Run[];
   test.skip(runs.length === 0, 'A retained candidate is required.');

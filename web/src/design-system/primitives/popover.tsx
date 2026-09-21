@@ -1,5 +1,6 @@
 import { Popover as BasePopover } from '@base-ui/react/popover';
-import type { ReactNode } from 'react';
+import { isValidElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 import { cn } from '../cn';
 
@@ -22,7 +23,13 @@ export function Popover({
 }) {
   return (
     <BasePopover.Root open={open} onOpenChange={onOpenChange}>
-      <BasePopover.Trigger render={<span className="inline-flex" />}>{trigger}</BasePopover.Trigger>
+      {/* A single element (usually a Button) becomes the trigger itself, so
+          the popup state lands on a real button and never on a generic span. */}
+      {isValidElement(trigger) ? (
+        <BasePopover.Trigger render={trigger as ReactElement<Record<string, unknown>>} />
+      ) : (
+        <BasePopover.Trigger className="inline-flex">{trigger}</BasePopover.Trigger>
+      )}
       <BasePopover.Portal>
         <BasePopover.Positioner side={side} align={align} sideOffset={6}>
           <BasePopover.Popup

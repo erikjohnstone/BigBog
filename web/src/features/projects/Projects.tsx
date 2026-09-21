@@ -6,6 +6,7 @@ import { useProject, useProjects } from '../../api/queries';
 import { cn } from '../../design-system/cn';
 import { StatusPill, runStatusTone } from '../../design-system/primitives';
 import { EmptyState, ErrorState, LoadingState } from '../../design-system/states';
+import { SystemMap } from '../schematic/SystemMap';
 import { KeyValue, SectionCard } from '../shared/StageFrame';
 
 /** Projects: multi-equipment sites with typed relationships and signal bindings. */
@@ -79,6 +80,11 @@ function ProjectDetail({ projectId }: { projectId: string }) {
         <StatusPill tone={status.tone}>{status.label}</StatusPill>
         <span className="num text-fg-2">{data.artifact_sha256.slice(0, 12)}</span>
       </header>
+      <SectionCard title="System map" aside={<span className="text-2xs text-fg-2">Double-click equipment to open its job</span>}>
+        <div className="p-3">
+          <SystemMap project={data} />
+        </div>
+      </SectionCard>
       <SectionCard title="Site">
         <KeyValue
           items={[

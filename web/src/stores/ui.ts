@@ -25,6 +25,8 @@ interface UiState {
   commandMode: CommandMode;
   assistantOpen: boolean;
   railExpanded: boolean;
+  /** Schematic panel on the Test stage. */
+  schematicOpen: boolean;
   panelSizes: Record<string, PanelLayout>;
 
   openCommand: (mode: Exclude<CommandMode, null>) => void;
@@ -32,6 +34,7 @@ interface UiState {
   setAssistantOpen: (open: boolean) => void;
   toggleAssistant: () => void;
   setRailExpanded: (expanded: boolean) => void;
+  setSchematicOpen: (open: boolean) => void;
   savePanelSizes: (key: string, sizes: PanelLayout) => void;
   resetPanelSizes: (key: string) => void;
 }
@@ -40,6 +43,13 @@ export const useUi = create<UiState>((set, get) => ({
   commandMode: null,
   assistantOpen: false,
   railExpanded: false,
+  schematicOpen: (() => {
+    try {
+      return localStorage.getItem('bactalk.schematic.open') !== 'false';
+    } catch {
+      return true;
+    }
+  })(),
   panelSizes: readSizes(),
 
   openCommand(mode) {
@@ -56,6 +66,14 @@ export const useUi = create<UiState>((set, get) => ({
   },
   setRailExpanded(expanded) {
     set({ railExpanded: expanded });
+  },
+  setSchematicOpen(open) {
+    set({ schematicOpen: open });
+    try {
+      localStorage.setItem('bactalk.schematic.open', String(open));
+    } catch {
+      // preference only
+    }
   },
   savePanelSizes(key, sizes) {
     const next = { ...get().panelSizes, [key]: sizes };

@@ -274,3 +274,104 @@
   cursor: default;
   opacity: 0.5;
 }
+
+/* ---- schematic symbols ---------------------------------------------- */
+.schematic {
+  font-family: var(--font-sans);
+}
+.schematic .sym-label {
+  font-size: 11px;
+  fill: var(--fg-2);
+}
+.schematic .sym-label-strong {
+  font-size: 12px;
+  fill: var(--fg-0);
+}
+.schematic .sym-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  fill: var(--fg-1);
+  letter-spacing: 0.04em;
+}
+.schematic .sym-value {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  fill: var(--fg-0);
+}
+.schematic .sym-value-small {
+  font-size: 10px;
+}
+.schematic .is-unbound {
+  opacity: 0.55;
+}
+.schematic .is-unbound .sym-value {
+  fill: var(--fg-2);
+}
+/* Run lamps: grey until a signal says on. */
+.schematic .sym-run,
+.schematic .lamp-dot {
+  fill: var(--line-2);
+  transition: fill var(--duration-state);
+}
+.schematic [data-on='true'] .sym-run,
+.schematic [data-on='true'] .lamp-dot {
+  fill: var(--m-status);
+}
+.schematic .sym-lamp[data-on='true'] rect {
+  stroke: var(--m-status);
+}
+/* Alarm lamps use the status medium to mean "bad when on". */
+.schematic .sym-lamp[data-on='true'] .lamp-dot {
+  fill: var(--m-status);
+}
+/* Damper blades rotate with --position; valve stems lift. */
+.schematic .sym-damper .blade {
+  transform: rotate(calc(var(--position, 0) * -72deg));
+  transition: transform var(--duration-state) var(--ease-out);
+}
+.schematic .sym-valve .stem {
+  transform: translateY(calc((1 - var(--position, 0)) * 6px));
+  transition: transform var(--duration-state) var(--ease-out);
+}
+.schematic .sym-valve .opening {
+  transform-origin: center;
+  transform: scaleX(var(--position, 0));
+  transition: transform var(--duration-state) var(--ease-out);
+}
+/* Fans, pumps, towers spin with --speed and stop when not running. */
+.schematic [data-running='false'] .impeller,
+.schematic .impeller:not([style]) {
+  animation-play-state: paused;
+}
+.schematic [data-running='true'] .impeller {
+  animation-play-state: running;
+}
+/* Zones tint from cool to warm through --temp-h. */
+.schematic .zone-fill {
+  fill: oklch(0.6 0.1 var(--temp-h, 200) / 0.18);
+  transition: fill var(--duration-layout);
+}
+/* Flows: tinted by temperature when bound, dash speed by --speed. */
+.schematic .schematic-flow .flow-dash {
+  --flow-rate: var(--speed, 0);
+}
+.schematic .schematic-flow[style*='--temp-h'] .flow-body {
+  stroke: oklch(0.7 0.12 var(--temp-h, 200));
+}
+.schematic .sym-flame {
+  transform-origin: 50% 80%;
+  transform: scale(calc(0.4 + var(--speed, 0) * 0.6));
+  opacity: calc(0.25 + var(--speed, 0) * 0.75);
+  transition: transform var(--duration-state), opacity var(--duration-state);
+}
+@media (prefers-reduced-motion: reduce) {
+  .schematic .sym-damper .blade,
+  .schematic .sym-valve .stem,
+  .schematic .sym-valve .opening,
+  .schematic .zone-fill,
+  .schematic .sym-flame {
+    transition: none;
+  }
+}
