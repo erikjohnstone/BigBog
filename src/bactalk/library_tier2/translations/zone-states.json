@@ -1,0 +1,524 @@
+{
+ "configuration_id": "zone-states",
+ "controller_id": "ThermalZones.ZoneStates",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates",
+  "inputs": [
+   {
+    "description": "Cooling control signal",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates.uCoo",
+    "label": "uCoo",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Heating control signal",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates.uHea",
+    "label": "uHea",
+    "type": "S231:RealInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Zone state",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates.yZonSta",
+    "label": "yZonSta",
+    "type": "S231:IntegerOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 3
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {},
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uCoo",
+   "name": "uCoo",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates.uCoo",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uHea",
+   "name": "uHea",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates.uHea",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yZonSta",
+   "name": "yZonSta",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates.yZonSta",
+   "source_interface_type": "S231:IntegerOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "ThermalZones/ZoneStates.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "82b8165e79313ee657957a919cc2e741d495dffaab2e06f518b1a62cb0b1b64d",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "ec6f7398554f7299bae8a4f543fd1a4163bde5e02c84b47c32b2bb3f621be065",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uCoo",
+    "kind": "numeric_input",
+    "label": "uCoo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uHea",
+    "kind": "numeric_input",
+    "label": "uHea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yZonSta",
+    "kind": "numeric_output",
+    "label": "yZonSta",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addInt",
+    "kind": "add",
+    "label": "addInt",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addInt1",
+    "kind": "add",
+    "label": "addInt1",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "booToIntCoo_true",
+    "kind": "numeric_const",
+    "label": "booToIntCoo true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToIntCoo_false",
+    "kind": "numeric_const",
+    "label": "booToIntCoo false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToIntCoo",
+    "kind": "numeric_switch",
+    "label": "booToIntCoo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "booToIntDea_true",
+    "kind": "numeric_const",
+    "label": "booToIntDea true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToIntDea_false",
+    "kind": "numeric_const",
+    "label": "booToIntDea false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToIntDea",
+    "kind": "numeric_switch",
+    "label": "booToIntDea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToIntHea_true",
+    "kind": "numeric_const",
+    "label": "booToIntHea true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToIntHea_false",
+    "kind": "numeric_const",
+    "label": "booToIntHea false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToIntHea",
+    "kind": "numeric_switch",
+    "label": "booToIntHea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.01,
+     "u_low": -0.01
+    },
+    "id": "hysU",
+    "kind": "hysteresis",
+    "label": "hysU",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.05,
+     "u_low": 0.01
+    },
+    "id": "hysUCoo",
+    "kind": "hysteresis",
+    "label": "hysUCoo",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.05,
+     "u_low": 0.01
+    },
+    "id": "hysUHea",
+    "kind": "hysteresis",
+    "label": "hysUHea",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "isCoo",
+    "kind": "and",
+    "label": "isCoo",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "isDea_or",
+    "kind": "or",
+    "label": "isDea or",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isDea_not",
+    "kind": "not",
+    "label": "isDea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isHea",
+    "kind": "and",
+    "label": "isHea",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "notHea",
+    "kind": "not",
+    "label": "notHea",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "uHeaMinUCoo",
+    "kind": "subtract",
+    "label": "uHeaMinUCoo",
+    "x": 0,
+    "y": 240
+   }
+  ],
+  "links": [
+   {
+    "source": "booToIntCoo_true",
+    "source_slot": "out",
+    "target": "booToIntCoo",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToIntCoo_false",
+    "source_slot": "out",
+    "target": "booToIntCoo",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToIntDea_true",
+    "source_slot": "out",
+    "target": "booToIntDea",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToIntDea_false",
+    "source_slot": "out",
+    "target": "booToIntDea",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToIntHea_true",
+    "source_slot": "out",
+    "target": "booToIntHea",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToIntHea_false",
+    "source_slot": "out",
+    "target": "booToIntHea",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "isDea_or",
+    "source_slot": "out",
+    "target": "isDea_not",
+    "target_slot": "in"
+   },
+   {
+    "source": "uCoo",
+    "source_slot": "out",
+    "target": "hysUCoo",
+    "target_slot": "in"
+   },
+   {
+    "source": "uCoo",
+    "source_slot": "out",
+    "target": "uHeaMinUCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "uHea",
+    "source_slot": "out",
+    "target": "hysUHea",
+    "target_slot": "in"
+   },
+   {
+    "source": "uHea",
+    "source_slot": "out",
+    "target": "uHeaMinUCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt",
+    "source_slot": "out",
+    "target": "addInt1",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt1",
+    "source_slot": "out",
+    "target": "yZonSta",
+    "target_slot": "in"
+   },
+   {
+    "source": "booToIntCoo",
+    "source_slot": "out",
+    "target": "addInt",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToIntDea",
+    "source_slot": "out",
+    "target": "addInt1",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToIntHea",
+    "source_slot": "out",
+    "target": "addInt",
+    "target_slot": "a"
+   },
+   {
+    "source": "hysU",
+    "source_slot": "out",
+    "target": "isHea",
+    "target_slot": "b"
+   },
+   {
+    "source": "hysUCoo",
+    "source_slot": "out",
+    "target": "isCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "hysUHea",
+    "source_slot": "out",
+    "target": "isHea",
+    "target_slot": "a"
+   },
+   {
+    "source": "isCoo",
+    "source_slot": "out",
+    "target": "booToIntCoo",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isCoo",
+    "source_slot": "out",
+    "target": "isDea_or",
+    "target_slot": "b"
+   },
+   {
+    "source": "isDea_not",
+    "source_slot": "out",
+    "target": "booToIntDea",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isHea",
+    "source_slot": "out",
+    "target": "booToIntHea",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isHea",
+    "source_slot": "out",
+    "target": "isDea_or",
+    "target_slot": "a"
+   },
+   {
+    "source": "isHea",
+    "source_slot": "out",
+    "target": "notHea",
+    "target_slot": "in"
+   },
+   {
+    "source": "notHea",
+    "source_slot": "out",
+    "target": "isCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "uHeaMinUCoo",
+    "source_slot": "out",
+    "target": "hysU",
+    "target_slot": "in"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "addInt": "addInt",
+    "addInt1": "addInt1",
+    "booToIntCoo": "booToIntCoo",
+    "booToIntCoo_false": "booToIntCoo",
+    "booToIntCoo_true": "booToIntCoo",
+    "booToIntDea": "booToIntDea",
+    "booToIntDea_false": "booToIntDea",
+    "booToIntDea_true": "booToIntDea",
+    "booToIntHea": "booToIntHea",
+    "booToIntHea_false": "booToIntHea",
+    "booToIntHea_true": "booToIntHea",
+    "hysU": "hysU",
+    "hysUCoo": "hysUCoo",
+    "hysUHea": "hysUHea",
+    "isCoo": "isCoo",
+    "isDea": "isDea",
+    "isDea_not": "isDea",
+    "isDea_or": "isDea",
+    "isHea": "isHea",
+    "notHea": "notHea",
+    "uHeaMinUCoo": "uHeaMinUCoo"
+   },
+   "coverage": {
+    "boundary_inputs": 2,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger": 3,
+     "Buildings.Controls.OBC.CDL.Integers.Add": 2,
+     "Buildings.Controls.OBC.CDL.Logical.And": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Nor": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Hysteresis": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 1
+    },
+    "component_count": 13,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Reals.Hysteresis"
+    ],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ZoneStates",
+    "root_label": "ZoneStates",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "ec6f7398554f7299bae8a4f543fd1a4163bde5e02c84b47c32b2bb3f621be065",
+    "supported_class_count": 13,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "ec6f7398554f7299bae8a4f543fd1a4163bde5e02c84b47c32b2bb3f621be065"
+  },
+  "name": "ZoneStates"
+ }
+}

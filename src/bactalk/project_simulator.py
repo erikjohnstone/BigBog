@@ -32,6 +32,9 @@ class ProjectGraphInterpreter:
         self.incoming = defaultdict(list)
         for binding in project.signal_bindings:
             self.incoming[binding.target_equipment].append(binding)
+        self.aggregations = defaultdict(list)
+        for aggregation in project.signal_aggregations:
+            self.aggregations[aggregation.target_equipment].append(aggregation)
 
     def evaluate(
         self,
@@ -52,6 +55,13 @@ class ProjectGraphInterpreter:
                 equipment_inputs[binding.target_point] = values[binding.source_equipment][
                     binding.source_point
                 ]
+            for aggregation in self.aggregations[equipment]:
+                contributions = [
+                    values[source.equipment][source.point] for source in aggregation.sources
+                ]
+                equipment_inputs[aggregation.target_point] = _reduce(
+                    aggregation.reduce, contributions
+                )
             equipment_values = self.interpreters[equipment].evaluate(
                 equipment_inputs,
                 step_seconds=step_seconds,
@@ -120,6 +130,7 @@ def run_project_acceptance_suite(
             "schema": "bactalk.project-signal-coverage/v1",
             "equipment_count": len(project.equipment),
             "signal_binding_count": len(project.signal_bindings),
+            "signal_aggregation_count": len(project.signal_aggregations),
             "acceptance_case_count": len(project.acceptance_tests),
             "phase_count": sum(len(case.phases) for case in project.acceptance_tests),
             "all_project_acceptance_passed": all(result.passed for result in results),
@@ -131,14 +142,30 @@ def run_project_acceptance_suite(
     )
 
 
+def _reduce(mode: str, contributions: list[float | bool]) -> float | bool:
+    if mode == "any":
+        return any(bool(value) for value in contributions)
+    numbers = [float(value) for value in contributions]
+    if mode == "max":
+        return max(numbers)
+    return float(sum(numbers))
+
+
 def _equipment_order(project: ProjectSpec) -> list[str]:
     names = [job.equipment_name for job in project.equipment]
     adjacency: dict[str, set[str]] = defaultdict(set)
     indegree = {name: 0 for name in names}
-    for binding in project.signal_bindings:
-        if binding.target_equipment not in adjacency[binding.source_equipment]:
-            adjacency[binding.source_equipment].add(binding.target_equipment)
-            indegree[binding.target_equipment] += 1
+    edges = [
+        (binding.source_equipment, binding.target_equipment) for binding in project.signal_bindings
+    ] + [
+        (source.equipment, aggregation.target_equipment)
+        for aggregation in project.signal_aggregations
+        for source in aggregation.sources
+    ]
+    for source_equipment, target_equipment in edges:
+        if target_equipment not in adjacency[source_equipment]:
+            adjacency[source_equipment].add(target_equipment)
+            indegree[target_equipment] += 1
     queue = deque(sorted(name for name, degree in indegree.items() if degree == 0))
     ordered: list[str] = []
     while queue:

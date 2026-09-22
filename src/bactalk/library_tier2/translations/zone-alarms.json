@@ -1,0 +1,1132 @@
+{
+ "configuration_id": "zone-alarms",
+ "controller_id": "ThermalZones.Alarms",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms",
+  "inputs": [
+   {
+    "description": "Zone cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms.TCooSet",
+    "label": "TCooSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms.THeaSet",
+    "label": "THeaSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Measured zone temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms.TZon",
+    "label": "TZon",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "True: zone setpoint temperature is being resetted",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms.u1ResSet",
+    "label": "u1ResSet",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "AHU operation mode status signal",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms.uOpeMod",
+    "label": "uOpeMod",
+    "type": "S231:IntegerInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Zone temperature alarm",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms.yTemAla",
+    "label": "yTemAla",
+    "type": "S231:IntegerOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 8
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {},
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TCooSet",
+   "name": "TCooSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms.TCooSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "THeaSet",
+   "name": "THeaSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms.THeaSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZon",
+   "name": "TZon",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms.TZon",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1ResSet",
+   "name": "u1ResSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms.u1ResSet",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uOpeMod",
+   "name": "uOpeMod",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms.uOpeMod",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yTemAla",
+   "name": "yTemAla",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms.yTemAla",
+   "source_interface_type": "S231:IntegerOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "ThermalZones/Alarms.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "9949d5fb2c61522ed431b2fbe35e2041897a9f3e3c4e6a72b91e3b974c1489ee",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "b27c0e0ce0265638e3d07cec241860bec5d4b349ff54cd84aafbbe74c423aec6",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TCooSet",
+    "kind": "numeric_input",
+    "label": "TCooSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "THeaSet",
+    "kind": "numeric_input",
+    "label": "THeaSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TZon",
+    "kind": "numeric_input",
+    "label": "TZon",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1ResSet",
+    "kind": "boolean_input",
+    "label": "u1ResSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uOpeMod",
+    "kind": "numeric_input",
+    "label": "uOpeMod",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yTemAla",
+    "kind": "numeric_output",
+    "label": "yTemAla",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "and1",
+    "kind": "and",
+    "label": "and1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "and2",
+    "kind": "and",
+    "label": "and2",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "and3",
+    "kind": "and",
+    "label": "and3",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "and4",
+    "kind": "and",
+    "label": "and4",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "booToInt_true",
+    "kind": "numeric_const",
+    "label": "booToInt true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt_false",
+    "kind": "numeric_const",
+    "label": "booToInt false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt",
+    "kind": "numeric_switch",
+    "label": "booToInt",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "booToInt2_true",
+    "kind": "numeric_const",
+    "label": "booToInt2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt2_false",
+    "kind": "numeric_const",
+    "label": "booToInt2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt2",
+    "kind": "numeric_switch",
+    "label": "booToInt2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "cooDowMod",
+    "kind": "numeric_const",
+    "label": "cooDowMod",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "higTem",
+    "kind": "subtract",
+    "label": "higTem",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "higTemAla",
+    "kind": "numeric_switch",
+    "label": "higTemAla",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {
+     "message": "Warning: zone temperature is 3 degC higher than the cooling setpoint",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "higTemAla2",
+    "kind": "boolean_assert_warning",
+    "label": "higTemAla2",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "message": "Warning: zone temperature is 2 degC higher than the cooling setpoint",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "higTemAla3",
+    "kind": "boolean_assert_warning",
+    "label": "higTemAla3",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "intEqu3",
+    "kind": "equal",
+    "label": "intEqu3",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "intEqu4",
+    "kind": "equal",
+    "label": "intEqu4",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "levThr",
+    "kind": "numeric_const",
+    "label": "levThr",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "levThrHig",
+    "kind": "equal",
+    "label": "levThrHig",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "levThrLow",
+    "kind": "equal",
+    "label": "levThrLow",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "levTwo",
+    "kind": "numeric_const",
+    "label": "levTwo",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "levTwoHig",
+    "kind": "equal",
+    "label": "levTwoHig",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "levTwoLow",
+    "kind": "equal",
+    "label": "levTwoLow",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "lowTem",
+    "kind": "subtract",
+    "label": "lowTem",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "lowTemAla",
+    "kind": "numeric_switch",
+    "label": "lowTemAla",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {
+     "message": "Warning: zone temperature is 3 degC lower than the heating setpoint",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "lowTemAla2",
+    "kind": "boolean_assert_warning",
+    "label": "lowTemAla2",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {
+     "message": "Warning: zone temperature is 2 degC lower than the heating setpoint",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "lowTemAla3",
+    "kind": "boolean_assert_warning",
+    "label": "lowTemAla3",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "not1",
+    "kind": "not",
+    "label": "not1",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "not2",
+    "kind": "not",
+    "label": "not2",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "not3",
+    "kind": "not",
+    "label": "not3",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "not4",
+    "kind": "not",
+    "label": "not4",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "notSupTemAla",
+    "kind": "not",
+    "label": "notSupTemAla",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "or1",
+    "kind": "or",
+    "label": "or1",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "or2",
+    "kind": "or",
+    "label": "or2",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "temAla",
+    "kind": "add",
+    "label": "temAla",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "delay_on_init": false,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 600.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "tenMinDur",
+    "kind": "boolean_delay",
+    "label": "tenMinDur",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {
+     "delay_on_init": false,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 600.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "tenMinDur1",
+    "kind": "boolean_delay",
+    "label": "tenMinDur1",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {
+     "delay_on_init": false,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 600.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "tenMinDur2",
+    "kind": "boolean_delay",
+    "label": "tenMinDur2",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {
+     "delay_on_init": false,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 600.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "tenMinDur3",
+    "kind": "boolean_delay",
+    "label": "tenMinDur3",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "thrDegHig_threshold",
+    "kind": "numeric_const",
+    "label": "thrDegHig threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "thrDegHig",
+    "kind": "greater_than",
+    "label": "thrDegHig",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "thrDegLow_threshold",
+    "kind": "numeric_const",
+    "label": "thrDegLow threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "thrDegLow",
+    "kind": "greater_than",
+    "label": "thrDegLow",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "twoDegHig_threshold",
+    "kind": "numeric_const",
+    "label": "twoDegHig threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "twoDegHig",
+    "kind": "greater_than",
+    "label": "twoDegHig",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "twoDegLow_threshold",
+    "kind": "numeric_const",
+    "label": "twoDegLow threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "twoDegLow",
+    "kind": "greater_than",
+    "label": "twoDegLow",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "warUpMod",
+    "kind": "numeric_const",
+    "label": "warUpMod",
+    "x": 540,
+    "y": 720
+   }
+  ],
+  "links": [
+   {
+    "source": "booToInt_true",
+    "source_slot": "out",
+    "target": "booToInt",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt_false",
+    "source_slot": "out",
+    "target": "booToInt",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt2_true",
+    "source_slot": "out",
+    "target": "booToInt2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt2_false",
+    "source_slot": "out",
+    "target": "booToInt2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "thrDegHig_threshold",
+    "source_slot": "out",
+    "target": "thrDegHig",
+    "target_slot": "b"
+   },
+   {
+    "source": "thrDegLow_threshold",
+    "source_slot": "out",
+    "target": "thrDegLow",
+    "target_slot": "b"
+   },
+   {
+    "source": "twoDegHig_threshold",
+    "source_slot": "out",
+    "target": "twoDegHig",
+    "target_slot": "b"
+   },
+   {
+    "source": "twoDegLow_threshold",
+    "source_slot": "out",
+    "target": "twoDegLow",
+    "target_slot": "b"
+   },
+   {
+    "source": "TCooSet",
+    "source_slot": "out",
+    "target": "higTem",
+    "target_slot": "b"
+   },
+   {
+    "source": "THeaSet",
+    "source_slot": "out",
+    "target": "lowTem",
+    "target_slot": "a"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "higTem",
+    "target_slot": "a"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "lowTem",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1ResSet",
+    "source_slot": "out",
+    "target": "or1",
+    "target_slot": "a"
+   },
+   {
+    "source": "uOpeMod",
+    "source_slot": "out",
+    "target": "intEqu3",
+    "target_slot": "b"
+   },
+   {
+    "source": "uOpeMod",
+    "source_slot": "out",
+    "target": "intEqu4",
+    "target_slot": "b"
+   },
+   {
+    "source": "and1",
+    "source_slot": "out",
+    "target": "tenMinDur3",
+    "target_slot": "in"
+   },
+   {
+    "source": "and2",
+    "source_slot": "out",
+    "target": "tenMinDur2",
+    "target_slot": "in"
+   },
+   {
+    "source": "and3",
+    "source_slot": "out",
+    "target": "tenMinDur",
+    "target_slot": "in"
+   },
+   {
+    "source": "and4",
+    "source_slot": "out",
+    "target": "tenMinDur1",
+    "target_slot": "in"
+   },
+   {
+    "source": "booToInt",
+    "source_slot": "out",
+    "target": "higTemAla",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt2",
+    "source_slot": "out",
+    "target": "lowTemAla",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "cooDowMod",
+    "source_slot": "out",
+    "target": "intEqu3",
+    "target_slot": "a"
+   },
+   {
+    "source": "higTem",
+    "source_slot": "out",
+    "target": "thrDegHig",
+    "target_slot": "a"
+   },
+   {
+    "source": "higTem",
+    "source_slot": "out",
+    "target": "twoDegHig",
+    "target_slot": "a"
+   },
+   {
+    "source": "higTemAla",
+    "source_slot": "out",
+    "target": "levThrHig",
+    "target_slot": "a"
+   },
+   {
+    "source": "higTemAla",
+    "source_slot": "out",
+    "target": "levTwoHig",
+    "target_slot": "a"
+   },
+   {
+    "source": "higTemAla",
+    "source_slot": "out",
+    "target": "temAla",
+    "target_slot": "a"
+   },
+   {
+    "source": "intEqu3",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "a"
+   },
+   {
+    "source": "intEqu4",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "b"
+   },
+   {
+    "source": "levThr",
+    "source_slot": "out",
+    "target": "levThrHig",
+    "target_slot": "b"
+   },
+   {
+    "source": "levThr",
+    "source_slot": "out",
+    "target": "levThrLow",
+    "target_slot": "b"
+   },
+   {
+    "source": "levThrHig",
+    "source_slot": "out",
+    "target": "not1",
+    "target_slot": "in"
+   },
+   {
+    "source": "levThrLow",
+    "source_slot": "out",
+    "target": "not3",
+    "target_slot": "in"
+   },
+   {
+    "source": "levTwo",
+    "source_slot": "out",
+    "target": "higTemAla",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "levTwo",
+    "source_slot": "out",
+    "target": "levTwoHig",
+    "target_slot": "b"
+   },
+   {
+    "source": "levTwo",
+    "source_slot": "out",
+    "target": "levTwoLow",
+    "target_slot": "b"
+   },
+   {
+    "source": "levTwo",
+    "source_slot": "out",
+    "target": "lowTemAla",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "levTwoHig",
+    "source_slot": "out",
+    "target": "not2",
+    "target_slot": "in"
+   },
+   {
+    "source": "levTwoLow",
+    "source_slot": "out",
+    "target": "not4",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowTem",
+    "source_slot": "out",
+    "target": "thrDegLow",
+    "target_slot": "a"
+   },
+   {
+    "source": "lowTem",
+    "source_slot": "out",
+    "target": "twoDegLow",
+    "target_slot": "a"
+   },
+   {
+    "source": "lowTemAla",
+    "source_slot": "out",
+    "target": "levThrLow",
+    "target_slot": "a"
+   },
+   {
+    "source": "lowTemAla",
+    "source_slot": "out",
+    "target": "levTwoLow",
+    "target_slot": "a"
+   },
+   {
+    "source": "lowTemAla",
+    "source_slot": "out",
+    "target": "temAla",
+    "target_slot": "b"
+   },
+   {
+    "source": "not1",
+    "source_slot": "out",
+    "target": "higTemAla3",
+    "target_slot": "condition"
+   },
+   {
+    "source": "not2",
+    "source_slot": "out",
+    "target": "higTemAla2",
+    "target_slot": "condition"
+   },
+   {
+    "source": "not3",
+    "source_slot": "out",
+    "target": "lowTemAla3",
+    "target_slot": "condition"
+   },
+   {
+    "source": "not4",
+    "source_slot": "out",
+    "target": "lowTemAla2",
+    "target_slot": "condition"
+   },
+   {
+    "source": "notSupTemAla",
+    "source_slot": "out",
+    "target": "and1",
+    "target_slot": "b"
+   },
+   {
+    "source": "notSupTemAla",
+    "source_slot": "out",
+    "target": "and2",
+    "target_slot": "b"
+   },
+   {
+    "source": "notSupTemAla",
+    "source_slot": "out",
+    "target": "and3",
+    "target_slot": "b"
+   },
+   {
+    "source": "notSupTemAla",
+    "source_slot": "out",
+    "target": "and4",
+    "target_slot": "b"
+   },
+   {
+    "source": "or1",
+    "source_slot": "out",
+    "target": "notSupTemAla",
+    "target_slot": "in"
+   },
+   {
+    "source": "or2",
+    "source_slot": "out",
+    "target": "or1",
+    "target_slot": "b"
+   },
+   {
+    "source": "temAla",
+    "source_slot": "out",
+    "target": "yTemAla",
+    "target_slot": "in"
+   },
+   {
+    "source": "tenMinDur",
+    "source_slot": "out",
+    "target": "booToInt2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tenMinDur1",
+    "source_slot": "out",
+    "target": "lowTemAla",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tenMinDur2",
+    "source_slot": "out",
+    "target": "booToInt",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tenMinDur3",
+    "source_slot": "out",
+    "target": "higTemAla",
+    "target_slot": "selector"
+   },
+   {
+    "source": "thrDegHig",
+    "source_slot": "out",
+    "target": "and1",
+    "target_slot": "a"
+   },
+   {
+    "source": "thrDegLow",
+    "source_slot": "out",
+    "target": "and4",
+    "target_slot": "a"
+   },
+   {
+    "source": "twoDegHig",
+    "source_slot": "out",
+    "target": "and2",
+    "target_slot": "a"
+   },
+   {
+    "source": "twoDegLow",
+    "source_slot": "out",
+    "target": "and3",
+    "target_slot": "a"
+   },
+   {
+    "source": "warUpMod",
+    "source_slot": "out",
+    "target": "intEqu4",
+    "target_slot": "a"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "and1": "and1",
+    "and2": "and2",
+    "and3": "and3",
+    "and4": "and4",
+    "booToInt": "booToInt",
+    "booToInt2": "booToInt2",
+    "booToInt2_false": "booToInt2",
+    "booToInt2_true": "booToInt2",
+    "booToInt_false": "booToInt",
+    "booToInt_true": "booToInt",
+    "cooDowMod": "cooDowMod",
+    "higTem": "higTem",
+    "higTemAla": "higTemAla",
+    "higTemAla2": "higTemAla2",
+    "higTemAla3": "higTemAla3",
+    "intEqu3": "intEqu3",
+    "intEqu4": "intEqu4",
+    "levThr": "levThr",
+    "levThrHig": "levThrHig",
+    "levThrLow": "levThrLow",
+    "levTwo": "levTwo",
+    "levTwoHig": "levTwoHig",
+    "levTwoLow": "levTwoLow",
+    "lowTem": "lowTem",
+    "lowTemAla": "lowTemAla",
+    "lowTemAla2": "lowTemAla2",
+    "lowTemAla3": "lowTemAla3",
+    "not1": "not1",
+    "not2": "not2",
+    "not3": "not3",
+    "not4": "not4",
+    "notSupTemAla": "notSupTemAla",
+    "or1": "or1",
+    "or2": "or2",
+    "temAla": "temAla",
+    "tenMinDur": "tenMinDur",
+    "tenMinDur1": "tenMinDur1",
+    "tenMinDur2": "tenMinDur2",
+    "tenMinDur3": "tenMinDur3",
+    "thrDegHig": "thrDegHig",
+    "thrDegHig_threshold": "thrDegHig",
+    "thrDegLow": "thrDegLow",
+    "thrDegLow_threshold": "thrDegLow",
+    "twoDegHig": "twoDegHig",
+    "twoDegHig_threshold": "twoDegHig",
+    "twoDegLow": "twoDegLow",
+    "twoDegLow_threshold": "twoDegLow",
+    "warUpMod": "warUpMod"
+   },
+   "coverage": {
+    "boundary_inputs": 5,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger": 2,
+     "Buildings.Controls.OBC.CDL.Integers.Add": 1,
+     "Buildings.Controls.OBC.CDL.Integers.Equal": 6,
+     "Buildings.Controls.OBC.CDL.Integers.Sources.Constant": 4,
+     "Buildings.Controls.OBC.CDL.Integers.Switch": 2,
+     "Buildings.Controls.OBC.CDL.Logical.And": 4,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 5,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 2,
+     "Buildings.Controls.OBC.CDL.Logical.TrueDelay": 4,
+     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 4,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 2,
+     "Buildings.Controls.OBC.CDL.Utilities.Assert": 4
+    },
+    "component_count": 40,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [
+     "tenMinDur: delayOnInit=false is not equivalent to the Niagara BooleanDelay initialization used by this lowering",
+     "tenMinDur1: delayOnInit=false is not equivalent to the Niagara BooleanDelay initialization used by this lowering",
+     "tenMinDur2: delayOnInit=false is not equivalent to the Niagara BooleanDelay initialization used by this lowering",
+     "tenMinDur3: delayOnInit=false is not equivalent to the Niagara BooleanDelay initialization used by this lowering"
+    ],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Utilities.Assert"
+    ],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Alarms",
+    "root_label": "Alarms",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "b27c0e0ce0265638e3d07cec241860bec5d4b349ff54cd84aafbbe74c423aec6",
+    "supported_class_count": 40,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "b27c0e0ce0265638e3d07cec241860bec5d4b349ff54cd84aafbbe74c423aec6"
+  },
+  "name": "Alarms"
+ }
+}

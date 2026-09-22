@@ -1,0 +1,5070 @@
+{
+ "configuration_id": "zone-group-status",
+ "controller_id": "ZoneGroups.GroupStatus",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus",
+  "inputs": [
+   {
+    "description": "Zone unoccupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TCooSetOff__1",
+    "label": "TCooSetOff__1",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone unoccupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TCooSetOff__2",
+    "label": "TCooSetOff__2",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone unoccupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TCooSetOff__3",
+    "label": "TCooSetOff__3",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone unoccupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TCooSetOff__4",
+    "label": "TCooSetOff__4",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone unoccupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TCooSetOff__5",
+    "label": "TCooSetOff__5",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone unoccupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.THeaSetOff__1",
+    "label": "THeaSetOff__1",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone unoccupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.THeaSetOff__2",
+    "label": "THeaSetOff__2",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone unoccupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.THeaSetOff__3",
+    "label": "THeaSetOff__3",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone unoccupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.THeaSetOff__4",
+    "label": "THeaSetOff__4",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone unoccupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.THeaSetOff__5",
+    "label": "THeaSetOff__5",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZon__1",
+    "label": "TZon__1",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZon__2",
+    "label": "TZon__2",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZon__3",
+    "label": "TZon__3",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZon__4",
+    "label": "TZon__4",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZon__5",
+    "label": "TZon__5",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Time to next occupied period",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.tNexOcc__1",
+    "label": "tNexOcc__1",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Time to next occupied period",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.tNexOcc__2",
+    "label": "tNexOcc__2",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Time to next occupied period",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.tNexOcc__3",
+    "label": "tNexOcc__3",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Time to next occupied period",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.tNexOcc__4",
+    "label": "tNexOcc__4",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Time to next occupied period",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.tNexOcc__5",
+    "label": "tNexOcc__5",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "True when the zone could end the setback mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetBac__1",
+    "label": "u1EndSetBac__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone could end the setback mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetBac__2",
+    "label": "u1EndSetBac__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone could end the setback mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetBac__3",
+    "label": "u1EndSetBac__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone could end the setback mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetBac__4",
+    "label": "u1EndSetBac__4",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone could end the setback mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetBac__5",
+    "label": "u1EndSetBac__5",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone could end the setup mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetUp__1",
+    "label": "u1EndSetUp__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone could end the setup mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetUp__2",
+    "label": "u1EndSetUp__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone could end the setup mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetUp__3",
+    "label": "u1EndSetUp__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone could end the setup mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetUp__4",
+    "label": "u1EndSetUp__4",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone could end the setup mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetUp__5",
+    "label": "u1EndSetUp__5",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is higher than the occupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigOccCoo__1",
+    "label": "u1HigOccCoo__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is higher than the occupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigOccCoo__2",
+    "label": "u1HigOccCoo__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is higher than the occupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigOccCoo__3",
+    "label": "u1HigOccCoo__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is higher than the occupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigOccCoo__4",
+    "label": "u1HigOccCoo__4",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is higher than the occupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigOccCoo__5",
+    "label": "u1HigOccCoo__5",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is higher than its unoccupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigUnoCoo__1",
+    "label": "u1HigUnoCoo__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is higher than its unoccupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigUnoCoo__2",
+    "label": "u1HigUnoCoo__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is higher than its unoccupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigUnoCoo__3",
+    "label": "u1HigUnoCoo__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is higher than its unoccupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigUnoCoo__4",
+    "label": "u1HigUnoCoo__4",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is higher than its unoccupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigUnoCoo__5",
+    "label": "u1HigUnoCoo__5",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is lower than the occupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1OccHeaHig__1",
+    "label": "u1OccHeaHig__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is lower than the occupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1OccHeaHig__2",
+    "label": "u1OccHeaHig__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is lower than the occupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1OccHeaHig__3",
+    "label": "u1OccHeaHig__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is lower than the occupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1OccHeaHig__4",
+    "label": "u1OccHeaHig__4",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is lower than the occupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1OccHeaHig__5",
+    "label": "u1OccHeaHig__5",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone is occupied according to the occupancy schedule",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Occ__1",
+    "label": "u1Occ__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone is occupied according to the occupancy schedule",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Occ__2",
+    "label": "u1Occ__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone is occupied according to the occupancy schedule",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Occ__3",
+    "label": "u1Occ__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone is occupied according to the occupancy schedule",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Occ__4",
+    "label": "u1Occ__4",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone is occupied according to the occupancy schedule",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Occ__5",
+    "label": "u1Occ__5",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is lower than the unoccupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1UnoHeaHig__1",
+    "label": "u1UnoHeaHig__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is lower than the unoccupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1UnoHeaHig__2",
+    "label": "u1UnoHeaHig__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is lower than the unoccupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1UnoHeaHig__3",
+    "label": "u1UnoHeaHig__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is lower than the unoccupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1UnoHeaHig__4",
+    "label": "u1UnoHeaHig__4",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone temperature is lower than the unoccupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1UnoHeaHig__5",
+    "label": "u1UnoHeaHig__5",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Window status, normally closed (true), when windows open, it becomes false. For zone without sensor, it is true",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Win__1",
+    "label": "u1Win__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Window status, normally closed (true), when windows open, it becomes false. For zone without sensor, it is true",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Win__2",
+    "label": "u1Win__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Window status, normally closed (true), when windows open, it becomes false. For zone without sensor, it is true",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Win__3",
+    "label": "u1Win__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Window status, normally closed (true), when windows open, it becomes false. For zone without sensor, it is true",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Win__4",
+    "label": "u1Win__4",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Window status, normally closed (true), when windows open, it becomes false. For zone without sensor, it is true",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Win__5",
+    "label": "u1Win__5",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Cool down time",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uCooTim__1",
+    "label": "uCooTim__1",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Cool down time",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uCooTim__2",
+    "label": "uCooTim__2",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Cool down time",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uCooTim__3",
+    "label": "uCooTim__3",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Cool down time",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uCooTim__4",
+    "label": "uCooTim__4",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Cool down time",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uCooTim__5",
+    "label": "uCooTim__5",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Warm-up time",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uWarTim__1",
+    "label": "uWarTim__1",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Warm-up time",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uWarTim__2",
+    "label": "uWarTim__2",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Warm-up time",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uWarTim__3",
+    "label": "uWarTim__3",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Warm-up time",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uWarTim__4",
+    "label": "uWarTim__4",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Warm-up time",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uWarTim__5",
+    "label": "uWarTim__5",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "True when the zone is set to be occupied due to the override",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.zonOcc__1",
+    "label": "zonOcc__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone is set to be occupied due to the override",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.zonOcc__2",
+    "label": "zonOcc__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone is set to be occupied due to the override",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.zonOcc__3",
+    "label": "zonOcc__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone is set to be occupied due to the override",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.zonOcc__4",
+    "label": "zonOcc__4",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the zone is set to be occupied due to the override",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.zonOcc__5",
+    "label": "zonOcc__5",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Maximum zone temperature in the zone group",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZonMax",
+    "label": "TZonMax",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Minimum zone temperature in the zone group",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZonMin",
+    "label": "TZonMin",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Time to next occupied period",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.nexOcc",
+    "label": "nexOcc",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "True when the zone group is in occupied mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uGroOcc",
+    "label": "uGroOcc",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Total number of cold zones",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yColZon",
+    "label": "yColZon",
+    "type": "S231:IntegerOutput"
+   },
+   {
+    "description": "Cool down time",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yCooTim",
+    "label": "yCooTim",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "True when the group should end setback mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yEndSetBac",
+    "label": "yEndSetBac",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "True when the group should end setup mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yEndSetUp",
+    "label": "yEndSetUp",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "True when there is zone with temperature being higher than the occupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yHigOccCoo",
+    "label": "yHigOccCoo",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Total number of hot zones",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yHotZon",
+    "label": "yHotZon",
+    "type": "S231:IntegerOutput"
+   },
+   {
+    "description": "True when there is zone with temperature being lower than the occupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yOccHeaHig",
+    "label": "yOccHeaHig",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Total number of open windows",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yOpeWin",
+    "label": "yOpeWin",
+    "type": "S231:IntegerOutput"
+   },
+   {
+    "description": "Run setback mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.ySetBac",
+    "label": "ySetBac",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Run setup mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.ySetUp",
+    "label": "ySetUp",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Warm-up time",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yWarTim",
+    "label": "yWarTim",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 2
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {},
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TCooSetOff__1",
+   "name": "TCooSetOff__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TCooSetOff__1",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TCooSetOff__2",
+   "name": "TCooSetOff__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TCooSetOff__2",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TCooSetOff__3",
+   "name": "TCooSetOff__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TCooSetOff__3",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TCooSetOff__4",
+   "name": "TCooSetOff__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TCooSetOff__4",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TCooSetOff__5",
+   "name": "TCooSetOff__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TCooSetOff__5",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "THeaSetOff__1",
+   "name": "THeaSetOff__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.THeaSetOff__1",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "THeaSetOff__2",
+   "name": "THeaSetOff__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.THeaSetOff__2",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "THeaSetOff__3",
+   "name": "THeaSetOff__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.THeaSetOff__3",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "THeaSetOff__4",
+   "name": "THeaSetOff__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.THeaSetOff__4",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "THeaSetOff__5",
+   "name": "THeaSetOff__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.THeaSetOff__5",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZon__1",
+   "name": "TZon__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZon__1",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZon__2",
+   "name": "TZon__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZon__2",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZon__3",
+   "name": "TZon__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZon__3",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZon__4",
+   "name": "TZon__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZon__4",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZon__5",
+   "name": "TZon__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZon__5",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "tNexOcc__1",
+   "name": "tNexOcc__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.tNexOcc__1",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "tNexOcc__2",
+   "name": "tNexOcc__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.tNexOcc__2",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "tNexOcc__3",
+   "name": "tNexOcc__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.tNexOcc__3",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "tNexOcc__4",
+   "name": "tNexOcc__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.tNexOcc__4",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "tNexOcc__5",
+   "name": "tNexOcc__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.tNexOcc__5",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1EndSetBac__1",
+   "name": "u1EndSetBac__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetBac__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1EndSetBac__2",
+   "name": "u1EndSetBac__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetBac__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1EndSetBac__3",
+   "name": "u1EndSetBac__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetBac__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1EndSetBac__4",
+   "name": "u1EndSetBac__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetBac__4",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1EndSetBac__5",
+   "name": "u1EndSetBac__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetBac__5",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1EndSetUp__1",
+   "name": "u1EndSetUp__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetUp__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1EndSetUp__2",
+   "name": "u1EndSetUp__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetUp__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1EndSetUp__3",
+   "name": "u1EndSetUp__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetUp__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1EndSetUp__4",
+   "name": "u1EndSetUp__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetUp__4",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1EndSetUp__5",
+   "name": "u1EndSetUp__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1EndSetUp__5",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1HigOccCoo__1",
+   "name": "u1HigOccCoo__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigOccCoo__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1HigOccCoo__2",
+   "name": "u1HigOccCoo__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigOccCoo__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1HigOccCoo__3",
+   "name": "u1HigOccCoo__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigOccCoo__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1HigOccCoo__4",
+   "name": "u1HigOccCoo__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigOccCoo__4",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1HigOccCoo__5",
+   "name": "u1HigOccCoo__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigOccCoo__5",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1HigUnoCoo__1",
+   "name": "u1HigUnoCoo__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigUnoCoo__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1HigUnoCoo__2",
+   "name": "u1HigUnoCoo__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigUnoCoo__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1HigUnoCoo__3",
+   "name": "u1HigUnoCoo__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigUnoCoo__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1HigUnoCoo__4",
+   "name": "u1HigUnoCoo__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigUnoCoo__4",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1HigUnoCoo__5",
+   "name": "u1HigUnoCoo__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1HigUnoCoo__5",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1OccHeaHig__1",
+   "name": "u1OccHeaHig__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1OccHeaHig__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1OccHeaHig__2",
+   "name": "u1OccHeaHig__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1OccHeaHig__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1OccHeaHig__3",
+   "name": "u1OccHeaHig__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1OccHeaHig__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1OccHeaHig__4",
+   "name": "u1OccHeaHig__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1OccHeaHig__4",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1OccHeaHig__5",
+   "name": "u1OccHeaHig__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1OccHeaHig__5",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Occ__1",
+   "name": "u1Occ__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Occ__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Occ__2",
+   "name": "u1Occ__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Occ__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Occ__3",
+   "name": "u1Occ__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Occ__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Occ__4",
+   "name": "u1Occ__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Occ__4",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Occ__5",
+   "name": "u1Occ__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Occ__5",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1UnoHeaHig__1",
+   "name": "u1UnoHeaHig__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1UnoHeaHig__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1UnoHeaHig__2",
+   "name": "u1UnoHeaHig__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1UnoHeaHig__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1UnoHeaHig__3",
+   "name": "u1UnoHeaHig__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1UnoHeaHig__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1UnoHeaHig__4",
+   "name": "u1UnoHeaHig__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1UnoHeaHig__4",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1UnoHeaHig__5",
+   "name": "u1UnoHeaHig__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1UnoHeaHig__5",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Win__1",
+   "name": "u1Win__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Win__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Win__2",
+   "name": "u1Win__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Win__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Win__3",
+   "name": "u1Win__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Win__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Win__4",
+   "name": "u1Win__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Win__4",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Win__5",
+   "name": "u1Win__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.u1Win__5",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uCooTim__1",
+   "name": "uCooTim__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uCooTim__1",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uCooTim__2",
+   "name": "uCooTim__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uCooTim__2",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uCooTim__3",
+   "name": "uCooTim__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uCooTim__3",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uCooTim__4",
+   "name": "uCooTim__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uCooTim__4",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uCooTim__5",
+   "name": "uCooTim__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uCooTim__5",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uWarTim__1",
+   "name": "uWarTim__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uWarTim__1",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uWarTim__2",
+   "name": "uWarTim__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uWarTim__2",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uWarTim__3",
+   "name": "uWarTim__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uWarTim__3",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uWarTim__4",
+   "name": "uWarTim__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uWarTim__4",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uWarTim__5",
+   "name": "uWarTim__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uWarTim__5",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "zonOcc__1",
+   "name": "zonOcc__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.zonOcc__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "zonOcc__2",
+   "name": "zonOcc__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.zonOcc__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "zonOcc__3",
+   "name": "zonOcc__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.zonOcc__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "zonOcc__4",
+   "name": "zonOcc__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.zonOcc__4",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "zonOcc__5",
+   "name": "zonOcc__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.zonOcc__5",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZonMax",
+   "name": "TZonMax",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZonMax",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZonMin",
+   "name": "TZonMin",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.TZonMin",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "nexOcc",
+   "name": "nexOcc",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.nexOcc",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uGroOcc",
+   "name": "uGroOcc",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.uGroOcc",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yColZon",
+   "name": "yColZon",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yColZon",
+   "source_interface_type": "S231:IntegerOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yCooTim",
+   "name": "yCooTim",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yCooTim",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "yEndSetBac",
+   "name": "yEndSetBac",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yEndSetBac",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "yEndSetUp",
+   "name": "yEndSetUp",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yEndSetUp",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "yHigOccCoo",
+   "name": "yHigOccCoo",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yHigOccCoo",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yHotZon",
+   "name": "yHotZon",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yHotZon",
+   "source_interface_type": "S231:IntegerOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "yOccHeaHig",
+   "name": "yOccHeaHig",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yOccHeaHig",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yOpeWin",
+   "name": "yOpeWin",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yOpeWin",
+   "source_interface_type": "S231:IntegerOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "ySetBac",
+   "name": "ySetBac",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.ySetBac",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "ySetUp",
+   "name": "ySetUp",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.ySetUp",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yWarTim",
+   "name": "yWarTim",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus.yWarTim",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "ZoneGroups/GroupStatus.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "d4355279e3bb22052cb4a076bcd03859430f49becd4fb1f617b3362322e9cdc6",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "610093b50c8bcff3f5aba1abc2be66af799547bab0945edc8a3c6b693c488951",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TCooSetOff__1",
+    "kind": "numeric_input",
+    "label": "TCooSetOff__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TCooSetOff__2",
+    "kind": "numeric_input",
+    "label": "TCooSetOff__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TCooSetOff__3",
+    "kind": "numeric_input",
+    "label": "TCooSetOff__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TCooSetOff__4",
+    "kind": "numeric_input",
+    "label": "TCooSetOff__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TCooSetOff__5",
+    "kind": "numeric_input",
+    "label": "TCooSetOff__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "THeaSetOff__1",
+    "kind": "numeric_input",
+    "label": "THeaSetOff__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "THeaSetOff__2",
+    "kind": "numeric_input",
+    "label": "THeaSetOff__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "THeaSetOff__3",
+    "kind": "numeric_input",
+    "label": "THeaSetOff__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "THeaSetOff__4",
+    "kind": "numeric_input",
+    "label": "THeaSetOff__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "THeaSetOff__5",
+    "kind": "numeric_input",
+    "label": "THeaSetOff__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "tNexOcc__1",
+    "kind": "numeric_input",
+    "label": "tNexOcc__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "tNexOcc__2",
+    "kind": "numeric_input",
+    "label": "tNexOcc__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "tNexOcc__3",
+    "kind": "numeric_input",
+    "label": "tNexOcc__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "tNexOcc__4",
+    "kind": "numeric_input",
+    "label": "tNexOcc__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "tNexOcc__5",
+    "kind": "numeric_input",
+    "label": "tNexOcc__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TZon__1",
+    "kind": "numeric_input",
+    "label": "TZon__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TZon__2",
+    "kind": "numeric_input",
+    "label": "TZon__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TZon__3",
+    "kind": "numeric_input",
+    "label": "TZon__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TZon__4",
+    "kind": "numeric_input",
+    "label": "TZon__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TZon__5",
+    "kind": "numeric_input",
+    "label": "TZon__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1EndSetBac__1",
+    "kind": "boolean_input",
+    "label": "u1EndSetBac__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1EndSetBac__2",
+    "kind": "boolean_input",
+    "label": "u1EndSetBac__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1EndSetBac__3",
+    "kind": "boolean_input",
+    "label": "u1EndSetBac__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1EndSetBac__4",
+    "kind": "boolean_input",
+    "label": "u1EndSetBac__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1EndSetBac__5",
+    "kind": "boolean_input",
+    "label": "u1EndSetBac__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1EndSetUp__1",
+    "kind": "boolean_input",
+    "label": "u1EndSetUp__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1EndSetUp__2",
+    "kind": "boolean_input",
+    "label": "u1EndSetUp__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1EndSetUp__3",
+    "kind": "boolean_input",
+    "label": "u1EndSetUp__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1EndSetUp__4",
+    "kind": "boolean_input",
+    "label": "u1EndSetUp__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1EndSetUp__5",
+    "kind": "boolean_input",
+    "label": "u1EndSetUp__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1HigOccCoo__1",
+    "kind": "boolean_input",
+    "label": "u1HigOccCoo__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1HigOccCoo__2",
+    "kind": "boolean_input",
+    "label": "u1HigOccCoo__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1HigOccCoo__3",
+    "kind": "boolean_input",
+    "label": "u1HigOccCoo__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1HigOccCoo__4",
+    "kind": "boolean_input",
+    "label": "u1HigOccCoo__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1HigOccCoo__5",
+    "kind": "boolean_input",
+    "label": "u1HigOccCoo__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1HigUnoCoo__1",
+    "kind": "boolean_input",
+    "label": "u1HigUnoCoo__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1HigUnoCoo__2",
+    "kind": "boolean_input",
+    "label": "u1HigUnoCoo__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1HigUnoCoo__3",
+    "kind": "boolean_input",
+    "label": "u1HigUnoCoo__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1HigUnoCoo__4",
+    "kind": "boolean_input",
+    "label": "u1HigUnoCoo__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1HigUnoCoo__5",
+    "kind": "boolean_input",
+    "label": "u1HigUnoCoo__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Occ__1",
+    "kind": "boolean_input",
+    "label": "u1Occ__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Occ__2",
+    "kind": "boolean_input",
+    "label": "u1Occ__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Occ__3",
+    "kind": "boolean_input",
+    "label": "u1Occ__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Occ__4",
+    "kind": "boolean_input",
+    "label": "u1Occ__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Occ__5",
+    "kind": "boolean_input",
+    "label": "u1Occ__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1OccHeaHig__1",
+    "kind": "boolean_input",
+    "label": "u1OccHeaHig__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1OccHeaHig__2",
+    "kind": "boolean_input",
+    "label": "u1OccHeaHig__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1OccHeaHig__3",
+    "kind": "boolean_input",
+    "label": "u1OccHeaHig__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1OccHeaHig__4",
+    "kind": "boolean_input",
+    "label": "u1OccHeaHig__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1OccHeaHig__5",
+    "kind": "boolean_input",
+    "label": "u1OccHeaHig__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1UnoHeaHig__1",
+    "kind": "boolean_input",
+    "label": "u1UnoHeaHig__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1UnoHeaHig__2",
+    "kind": "boolean_input",
+    "label": "u1UnoHeaHig__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1UnoHeaHig__3",
+    "kind": "boolean_input",
+    "label": "u1UnoHeaHig__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1UnoHeaHig__4",
+    "kind": "boolean_input",
+    "label": "u1UnoHeaHig__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1UnoHeaHig__5",
+    "kind": "boolean_input",
+    "label": "u1UnoHeaHig__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Win__1",
+    "kind": "boolean_input",
+    "label": "u1Win__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Win__2",
+    "kind": "boolean_input",
+    "label": "u1Win__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Win__3",
+    "kind": "boolean_input",
+    "label": "u1Win__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Win__4",
+    "kind": "boolean_input",
+    "label": "u1Win__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Win__5",
+    "kind": "boolean_input",
+    "label": "u1Win__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uCooTim__1",
+    "kind": "numeric_input",
+    "label": "uCooTim__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uCooTim__2",
+    "kind": "numeric_input",
+    "label": "uCooTim__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uCooTim__3",
+    "kind": "numeric_input",
+    "label": "uCooTim__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uCooTim__4",
+    "kind": "numeric_input",
+    "label": "uCooTim__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uCooTim__5",
+    "kind": "numeric_input",
+    "label": "uCooTim__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uWarTim__1",
+    "kind": "numeric_input",
+    "label": "uWarTim__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uWarTim__2",
+    "kind": "numeric_input",
+    "label": "uWarTim__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uWarTim__3",
+    "kind": "numeric_input",
+    "label": "uWarTim__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uWarTim__4",
+    "kind": "numeric_input",
+    "label": "uWarTim__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uWarTim__5",
+    "kind": "numeric_input",
+    "label": "uWarTim__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "zonOcc__1",
+    "kind": "boolean_input",
+    "label": "zonOcc__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "zonOcc__2",
+    "kind": "boolean_input",
+    "label": "zonOcc__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "zonOcc__3",
+    "kind": "boolean_input",
+    "label": "zonOcc__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "zonOcc__4",
+    "kind": "boolean_input",
+    "label": "zonOcc__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "zonOcc__5",
+    "kind": "boolean_input",
+    "label": "zonOcc__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "nexOcc",
+    "kind": "numeric_output",
+    "label": "nexOcc",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "TZonMax",
+    "kind": "numeric_output",
+    "label": "TZonMax",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "TZonMin",
+    "kind": "numeric_output",
+    "label": "TZonMin",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "uGroOcc",
+    "kind": "boolean_output",
+    "label": "uGroOcc",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yColZon",
+    "kind": "numeric_output",
+    "label": "yColZon",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yCooTim",
+    "kind": "numeric_output",
+    "label": "yCooTim",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yEndSetBac",
+    "kind": "boolean_output",
+    "label": "yEndSetBac",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yEndSetUp",
+    "kind": "boolean_output",
+    "label": "yEndSetUp",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yHigOccCoo",
+    "kind": "boolean_output",
+    "label": "yHigOccCoo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yHotZon",
+    "kind": "numeric_output",
+    "label": "yHotZon",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yOccHeaHig",
+    "kind": "boolean_output",
+    "label": "yOccHeaHig",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yOpeWin",
+    "kind": "numeric_output",
+    "label": "yOpeWin",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "ySetBac",
+    "kind": "boolean_output",
+    "label": "ySetBac",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "ySetUp",
+    "kind": "boolean_output",
+    "label": "ySetUp",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yWarTim",
+    "kind": "numeric_output",
+    "label": "yWarTim",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__1_true",
+    "kind": "numeric_const",
+    "label": "booToInt__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__1_false",
+    "kind": "numeric_const",
+    "label": "booToInt__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__1",
+    "kind": "numeric_switch",
+    "label": "booToInt__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__2_true",
+    "kind": "numeric_const",
+    "label": "booToInt__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__2_false",
+    "kind": "numeric_const",
+    "label": "booToInt__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__2",
+    "kind": "numeric_switch",
+    "label": "booToInt__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__3_true",
+    "kind": "numeric_const",
+    "label": "booToInt__3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__3_false",
+    "kind": "numeric_const",
+    "label": "booToInt__3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__3",
+    "kind": "numeric_switch",
+    "label": "booToInt__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__4_true",
+    "kind": "numeric_const",
+    "label": "booToInt__4 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__4_false",
+    "kind": "numeric_const",
+    "label": "booToInt__4 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__4",
+    "kind": "numeric_switch",
+    "label": "booToInt__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__5_true",
+    "kind": "numeric_const",
+    "label": "booToInt__5 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__5_false",
+    "kind": "numeric_const",
+    "label": "booToInt__5 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__5",
+    "kind": "numeric_switch",
+    "label": "booToInt__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt1__1_true",
+    "kind": "numeric_const",
+    "label": "booToInt1__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt1__1_false",
+    "kind": "numeric_const",
+    "label": "booToInt1__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt1__1",
+    "kind": "numeric_switch",
+    "label": "booToInt1__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt1__2_true",
+    "kind": "numeric_const",
+    "label": "booToInt1__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt1__2_false",
+    "kind": "numeric_const",
+    "label": "booToInt1__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt1__2",
+    "kind": "numeric_switch",
+    "label": "booToInt1__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt1__3_true",
+    "kind": "numeric_const",
+    "label": "booToInt1__3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt1__3_false",
+    "kind": "numeric_const",
+    "label": "booToInt1__3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt1__3",
+    "kind": "numeric_switch",
+    "label": "booToInt1__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt1__4_true",
+    "kind": "numeric_const",
+    "label": "booToInt1__4 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt1__4_false",
+    "kind": "numeric_const",
+    "label": "booToInt1__4 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt1__4",
+    "kind": "numeric_switch",
+    "label": "booToInt1__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt1__5_true",
+    "kind": "numeric_const",
+    "label": "booToInt1__5 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt1__5_false",
+    "kind": "numeric_const",
+    "label": "booToInt1__5 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt1__5",
+    "kind": "numeric_switch",
+    "label": "booToInt1__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt2__1_true",
+    "kind": "numeric_const",
+    "label": "booToInt2__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt2__1_false",
+    "kind": "numeric_const",
+    "label": "booToInt2__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt2__1",
+    "kind": "numeric_switch",
+    "label": "booToInt2__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt2__2_true",
+    "kind": "numeric_const",
+    "label": "booToInt2__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt2__2_false",
+    "kind": "numeric_const",
+    "label": "booToInt2__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt2__2",
+    "kind": "numeric_switch",
+    "label": "booToInt2__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt2__3_true",
+    "kind": "numeric_const",
+    "label": "booToInt2__3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt2__3_false",
+    "kind": "numeric_const",
+    "label": "booToInt2__3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt2__3",
+    "kind": "numeric_switch",
+    "label": "booToInt2__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt2__4_true",
+    "kind": "numeric_const",
+    "label": "booToInt2__4 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt2__4_false",
+    "kind": "numeric_const",
+    "label": "booToInt2__4 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt2__4",
+    "kind": "numeric_switch",
+    "label": "booToInt2__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt2__5_true",
+    "kind": "numeric_const",
+    "label": "booToInt2__5 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt2__5_false",
+    "kind": "numeric_const",
+    "label": "booToInt2__5 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt2__5",
+    "kind": "numeric_switch",
+    "label": "booToInt2__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea_true",
+    "kind": "numeric_const",
+    "label": "booToRea true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea_false",
+    "kind": "numeric_const",
+    "label": "booToRea false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea",
+    "kind": "numeric_switch",
+    "label": "booToRea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cooDowTim_fold_2",
+    "kind": "maximum",
+    "label": "cooDowTim fold 2",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "cooDowTim_fold_3",
+    "kind": "maximum",
+    "label": "cooDowTim fold 3",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "cooDowTim_fold_4",
+    "kind": "maximum",
+    "label": "cooDowTim fold 4",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "cooDowTim_fold_5",
+    "kind": "maximum",
+    "label": "cooDowTim fold 5",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "difUnoCoo",
+    "kind": "subtract",
+    "label": "difUnoCoo",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "difUnoHea",
+    "kind": "subtract",
+    "label": "difUnoHea",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "div1",
+    "kind": "divide",
+    "label": "div1",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "div2",
+    "kind": "divide",
+    "label": "div2",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "endSetBac_fold_2",
+    "kind": "and",
+    "label": "endSetBac fold 2",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "endSetBac_fold_3",
+    "kind": "and",
+    "label": "endSetBac fold 3",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "endSetBac_fold_4",
+    "kind": "and",
+    "label": "endSetBac fold 4",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "endSetBac_fold_5",
+    "kind": "and",
+    "label": "endSetBac fold 5",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "endSetUp_fold_2",
+    "kind": "and",
+    "label": "endSetUp fold 2",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "endSetUp_fold_3",
+    "kind": "and",
+    "label": "endSetUp fold 3",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "endSetUp_fold_4",
+    "kind": "and",
+    "label": "endSetUp fold 4",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "endSetUp_fold_5",
+    "kind": "and",
+    "label": "endSetUp fold 5",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "groOcc",
+    "kind": "or",
+    "label": "groOcc",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": -0.1
+    },
+    "id": "hys",
+    "kind": "hysteresis",
+    "label": "hys",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": -0.1
+    },
+    "id": "hys1",
+    "kind": "hysteresis",
+    "label": "hys1",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intToRea_zero",
+    "kind": "numeric_const",
+    "label": "intToRea zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intToRea",
+    "kind": "add",
+    "label": "intToRea",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "maxTem_fold_2",
+    "kind": "maximum",
+    "label": "maxTem fold 2",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "maxTem_fold_3",
+    "kind": "maximum",
+    "label": "maxTem fold 3",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "maxTem_fold_4",
+    "kind": "maximum",
+    "label": "maxTem fold 4",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "maxTem_fold_5",
+    "kind": "maximum",
+    "label": "maxTem fold 5",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "minTem_fold_2",
+    "kind": "minimum",
+    "label": "minTem fold 2",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "minTem_fold_3",
+    "kind": "minimum",
+    "label": "minTem fold 3",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "minTem_fold_4",
+    "kind": "minimum",
+    "label": "minTem fold 4",
+    "x": 0,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "minTem_fold_5",
+    "kind": "minimum",
+    "label": "minTem fold 5",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "minToNexOcc_fold_2",
+    "kind": "minimum",
+    "label": "minToNexOcc fold 2",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "minToNexOcc_fold_3",
+    "kind": "minimum",
+    "label": "minToNexOcc fold 3",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "minToNexOcc_fold_4",
+    "kind": "minimum",
+    "label": "minToNexOcc fold 4",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "minToNexOcc_fold_5",
+    "kind": "minimum",
+    "label": "minToNexOcc fold 5",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "mulOr_fold_2",
+    "kind": "or",
+    "label": "mulOr fold 2",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "mulOr_fold_3",
+    "kind": "or",
+    "label": "mulOr fold 3",
+    "x": 180,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "mulOr_fold_4",
+    "kind": "or",
+    "label": "mulOr fold 4",
+    "x": 360,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "mulOr_fold_5",
+    "kind": "or",
+    "label": "mulOr fold 5",
+    "x": 540,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "mulOr1_fold_2",
+    "kind": "or",
+    "label": "mulOr1 fold 2",
+    "x": 720,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "mulOr1_fold_3",
+    "kind": "or",
+    "label": "mulOr1 fold 3",
+    "x": 900,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "mulOr1_fold_4",
+    "kind": "or",
+    "label": "mulOr1 fold 4",
+    "x": 0,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "mulOr1_fold_5",
+    "kind": "or",
+    "label": "mulOr1 fold 5",
+    "x": 180,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "not1__1",
+    "kind": "not",
+    "label": "not1__1",
+    "x": 360,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "not1__2",
+    "kind": "not",
+    "label": "not1__2",
+    "x": 540,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "not1__3",
+    "kind": "not",
+    "label": "not1__3",
+    "x": 720,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "not1__4",
+    "kind": "not",
+    "label": "not1__4",
+    "x": 900,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "not1__5",
+    "kind": "not",
+    "label": "not1__5",
+    "x": 0,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "oveRidOcc_fold_2",
+    "kind": "or",
+    "label": "oveRidOcc fold 2",
+    "x": 180,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "oveRidOcc_fold_3",
+    "kind": "or",
+    "label": "oveRidOcc fold 3",
+    "x": 360,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "oveRidOcc_fold_4",
+    "kind": "or",
+    "label": "oveRidOcc fold 4",
+    "x": 540,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "oveRidOcc_fold_5",
+    "kind": "or",
+    "label": "oveRidOcc fold 5",
+    "x": 720,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "pro",
+    "kind": "multiply",
+    "label": "pro",
+    "x": 900,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "schOcc_fold_2",
+    "kind": "or",
+    "label": "schOcc fold 2",
+    "x": 0,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "schOcc_fold_3",
+    "kind": "or",
+    "label": "schOcc fold 3",
+    "x": 180,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "schOcc_fold_4",
+    "kind": "or",
+    "label": "schOcc fold 4",
+    "x": 360,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "schOcc_fold_5",
+    "kind": "or",
+    "label": "schOcc fold 5",
+    "x": 540,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "sumTem_fold_2",
+    "kind": "add",
+    "label": "sumTem fold 2",
+    "x": 720,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "sumTem_fold_3",
+    "kind": "add",
+    "label": "sumTem fold 3",
+    "x": 900,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "sumTem_fold_4",
+    "kind": "add",
+    "label": "sumTem fold 4",
+    "x": 0,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "sumTem_fold_5",
+    "kind": "add",
+    "label": "sumTem fold 5",
+    "x": 180,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "sumUnoCoo_fold_2",
+    "kind": "add",
+    "label": "sumUnoCoo fold 2",
+    "x": 360,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "sumUnoCoo_fold_3",
+    "kind": "add",
+    "label": "sumUnoCoo fold 3",
+    "x": 540,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "sumUnoCoo_fold_4",
+    "kind": "add",
+    "label": "sumUnoCoo fold 4",
+    "x": 720,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "sumUnoCoo_fold_5",
+    "kind": "add",
+    "label": "sumUnoCoo fold 5",
+    "x": 900,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "sumUnoHea_fold_2",
+    "kind": "add",
+    "label": "sumUnoHea fold 2",
+    "x": 0,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "sumUnoHea_fold_3",
+    "kind": "add",
+    "label": "sumUnoHea fold 3",
+    "x": 180,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "sumUnoHea_fold_4",
+    "kind": "add",
+    "label": "sumUnoHea fold 4",
+    "x": 360,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "sumUnoHea_fold_5",
+    "kind": "add",
+    "label": "sumUnoHea fold 5",
+    "x": 540,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "totColZon_fold_2",
+    "kind": "add",
+    "label": "totColZon fold 2",
+    "x": 720,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "totColZon_fold_3",
+    "kind": "add",
+    "label": "totColZon fold 3",
+    "x": 900,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "totColZon_fold_4",
+    "kind": "add",
+    "label": "totColZon fold 4",
+    "x": 0,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "totColZon_fold_5",
+    "kind": "add",
+    "label": "totColZon fold 5",
+    "x": 180,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "totHotZon_fold_2",
+    "kind": "add",
+    "label": "totHotZon fold 2",
+    "x": 360,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "totHotZon_fold_3",
+    "kind": "add",
+    "label": "totHotZon fold 3",
+    "x": 540,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "totHotZon_fold_4",
+    "kind": "add",
+    "label": "totHotZon fold 4",
+    "x": 720,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "totHotZon_fold_5",
+    "kind": "add",
+    "label": "totHotZon fold 5",
+    "x": 900,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "totOpeWin_fold_2",
+    "kind": "add",
+    "label": "totOpeWin fold 2",
+    "x": 0,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "totOpeWin_fold_3",
+    "kind": "add",
+    "label": "totOpeWin fold 3",
+    "x": 180,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "totOpeWin_fold_4",
+    "kind": "add",
+    "label": "totOpeWin fold 4",
+    "x": 360,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "totOpeWin_fold_5",
+    "kind": "add",
+    "label": "totOpeWin fold 5",
+    "x": 540,
+    "y": 1800
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "totZon",
+    "kind": "numeric_const",
+    "label": "totZon",
+    "x": 720,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "warUpTim_fold_2",
+    "kind": "maximum",
+    "label": "warUpTim fold 2",
+    "x": 900,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "warUpTim_fold_3",
+    "kind": "maximum",
+    "label": "warUpTim fold 3",
+    "x": 0,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "warUpTim_fold_4",
+    "kind": "maximum",
+    "label": "warUpTim fold 4",
+    "x": 180,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "warUpTim_fold_5",
+    "kind": "maximum",
+    "label": "warUpTim fold 5",
+    "x": 360,
+    "y": 1920
+   }
+  ],
+  "links": [
+   {
+    "source": "booToInt__1_true",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__1_false",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__2_true",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__2_false",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__3_true",
+    "source_slot": "out",
+    "target": "booToInt__3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__3_false",
+    "source_slot": "out",
+    "target": "booToInt__3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__4_true",
+    "source_slot": "out",
+    "target": "booToInt__4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__4_false",
+    "source_slot": "out",
+    "target": "booToInt__4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__5_true",
+    "source_slot": "out",
+    "target": "booToInt__5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__5_false",
+    "source_slot": "out",
+    "target": "booToInt__5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt1__1_true",
+    "source_slot": "out",
+    "target": "booToInt1__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt1__1_false",
+    "source_slot": "out",
+    "target": "booToInt1__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt1__2_true",
+    "source_slot": "out",
+    "target": "booToInt1__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt1__2_false",
+    "source_slot": "out",
+    "target": "booToInt1__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt1__3_true",
+    "source_slot": "out",
+    "target": "booToInt1__3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt1__3_false",
+    "source_slot": "out",
+    "target": "booToInt1__3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt1__4_true",
+    "source_slot": "out",
+    "target": "booToInt1__4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt1__4_false",
+    "source_slot": "out",
+    "target": "booToInt1__4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt1__5_true",
+    "source_slot": "out",
+    "target": "booToInt1__5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt1__5_false",
+    "source_slot": "out",
+    "target": "booToInt1__5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt2__1_true",
+    "source_slot": "out",
+    "target": "booToInt2__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt2__1_false",
+    "source_slot": "out",
+    "target": "booToInt2__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt2__2_true",
+    "source_slot": "out",
+    "target": "booToInt2__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt2__2_false",
+    "source_slot": "out",
+    "target": "booToInt2__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt2__3_true",
+    "source_slot": "out",
+    "target": "booToInt2__3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt2__3_false",
+    "source_slot": "out",
+    "target": "booToInt2__3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt2__4_true",
+    "source_slot": "out",
+    "target": "booToInt2__4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt2__4_false",
+    "source_slot": "out",
+    "target": "booToInt2__4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt2__5_true",
+    "source_slot": "out",
+    "target": "booToInt2__5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt2__5_false",
+    "source_slot": "out",
+    "target": "booToInt2__5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea_true",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea_false",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "intToRea_zero",
+    "source_slot": "out",
+    "target": "intToRea",
+    "target_slot": "b"
+   },
+   {
+    "source": "TCooSetOff__1",
+    "source_slot": "out",
+    "target": "sumUnoCoo_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "TCooSetOff__2",
+    "source_slot": "out",
+    "target": "sumUnoCoo_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "TCooSetOff__3",
+    "source_slot": "out",
+    "target": "sumUnoCoo_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "TCooSetOff__4",
+    "source_slot": "out",
+    "target": "sumUnoCoo_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "TCooSetOff__5",
+    "source_slot": "out",
+    "target": "sumUnoCoo_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "THeaSetOff__1",
+    "source_slot": "out",
+    "target": "sumUnoHea_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "THeaSetOff__2",
+    "source_slot": "out",
+    "target": "sumUnoHea_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "THeaSetOff__3",
+    "source_slot": "out",
+    "target": "sumUnoHea_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "THeaSetOff__4",
+    "source_slot": "out",
+    "target": "sumUnoHea_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "THeaSetOff__5",
+    "source_slot": "out",
+    "target": "sumUnoHea_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "tNexOcc__1",
+    "source_slot": "out",
+    "target": "minToNexOcc_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "tNexOcc__2",
+    "source_slot": "out",
+    "target": "minToNexOcc_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "tNexOcc__3",
+    "source_slot": "out",
+    "target": "minToNexOcc_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "tNexOcc__4",
+    "source_slot": "out",
+    "target": "minToNexOcc_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "tNexOcc__5",
+    "source_slot": "out",
+    "target": "minToNexOcc_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon__1",
+    "source_slot": "out",
+    "target": "maxTem_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "TZon__1",
+    "source_slot": "out",
+    "target": "minTem_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "TZon__1",
+    "source_slot": "out",
+    "target": "sumTem_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "TZon__2",
+    "source_slot": "out",
+    "target": "maxTem_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon__2",
+    "source_slot": "out",
+    "target": "minTem_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon__2",
+    "source_slot": "out",
+    "target": "sumTem_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon__3",
+    "source_slot": "out",
+    "target": "maxTem_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon__3",
+    "source_slot": "out",
+    "target": "minTem_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon__3",
+    "source_slot": "out",
+    "target": "sumTem_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon__4",
+    "source_slot": "out",
+    "target": "maxTem_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon__4",
+    "source_slot": "out",
+    "target": "minTem_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon__4",
+    "source_slot": "out",
+    "target": "sumTem_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon__5",
+    "source_slot": "out",
+    "target": "maxTem_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon__5",
+    "source_slot": "out",
+    "target": "minTem_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon__5",
+    "source_slot": "out",
+    "target": "sumTem_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1EndSetBac__1",
+    "source_slot": "out",
+    "target": "endSetBac_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1EndSetBac__2",
+    "source_slot": "out",
+    "target": "endSetBac_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1EndSetBac__3",
+    "source_slot": "out",
+    "target": "endSetBac_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1EndSetBac__4",
+    "source_slot": "out",
+    "target": "endSetBac_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1EndSetBac__5",
+    "source_slot": "out",
+    "target": "endSetBac_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1EndSetUp__1",
+    "source_slot": "out",
+    "target": "endSetUp_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1EndSetUp__2",
+    "source_slot": "out",
+    "target": "endSetUp_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1EndSetUp__3",
+    "source_slot": "out",
+    "target": "endSetUp_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1EndSetUp__4",
+    "source_slot": "out",
+    "target": "endSetUp_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1EndSetUp__5",
+    "source_slot": "out",
+    "target": "endSetUp_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1HigOccCoo__1",
+    "source_slot": "out",
+    "target": "mulOr1_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1HigOccCoo__2",
+    "source_slot": "out",
+    "target": "mulOr1_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1HigOccCoo__3",
+    "source_slot": "out",
+    "target": "mulOr1_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1HigOccCoo__4",
+    "source_slot": "out",
+    "target": "mulOr1_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1HigOccCoo__5",
+    "source_slot": "out",
+    "target": "mulOr1_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1HigUnoCoo__1",
+    "source_slot": "out",
+    "target": "booToInt1__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1HigUnoCoo__2",
+    "source_slot": "out",
+    "target": "booToInt1__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1HigUnoCoo__3",
+    "source_slot": "out",
+    "target": "booToInt1__3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1HigUnoCoo__4",
+    "source_slot": "out",
+    "target": "booToInt1__4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1HigUnoCoo__5",
+    "source_slot": "out",
+    "target": "booToInt1__5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1Occ__1",
+    "source_slot": "out",
+    "target": "schOcc_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1Occ__2",
+    "source_slot": "out",
+    "target": "schOcc_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Occ__3",
+    "source_slot": "out",
+    "target": "schOcc_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Occ__4",
+    "source_slot": "out",
+    "target": "schOcc_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Occ__5",
+    "source_slot": "out",
+    "target": "schOcc_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1OccHeaHig__1",
+    "source_slot": "out",
+    "target": "mulOr_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1OccHeaHig__2",
+    "source_slot": "out",
+    "target": "mulOr_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1OccHeaHig__3",
+    "source_slot": "out",
+    "target": "mulOr_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1OccHeaHig__4",
+    "source_slot": "out",
+    "target": "mulOr_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1OccHeaHig__5",
+    "source_slot": "out",
+    "target": "mulOr_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1UnoHeaHig__1",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1UnoHeaHig__2",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1UnoHeaHig__3",
+    "source_slot": "out",
+    "target": "booToInt__3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1UnoHeaHig__4",
+    "source_slot": "out",
+    "target": "booToInt__4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1UnoHeaHig__5",
+    "source_slot": "out",
+    "target": "booToInt__5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1Win__1",
+    "source_slot": "out",
+    "target": "not1__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Win__2",
+    "source_slot": "out",
+    "target": "not1__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Win__3",
+    "source_slot": "out",
+    "target": "not1__3",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Win__4",
+    "source_slot": "out",
+    "target": "not1__4",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Win__5",
+    "source_slot": "out",
+    "target": "not1__5",
+    "target_slot": "in"
+   },
+   {
+    "source": "uCooTim__1",
+    "source_slot": "out",
+    "target": "cooDowTim_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "uCooTim__2",
+    "source_slot": "out",
+    "target": "cooDowTim_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "uCooTim__3",
+    "source_slot": "out",
+    "target": "cooDowTim_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "uCooTim__4",
+    "source_slot": "out",
+    "target": "cooDowTim_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "uCooTim__5",
+    "source_slot": "out",
+    "target": "cooDowTim_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "uWarTim__1",
+    "source_slot": "out",
+    "target": "warUpTim_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "uWarTim__2",
+    "source_slot": "out",
+    "target": "warUpTim_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "uWarTim__3",
+    "source_slot": "out",
+    "target": "warUpTim_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "uWarTim__4",
+    "source_slot": "out",
+    "target": "warUpTim_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "uWarTim__5",
+    "source_slot": "out",
+    "target": "warUpTim_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "zonOcc__1",
+    "source_slot": "out",
+    "target": "oveRidOcc_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "zonOcc__2",
+    "source_slot": "out",
+    "target": "oveRidOcc_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "zonOcc__3",
+    "source_slot": "out",
+    "target": "oveRidOcc_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "zonOcc__4",
+    "source_slot": "out",
+    "target": "oveRidOcc_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "zonOcc__5",
+    "source_slot": "out",
+    "target": "oveRidOcc_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__1",
+    "source_slot": "out",
+    "target": "totColZon_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt__2",
+    "source_slot": "out",
+    "target": "totColZon_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__3",
+    "source_slot": "out",
+    "target": "totColZon_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__4",
+    "source_slot": "out",
+    "target": "totColZon_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__5",
+    "source_slot": "out",
+    "target": "totColZon_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt1__1",
+    "source_slot": "out",
+    "target": "totHotZon_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt1__2",
+    "source_slot": "out",
+    "target": "totHotZon_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt1__3",
+    "source_slot": "out",
+    "target": "totHotZon_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt1__4",
+    "source_slot": "out",
+    "target": "totHotZon_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt1__5",
+    "source_slot": "out",
+    "target": "totHotZon_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt2__1",
+    "source_slot": "out",
+    "target": "totOpeWin_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt2__2",
+    "source_slot": "out",
+    "target": "totOpeWin_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt2__3",
+    "source_slot": "out",
+    "target": "totOpeWin_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt2__4",
+    "source_slot": "out",
+    "target": "totOpeWin_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt2__5",
+    "source_slot": "out",
+    "target": "totOpeWin_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea",
+    "source_slot": "out",
+    "target": "pro",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooDowTim_fold_2",
+    "source_slot": "out",
+    "target": "cooDowTim_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooDowTim_fold_3",
+    "source_slot": "out",
+    "target": "cooDowTim_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooDowTim_fold_4",
+    "source_slot": "out",
+    "target": "cooDowTim_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooDowTim_fold_5",
+    "source_slot": "out",
+    "target": "yCooTim",
+    "target_slot": "in"
+   },
+   {
+    "source": "difUnoCoo",
+    "source_slot": "out",
+    "target": "div2",
+    "target_slot": "a"
+   },
+   {
+    "source": "difUnoHea",
+    "source_slot": "out",
+    "target": "div1",
+    "target_slot": "a"
+   },
+   {
+    "source": "div1",
+    "source_slot": "out",
+    "target": "hys",
+    "target_slot": "in"
+   },
+   {
+    "source": "div2",
+    "source_slot": "out",
+    "target": "hys1",
+    "target_slot": "in"
+   },
+   {
+    "source": "endSetBac_fold_2",
+    "source_slot": "out",
+    "target": "endSetBac_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "endSetBac_fold_3",
+    "source_slot": "out",
+    "target": "endSetBac_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "endSetBac_fold_4",
+    "source_slot": "out",
+    "target": "endSetBac_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "endSetBac_fold_5",
+    "source_slot": "out",
+    "target": "yEndSetBac",
+    "target_slot": "in"
+   },
+   {
+    "source": "endSetUp_fold_2",
+    "source_slot": "out",
+    "target": "endSetUp_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "endSetUp_fold_3",
+    "source_slot": "out",
+    "target": "endSetUp_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "endSetUp_fold_4",
+    "source_slot": "out",
+    "target": "endSetUp_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "endSetUp_fold_5",
+    "source_slot": "out",
+    "target": "yEndSetUp",
+    "target_slot": "in"
+   },
+   {
+    "source": "groOcc",
+    "source_slot": "out",
+    "target": "uGroOcc",
+    "target_slot": "in"
+   },
+   {
+    "source": "hys",
+    "source_slot": "out",
+    "target": "ySetBac",
+    "target_slot": "in"
+   },
+   {
+    "source": "hys1",
+    "source_slot": "out",
+    "target": "ySetUp",
+    "target_slot": "in"
+   },
+   {
+    "source": "intToRea",
+    "source_slot": "out",
+    "target": "div1",
+    "target_slot": "b"
+   },
+   {
+    "source": "intToRea",
+    "source_slot": "out",
+    "target": "div2",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxTem_fold_2",
+    "source_slot": "out",
+    "target": "maxTem_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxTem_fold_3",
+    "source_slot": "out",
+    "target": "maxTem_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxTem_fold_4",
+    "source_slot": "out",
+    "target": "maxTem_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxTem_fold_5",
+    "source_slot": "out",
+    "target": "TZonMax",
+    "target_slot": "in"
+   },
+   {
+    "source": "minTem_fold_2",
+    "source_slot": "out",
+    "target": "minTem_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "minTem_fold_3",
+    "source_slot": "out",
+    "target": "minTem_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "minTem_fold_4",
+    "source_slot": "out",
+    "target": "minTem_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "minTem_fold_5",
+    "source_slot": "out",
+    "target": "TZonMin",
+    "target_slot": "in"
+   },
+   {
+    "source": "minToNexOcc_fold_2",
+    "source_slot": "out",
+    "target": "minToNexOcc_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "minToNexOcc_fold_3",
+    "source_slot": "out",
+    "target": "minToNexOcc_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "minToNexOcc_fold_4",
+    "source_slot": "out",
+    "target": "minToNexOcc_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "minToNexOcc_fold_5",
+    "source_slot": "out",
+    "target": "pro",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulOr_fold_2",
+    "source_slot": "out",
+    "target": "mulOr_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulOr_fold_3",
+    "source_slot": "out",
+    "target": "mulOr_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulOr_fold_4",
+    "source_slot": "out",
+    "target": "mulOr_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulOr_fold_5",
+    "source_slot": "out",
+    "target": "yOccHeaHig",
+    "target_slot": "in"
+   },
+   {
+    "source": "mulOr1_fold_2",
+    "source_slot": "out",
+    "target": "mulOr1_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulOr1_fold_3",
+    "source_slot": "out",
+    "target": "mulOr1_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulOr1_fold_4",
+    "source_slot": "out",
+    "target": "mulOr1_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulOr1_fold_5",
+    "source_slot": "out",
+    "target": "yHigOccCoo",
+    "target_slot": "in"
+   },
+   {
+    "source": "not1__1",
+    "source_slot": "out",
+    "target": "booToInt2__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not1__2",
+    "source_slot": "out",
+    "target": "booToInt2__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not1__3",
+    "source_slot": "out",
+    "target": "booToInt2__3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not1__4",
+    "source_slot": "out",
+    "target": "booToInt2__4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not1__5",
+    "source_slot": "out",
+    "target": "booToInt2__5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "oveRidOcc_fold_2",
+    "source_slot": "out",
+    "target": "oveRidOcc_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "oveRidOcc_fold_3",
+    "source_slot": "out",
+    "target": "oveRidOcc_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "oveRidOcc_fold_4",
+    "source_slot": "out",
+    "target": "oveRidOcc_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "oveRidOcc_fold_5",
+    "source_slot": "out",
+    "target": "groOcc",
+    "target_slot": "a"
+   },
+   {
+    "source": "pro",
+    "source_slot": "out",
+    "target": "nexOcc",
+    "target_slot": "in"
+   },
+   {
+    "source": "schOcc_fold_2",
+    "source_slot": "out",
+    "target": "schOcc_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "schOcc_fold_3",
+    "source_slot": "out",
+    "target": "schOcc_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "schOcc_fold_4",
+    "source_slot": "out",
+    "target": "schOcc_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "schOcc_fold_5",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "selector"
+   },
+   {
+    "source": "schOcc_fold_5",
+    "source_slot": "out",
+    "target": "groOcc",
+    "target_slot": "b"
+   },
+   {
+    "source": "sumTem_fold_2",
+    "source_slot": "out",
+    "target": "sumTem_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumTem_fold_3",
+    "source_slot": "out",
+    "target": "sumTem_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumTem_fold_4",
+    "source_slot": "out",
+    "target": "sumTem_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumTem_fold_5",
+    "source_slot": "out",
+    "target": "difUnoCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumTem_fold_5",
+    "source_slot": "out",
+    "target": "difUnoHea",
+    "target_slot": "b"
+   },
+   {
+    "source": "sumUnoCoo_fold_2",
+    "source_slot": "out",
+    "target": "sumUnoCoo_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumUnoCoo_fold_3",
+    "source_slot": "out",
+    "target": "sumUnoCoo_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumUnoCoo_fold_4",
+    "source_slot": "out",
+    "target": "sumUnoCoo_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumUnoCoo_fold_5",
+    "source_slot": "out",
+    "target": "difUnoCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "sumUnoHea_fold_2",
+    "source_slot": "out",
+    "target": "sumUnoHea_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumUnoHea_fold_3",
+    "source_slot": "out",
+    "target": "sumUnoHea_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumUnoHea_fold_4",
+    "source_slot": "out",
+    "target": "sumUnoHea_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumUnoHea_fold_5",
+    "source_slot": "out",
+    "target": "difUnoHea",
+    "target_slot": "a"
+   },
+   {
+    "source": "totColZon_fold_2",
+    "source_slot": "out",
+    "target": "totColZon_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "totColZon_fold_3",
+    "source_slot": "out",
+    "target": "totColZon_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "totColZon_fold_4",
+    "source_slot": "out",
+    "target": "totColZon_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "totColZon_fold_5",
+    "source_slot": "out",
+    "target": "yColZon",
+    "target_slot": "in"
+   },
+   {
+    "source": "totHotZon_fold_2",
+    "source_slot": "out",
+    "target": "totHotZon_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "totHotZon_fold_3",
+    "source_slot": "out",
+    "target": "totHotZon_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "totHotZon_fold_4",
+    "source_slot": "out",
+    "target": "totHotZon_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "totHotZon_fold_5",
+    "source_slot": "out",
+    "target": "yHotZon",
+    "target_slot": "in"
+   },
+   {
+    "source": "totOpeWin_fold_2",
+    "source_slot": "out",
+    "target": "totOpeWin_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "totOpeWin_fold_3",
+    "source_slot": "out",
+    "target": "totOpeWin_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "totOpeWin_fold_4",
+    "source_slot": "out",
+    "target": "totOpeWin_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "totOpeWin_fold_5",
+    "source_slot": "out",
+    "target": "yOpeWin",
+    "target_slot": "in"
+   },
+   {
+    "source": "totZon",
+    "source_slot": "out",
+    "target": "intToRea",
+    "target_slot": "a"
+   },
+   {
+    "source": "warUpTim_fold_2",
+    "source_slot": "out",
+    "target": "warUpTim_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "warUpTim_fold_3",
+    "source_slot": "out",
+    "target": "warUpTim_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "warUpTim_fold_4",
+    "source_slot": "out",
+    "target": "warUpTim_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "warUpTim_fold_5",
+    "source_slot": "out",
+    "target": "yWarTim",
+    "target_slot": "in"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "booToInt1__1": "booToInt1__1",
+    "booToInt1__1_false": "booToInt1__1",
+    "booToInt1__1_true": "booToInt1__1",
+    "booToInt1__2": "booToInt1__2",
+    "booToInt1__2_false": "booToInt1__2",
+    "booToInt1__2_true": "booToInt1__2",
+    "booToInt1__3": "booToInt1__3",
+    "booToInt1__3_false": "booToInt1__3",
+    "booToInt1__3_true": "booToInt1__3",
+    "booToInt1__4": "booToInt1__4",
+    "booToInt1__4_false": "booToInt1__4",
+    "booToInt1__4_true": "booToInt1__4",
+    "booToInt1__5": "booToInt1__5",
+    "booToInt1__5_false": "booToInt1__5",
+    "booToInt1__5_true": "booToInt1__5",
+    "booToInt2__1": "booToInt2__1",
+    "booToInt2__1_false": "booToInt2__1",
+    "booToInt2__1_true": "booToInt2__1",
+    "booToInt2__2": "booToInt2__2",
+    "booToInt2__2_false": "booToInt2__2",
+    "booToInt2__2_true": "booToInt2__2",
+    "booToInt2__3": "booToInt2__3",
+    "booToInt2__3_false": "booToInt2__3",
+    "booToInt2__3_true": "booToInt2__3",
+    "booToInt2__4": "booToInt2__4",
+    "booToInt2__4_false": "booToInt2__4",
+    "booToInt2__4_true": "booToInt2__4",
+    "booToInt2__5": "booToInt2__5",
+    "booToInt2__5_false": "booToInt2__5",
+    "booToInt2__5_true": "booToInt2__5",
+    "booToInt__1": "booToInt__1",
+    "booToInt__1_false": "booToInt__1",
+    "booToInt__1_true": "booToInt__1",
+    "booToInt__2": "booToInt__2",
+    "booToInt__2_false": "booToInt__2",
+    "booToInt__2_true": "booToInt__2",
+    "booToInt__3": "booToInt__3",
+    "booToInt__3_false": "booToInt__3",
+    "booToInt__3_true": "booToInt__3",
+    "booToInt__4": "booToInt__4",
+    "booToInt__4_false": "booToInt__4",
+    "booToInt__4_true": "booToInt__4",
+    "booToInt__5": "booToInt__5",
+    "booToInt__5_false": "booToInt__5",
+    "booToInt__5_true": "booToInt__5",
+    "booToRea": "booToRea",
+    "booToRea_false": "booToRea",
+    "booToRea_true": "booToRea",
+    "cooDowTim_fold_2": "cooDowTim__fold_2",
+    "cooDowTim_fold_3": "cooDowTim__fold_3",
+    "cooDowTim_fold_4": "cooDowTim__fold_4",
+    "cooDowTim_fold_5": "cooDowTim__fold_5",
+    "difUnoCoo": "difUnoCoo",
+    "difUnoHea": "difUnoHea",
+    "div1": "div1",
+    "div2": "div2",
+    "endSetBac_fold_2": "endSetBac__fold_2",
+    "endSetBac_fold_3": "endSetBac__fold_3",
+    "endSetBac_fold_4": "endSetBac__fold_4",
+    "endSetBac_fold_5": "endSetBac__fold_5",
+    "endSetUp_fold_2": "endSetUp__fold_2",
+    "endSetUp_fold_3": "endSetUp__fold_3",
+    "endSetUp_fold_4": "endSetUp__fold_4",
+    "endSetUp_fold_5": "endSetUp__fold_5",
+    "groOcc": "groOcc",
+    "hys": "hys",
+    "hys1": "hys1",
+    "intToRea": "intToRea",
+    "intToRea_zero": "intToRea",
+    "maxTem_fold_2": "maxTem__fold_2",
+    "maxTem_fold_3": "maxTem__fold_3",
+    "maxTem_fold_4": "maxTem__fold_4",
+    "maxTem_fold_5": "maxTem__fold_5",
+    "minTem_fold_2": "minTem__fold_2",
+    "minTem_fold_3": "minTem__fold_3",
+    "minTem_fold_4": "minTem__fold_4",
+    "minTem_fold_5": "minTem__fold_5",
+    "minToNexOcc_fold_2": "minToNexOcc__fold_2",
+    "minToNexOcc_fold_3": "minToNexOcc__fold_3",
+    "minToNexOcc_fold_4": "minToNexOcc__fold_4",
+    "minToNexOcc_fold_5": "minToNexOcc__fold_5",
+    "mulOr1_fold_2": "mulOr1__fold_2",
+    "mulOr1_fold_3": "mulOr1__fold_3",
+    "mulOr1_fold_4": "mulOr1__fold_4",
+    "mulOr1_fold_5": "mulOr1__fold_5",
+    "mulOr_fold_2": "mulOr__fold_2",
+    "mulOr_fold_3": "mulOr__fold_3",
+    "mulOr_fold_4": "mulOr__fold_4",
+    "mulOr_fold_5": "mulOr__fold_5",
+    "not1__1": "not1__1",
+    "not1__2": "not1__2",
+    "not1__3": "not1__3",
+    "not1__4": "not1__4",
+    "not1__5": "not1__5",
+    "oveRidOcc_fold_2": "oveRidOcc__fold_2",
+    "oveRidOcc_fold_3": "oveRidOcc__fold_3",
+    "oveRidOcc_fold_4": "oveRidOcc__fold_4",
+    "oveRidOcc_fold_5": "oveRidOcc__fold_5",
+    "pro": "pro",
+    "schOcc_fold_2": "schOcc__fold_2",
+    "schOcc_fold_3": "schOcc__fold_3",
+    "schOcc_fold_4": "schOcc__fold_4",
+    "schOcc_fold_5": "schOcc__fold_5",
+    "sumTem_fold_2": "sumTem__fold_2",
+    "sumTem_fold_3": "sumTem__fold_3",
+    "sumTem_fold_4": "sumTem__fold_4",
+    "sumTem_fold_5": "sumTem__fold_5",
+    "sumUnoCoo_fold_2": "sumUnoCoo__fold_2",
+    "sumUnoCoo_fold_3": "sumUnoCoo__fold_3",
+    "sumUnoCoo_fold_4": "sumUnoCoo__fold_4",
+    "sumUnoCoo_fold_5": "sumUnoCoo__fold_5",
+    "sumUnoHea_fold_2": "sumUnoHea__fold_2",
+    "sumUnoHea_fold_3": "sumUnoHea__fold_3",
+    "sumUnoHea_fold_4": "sumUnoHea__fold_4",
+    "sumUnoHea_fold_5": "sumUnoHea__fold_5",
+    "totColZon_fold_2": "totColZon__fold_2",
+    "totColZon_fold_3": "totColZon__fold_3",
+    "totColZon_fold_4": "totColZon__fold_4",
+    "totColZon_fold_5": "totColZon__fold_5",
+    "totHotZon_fold_2": "totHotZon__fold_2",
+    "totHotZon_fold_3": "totHotZon__fold_3",
+    "totHotZon_fold_4": "totHotZon__fold_4",
+    "totHotZon_fold_5": "totHotZon__fold_5",
+    "totOpeWin_fold_2": "totOpeWin__fold_2",
+    "totOpeWin_fold_3": "totOpeWin__fold_3",
+    "totOpeWin_fold_4": "totOpeWin__fold_4",
+    "totOpeWin_fold_5": "totOpeWin__fold_5",
+    "totZon": "totZon",
+    "warUpTim_fold_2": "warUpTim__fold_2",
+    "warUpTim_fold_3": "warUpTim__fold_3",
+    "warUpTim_fold_4": "warUpTim__fold_4",
+    "warUpTim_fold_5": "warUpTim__fold_5"
+   },
+   "coverage": {
+    "boundary_inputs": 75,
+    "boundary_outputs": 15,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger": 15,
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal": 1,
+     "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal": 1,
+     "Buildings.Controls.OBC.CDL.Integers.Add": 12,
+     "Buildings.Controls.OBC.CDL.Integers.Sources.Constant": 1,
+     "Buildings.Controls.OBC.CDL.Logical.And": 8,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 5,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 17,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 12,
+     "Buildings.Controls.OBC.CDL.Reals.Divide": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Hysteresis": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Max": 12,
+     "Buildings.Controls.OBC.CDL.Reals.Min": 8,
+     "Buildings.Controls.OBC.CDL.Reals.Multiply": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 2
+    },
+    "component_count": 99,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Reals.Hysteresis"
+    ],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.GroupStatus",
+    "root_label": "GroupStatus",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "610093b50c8bcff3f5aba1abc2be66af799547bab0945edc8a3c6b693c488951",
+    "supported_class_count": 99,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "610093b50c8bcff3f5aba1abc2be66af799547bab0945edc8a3c6b693c488951"
+  },
+  "name": "GroupStatus"
+ }
+}

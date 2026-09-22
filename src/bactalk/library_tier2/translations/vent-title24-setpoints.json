@@ -1,0 +1,612 @@
+{
+ "configuration_id": "vent-title24-setpoints",
+ "controller_id": "VentilationZones.Title24.Setpoints",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints",
+  "inputs": [],
+  "outputs": [
+   {
+    "description": "Occupied zone minimum airflow setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints.VOccZonMin_flow",
+    "label": "VOccZonMin_flow",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Zone absolute minimum outdoor airflow setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints.VZonAbsMin_flow",
+    "label": "VZonAbsMin_flow",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Zone design minimum outdoor airflow setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints.VZonDesMin_flow",
+    "label": "VZonDesMin_flow",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "CO2 control loop signal",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints.yCO2",
+    "label": "yCO2",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 0
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "VAreMin_flow": 0.014,
+  "VMin_flow": 0.094,
+  "VOccMin_flow": 0.024
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VOccZonMin_flow",
+   "name": "VOccZonMin_flow",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints.VOccZonMin_flow",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VZonAbsMin_flow",
+   "name": "VZonAbsMin_flow",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints.VZonAbsMin_flow",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VZonDesMin_flow",
+   "name": "VZonDesMin_flow",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints.VZonDesMin_flow",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yCO2",
+   "name": "yCO2",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints.yCO2",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "VentilationZones/Title24/Setpoints.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "4f207f7a86b423511f39d0c1cf68b064da358544fa89d5fe1c86adfea75145de",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "9de09d0b4a28a6cff810e29eeaad6e5f1d7ca61e026f403b04017bda21d71fda",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {},
+    "id": "VOccZonMin_flow",
+    "kind": "numeric_output",
+    "label": "VOccZonMin_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "VZonAbsMin_flow",
+    "kind": "numeric_output",
+    "label": "VZonAbsMin_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "VZonDesMin_flow",
+    "kind": "numeric_output",
+    "label": "VZonDesMin_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yCO2",
+    "kind": "numeric_output",
+    "label": "yCO2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "con",
+    "kind": "boolean_const",
+    "label": "con",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "con1",
+    "kind": "boolean_const",
+    "label": "con1",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.25
+    },
+    "id": "gai_parameter",
+    "kind": "numeric_const",
+    "label": "gai parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "gai",
+    "kind": "multiply",
+    "label": "gai",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "gai1_parameter",
+    "kind": "numeric_const",
+    "label": "gai1 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "gai1",
+    "kind": "multiply",
+    "label": "gai1",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "havCO2Sen",
+    "kind": "boolean_const",
+    "label": "havCO2Sen",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "max1",
+    "kind": "maximum",
+    "label": "max1",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notOcc",
+    "kind": "not",
+    "label": "notOcc",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "one",
+    "kind": "numeric_const",
+    "label": "one",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "one2",
+    "kind": "numeric_const",
+    "label": "one2",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer1",
+    "kind": "numeric_const",
+    "label": "zer1",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer3",
+    "kind": "numeric_const",
+    "label": "zer3",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "zonAbsMin",
+    "kind": "numeric_switch",
+    "label": "zonAbsMin",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "zonAbsMin1",
+    "kind": "numeric_switch",
+    "label": "zonAbsMin1",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "zonAbsMin2",
+    "kind": "numeric_switch",
+    "label": "zonAbsMin2",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.014
+    },
+    "id": "zonAreOAMin",
+    "kind": "numeric_const",
+    "label": "zonAreOAMin",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "zonDesMin",
+    "kind": "numeric_switch",
+    "label": "zonDesMin",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "zonDesMin1",
+    "kind": "numeric_switch",
+    "label": "zonDesMin1",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.094
+    },
+    "id": "zonMinFlo",
+    "kind": "numeric_const",
+    "label": "zonMinFlo",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "zonOccMin",
+    "kind": "numeric_switch",
+    "label": "zonOccMin",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "zonOccMin1",
+    "kind": "numeric_switch",
+    "label": "zonOccMin1",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.024
+    },
+    "id": "zonOccOAMin",
+    "kind": "numeric_const",
+    "label": "zonOccOAMin",
+    "x": 540,
+    "y": 360
+   }
+  ],
+  "links": [
+   {
+    "source": "gai_parameter",
+    "source_slot": "out",
+    "target": "gai",
+    "target_slot": "b"
+   },
+   {
+    "source": "gai1_parameter",
+    "source_slot": "out",
+    "target": "gai1",
+    "target_slot": "b"
+   },
+   {
+    "source": "con",
+    "source_slot": "out",
+    "target": "zonAbsMin",
+    "target_slot": "selector"
+   },
+   {
+    "source": "con",
+    "source_slot": "out",
+    "target": "zonDesMin",
+    "target_slot": "selector"
+   },
+   {
+    "source": "con",
+    "source_slot": "out",
+    "target": "zonOccMin1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "con1",
+    "source_slot": "out",
+    "target": "notOcc",
+    "target_slot": "in"
+   },
+   {
+    "source": "gai",
+    "source_slot": "out",
+    "target": "zonAbsMin1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "gai",
+    "source_slot": "out",
+    "target": "zonDesMin1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "gai",
+    "source_slot": "out",
+    "target": "zonOccMin",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "gai1",
+    "source_slot": "out",
+    "target": "zonOccMin1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "havCO2Sen",
+    "source_slot": "out",
+    "target": "zonAbsMin2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "max1",
+    "source_slot": "out",
+    "target": "zonDesMin1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "notOcc",
+    "source_slot": "out",
+    "target": "zonAbsMin1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "notOcc",
+    "source_slot": "out",
+    "target": "zonDesMin1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "notOcc",
+    "source_slot": "out",
+    "target": "zonOccMin",
+    "target_slot": "selector"
+   },
+   {
+    "source": "zer1",
+    "source_slot": "out",
+    "target": "zonAbsMin",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zer1",
+    "source_slot": "out",
+    "target": "zonDesMin",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zer1",
+    "source_slot": "out",
+    "target": "zonOccMin1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zer3",
+    "source_slot": "out",
+    "target": "yCO2",
+    "target_slot": "in"
+   },
+   {
+    "source": "zonAbsMin",
+    "source_slot": "out",
+    "target": "VZonAbsMin_flow",
+    "target_slot": "in"
+   },
+   {
+    "source": "zonAbsMin1",
+    "source_slot": "out",
+    "target": "zonAbsMin",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zonAbsMin2",
+    "source_slot": "out",
+    "target": "zonAbsMin1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zonAreOAMin",
+    "source_slot": "out",
+    "target": "gai",
+    "target_slot": "a"
+   },
+   {
+    "source": "zonAreOAMin",
+    "source_slot": "out",
+    "target": "max1",
+    "target_slot": "b"
+   },
+   {
+    "source": "zonAreOAMin",
+    "source_slot": "out",
+    "target": "zonAbsMin2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zonDesMin",
+    "source_slot": "out",
+    "target": "VZonDesMin_flow",
+    "target_slot": "in"
+   },
+   {
+    "source": "zonDesMin",
+    "source_slot": "out",
+    "target": "zonAbsMin2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zonDesMin1",
+    "source_slot": "out",
+    "target": "zonDesMin",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zonMinFlo",
+    "source_slot": "out",
+    "target": "gai1",
+    "target_slot": "a"
+   },
+   {
+    "source": "zonOccMin",
+    "source_slot": "out",
+    "target": "VOccZonMin_flow",
+    "target_slot": "in"
+   },
+   {
+    "source": "zonOccMin1",
+    "source_slot": "out",
+    "target": "zonOccMin",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zonOccOAMin",
+    "source_slot": "out",
+    "target": "max1",
+    "target_slot": "a"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "con": "con",
+    "con1": "con1",
+    "gai": "gai",
+    "gai1": "gai1",
+    "gai1_parameter": "gai1",
+    "gai_parameter": "gai",
+    "havCO2Sen": "havCO2Sen",
+    "max1": "max1",
+    "notOcc": "notOcc",
+    "one": "one",
+    "one2": "one2",
+    "zer": "zer",
+    "zer1": "zer1",
+    "zer3": "zer3",
+    "zonAbsMin": "zonAbsMin",
+    "zonAbsMin1": "zonAbsMin1",
+    "zonAbsMin2": "zonAbsMin2",
+    "zonAreOAMin": "zonAreOAMin",
+    "zonDesMin": "zonDesMin",
+    "zonDesMin1": "zonDesMin1",
+    "zonMinFlo": "zonMinFlo",
+    "zonOccMin": "zonOccMin",
+    "zonOccMin1": "zonOccMin1",
+    "zonOccOAMin": "zonOccOAMin"
+   },
+   "coverage": {
+    "boundary_inputs": 0,
+    "boundary_outputs": 4,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Logical.Not": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Max": 1,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 8,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 7
+    },
+    "component_count": 22,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": true,
+    "niagara_unsupported_classes": [],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.Title24.Setpoints",
+    "root_label": "Setpoints",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "9de09d0b4a28a6cff810e29eeaad6e5f1d7ca61e026f403b04017bda21d71fda",
+    "supported_class_count": 22,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "9de09d0b4a28a6cff810e29eeaad6e5f1d7ca61e026f403b04017bda21d71fda"
+  },
+  "name": "Setpoints"
+ }
+}

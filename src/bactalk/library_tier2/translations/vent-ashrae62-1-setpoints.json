@@ -1,0 +1,784 @@
+{
+ "configuration_id": "vent-ashrae62-1-setpoints",
+ "controller_id": "VentilationZones.ASHRAE62_1.Setpoints",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints",
+  "inputs": [
+   {
+    "description": "Measured discharge air temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.TDis",
+    "label": "TDis",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Measured room temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.TZon",
+    "label": "TZon",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone operation mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.uOpeMod",
+    "label": "uOpeMod",
+    "type": "S231:IntegerInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Adjusted area component breathing zone flow rate",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.VAdjAreBreZon_flow",
+    "label": "VAdjAreBreZon_flow",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Adjusted population component breathing zone flow rate",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.VAdjPopBreZon_flow",
+    "label": "VAdjPopBreZon_flow",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Minimum outdoor airflow setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.VMinOA_flow",
+    "label": "VMinOA_flow",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Occupied minimum airflow setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.VOccZonMin_flow",
+    "label": "VOccZonMin_flow",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 0
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "VAreBreZon_flow": 0.014,
+  "VMin_flow": 0.094,
+  "VPopBreZon_flow": 0.024
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TDis",
+   "name": "TDis",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.TDis",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZon",
+   "name": "TZon",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.TZon",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uOpeMod",
+   "name": "uOpeMod",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.uOpeMod",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VAdjAreBreZon_flow",
+   "name": "VAdjAreBreZon_flow",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.VAdjAreBreZon_flow",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VAdjPopBreZon_flow",
+   "name": "VAdjPopBreZon_flow",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.VAdjPopBreZon_flow",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VMinOA_flow",
+   "name": "VMinOA_flow",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.VMinOA_flow",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VOccZonMin_flow",
+   "name": "VOccZonMin_flow",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints.VOccZonMin_flow",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "VentilationZones/ASHRAE62_1/Setpoints.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "cacd83a9996205171ee78a0190c7ca6611777c3be2b5326fc2686b978e8f49d0",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "fc757b60995ba42186298f2dd88a7e98f364e49b27e40c81f5e54b32faf3e9a6",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TDis",
+    "kind": "numeric_input",
+    "label": "TDis",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TZon",
+    "kind": "numeric_input",
+    "label": "TZon",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uOpeMod",
+    "kind": "numeric_input",
+    "label": "uOpeMod",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "VAdjAreBreZon_flow",
+    "kind": "numeric_output",
+    "label": "VAdjAreBreZon_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "VAdjPopBreZon_flow",
+    "kind": "numeric_output",
+    "label": "VAdjPopBreZon_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "VMinOA_flow",
+    "kind": "numeric_output",
+    "label": "VMinOA_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "VOccZonMin_flow",
+    "kind": "numeric_output",
+    "label": "VOccZonMin_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "airDisEff_true",
+    "kind": "numeric_const",
+    "label": "airDisEff true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.8
+    },
+    "id": "airDisEff_false",
+    "kind": "numeric_const",
+    "label": "airDisEff false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "airDisEff",
+    "kind": "numeric_switch",
+    "label": "airDisEff",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "con",
+    "kind": "boolean_const",
+    "label": "con",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "con1",
+    "kind": "boolean_const",
+    "label": "con1",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cooSup",
+    "kind": "greater_than",
+    "label": "cooSup",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.014
+    },
+    "id": "desAreAir",
+    "kind": "numeric_const",
+    "label": "desAreAir",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.024
+    },
+    "id": "desPopAir",
+    "kind": "numeric_const",
+    "label": "desPopAir",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "gai_parameter",
+    "kind": "numeric_const",
+    "label": "gai parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "gai",
+    "kind": "multiply",
+    "label": "gai",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "gai1_parameter",
+    "kind": "numeric_const",
+    "label": "gai1 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "gai1",
+    "kind": "multiply",
+    "label": "gai1",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "inOccMod",
+    "kind": "equal",
+    "label": "inOccMod",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "minOA",
+    "kind": "divide",
+    "label": "minOA",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "modAreBreAir",
+    "kind": "numeric_switch",
+    "label": "modAreBreAir",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "modPopBreAir",
+    "kind": "numeric_switch",
+    "label": "modPopBreAir",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "notOccMod",
+    "kind": "not",
+    "label": "notOccMod",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "occMinAir",
+    "kind": "numeric_switch",
+    "label": "occMinAir",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "occMod",
+    "kind": "numeric_const",
+    "label": "occMod",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "or2",
+    "kind": "or",
+    "label": "or2",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "reqBreAir",
+    "kind": "add",
+    "label": "reqBreAir",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "unpAreBreAir",
+    "kind": "numeric_switch",
+    "label": "unpAreBreAir",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "unpMinZonAir",
+    "kind": "numeric_switch",
+    "label": "unpMinZonAir",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "unpPopBreAir",
+    "kind": "numeric_switch",
+    "label": "unpPopBreAir",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer1",
+    "kind": "numeric_const",
+    "label": "zer1",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer2",
+    "kind": "numeric_const",
+    "label": "zer2",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer3",
+    "kind": "numeric_const",
+    "label": "zer3",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.094
+    },
+    "id": "zonMinFlo",
+    "kind": "numeric_const",
+    "label": "zonMinFlo",
+    "x": 900,
+    "y": 360
+   }
+  ],
+  "links": [
+   {
+    "source": "airDisEff_true",
+    "source_slot": "out",
+    "target": "airDisEff",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "airDisEff_false",
+    "source_slot": "out",
+    "target": "airDisEff",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "gai_parameter",
+    "source_slot": "out",
+    "target": "gai",
+    "target_slot": "b"
+   },
+   {
+    "source": "gai1_parameter",
+    "source_slot": "out",
+    "target": "gai1",
+    "target_slot": "b"
+   },
+   {
+    "source": "TDis",
+    "source_slot": "out",
+    "target": "cooSup",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "cooSup",
+    "target_slot": "a"
+   },
+   {
+    "source": "uOpeMod",
+    "source_slot": "out",
+    "target": "inOccMod",
+    "target_slot": "a"
+   },
+   {
+    "source": "airDisEff",
+    "source_slot": "out",
+    "target": "minOA",
+    "target_slot": "b"
+   },
+   {
+    "source": "con",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "a"
+   },
+   {
+    "source": "con1",
+    "source_slot": "out",
+    "target": "unpAreBreAir",
+    "target_slot": "selector"
+   },
+   {
+    "source": "con1",
+    "source_slot": "out",
+    "target": "unpMinZonAir",
+    "target_slot": "selector"
+   },
+   {
+    "source": "con1",
+    "source_slot": "out",
+    "target": "unpPopBreAir",
+    "target_slot": "selector"
+   },
+   {
+    "source": "cooSup",
+    "source_slot": "out",
+    "target": "airDisEff",
+    "target_slot": "selector"
+   },
+   {
+    "source": "desAreAir",
+    "source_slot": "out",
+    "target": "unpAreBreAir",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "desPopAir",
+    "source_slot": "out",
+    "target": "gai1",
+    "target_slot": "a"
+   },
+   {
+    "source": "gai",
+    "source_slot": "out",
+    "target": "unpMinZonAir",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "gai1",
+    "source_slot": "out",
+    "target": "unpPopBreAir",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "inOccMod",
+    "source_slot": "out",
+    "target": "notOccMod",
+    "target_slot": "in"
+   },
+   {
+    "source": "minOA",
+    "source_slot": "out",
+    "target": "VMinOA_flow",
+    "target_slot": "in"
+   },
+   {
+    "source": "modAreBreAir",
+    "source_slot": "out",
+    "target": "VAdjAreBreZon_flow",
+    "target_slot": "in"
+   },
+   {
+    "source": "modAreBreAir",
+    "source_slot": "out",
+    "target": "reqBreAir",
+    "target_slot": "b"
+   },
+   {
+    "source": "modPopBreAir",
+    "source_slot": "out",
+    "target": "VAdjPopBreZon_flow",
+    "target_slot": "in"
+   },
+   {
+    "source": "modPopBreAir",
+    "source_slot": "out",
+    "target": "reqBreAir",
+    "target_slot": "a"
+   },
+   {
+    "source": "notOccMod",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "b"
+   },
+   {
+    "source": "occMinAir",
+    "source_slot": "out",
+    "target": "VOccZonMin_flow",
+    "target_slot": "in"
+   },
+   {
+    "source": "occMod",
+    "source_slot": "out",
+    "target": "inOccMod",
+    "target_slot": "b"
+   },
+   {
+    "source": "or2",
+    "source_slot": "out",
+    "target": "modAreBreAir",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or2",
+    "source_slot": "out",
+    "target": "modPopBreAir",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or2",
+    "source_slot": "out",
+    "target": "occMinAir",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqBreAir",
+    "source_slot": "out",
+    "target": "minOA",
+    "target_slot": "a"
+   },
+   {
+    "source": "unpAreBreAir",
+    "source_slot": "out",
+    "target": "modAreBreAir",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "unpMinZonAir",
+    "source_slot": "out",
+    "target": "occMinAir",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "unpPopBreAir",
+    "source_slot": "out",
+    "target": "modPopBreAir",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zer1",
+    "source_slot": "out",
+    "target": "modAreBreAir",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zer1",
+    "source_slot": "out",
+    "target": "modPopBreAir",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zer1",
+    "source_slot": "out",
+    "target": "occMinAir",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zer1",
+    "source_slot": "out",
+    "target": "unpPopBreAir",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zer2",
+    "source_slot": "out",
+    "target": "unpAreBreAir",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zer3",
+    "source_slot": "out",
+    "target": "unpMinZonAir",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zonMinFlo",
+    "source_slot": "out",
+    "target": "gai",
+    "target_slot": "a"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "airDisEff": "airDisEff",
+    "airDisEff_false": "airDisEff",
+    "airDisEff_true": "airDisEff",
+    "con": "con",
+    "con1": "con1",
+    "cooSup": "cooSup",
+    "desAreAir": "desAreAir",
+    "desPopAir": "desPopAir",
+    "gai": "gai",
+    "gai1": "gai1",
+    "gai1_parameter": "gai1",
+    "gai_parameter": "gai",
+    "inOccMod": "inOccMod",
+    "minOA": "minOA",
+    "modAreBreAir": "modAreBreAir",
+    "modPopBreAir": "modPopBreAir",
+    "notOccMod": "notOccMod",
+    "occMinAir": "occMinAir",
+    "occMod": "occMod",
+    "or2": "or2",
+    "reqBreAir": "reqBreAir",
+    "unpAreBreAir": "unpAreBreAir",
+    "unpMinZonAir": "unpMinZonAir",
+    "unpPopBreAir": "unpPopBreAir",
+    "zer1": "zer1",
+    "zer2": "zer2",
+    "zer3": "zer3",
+    "zonMinFlo": "zonMinFlo"
+   },
+   "coverage": {
+    "boundary_inputs": 3,
+    "boundary_outputs": 4,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal": 1,
+     "Buildings.Controls.OBC.CDL.Integers.Equal": 1,
+     "Buildings.Controls.OBC.CDL.Integers.Sources.Constant": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Divide": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Greater": 1,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 6,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 6
+    },
+    "component_count": 24,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": true,
+    "niagara_unsupported_classes": [],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.VentilationZones.ASHRAE62_1.Setpoints",
+    "root_label": "Setpoints",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "fc757b60995ba42186298f2dd88a7e98f364e49b27e40c81f5e54b32faf3e9a6",
+    "supported_class_count": 24,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "fc757b60995ba42186298f2dd88a7e98f364e49b27e40c81f5e54b32faf3e9a6"
+  },
+  "name": "Setpoints"
+ }
+}

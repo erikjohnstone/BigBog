@@ -27,6 +27,7 @@ from bactalk.domain import (
 )
 from bactalk.intake import validate_template_bog
 from bactalk.integrations.niagara_station import (
+    NiagaraProgramAggregation,
     NiagaraProgramLink,
     assemble_project_station_bog,
 )
@@ -51,6 +52,28 @@ class ProjectSignalBinding(BaseModel):
     source_point: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$")
     target_equipment: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$")
     target_point: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
+class ProjectSignalSource(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    equipment: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$")
+    point: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
+class ProjectSignalAggregation(BaseModel):
+    """Several programs' outputs reduced into one program input (G36 request counts:
+    the zones' reset requests are summed at the AHU, the AHUs' plant requests at the
+    plant). ``sum`` and ``max`` for numeric and integer points, ``any`` for booleans.
+    In the assembled station this becomes a chain of kitControl Add (or Or) blocks
+    under a ``Requests`` folder of the target program (GOAL-NATIVE-BOG.md N8 step 5)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    target_equipment: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$")
+    target_point: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$")
+    sources: list[ProjectSignalSource] = Field(min_length=1, max_length=10_000)
+    reduce: Literal["sum", "max", "any"] = "sum"
 
 
 class ProjectOutputExpectation(BaseModel):
@@ -88,9 +111,7 @@ class ProjectAcceptancePhase(BaseModel):
     def qualified_inputs(self) -> ProjectAcceptancePhase:
         for key in self.inputs:
             if not _qualified_point(key):
-                raise ValueError(
-                    "project acceptance inputs must use EquipmentName.PointName keys"
-                )
+                raise ValueError("project acceptance inputs must use EquipmentName.PointName keys")
         return self
 
 
@@ -130,6 +151,9 @@ class ProjectSpec(BaseModel):
     equipment: list[JobSpec] = Field(min_length=1, max_length=10_000)
     relationships: list[EquipmentRelationship] = Field(default_factory=list)
     signal_bindings: list[ProjectSignalBinding] = Field(default_factory=list, max_length=100_000)
+    signal_aggregations: list[ProjectSignalAggregation] = Field(
+        default_factory=list, max_length=100_000
+    )
     acceptance_tests: list[ProjectAcceptanceCase] = Field(default_factory=list, max_length=10_000)
     station_assembly_mode: Literal["none", "insert", "replace"] = "none"
 
@@ -152,8 +176,7 @@ class ProjectSpec(BaseModel):
         if conflicting_modes:
             raise ValueError(
                 "project equipment must leave station_template_mode at compare_only; use the "
-                "project station_assembly_mode: "
-                + ", ".join(sorted(conflicting_modes))
+                "project station_assembly_mode: " + ", ".join(sorted(conflicting_modes))
             )
         known = set(names)
         seen: set[tuple[str, str, str]] = set()
@@ -222,6 +245,57 @@ class ProjectSpec(BaseModel):
             if binding.target_equipment not in adjacency[binding.source_equipment]:
                 adjacency[binding.source_equipment].add(binding.target_equipment)
                 indegree[binding.target_equipment] += 1
+        for aggregation in self.signal_aggregations:
+            target_job = jobs.get(aggregation.target_equipment)
+            if target_job is None:
+                raise ValueError("project signal aggregation references unknown equipment")
+            target = next(
+                (p for p in target_job.points if p.name == aggregation.target_point), None
+            )
+            if target is None:
+                raise ValueError("project signal aggregation references an unknown point")
+            if target.role not in {PointRole.SENSOR, PointRole.SETPOINT, PointRole.STATUS}:
+                raise ValueError(
+                    f"aggregation target {aggregation.target_equipment}."
+                    f"{aggregation.target_point} must be an input"
+                )
+            if aggregation.reduce == "any":
+                if target.data_type != DataType.BOOLEAN:
+                    raise ValueError("an 'any' aggregation needs a boolean target")
+            elif target.data_type is not DataType.NUMERIC:
+                raise ValueError(f"a '{aggregation.reduce}' aggregation needs a numeric target")
+            if target.bacnet_object is not None or target.niagara_ord is not None:
+                raise ValueError(
+                    f"aggregated target {aggregation.target_equipment}."
+                    f"{aggregation.target_point} cannot also be driven by BACnet or an ORD"
+                )
+            target_key = (aggregation.target_equipment, aggregation.target_point)
+            if target_key in incoming_targets:
+                raise ValueError("project signal target has multiple drivers")
+            incoming_targets.add(target_key)
+            seen_sources: set[tuple[str, str]] = set()
+            for source in aggregation.sources:
+                if source.equipment == aggregation.target_equipment:
+                    raise ValueError("project signal aggregations must connect different equipment")
+                source_job = jobs.get(source.equipment)
+                if source_job is None:
+                    raise ValueError("project signal aggregation references unknown equipment")
+                point = next((p for p in source_job.points if p.name == source.point), None)
+                if point is None:
+                    raise ValueError("project signal aggregation references an unknown point")
+                if point.role not in {PointRole.COMMAND, PointRole.ALARM}:
+                    raise ValueError(
+                        f"aggregation source {source.equipment}.{source.point} "
+                        "must be a command or alarm output"
+                    )
+                if point.data_type != target.data_type:
+                    raise ValueError("aggregation source and target types must match")
+                if (source.equipment, source.point) in seen_sources:
+                    raise ValueError("aggregation sources must be unique")
+                seen_sources.add((source.equipment, source.point))
+                if aggregation.target_equipment not in adjacency[source.equipment]:
+                    adjacency[source.equipment].add(aggregation.target_equipment)
+                    indegree[aggregation.target_equipment] += 1
 
         queue = deque(name for name, degree in indegree.items() if degree == 0)
         visited = 0
@@ -234,7 +308,7 @@ class ProjectSpec(BaseModel):
                     queue.append(target)
         if visited != len(jobs):
             raise ValueError("project signal bindings contain an equipment cycle")
-        if self.signal_bindings and not self.acceptance_tests:
+        if (self.signal_bindings or self.signal_aggregations) and not self.acceptance_tests:
             raise ValueError("cross-equipment signal bindings require project acceptance tests")
 
         outputs_by_job = {
@@ -255,9 +329,11 @@ class ProjectSpec(BaseModel):
                         raise ValueError("invalid qualified project input")
                     equipment_name, point_name = parsed
                     job = jobs.get(equipment_name)
-                    point = next(
-                        (item for item in job.points if item.name == point_name), None
-                    ) if job is not None else None
+                    point = (
+                        next((item for item in job.points if item.name == point_name), None)
+                        if job is not None
+                        else None
+                    )
                     if point is None or point.role in {PointRole.COMMAND, PointRole.ALARM}:
                         raise ValueError(f"project input {qualified} is not an equipment input")
                     if (equipment_name, point_name) in incoming_targets:
@@ -273,9 +349,7 @@ class ProjectSpec(BaseModel):
                             f"project expectation {expectation.equipment}.{expectation.point} "
                             "is not an equipment output"
                         )
-                    if (point.data_type == DataType.BOOLEAN) != isinstance(
-                        expectation.value, bool
-                    ):
+                    if (point.data_type == DataType.BOOLEAN) != isinstance(expectation.value, bool):
                         raise ValueError("project expectation has the wrong data type")
                     if point.data_type == DataType.BOOLEAN and expectation.operator not in {
                         ComparisonOperator.EQUAL,
@@ -283,11 +357,14 @@ class ProjectSpec(BaseModel):
                     }:
                         raise ValueError("boolean project expectations only support eq or ne")
                     covered.add((expectation.equipment, expectation.point))
-        if self.signal_bindings:
+        if self.signal_bindings or self.signal_aggregations:
             downstream = {
-                (binding.target_equipment, point_name)
-                for binding in self.signal_bindings
-                for point_name in outputs_by_job[binding.target_equipment]
+                (target_equipment, point_name)
+                for target_equipment in {
+                    *(binding.target_equipment for binding in self.signal_bindings),
+                    *(item.target_equipment for item in self.signal_aggregations),
+                }
+                for point_name in outputs_by_job[target_equipment]
             }
             unobserved = sorted(downstream - covered)
             if unobserved:
@@ -314,10 +391,7 @@ class ProjectPreflight:
                 blockers.append(
                     f"No installed pack or supplied typed graph for {job.sequence.family!r}."
                 )
-            if (
-                project.station_assembly_mode != "none"
-                and job.sequence.library is not None
-            ):
+            if project.station_assembly_mode != "none" and job.sequence.library is not None:
                 blockers.append(
                     "Plant-library ProgramObject source packages require licensed Workbench "
                     "compilation before whole-station BOG assembly."
@@ -354,6 +428,7 @@ class ProjectPreflight:
             "equipment_count": len(project.equipment),
             "relationship_count": len(project.relationships),
             "signal_binding_count": len(project.signal_bindings),
+            "signal_aggregation_count": len(project.signal_aggregations),
             "project_acceptance_case_count": len(project.acceptance_tests),
             "equipment": equipment,
             "next_gate": (
@@ -529,6 +604,22 @@ class ProjectBuildService:
                         ),
                     )
                     for binding in project.signal_bindings
+                ],
+                program_aggregations=[
+                    NiagaraProgramAggregation(
+                        target_equipment=item.target_equipment,
+                        target_point=item.target_point,
+                        sources=tuple((s.equipment, s.point) for s in item.sources),
+                        reduce=item.reduce,
+                        data_type=next(
+                            point.data_type.value
+                            for job in project.equipment
+                            if job.equipment_name == item.target_equipment
+                            for point in job.points
+                            if point.name == item.target_point
+                        ),
+                    )
+                    for item in project.signal_aggregations
                 ],
             )
             assembled_station_path = project_dir / "assembled-station.bog"

@@ -40,6 +40,7 @@ export const keys = {
   project: (id: string) => ['project', id] as const,
   projectReport: (id: string) => ['project', id, 'report'] as const,
   libraryCatalogs: ['library-catalogs'] as const,
+  libraryCoverage: ['library-coverage'] as const,
   ctrlFlowTemplates: ['ctrl-flow-templates'] as const,
   ctrlFlowConfiguration: (templateId: string, selections: Record<string, unknown>) => ['ctrl-flow-configuration', templateId, selections] as const,
   g36Parameters: (controllerId: string) => ['g36-parameters', controllerId] as const,
@@ -117,6 +118,9 @@ export function useProject(id: string | undefined) {
 }
 export function useProjectReport(id: string | undefined) {
   return useQuery({ queryKey: keys.projectReport(id ?? ''), queryFn: () => api.projectReport(id!), enabled: Boolean(id) });
+}
+export function useLibraryCoverage() {
+  return useQuery({ queryKey: keys.libraryCoverage, queryFn: api.libraryCoverage, staleTime: 300_000 });
 }
 export function useLibraryCatalogs() {
   return useQuery({ queryKey: keys.libraryCatalogs, queryFn: api.libraryCatalogs, staleTime: 5 * 60_000 });

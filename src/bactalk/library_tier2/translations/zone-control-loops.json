@@ -1,0 +1,667 @@
+{
+ "configuration_id": "zone-control-loops",
+ "controller_id": "ThermalZones.ControlLoops",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops",
+  "inputs": [
+   {
+    "description": "Zone cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops.TCooSet",
+    "label": "TCooSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Zone heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops.THeaSet",
+    "label": "THeaSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Measured zone temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops.TZon",
+    "label": "TZon",
+    "type": "S231:RealInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Cooling control signal",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops.yCoo",
+    "label": "yCoo",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Heating control signal",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops.yHea",
+    "label": "yHea",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 4
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {},
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TCooSet",
+   "name": "TCooSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops.TCooSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "THeaSet",
+   "name": "THeaSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops.THeaSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZon",
+   "name": "TZon",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops.TZon",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yCoo",
+   "name": "yCoo",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops.yCoo",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yHea",
+   "name": "yHea",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops.yHea",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "ThermalZones/ControlLoops.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "ee9750d5431f82fd1751fd872264990217280b69b3dc04ef340f3f4c393ffc1e",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "ed8349a0c7fa8bdfa17efe212cccef1bb950bea284d589b0b122d4b0b58864f2",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TCooSet",
+    "kind": "numeric_input",
+    "label": "TCooSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "THeaSet",
+    "kind": "numeric_input",
+    "label": "THeaSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TZon",
+    "kind": "numeric_input",
+    "label": "TZon",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yCoo",
+    "kind": "numeric_output",
+    "label": "yCoo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yHea",
+    "kind": "numeric_output",
+    "label": "yHea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "colZon",
+    "kind": "not",
+    "label": "colZon",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 0.1,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 1.0,
+     "reverse_acting": false,
+     "td": 0.1,
+     "ti": 900.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.0,
+     "y_reset": 0.0,
+     "yd_start": 0.0
+    },
+    "id": "conCoo",
+    "kind": "pid_with_reset",
+    "label": "conCoo",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 0.1,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 1.0,
+     "reverse_acting": true,
+     "td": 0.1,
+     "ti": 900.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.0,
+     "y_reset": 0.0,
+     "yd_start": 0.0
+    },
+    "id": "conHea",
+    "kind": "pid_with_reset",
+    "label": "conHea",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cooConSig",
+    "kind": "multiply",
+    "label": "cooConSig",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "delay_on_init": false,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 30.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "disCoo",
+    "kind": "boolean_delay",
+    "label": "disCoo",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "disCooCon",
+    "kind": "and",
+    "label": "disCooCon",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {
+     "delay_on_init": false,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 30.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "disHea",
+    "kind": "boolean_delay",
+    "label": "disHea",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "disHeaCon",
+    "kind": "and",
+    "label": "disHeaCon",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "enaCooLoo",
+    "kind": "less_than",
+    "label": "enaCooLoo",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "enaHeaLoo",
+    "kind": "less_than",
+    "label": "enaHeaLoo",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "heaConSig",
+    "kind": "multiply",
+    "label": "heaConSig",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "holZon",
+    "kind": "not",
+    "label": "holZon",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.01
+    },
+    "id": "zerCon_threshold",
+    "kind": "numeric_const",
+    "label": "zerCon threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "zerCon",
+    "kind": "less_than",
+    "label": "zerCon",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.01
+    },
+    "id": "zerCon1_threshold",
+    "kind": "numeric_const",
+    "label": "zerCon1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "zerCon1",
+    "kind": "less_than",
+    "label": "zerCon1",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zerCoo_true",
+    "kind": "numeric_const",
+    "label": "zerCoo true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "zerCoo_false",
+    "kind": "numeric_const",
+    "label": "zerCoo false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "zerCoo",
+    "kind": "numeric_switch",
+    "label": "zerCoo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zerHea_true",
+    "kind": "numeric_const",
+    "label": "zerHea true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "zerHea_false",
+    "kind": "numeric_const",
+    "label": "zerHea false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "zerHea",
+    "kind": "numeric_switch",
+    "label": "zerHea",
+    "x": 0,
+    "y": 0
+   }
+  ],
+  "links": [
+   {
+    "source": "zerCon_threshold",
+    "source_slot": "out",
+    "target": "zerCon",
+    "target_slot": "b"
+   },
+   {
+    "source": "zerCon1_threshold",
+    "source_slot": "out",
+    "target": "zerCon1",
+    "target_slot": "b"
+   },
+   {
+    "source": "zerCoo_true",
+    "source_slot": "out",
+    "target": "zerCoo",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zerCoo_false",
+    "source_slot": "out",
+    "target": "zerCoo",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zerHea_true",
+    "source_slot": "out",
+    "target": "zerHea",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zerHea_false",
+    "source_slot": "out",
+    "target": "zerHea",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "TCooSet",
+    "source_slot": "out",
+    "target": "conCoo",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "TCooSet",
+    "source_slot": "out",
+    "target": "enaCooLoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "THeaSet",
+    "source_slot": "out",
+    "target": "conHea",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "THeaSet",
+    "source_slot": "out",
+    "target": "enaHeaLoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "conCoo",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "conHea",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "enaCooLoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "enaHeaLoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "colZon",
+    "source_slot": "out",
+    "target": "disCooCon",
+    "target_slot": "b"
+   },
+   {
+    "source": "conCoo",
+    "source_slot": "out",
+    "target": "cooConSig",
+    "target_slot": "a"
+   },
+   {
+    "source": "conCoo",
+    "source_slot": "out",
+    "target": "zerCon",
+    "target_slot": "a"
+   },
+   {
+    "source": "conHea",
+    "source_slot": "out",
+    "target": "heaConSig",
+    "target_slot": "a"
+   },
+   {
+    "source": "conHea",
+    "source_slot": "out",
+    "target": "zerCon1",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooConSig",
+    "source_slot": "out",
+    "target": "yCoo",
+    "target_slot": "in"
+   },
+   {
+    "source": "disCoo",
+    "source_slot": "out",
+    "target": "disCooCon",
+    "target_slot": "a"
+   },
+   {
+    "source": "disCooCon",
+    "source_slot": "out",
+    "target": "zerCoo",
+    "target_slot": "selector"
+   },
+   {
+    "source": "disHea",
+    "source_slot": "out",
+    "target": "disHeaCon",
+    "target_slot": "a"
+   },
+   {
+    "source": "disHeaCon",
+    "source_slot": "out",
+    "target": "zerHea",
+    "target_slot": "selector"
+   },
+   {
+    "source": "enaCooLoo",
+    "source_slot": "out",
+    "target": "colZon",
+    "target_slot": "in"
+   },
+   {
+    "source": "enaCooLoo",
+    "source_slot": "out",
+    "target": "conCoo",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "enaHeaLoo",
+    "source_slot": "out",
+    "target": "conHea",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "enaHeaLoo",
+    "source_slot": "out",
+    "target": "holZon",
+    "target_slot": "in"
+   },
+   {
+    "source": "heaConSig",
+    "source_slot": "out",
+    "target": "yHea",
+    "target_slot": "in"
+   },
+   {
+    "source": "holZon",
+    "source_slot": "out",
+    "target": "disHeaCon",
+    "target_slot": "b"
+   },
+   {
+    "source": "zerCon",
+    "source_slot": "out",
+    "target": "disCoo",
+    "target_slot": "in"
+   },
+   {
+    "source": "zerCon1",
+    "source_slot": "out",
+    "target": "disHea",
+    "target_slot": "in"
+   },
+   {
+    "source": "zerCoo",
+    "source_slot": "out",
+    "target": "cooConSig",
+    "target_slot": "b"
+   },
+   {
+    "source": "zerHea",
+    "source_slot": "out",
+    "target": "heaConSig",
+    "target_slot": "b"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "colZon": "colZon",
+    "conCoo": "conCoo",
+    "conHea": "conHea",
+    "cooConSig": "cooConSig",
+    "disCoo": "disCoo",
+    "disCooCon": "disCooCon",
+    "disHea": "disHea",
+    "disHeaCon": "disHeaCon",
+    "enaCooLoo": "enaCooLoo",
+    "enaHeaLoo": "enaHeaLoo",
+    "heaConSig": "heaConSig",
+    "holZon": "holZon",
+    "zerCon": "zerCon",
+    "zerCon1": "zerCon1",
+    "zerCon1_threshold": "zerCon1",
+    "zerCon_threshold": "zerCon",
+    "zerCoo": "zerCoo",
+    "zerCoo_false": "zerCoo",
+    "zerCoo_true": "zerCoo",
+    "zerHea": "zerHea",
+    "zerHea_false": "zerHea",
+    "zerHea_true": "zerHea"
+   },
+   "coverage": {
+    "boundary_inputs": 3,
+    "boundary_outputs": 2,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal": 2,
+     "Buildings.Controls.OBC.CDL.Logical.And": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 2,
+     "Buildings.Controls.OBC.CDL.Logical.TrueDelay": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Less": 2,
+     "Buildings.Controls.OBC.CDL.Reals.LessThreshold": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Multiply": 2,
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset": 2
+    },
+    "component_count": 16,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [
+     "disCoo: delayOnInit=false is not equivalent to the Niagara BooleanDelay initialization used by this lowering",
+     "disHea: delayOnInit=false is not equivalent to the Niagara BooleanDelay initialization used by this lowering"
+    ],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset"
+    ],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.ControlLoops",
+    "root_label": "ControlLoops",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "ed8349a0c7fa8bdfa17efe212cccef1bb950bea284d589b0b122d4b0b58864f2",
+    "supported_class_count": 16,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "ed8349a0c7fa8bdfa17efe212cccef1bb950bea284d589b0b122d4b0b58864f2"
+  },
+  "name": "ControlLoops"
+ }
+}

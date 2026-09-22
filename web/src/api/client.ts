@@ -1516,6 +1516,51 @@ async function getArtifact<T>(path: string, schema: z.ZodType<T>): Promise<Artif
   return { state: 'available', data: schema.parse(await response.json()) };
 }
 
+const coverageProofSchema = z.object({
+  passed: z.boolean(),
+  blocker: z.string().optional(),
+  lane: z.string().optional(),
+  blockers: z.array(z.string()).optional(),
+  errors: z.array(z.string()).optional(),
+  failing_cases: z.array(z.string()).optional(),
+  reference_available: z.boolean().optional(),
+  catch_rate: z.number().optional(),
+  sample: z.number().optional(),
+  caught: z.number().optional(),
+  survivors: z.array(z.object({ operator: z.string(), path: z.string() }).passthrough()).optional(),
+}).passthrough();
+const libraryCoverageSchema = z.object({
+  schema: z.literal('bactalk.native-bog-coverage/v1'),
+  mutation_sample: z.number(),
+  mutation_target: z.number(),
+  summary: z.object({
+    configurations: z.number(),
+    all_four: z.number(),
+    d1: z.number(),
+    d2: z.number(),
+    d3: z.number(),
+    d4: z.number(),
+    blocked: z.number(),
+  }).passthrough(),
+  items: z.array(z.object({
+    id: z.string(),
+    controller: z.string(),
+    family: z.string(),
+    variant: z.string(),
+    tier: z.string(),
+    source_of_truth: z.string(),
+    expectations: z.string(),
+    scenarios: z.number().optional(),
+    blocker: z.object({ stage: z.string(), reason: z.string() }).optional(),
+    d1: coverageProofSchema,
+    d2: coverageProofSchema,
+    d3: coverageProofSchema,
+    d4: coverageProofSchema,
+  }).passthrough()),
+}).passthrough();
+export type LibraryCoverage = z.infer<typeof libraryCoverageSchema>;
+export type CoverageProof = z.infer<typeof coverageProofSchema>;
+
 export const api = {
   async health() {
     return healthSchema.parse(await getJson('/api/health'));
@@ -1653,6 +1698,9 @@ export const api = {
   },
   async environment(runId: string) {
     return getArtifact(`/api/runs/${runId}/environment-manifest`, z.record(z.string(), z.unknown()));
+  },
+  async libraryCoverage() {
+    return getArtifact('/api/library/coverage', libraryCoverageSchema);
   },
   async libraryCatalogs() {
     const [g36, plant, faults, aixocat, niagara, ctrlFlow] = await Promise.all([

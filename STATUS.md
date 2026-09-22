@@ -27,8 +27,9 @@ stack is present on the development box and the LBNL translation lane runs
 | N4 Native emitter | **done** | `make test-native-bog` (`tests/test_native_bog_emit.py`); both retained Tier 1 controllers export one validated `.bog` | descriptions and writable parameters wait on N5 (docs/decisions/005) |
 | N5 Point linking | **done** | `tests/test_native_bog_points.py` in `make test-native-bog`: one AHU + 25 VAVs linked in one station, validator clean | station structure is doc-only until Gate G-WB (docs/decisions/006) |
 | N6 Shadow Runtime | **done** | `make test-native-bog` (232 passed: `tests/test_native_bog_shadow_*.py` add the loader, block-semantics, kernel-equivalence and driver tests incl. both Tier 1 suites and the AHU + 25 VAVs fan-out); `make test-minimal` (408 passed, 1 skipped); `make shadow-check` | stock semantics are ASSUMED until Gate G-WB's calibration kit (N7); event-ordering hazard in the VAV time-suppression logic recorded for N7 (docs/niagara-semantics.md) |
-| N7 Prove it | **done (D4 target not met for VAV; recorded)** | `make test-native-bog` (calibration kit `--check` + 312 native_bog tests: differential, property, mutation, calibration, shadow qualification); `make test-minimal` (469 passed, 1 skipped); committed proofs `artifacts/native-bog/d1..d4-tier1.json`; web: `make web-lint`, `make web-build`, `make web-test`, Playwright `e2e/shadow.spec.ts` | D4 catch rate: AHU meets ≥ 95 %, VAV reheat does not (63.5 % on a 200-mutant sample; survivors listed, N8's first work list, docs/decisions/009); stock semantics stay ASSUMED until a human runs `calibration/` (Gate G-WB) |
-| N8–N11 Library tiers | not started | | |
+| N7 Prove it | **done (D4 target not met; recorded)** | `make test-native-bog` (calibration kit `--check` + 312 native_bog tests: differential, property, mutation, calibration, shadow qualification); `make test-minimal` (469 passed, 1 skipped); committed proofs `artifacts/native-bog/d1..d4-tier1.json`; web: `make web-lint`, `make web-build`, `make web-test`, Playwright `e2e/shadow.spec.ts` | D4 catch rate: neither Tier 1 suite meets ≥ 95 % (VAV reheat 63.5 %, multizone AHU 65.5 % on 200-mutant samples; the AHU's earlier 100 % was a failing-baseline artifact found in N8; survivors listed, N8's first work list, docs/decisions/009); stock semantics stay ASSUMED until a human runs `calibration/` (Gate G-WB) |
+| N8 Library Tier 2 | **partial** | `make test-native-bog` (337 passed: `tests/test_native_bog_tier2.py`, `tests/test_native_bog_requests.py`); `make test-minimal` (494 passed, 1 skipped); `docs/coverage.md` + `src/bactalk/library_tier2/coverage.json` from `make coverage-report` | 22 Tier 2 configurations defined; 16 retained with OCE references, 6 blocked with the exact reason in `docs/coverage.md` (single-zone AHU: OCE rejects the flattened CXF; fan coil, zone setpoints, zone-group operation mode: importer lacks `CDL.Reals.Limiter` / `CDL.Conversions.RealToInteger`; cooling-only Title 24: engine input mapping); D3 fails for the two constant-volume fan-powered boxes (Shadow Runtime valve PID transient, recorded below); D4 ≥ 95 % on 6 of 18 graded rows; chiller-plant pin (step 1) not started |
+| N9–N11 Library tiers 3–5 | not started | | Test Generation Protocol |
 
 ## N0 results
 
@@ -285,9 +286,10 @@ stack is present on the development box and the LBNL translation lane runs
   applies eight operators (VAV reheat: 1596 mutants; AHU: 1854) and
   judges each by validator → loader → acceptance suite → three-way
   differential. On the committed 200-mutant seeded samples
-  (`artifacts/native-bog/d4-tier1.json`): AHU 200 of 200 caught; VAV reheat
-  127 of 200 caught (63.5 %), target not met. Every VAV survivor sits in logic the six
-  scenarios never exercise (time suppression, CO2 demand control, the
+  (`artifacts/native-bog/d4-tier1.json`): VAV reheat 127 of 200 caught (63.5 %),
+  multizone AHU 131 of 200 (65.5 %; the 200 of 200 first recorded here was an
+  artifact of a failing baseline, corrected in N8), target not met for either.
+  Every VAV survivor sits in logic the six scenarios never exercise (time suppression, CO2 demand control, the
   heating-maximum branch, the flow-sensor alarm, override modes) or is
   equivalent under the suite (an input point's fallback the scenarios
   override; facets on a boolean point). That list is N8's first work list
@@ -328,6 +330,46 @@ stack is present on the development box and the LBNL translation lane runs
   builds on this controller.
 - **Not claimed.** Nothing here is Niagara runtime qualification. The D4 target
   is met for one of two Tier 1 controllers. The calibration kit has not been run.
+
+## N8 results (partial)
+
+- **Every LBNL G36 equipment and zone controller is a configuration.**
+  `bactalk.library_tier2.CONFIGURATIONS` lists 22 (single-zone AHU ×2, fan
+  coil, nine terminal-unit variants incl. Title 24 and the dual-sensor snap-acting
+  box, zone setpoints, control loops, alarms, states, both ventilation standards,
+  zone-group status and operation mode), each with the complete parameter set
+  LBNL leaves open. `scripts/retain_tier2.py` retains the translation and an
+  Open Control Engine reference per configuration (mechanical scenarios: nominal
+  point plus one perturbation per input and every operation mode;
+  docs/decisions/010); modelica-json output is now cached per controller, which
+  turned retention from hours into minutes.
+- **Coverage report.** `docs/coverage.md` and `src/bactalk/library_tier2/coverage.json`
+  (`make coverage-report`, `GET /api/library/coverage`, the Libraries page) grade
+  all 24 rows: D1 and D2 pass on every retained row (18), D3 on 16, D4 at or above
+  95 % on 6 (the fan-powered VVF boxes, the dual-sensor snap-acting box and the
+  zone control loops); the rest report their measured catch rate. Six rows are
+  blocked with the exact reason.
+- **Findings.** (1) The Tier 1 AHU's D4 figure in N7 (200 of 200) was an
+  artifact: its acceptance suite was failing at the time, so every mutant was
+  "caught by the suite". `run_mutation_suite` now refuses a failing baseline and
+  the regenerated report reads 45 %. (2) The Shadow Runtime's valve PID lags the
+  interpreter and the reference by one scan and then integrates faster on the
+  constant-volume fan-powered boxes (`conVal`, first divergence at t = 300 s in
+  `DamVal_1`); the interpreter matches OCE exactly, so this is a runtime defect
+  to fix before those rows can pass D3. (3) `CDL.Reals.Limiter` and
+  `CDL.Conversions.RealToInteger` (round half away from zero; no stock Niagara
+  block) are the next importer/module additions; they unblock three rows.
+- **Cross-equipment requests.** `ProjectSignalAggregation` (`sum`, `max`, `any`)
+  joins the project model; `bactalk.library_tier2.requests` generates zone → AHU
+  and AHU → plant request signals from the G36 request table and the project's
+  `feeds`/`serves` relationships; the simulator reduces them and the station
+  assembler builds kitControl chains in a `Requests` folder
+  (`tests/test_native_bog_requests.py`: one AHU with two reheat boxes raises the
+  fan on summed pressure requests; nine sources chain three stages).
+- **Not done.** Step 1 (pin a Modelica Buildings master commit for `G36/Plants`;
+  master `a3cfdde` carries `Plants/Chillers`) and Tier 2b plant templates; the
+  three importer gaps; the CVF runtime defect; the single-zone AHU (an OCE ingest
+  rejection of LBNL's own CDL).
 
 ## Gates
 

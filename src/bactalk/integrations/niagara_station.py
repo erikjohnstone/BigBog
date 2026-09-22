@@ -14,7 +14,7 @@ from bactalk.integrations.niagara_bindings import program_root_ord
 
 _HANDLE = re.compile(r"^[0-9a-fA-F]+$")
 _HANDLE_REF = re.compile(r"(?<![A-Za-z0-9])h:([0-9a-fA-F]+)(?![A-Za-z0-9_$])")
-_FORBIDDEN_XML = re.compile(br"<!\s*(?:DOCTYPE|ENTITY)\b", re.IGNORECASE)
+_FORBIDDEN_XML = re.compile(rb"<!\s*(?:DOCTYPE|ENTITY)\b", re.IGNORECASE)
 
 
 @dataclass(frozen=True)
@@ -35,6 +35,19 @@ class NiagaraProgramLink:
     source_point: str
     target_equipment: str
     target_point: str
+    data_type: str
+
+
+@dataclass(frozen=True)
+class NiagaraProgramAggregation:
+    """Several programs' outputs reduced into one program input through a chain of
+    kitControl Add (numeric ``sum``), Maximum (``max``) or Or (boolean ``any``) blocks placed
+    in a ``Requests`` folder of the target program."""
+
+    target_equipment: str
+    target_point: str
+    sources: tuple[tuple[str, str], ...]
+    reduce: str
     data_type: str
 
 
@@ -135,9 +148,7 @@ def _carry_root_modules(
         raise ValueError(f"generated program contains module-symbol conflicts: {conflicts}")
     merged = {**inherited, **local}
     if merged:
-        declarations = " ".join(
-            f"{symbol}={module}" for symbol, module in sorted(merged.items())
-        )
+        declarations = " ".join(f"{symbol}={module}" for symbol, module in sorted(merged.items()))
         program.set("m", declarations)
     return merged
 
@@ -469,6 +480,7 @@ def assemble_project_station_bog(
     mode: Literal["insert", "replace"],
     program_links: list[NiagaraProgramLink] | None = None,
     bindings_by_equipment: Mapping[str, Sequence[PointBinding]] | None = None,
+    program_aggregations: list[NiagaraProgramAggregation] | None = None,
 ) -> NiagaraProjectStationAssembly:
     """Atomically assemble multiple independently compiled programs into one station BOG."""
 
@@ -507,6 +519,11 @@ def assemble_project_station_bog(
     link_rows: list[dict[str, Any]] = []
     if program_links:
         current, link_rows = _add_project_program_links(current, ordered, program_links)
+    aggregation_rows: list[dict[str, Any]] = []
+    if program_aggregations:
+        current, aggregation_rows = _add_project_program_aggregations(
+            current, ordered, program_aggregations
+        )
 
     root, _ = _read_bog(current, "assembled project station")
     handles = _collect_handles(root)
@@ -520,6 +537,8 @@ def assemble_project_station_bog(
         "target_program_ords": targets,
         "cross_program_link_count": len(link_rows),
         "cross_program_links": link_rows,
+        "cross_program_aggregation_count": len(aggregation_rows),
+        "cross_program_aggregations": aggregation_rows,
         "steps": steps,
         "template_sha256": _sha256(template_bog),
         "assembled_bog_sha256": _sha256(current),
@@ -542,6 +561,135 @@ def assemble_project_station_bog(
         ),
     }
     return NiagaraProjectStationAssembly(content=current, manifest=manifest)
+
+
+_REDUCERS = {"sum": "kitControl:Add", "max": "kitControl:Maximum", "any": "kitControl:Or"}
+_REDUCER_INPUTS = ("inA", "inB", "inC", "inD")
+
+
+def _index_programs(
+    document: ElementTree.Element,
+    programs: list[tuple[bytes, JobSpec, ControlGraph]],
+) -> dict[str, tuple[JobSpec, ControlGraph, ElementTree.Element]]:
+    station_root = _root_component(document, "assembled project station")
+    indexed: dict[str, tuple[JobSpec, ControlGraph, ElementTree.Element]] = {}
+    for _, job, graph in programs:
+        profile = job.deliverables.shop_profile
+        parent = _target_parent(
+            station_root, profile.station_folder if profile is not None else None
+        )
+        program = _named_child(parent, graph.name)
+        if program is None:
+            raise ValueError(f"assembled station is missing program {graph.name!r}")
+        indexed[job.equipment_name] = (job, graph, program)
+    return indexed
+
+
+def _add_project_program_aggregations(
+    assembled_bog: bytes,
+    programs: list[tuple[bytes, JobSpec, ControlGraph]],
+    aggregations: list[NiagaraProgramAggregation],
+) -> tuple[bytes, list[dict[str, Any]]]:
+    """Reduce several programs' outputs into one input with a chain of kitControl blocks.
+
+    Each reducer takes up to four inputs; the chain feeds the previous stage's ``out``
+    into the next stage's ``inA``, so ``n`` sources need ``ceil((n - 1) / 3)`` blocks.
+    The blocks live in a ``Requests`` folder of the target program and every link is an
+    ordinary ``b:Link``, so nothing needs Java or a station-side installer.
+    """
+
+    document, _ = _read_bog(assembled_bog, "assembled project station")
+    indexed = _index_programs(document, programs)
+    station_root = _root_component(document, "assembled project station")
+    modules = _module_declarations(station_root.get("m"))
+    if modules.get("kitControl", "kitControl") != "kitControl":
+        raise ValueError("station declares a conflicting kitControl module symbol")
+    modules.setdefault("kitControl", "kitControl")
+    station_root.set(
+        "m", " ".join(f"{symbol}={module}" for symbol, module in sorted(modules.items()))
+    )
+    next_handle = max((int(value, 16) for value in _collect_handles(document)), default=0) + 1
+    rows: list[dict[str, Any]] = []
+    for ordinal, aggregation in enumerate(
+        sorted(aggregations, key=lambda item: (item.target_equipment, item.target_point)),
+        start=1,
+    ):
+        block_type = _REDUCERS.get(aggregation.reduce)
+        if block_type is None:
+            raise ValueError(f"unknown aggregation reduce {aggregation.reduce!r}")
+        target_entry = indexed.get(aggregation.target_equipment)
+        if target_entry is None:
+            raise ValueError("cross-program aggregation references unassembled equipment")
+        target_job, target_graph, target_program = target_entry
+        target = _find_program_point(target_program, aggregation.target_point)
+        if "in16" in _driven_slots(target):
+            raise ValueError(
+                f"cross-program target already has a driver: "
+                f"{aggregation.target_equipment}.{aggregation.target_point}"
+            )
+        sources: list[ElementTree.Element] = []
+        for source_equipment, source_point in aggregation.sources:
+            source_entry = indexed.get(source_equipment)
+            if source_entry is None:
+                raise ValueError("cross-program aggregation references unassembled equipment")
+            source = _find_program_point(source_entry[2], source_point)
+            if source.get("h") is None:
+                raise ValueError("cross-program aggregation source has no valid Niagara handle")
+            sources.append(source)
+        folder = _named_child(target_program, "Requests")
+        if folder is None:
+            folder = ElementTree.SubElement(
+                target_program,
+                "p",
+                {"n": "Requests", "h": format(next_handle, "x"), "t": "b:Folder"},
+            )
+            next_handle += 1
+        stage_names: list[str] = []
+        previous: ElementTree.Element | None = None
+        pending = list(sources)
+        stage = 0
+        while pending or previous is None:
+            stage += 1
+            name = f"{aggregation.target_point}_{aggregation.reduce}{stage}"
+            block = ElementTree.SubElement(
+                folder, "p", {"n": name, "h": format(next_handle, "x"), "t": block_type}
+            )
+            next_handle += 1
+            stage_names.append(name)
+            slots = list(_REDUCER_INPUTS)
+            if previous is not None:
+                _append_link(block, previous, "out", slots.pop(0), "Link")
+            for slot in slots:
+                if not pending:
+                    break
+                _append_link(block, pending.pop(0), "out", slot, "Link")
+            previous = block
+        assert previous is not None
+        _append_link(target, previous, "out", "in16", "BactalkProjectRequest")
+        rows.append(
+            {
+                "target_equipment": aggregation.target_equipment,
+                "target_point": aggregation.target_point,
+                "target_ord": (
+                    f"{program_root_ord(target_job, target_graph)}/{aggregation.target_point}"
+                ),
+                "reduce": aggregation.reduce,
+                "block_type": block_type,
+                "stages": stage_names,
+                "source_count": len(sources),
+                "sources": [f"{e}.{p}" for e, p in aggregation.sources],
+                "data_type": aggregation.data_type,
+                "ordinal": ordinal,
+            }
+        )
+    ElementTree.indent(document, space="  ")
+    xml = ElementTree.tostring(document, encoding="utf-8", xml_declaration=True)
+    reparsed = ElementTree.fromstring(xml)
+    handles = set(_collect_handles(reparsed))
+    unresolved = _collect_handle_refs(reparsed) - handles
+    if unresolved:
+        raise ValueError("cross-program aggregations introduced unresolved handle references")
+    return _deterministic_bog(xml), rows
 
 
 def _add_project_program_links(

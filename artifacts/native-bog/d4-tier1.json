@@ -562,33 +562,34 @@
     },
     {
       "by_catcher": {
-        "differential": 1,
-        "suite": 130,
+        "differential": 27,
+        "suite": 35,
+        "survived": 69,
         "validator": 69
       },
       "by_operator": {
         "alter_constant": {
-          "caught": 18,
+          "caught": 8,
           "total": 18
         },
         "change_block_type": {
-          "caught": 25,
+          "caught": 10,
           "total": 25
         },
         "change_priority_level": {
-          "caught": 2,
+          "caught": 0,
           "total": 2
         },
         "delete_link": {
-          "caught": 77,
+          "caught": 41,
           "total": 77
         },
         "drop_facets": {
-          "caught": 4,
+          "caught": 0,
           "total": 4
         },
         "invert_parameter": {
-          "caught": 6,
+          "caught": 4,
           "total": 6
         },
         "swap_link_slot": {
@@ -596,16 +597,500 @@
           "total": 68
         }
       },
-      "catch_rate": 1.0,
-      "caught": 200,
+      "catch_rate": 0.655,
+      "caught": 131,
       "controller": "AHUs.MultiZone.VAV.Controller",
       "equipment": "AHU_1",
       "mutants_generated": 1854,
       "sample": 200,
       "seed": 7,
-      "survivors": [],
+      "survivors": [
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1025,
+          "operator": "delete_link",
+          "path": "/Controller/ConTSupSet_1/lesThr1/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1196,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_2/outDamPos_upper_limit/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1844,
+          "operator": "invert_parameter",
+          "path": "/Controller/PlaReq/truDel1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1370,
+          "operator": "delete_link",
+          "path": "/Controller/FrePro_1/gai6/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1782,
+          "operator": "drop_facets",
+          "path": "/Controller/Inputs/uOutAirFra_max"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1380,
+          "operator": "delete_link",
+          "path": "/Controller/FrePro_1/heaCoiCon1/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1809,
+          "operator": "change_priority_level",
+          "path": "/Controller/Outputs/yChiWatResReq/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1127,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_1/and2/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1275,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_3/moaP__x/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 793,
+          "operator": "change_block_type",
+          "path": "/Controller/FrePro_1/endStaTwo"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1686,
+          "operator": "alter_constant",
+          "path": "/Controller/EcoCon_3/con4"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 626,
+          "operator": "change_block_type",
+          "path": "/Controller/ConSupFan_1/abs_negate"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1608,
+          "operator": "alter_constant",
+          "path": "/Controller/Inputs/uAhuOpeMod"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 760,
+          "operator": "change_block_type",
+          "path": "/Controller/EcoCon_3/moaP_lower_limit"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 772,
+          "operator": "change_block_type",
+          "path": "/Controller/EcoCon_3/moaP_slope_x2"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1021,
+          "operator": "delete_link",
+          "path": "/Controller/ConTSupSet_1/intLesThr2/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 755,
+          "operator": "change_block_type",
+          "path": "/Controller/EcoCon_3/retDamPos_lower_limit"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1286,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_3/maxRetDamPos_slope/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1163,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_2/swi14/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1751,
+          "operator": "alter_constant",
+          "path": "/Controller/Outputs/TAirSupSet"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 769,
+          "operator": "change_block_type",
+          "path": "/Controller/EcoCon_3/moaP_b_x"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1803,
+          "operator": "change_priority_level",
+          "path": "/Controller/Outputs/y1EneCHWPum/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1300,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_3/maxRetDamPos_slope_x2/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 898,
+          "operator": "delete_link",
+          "path": "/Controller/ConSupFan_1/intEqu3/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1743,
+          "operator": "alter_constant",
+          "path": "/Controller/RelFanCon/greThr_threshold"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1151,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_2/or29/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1842,
+          "operator": "invert_parameter",
+          "path": "/Controller/FrePro_2/tim4"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 906,
+          "operator": "delete_link",
+          "path": "/Controller/ConSupFan_1/notHol/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1441,
+          "operator": "delete_link",
+          "path": "/Controller/FrePro_2/or7/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 899,
+          "operator": "delete_link",
+          "path": "/Controller/ConSupFan_1/intEqu3/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1189,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_2/or9/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 720,
+          "operator": "change_block_type",
+          "path": "/Controller/EcoCon_2/or29"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1754,
+          "operator": "alter_constant",
+          "path": "/Controller/Outputs/yChiPlaReq"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1508,
+          "operator": "delete_link",
+          "path": "/Controller/PlaReq/hotWatRes3/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1130,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_1/and13/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 719,
+          "operator": "change_block_type",
+          "path": "/Controller/EcoCon_2/or28"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1793,
+          "operator": "drop_facets",
+          "path": "/Controller/Outputs/yHeaCoi"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1340,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_3/disRetDamMin/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1498,
+          "operator": "delete_link",
+          "path": "/Controller/PlaReq/chiWatRes2/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1794,
+          "operator": "drop_facets",
+          "path": "/Controller/Outputs/yHotWatPlaReq"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 718,
+          "operator": "change_block_type",
+          "path": "/Controller/EcoCon_2/or27"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1618,
+          "operator": "alter_constant",
+          "path": "/Controller/ConSupFan_1/abs1_zero"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1192,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_2/swi3/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 998,
+          "operator": "delete_link",
+          "path": "/Controller/ConTSupSet_1/abs_nonnegative/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1672,
+          "operator": "alter_constant",
+          "path": "/Controller/EcoCon_1/con11"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 754,
+          "operator": "change_block_type",
+          "path": "/Controller/EcoCon_2/min"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1136,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_1/or23/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1752,
+          "operator": "alter_constant",
+          "path": "/Controller/Outputs/VEffAirOut_flow_min"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1304,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_3/moaP_slope_x2/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1154,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_2/or30/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1141,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_1/or2/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1175,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_2/or33/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1297,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_3/moaP_b_x/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 708,
+          "operator": "change_block_type",
+          "path": "/Controller/EcoCon_1/and13"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1102,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_1/or10/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1243,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_2/outDamPos_slope/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 709,
+          "operator": "change_block_type",
+          "path": "/Controller/EcoCon_1/and14"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1260,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_3/retDamPos_lower_limit/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 654,
+          "operator": "change_block_type",
+          "path": "/Controller/ConSupFan_2/pro1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1472,
+          "operator": "delete_link",
+          "path": "/Controller/PlaReq/lesThr/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1783,
+          "operator": "drop_facets",
+          "path": "/Controller/Inputs/uZonPreResReq"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1603,
+          "operator": "alter_constant",
+          "path": "/Controller/Inputs/VSumAdjAreBreZon_flow"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1080,
+          "operator": "delete_link",
+          "path": "/Controller/ConTSupSet_2/pro1/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1149,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_2/or28/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 796,
+          "operator": "change_block_type",
+          "path": "/Controller/FrePro_1/gai2"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1738,
+          "operator": "alter_constant",
+          "path": "/Controller/RelFanCon/booToRea2_false"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 1215,
+          "operator": "delete_link",
+          "path": "/Controller/EcoCon_2/andEnaDis/Link1"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 900,
+          "operator": "delete_link",
+          "path": "/Controller/ConSupFan_1/abs1_negate/Link"
+        },
+        {
+          "caught_by": null,
+          "detail": "every scenario still passes",
+          "index": 725,
+          "operator": "change_block_type",
+          "path": "/Controller/EcoCon_2/or8"
+        }
+      ],
       "target": 0.95,
-      "target_met": true
+      "target_met": false
     }
   ],
   "oracles": [

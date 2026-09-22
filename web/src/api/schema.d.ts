@@ -288,6 +288,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/library/coverage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Library Coverage
+         * @description D1–D4 per library configuration (GOAL-NATIVE-BOG.md N8 step 6), as committed by
+         *     scripts/coverage_report.py; every failing or blocked configuration carries its reason.
+         */
+        get: operations["library_coverage_api_library_coverage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/library/ctrl-flow/templates": {
         parameters: {
             query?: never;
@@ -2762,6 +2783,28 @@ export interface components {
             value: number | boolean;
         };
         /**
+         * ProjectSignalAggregation
+         * @description Several programs' outputs reduced into one program input (G36 request counts:
+         *     the zones' reset requests are summed at the AHU, the AHUs' plant requests at the
+         *     plant). ``sum`` and ``max`` for numeric and integer points, ``any`` for booleans.
+         *     In the assembled station this becomes a chain of kitControl Add (or Or) blocks
+         *     under a ``Requests`` folder of the target program (GOAL-NATIVE-BOG.md N8 step 5).
+         */
+        ProjectSignalAggregation: {
+            /**
+             * Reduce
+             * @default sum
+             * @enum {string}
+             */
+            reduce: "sum" | "max" | "any";
+            /** Sources */
+            sources: components["schemas"]["ProjectSignalSource"][];
+            /** Target Equipment */
+            target_equipment: string;
+            /** Target Point */
+            target_point: string;
+        };
+        /**
          * ProjectSignalBinding
          * @description One typed, directed signal between two independently compiled programs.
          */
@@ -2774,6 +2817,13 @@ export interface components {
             target_equipment: string;
             /** Target Point */
             target_point: string;
+        };
+        /** ProjectSignalSource */
+        ProjectSignalSource: {
+            /** Equipment */
+            equipment: string;
+            /** Point */
+            point: string;
         };
         /**
          * ProjectSpec
@@ -2788,6 +2838,8 @@ export interface components {
             name: string;
             /** Relationships */
             relationships?: components["schemas"]["EquipmentRelationship"][];
+            /** Signal Aggregations */
+            signal_aggregations?: components["schemas"]["ProjectSignalAggregation"][];
             /** Signal Bindings */
             signal_bindings?: components["schemas"]["ProjectSignalBinding"][];
             /** Site */
@@ -3698,6 +3750,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    library_coverage_api_library_coverage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
         };

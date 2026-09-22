@@ -584,11 +584,29 @@ def run_mutation_suite(
         if job.control_graph is None:
             raise ValueError("the job carries no control graph")
         interpreter_report = run_acceptance_suite(job.control_graph, job)
+        if not interpreter_report.passed:
+            # A failing baseline would make every mutant look "caught by the suite".
+            failing = [
+                f"{scenario.name}: {assertion.name}"
+                for scenario in interpreter_report.scenarios
+                for assertion in scenario.assertions
+                if not assertion.passed
+            ]
+            raise ValueError(
+                "the unmutated graph fails its own acceptance suite, so the catch rate "
+                "would be meaningless: " + "; ".join(failing[:3])
+            )
         oracle = {
             "job": job.model_dump(mode="json"),
             "reference": dict(reference) if reference is not None else None,
             "interpreter_report": interpreter_report.model_dump(mode="json"),
         }
+    baseline, detail = _judge_serialised((content, payload, kernel_backend, oracle))
+    if baseline is not None:
+        raise ValueError(
+            f"the unmutated .bog is already caught by the {baseline} oracle ({detail}); "
+            "the catch rate would be meaningless"
+        )
     items = [(mutant.content, payload, kernel_backend, oracle) for mutant in mutants]
     if max_workers == 1 or len(items) <= 1:
         verdicts = [_judge_serialised(item) for item in items]

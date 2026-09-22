@@ -87,4 +87,6 @@ def test_committed_d4_report_records_the_measured_catch_rates() -> None:
         for survivor in item["survivors"]:
             assert survivor["caught_by"] is None
     assert report["passed"] == all(item["target_met"] for item in report["items"])
-    assert by_equipment["AHU_1"]["target_met"] is True
+    # Neither Tier 1 suite meets the target yet (docs/decisions/009, STATUS.md N8
+    # findings): the report must say so rather than be regenerated into silence.
+    assert report["passed"] is False

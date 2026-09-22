@@ -93,6 +93,7 @@ from bactalk.integrations.reference_stack import ReferenceStackCatalog
 from bactalk.integrations.rumoca import RumocaCompiler, RumocaError
 from bactalk.integrations.use_audit import IntegrationUseAudit
 from bactalk.library_demo import lbnl_multizone_ahu_demo_job, lbnl_vav_reheat_demo_job
+from bactalk.library_tier2 import coverage_report as library_coverage_report
 from bactalk.niagara.pointmap import apply_bindings, suggest_bindings
 from bactalk.niagara.station_points import parse_station_inventory
 from bactalk.optional_dependencies import (
@@ -724,6 +725,18 @@ def create_app(
             return g36_library.catalog()
         except (FileNotFoundError, RuntimeError) as exc:
             raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    @app.get("/api/library/coverage")
+    def library_coverage() -> dict:
+        """D1–D4 per library configuration (GOAL-NATIVE-BOG.md N8 step 6), as committed by
+        scripts/coverage_report.py; every failing or blocked configuration carries its reason."""
+
+        report = library_coverage_report()
+        if report is None:
+            raise HTTPException(
+                status_code=404, detail="no coverage report; run scripts/coverage_report.py"
+            )
+        return report
 
     @app.get("/api/library/ctrl-flow/templates")
     def ctrl_flow_template_catalog() -> dict:

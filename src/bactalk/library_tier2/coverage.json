@@ -1,0 +1,2724 @@
+{
+ "items": [
+  {
+   "controller": "TerminalUnits.Reheat.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 501,
+    "errors": [],
+    "links": 637,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 10.3
+   },
+   "d4": {
+    "by_catcher": {
+     "differential": 3,
+     "suite": 8,
+     "survived": 15,
+     "validator": 14
+    },
+    "catch_rate": 0.625,
+    "caught": 25,
+    "mutants_generated": 1596,
+    "passed": false,
+    "sample": 40,
+    "seconds": 232.1,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1146,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoi_1/lin_slope/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1420,
+      "operator": "alter_constant",
+      "path": "/Controller/ConLoo/zerHea_true"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1307,
+      "operator": "delete_link",
+      "path": "/Controller/TimSup/lat1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1542,
+      "operator": "drop_facets",
+      "path": "/Controller/Outputs/yFloSenAla"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 743,
+      "operator": "delete_link",
+      "path": "/Controller/ActAirSet/or1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1322,
+      "operator": "delete_link",
+      "path": "/Controller/TimSup/abs1_negate/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 921,
+      "operator": "delete_link",
+      "path": "/Controller/ConLoo/cooConSig/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 714,
+      "operator": "change_block_type",
+      "path": "/Controller/TimSup/greThr"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1085,
+      "operator": "delete_link",
+      "path": "/Controller/SetOve/booToRea/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 621,
+      "operator": "change_block_type",
+      "path": "/Controller/DamVal_2/lin3__f"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1511,
+      "operator": "alter_constant",
+      "path": "/Controller/Outputs/yFloSenAla"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1445,
+      "operator": "alter_constant",
+      "path": "/Controller/DamVal_2/minFlo_false"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1002,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_1/add1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1441,
+      "operator": "alter_constant",
+      "path": "/Controller/DamVal_1/heaMax_false"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1362,
+      "operator": "alter_constant",
+      "path": "/Controller/Inputs/ppmCO2"
+     }
+    ]
+   },
+   "expectations": "hand-written from the G36 text (N0), reference-checked (D3)",
+   "family": "TerminalUnits",
+   "id": "tier1-vav-reheat",
+   "scenarios": 6,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "1",
+   "variant": "LBNL validation configuration"
+  },
+  {
+   "controller": "AHUs.MultiZone.VAV.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 586,
+    "errors": [],
+    "links": 740,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 12.9
+   },
+   "d4": {
+    "by_catcher": {
+     "differential": 2,
+     "suite": 6,
+     "survived": 22,
+     "validator": 10
+    },
+    "catch_rate": 0.45,
+    "caught": 18,
+    "mutants_generated": 1854,
+    "passed": false,
+    "sample": 40,
+    "seconds": 343.7,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1025,
+      "operator": "delete_link",
+      "path": "/Controller/ConTSupSet_1/lesThr1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1196,
+      "operator": "delete_link",
+      "path": "/Controller/EcoCon_2/outDamPos_upper_limit/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1844,
+      "operator": "invert_parameter",
+      "path": "/Controller/PlaReq/truDel1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1370,
+      "operator": "delete_link",
+      "path": "/Controller/FrePro_1/gai6/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1782,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/uOutAirFra_max"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1380,
+      "operator": "delete_link",
+      "path": "/Controller/FrePro_1/heaCoiCon1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1809,
+      "operator": "change_priority_level",
+      "path": "/Controller/Outputs/yChiWatResReq/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1127,
+      "operator": "delete_link",
+      "path": "/Controller/EcoCon_1/and2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1275,
+      "operator": "delete_link",
+      "path": "/Controller/EcoCon_3/moaP__x/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 793,
+      "operator": "change_block_type",
+      "path": "/Controller/FrePro_1/endStaTwo"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1686,
+      "operator": "alter_constant",
+      "path": "/Controller/EcoCon_3/con4"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 626,
+      "operator": "change_block_type",
+      "path": "/Controller/ConSupFan_1/abs_negate"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1608,
+      "operator": "alter_constant",
+      "path": "/Controller/Inputs/uAhuOpeMod"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 760,
+      "operator": "change_block_type",
+      "path": "/Controller/EcoCon_3/moaP_lower_limit"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 772,
+      "operator": "change_block_type",
+      "path": "/Controller/EcoCon_3/moaP_slope_x2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1021,
+      "operator": "delete_link",
+      "path": "/Controller/ConTSupSet_1/intLesThr2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 755,
+      "operator": "change_block_type",
+      "path": "/Controller/EcoCon_3/retDamPos_lower_limit"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1286,
+      "operator": "delete_link",
+      "path": "/Controller/EcoCon_3/maxRetDamPos_slope/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1163,
+      "operator": "delete_link",
+      "path": "/Controller/EcoCon_2/swi14/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1751,
+      "operator": "alter_constant",
+      "path": "/Controller/Outputs/TAirSupSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 769,
+      "operator": "change_block_type",
+      "path": "/Controller/EcoCon_3/moaP_b_x"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1803,
+      "operator": "change_priority_level",
+      "path": "/Controller/Outputs/y1EneCHWPum/Link"
+     }
+    ]
+   },
+   "expectations": "hand-written from the G36 text (N0), reference-checked (D3)",
+   "family": "AHUs",
+   "id": "tier1-ahu-multizone-vav",
+   "scenarios": 4,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "1",
+   "variant": "LBNL validation configuration"
+  },
+  {
+   "blocker": {
+    "reason": "RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
+    "stage": "translation"
+   },
+   "controller": "AHUs.SingleZone.VAV.Controller",
+   "d1": {
+    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
+    "passed": false
+   },
+   "d2": {
+    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
+    "passed": false
+   },
+   "d3": {
+    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
+    "passed": false
+   },
+   "d4": {
+    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
+    "passed": false
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "AHUs",
+   "id": "ahu-singlezone-vav-ashrae",
+   "parameters": {
+    "eneStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+   },
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "ASHRAE90_1+ASHRAE62_1"
+  },
+  {
+   "blocker": {
+    "reason": "RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
+    "stage": "translation"
+   },
+   "controller": "AHUs.SingleZone.VAV.Controller",
+   "d1": {
+    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
+    "passed": false
+   },
+   "d2": {
+    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
+    "passed": false
+   },
+   "d3": {
+    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
+    "passed": false
+   },
+   "d4": {
+    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
+    "passed": false
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "AHUs",
+   "id": "ahu-singlezone-vav-title24",
+   "parameters": {
+    "eneStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24",
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
+   },
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "Title24"
+  },
+  {
+   "blocker": {
+    "reason": "RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "stage": "translation"
+   },
+   "controller": "FanCoilUnits.Controller",
+   "d1": {
+    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "passed": false
+   },
+   "d2": {
+    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "passed": false
+   },
+   "d3": {
+    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "passed": false
+   },
+   "d4": {
+    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "passed": false
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "FanCoilUnits",
+   "id": "fcu-controller",
+   "parameters": {
+    "TSupSet_max": 303.15,
+    "TSupSet_min": 285.15
+   },
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "default"
+  },
+  {
+   "controller": "TerminalUnits.CoolingOnly.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 351,
+    "errors": [],
+    "links": 443,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 31.5
+   },
+   "d4": {
+    "by_catcher": {
+     "differential": 1,
+     "loader": 1,
+     "suite": 10,
+     "survived": 14,
+     "validator": 14
+    },
+    "catch_rate": 0.65,
+    "caught": 26,
+    "mutants_generated": 1102,
+    "passed": false,
+    "sample": 40,
+    "seconds": 337.9,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 641,
+      "operator": "delete_link",
+      "path": "/Controller/Dam/lin_slope/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 772,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoi_1/popBreOutAir_upper_limit/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 596,
+      "operator": "delete_link",
+      "path": "/Controller/ConLoo/disCooCon/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 978,
+      "operator": "alter_constant",
+      "path": "/Controller/Dam/conInt2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1076,
+      "operator": "change_priority_level",
+      "path": "/Controller/Outputs/yZonPreResReq/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1012,
+      "operator": "alter_constant",
+      "path": "/Controller/SysReq/gai2_parameter"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 801,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq/gai2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1011,
+      "operator": "alter_constant",
+      "path": "/Controller/SysReq/gai1_parameter"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 831,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq/and1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 791,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq/sampler/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1062,
+      "operator": "drop_facets",
+      "path": "/Controller/Outputs/yDam"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 721,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoi_1/booToRea/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 635,
+      "operator": "delete_link",
+      "path": "/Controller/Dam/cloDam/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 806,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq/greThr/Link1"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "TerminalUnits",
+   "id": "tu-coolingonly-ashrae62-1",
+   "parameters": {
+    "VAreBreZon_flow": 0.014,
+    "VAreMin_flow": 0.014,
+    "VCooMax_flow": 0.472,
+    "VMin_flow": 0.094,
+    "VOccMin_flow": 0.024,
+    "VPopBreZon_flow": 0.024,
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+   },
+   "scenarios": 21,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "ASHRAE62_1"
+  },
+  {
+   "blocker": {
+    "reason": "ValueError: first sample must initialize every public controller input; missing: TDis",
+    "stage": "reference"
+   },
+   "controller": "TerminalUnits.CoolingOnly.Controller",
+   "d1": {
+    "blocker": "reference: ValueError: first sample must initialize every public controller input; missing: TDis",
+    "passed": false
+   },
+   "d2": {
+    "blocker": "reference: ValueError: first sample must initialize every public controller input; missing: TDis",
+    "passed": false
+   },
+   "d3": {
+    "blocker": "reference: ValueError: first sample must initialize every public controller input; missing: TDis",
+    "passed": false
+   },
+   "d4": {
+    "blocker": "reference: ValueError: first sample must initialize every public controller input; missing: TDis",
+    "passed": false
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "TerminalUnits",
+   "id": "tu-coolingonly-title24",
+   "parameters": {
+    "VAreBreZon_flow": 0.014,
+    "VAreMin_flow": 0.014,
+    "VCooMax_flow": 0.472,
+    "VMin_flow": 0.094,
+    "VOccMin_flow": 0.024,
+    "VPopBreZon_flow": 0.024,
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
+   },
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "Title24"
+  },
+  {
+   "controller": "TerminalUnits.SeriesFanCVF.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 478,
+    "errors": [],
+    "links": 597,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [
+     "TZon cold"
+    ],
+    "first_divergence": {
+     "band": 0.02,
+     "block": "conTDisHeaSet_scaled",
+     "first_violation_time": 300.0,
+     "interpreter": 0.9600000000000002,
+     "kind": "multiply",
+     "scan": 5,
+     "shadow": 1.1960000000000675,
+     "shadow_key": "DamVal_1/conTDisHeaSet_b_x.out",
+     "signals": [
+      "yVal"
+     ],
+     "slot": "out",
+     "time_seconds": 300.0
+    },
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": false,
+    "reference_available": true,
+    "seconds": 55.6
+   },
+   "d4": {
+    "by_catcher": {
+     "differential": 17,
+     "suite": 16,
+     "validator": 7
+    },
+    "catch_rate": 1.0,
+    "caught": 40,
+    "mutants_generated": 1490,
+    "passed": true,
+    "sample": 40,
+    "seconds": 672.7,
+    "survivors": []
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "TerminalUnits",
+   "id": "tu-seriesfancvf-ashrae62-1",
+   "parameters": {
+    "VAreBreZon_flow": 0.014,
+    "VAreMin_flow": 0.014,
+    "VCooMax_flow": 0.472,
+    "VMin_flow": 0.094,
+    "VOccMin_flow": 0.024,
+    "VPopBreZon_flow": 0.024,
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+   },
+   "scenarios": 27,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "ASHRAE62_1"
+  },
+  {
+   "controller": "TerminalUnits.SeriesFanVVF.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 508,
+    "errors": [],
+    "links": 643,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 54.4
+   },
+   "d4": {
+    "by_catcher": {
+     "suite": 30,
+     "validator": 10
+    },
+    "catch_rate": 1.0,
+    "caught": 40,
+    "mutants_generated": 1599,
+    "passed": true,
+    "sample": 40,
+    "seconds": 219.0,
+    "survivors": []
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "TerminalUnits",
+   "id": "tu-seriesfanvvf-ashrae62-1",
+   "parameters": {
+    "VAreBreZon_flow": 0.014,
+    "VAreMin_flow": 0.014,
+    "VCooMax_flow": 0.472,
+    "VMin_flow": 0.094,
+    "VOccMin_flow": 0.024,
+    "VPopBreZon_flow": 0.024,
+    "maxRat": 0.5,
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+   },
+   "scenarios": 27,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "ASHRAE62_1"
+  },
+  {
+   "controller": "TerminalUnits.ParallelFanCVF.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 497,
+    "errors": [],
+    "links": 622,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [
+     "TZon cold"
+    ],
+    "first_divergence": {
+     "band": 0.02,
+     "block": "conTDisHeaSet_scaled",
+     "first_violation_time": 300.0,
+     "interpreter": 0.9600000000000002,
+     "kind": "multiply",
+     "scan": 5,
+     "shadow": 1.1960000000000675,
+     "shadow_key": "DamVal_1/conTDisHeaSet_b_x.out",
+     "signals": [
+      "yVal"
+     ],
+     "slot": "out",
+     "time_seconds": 300.0
+    },
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": false,
+    "reference_available": true,
+    "seconds": 59.4
+   },
+   "d4": {
+    "by_catcher": {
+     "differential": 1,
+     "suite": 23,
+     "validator": 16
+    },
+    "catch_rate": 1.0,
+    "caught": 40,
+    "mutants_generated": 1543,
+    "passed": true,
+    "sample": 40,
+    "seconds": 243.8,
+    "survivors": []
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "TerminalUnits",
+   "id": "tu-parallelfancvf-ashrae62-1",
+   "parameters": {
+    "VAreBreZon_flow": 0.014,
+    "VAreMin_flow": 0.014,
+    "VCooMax_flow": 0.472,
+    "VMin_flow": 0.094,
+    "VOccMin_flow": 0.024,
+    "VPopBreZon_flow": 0.024,
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+   },
+   "scenarios": 29,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "ASHRAE62_1"
+  },
+  {
+   "controller": "TerminalUnits.ParallelFanVVF.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 538,
+    "errors": [],
+    "links": 681,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 56.5
+   },
+   "d4": {
+    "by_catcher": {
+     "loader": 2,
+     "suite": 28,
+     "validator": 10
+    },
+    "catch_rate": 1.0,
+    "caught": 40,
+    "mutants_generated": 1695,
+    "passed": true,
+    "sample": 40,
+    "seconds": 235.4,
+    "survivors": []
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "TerminalUnits",
+   "id": "tu-parallelfanvvf-ashrae62-1",
+   "parameters": {
+    "VAreBreZon_flow": 0.014,
+    "VAreMin_flow": 0.014,
+    "VCooMax_flow": 0.472,
+    "VMin_flow": 0.094,
+    "VOccMin_flow": 0.024,
+    "VPopBreZon_flow": 0.024,
+    "maxRat": 0.5,
+    "minRat": 0.1,
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+   },
+   "scenarios": 29,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "ASHRAE62_1"
+  },
+  {
+   "controller": "TerminalUnits.DualDuctSnapActing.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 535,
+    "errors": [],
+    "links": 686,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 59.3
+   },
+   "d4": {
+    "by_catcher": {
+     "suite": 30,
+     "validator": 10
+    },
+    "catch_rate": 1.0,
+    "caught": 40,
+    "mutants_generated": 1701,
+    "passed": true,
+    "sample": 40,
+    "seconds": 256.0,
+    "survivors": []
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "TerminalUnits",
+   "id": "tu-dualductsnapacting-ashrae62-1-dual-sensor",
+   "parameters": {
+    "VAreBreZon_flow": 0.014,
+    "VAreMin_flow": 0.014,
+    "VCooMax_flow": 0.472,
+    "VHeaMax_flow": 0.236,
+    "VMin_flow": 0.094,
+    "VOccMin_flow": 0.024,
+    "VPopBreZon_flow": 0.024,
+    "have_duaSen": true,
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+   },
+   "scenarios": 27,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "ASHRAE62_1_dual_sensor"
+  },
+  {
+   "controller": "TerminalUnits.DualDuctSnapActing.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 500,
+    "errors": [],
+    "links": 645,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 43.2
+   },
+   "d4": {
+    "by_catcher": {
+     "suite": 11,
+     "survived": 16,
+     "validator": 13
+    },
+    "catch_rate": 0.6,
+    "caught": 24,
+    "mutants_generated": 1596,
+    "passed": false,
+    "sample": 40,
+    "seconds": 577.7,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1146,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq_1/booToInt5/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1420,
+      "operator": "alter_constant",
+      "path": "/Controller/DamSinSen_1/greThr1_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1307,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupHea/temDif/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 841,
+      "operator": "delete_link",
+      "path": "/Controller/ConLoo/disCoo/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1542,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/uOpeMod"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1322,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupHea/abs2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 714,
+      "operator": "change_block_type",
+      "path": "/Controller/TimSupHea/abs1_nonnegative"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 621,
+      "operator": "change_block_type",
+      "path": "/Controller/SetOve/add1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1511,
+      "operator": "alter_constant",
+      "path": "/Controller/TimSupHea/conZer"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1002,
+      "operator": "delete_link",
+      "path": "/Controller/SetOve/zerFlo/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1362,
+      "operator": "delete_link",
+      "path": "/Controller/Outputs/yZonHeaTemResReq/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 681,
+      "operator": "change_block_type",
+      "path": "/Controller/SysReq_1/and8"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1070,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoi_1/lin_slope/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1153,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq_1/gai1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1399,
+      "operator": "alter_constant",
+      "path": "/Controller/Ala_1/gai4_parameter"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1289,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupCoo/abs1_nonnegative/Link1"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "TerminalUnits",
+   "id": "tu-dualductsnapacting-ashrae62-1-single-sensor",
+   "parameters": {
+    "VAreBreZon_flow": 0.014,
+    "VAreMin_flow": 0.014,
+    "VCooMax_flow": 0.472,
+    "VHeaMax_flow": 0.236,
+    "VMin_flow": 0.094,
+    "VOccMin_flow": 0.024,
+    "VPopBreZon_flow": 0.024,
+    "have_duaSen": false,
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+   },
+   "scenarios": 21,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "ASHRAE62_1_single_sensor"
+  },
+  {
+   "controller": "TerminalUnits.DualDuctColdDuctMin.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 521,
+    "errors": [],
+    "links": 660,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 55.7
+   },
+   "d4": {
+    "by_catcher": {
+     "suite": 10,
+     "survived": 17,
+     "validator": 13
+    },
+    "catch_rate": 0.575,
+    "caught": 23,
+    "mutants_generated": 1647,
+    "passed": false,
+    "sample": 40,
+    "seconds": 694.6,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1293,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupCoo/triSam/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 826,
+      "operator": "delete_link",
+      "path": "/Controller/Ala_1/and3/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1406,
+      "operator": "alter_constant",
+      "path": "/Controller/Inputs/ppmCO2Set"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 837,
+      "operator": "delete_link",
+      "path": "/Controller/Ala_2/leaDamAla/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 657,
+      "operator": "change_block_type",
+      "path": "/Controller/SetPoi_1/popBreOutAir_slope_x2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 547,
+      "operator": "change_block_type",
+      "path": "/Controller/Ala_1/fanOn"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1370,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupHea/greThr/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1068,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoi_1/cooSup/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1083,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoi_1/inOccMod/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 910,
+      "operator": "delete_link",
+      "path": "/Controller/DamDuaSen/lin1__x/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 811,
+      "operator": "delete_link",
+      "path": "/Controller/Ala_1/and4/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1328,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupCoo/tim/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1329,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupCoo/pasSupTim/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1236,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq_1/booToInt/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1301,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupCoo/lat1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 648,
+      "operator": "change_block_type",
+      "path": "/Controller/SetPoi_1/popBreOutAir__x"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 846,
+      "operator": "delete_link",
+      "path": "/Controller/Ala_2/not2/Link"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "TerminalUnits",
+   "id": "tu-dualductcoldductmin-ashrae62-1",
+   "parameters": {
+    "VAreBreZon_flow": 0.014,
+    "VAreMin_flow": 0.014,
+    "VCooMax_flow": 0.472,
+    "VHeaMax_flow": 0.236,
+    "VMin_flow": 0.094,
+    "VOccMin_flow": 0.024,
+    "VPopBreZon_flow": 0.024,
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+   },
+   "scenarios": 27,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "ASHRAE62_1"
+  },
+  {
+   "controller": "TerminalUnits.DualDuctMixConDischargeSensor.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 504,
+    "errors": [],
+    "links": 653,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 46.1
+   },
+   "d4": {
+    "by_catcher": {
+     "suite": 12,
+     "survived": 15,
+     "validator": 13
+    },
+    "catch_rate": 0.625,
+    "caught": 25,
+    "mutants_generated": 1615,
+    "passed": false,
+    "sample": 40,
+    "seconds": 557.2,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1335,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupHea/pre1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1527,
+      "operator": "alter_constant",
+      "path": "/Controller/TimSupHea/abs2_zero"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1437,
+      "operator": "alter_constant",
+      "path": "/Controller/DamDuaSen_1/greThr1_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1600,
+      "operator": "invert_parameter",
+      "path": "/Controller/ConLoo/disHea"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1307,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupCoo/abs1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1518,
+      "operator": "alter_constant",
+      "path": "/Controller/SysReq_2/twoPreResReq"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1339,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupHea/abs2/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1610,
+      "operator": "invert_parameter",
+      "path": "/Controller/TimSupCoo/truDel"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 991,
+      "operator": "delete_link",
+      "path": "/Controller/SetOve/cloDam1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 580,
+      "operator": "change_block_type",
+      "path": "/Controller/DamDuaSen_1/lin__x"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1495,
+      "operator": "alter_constant",
+      "path": "/Controller/SysReq_1/booToInt_true"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1554,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/THotSup"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1337,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupHea/abs2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1065,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoi_1/lin__x/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1606,
+      "operator": "invert_parameter",
+      "path": "/Controller/SysReq_2/tim6"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "TerminalUnits",
+   "id": "tu-dualductmixcondischargesensor-ashrae62-1",
+   "parameters": {
+    "VAreBreZon_flow": 0.014,
+    "VAreMin_flow": 0.014,
+    "VCooMax_flow": 0.472,
+    "VHeaMax_flow": 0.236,
+    "VMin_flow": 0.094,
+    "VOccMin_flow": 0.024,
+    "VPopBreZon_flow": 0.024,
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+   },
+   "scenarios": 25,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "ASHRAE62_1"
+  },
+  {
+   "controller": "TerminalUnits.DualDuctMixConInletSensor.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 518,
+    "errors": [],
+    "links": 665,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 55.6
+   },
+   "d4": {
+    "by_catcher": {
+     "suite": 7,
+     "survived": 20,
+     "validator": 13
+    },
+    "catch_rate": 0.5,
+    "caught": 20,
+    "mutants_generated": 1650,
+    "passed": false,
+    "sample": 40,
+    "seconds": 753.0,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1623,
+      "operator": "change_priority_level",
+      "path": "/Controller/Outputs/yZonHeaTemResReq/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1538,
+      "operator": "alter_constant",
+      "path": "/Controller/SysReq_2/thrCooResReq"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1275,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq_2/intSwi5/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1358,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupHea/abs2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 733,
+      "operator": "change_block_type",
+      "path": "/Controller/TimSupHea/supTim"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1070,
+      "operator": "delete_link",
+      "path": "/Controller/SetOve/add1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1234,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq_1/booToInt1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1276,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq_2/swi5/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 936,
+      "operator": "delete_link",
+      "path": "/Controller/DamDuaSen_1/booToRea2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 653,
+      "operator": "change_block_type",
+      "path": "/Controller/SetPoi_1/unpMinZonFlo"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1373,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupHea/supTim/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1198,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq_1/gai4/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 755,
+      "operator": "delete_link",
+      "path": "/Controller/ActAirSet/or4/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1361,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupHea/sub1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1608,
+      "operator": "change_priority_level",
+      "path": "/Controller/Outputs/VAdjAreBreZon_flow/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1296,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupCoo/samSet/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1311,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupCoo/uniDel/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1401,
+      "operator": "alter_constant",
+      "path": "/Controller/Inputs/TColSup"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1371,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupHea/abs1_nonnegative/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1202,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq_1/greThr11/Link"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "TerminalUnits",
+   "id": "tu-dualductmixconinletsensor-ashrae62-1",
+   "parameters": {
+    "VAreBreZon_flow": 0.014,
+    "VAreMin_flow": 0.014,
+    "VCooMax_flow": 0.472,
+    "VHeaMax_flow": 0.236,
+    "VMin_flow": 0.094,
+    "VOccMin_flow": 0.024,
+    "VPopBreZon_flow": 0.024,
+    "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
+   },
+   "scenarios": 27,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "ASHRAE62_1"
+  },
+  {
+   "blocker": {
+    "reason": "RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "stage": "translation"
+   },
+   "controller": "ThermalZones.Setpoints",
+   "d1": {
+    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "passed": false
+   },
+   "d2": {
+    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "passed": false
+   },
+   "d3": {
+    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "passed": false
+   },
+   "d4": {
+    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "passed": false
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "ThermalZones",
+   "id": "zone-setpoints-occ-win",
+   "parameters": {
+    "have_occSen": true,
+    "have_winSen": true
+   },
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "occupancy+window"
+  },
+  {
+   "controller": "ThermalZones.ControlLoops",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 33,
+    "errors": [],
+    "links": 34,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 2.2
+   },
+   "d4": {
+    "by_catcher": {
+     "suite": 30,
+     "validator": 10
+    },
+    "catch_rate": 1.0,
+    "caught": 40,
+    "mutants_generated": 98,
+    "passed": true,
+    "sample": 40,
+    "seconds": 5.0,
+    "survivors": []
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "ThermalZones",
+   "id": "zone-control-loops",
+   "parameters": {},
+   "scenarios": 7,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "default"
+  },
+  {
+   "controller": "ThermalZones.Alarms",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 60,
+    "errors": [],
+    "links": 60,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 1.2
+   },
+   "d4": {
+    "by_catcher": {
+     "suite": 6,
+     "survived": 21,
+     "validator": 13
+    },
+    "catch_rate": 0.475,
+    "caught": 19,
+    "mutants_generated": 169,
+    "passed": false,
+    "sample": 40,
+    "seconds": 15.5,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 64,
+      "operator": "change_block_type",
+      "path": "/Alarms/Alarms/levThrLow"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 109,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/higTemAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 55,
+      "operator": "change_block_type",
+      "path": "/Alarms/Alarms/or1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 160,
+      "operator": "drop_facets",
+      "path": "/Alarms/Parameters/twoDegHig_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 126,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/not2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 127,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/not3/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 148,
+      "operator": "drop_facets",
+      "path": "/Alarms/Inputs/THeaSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 168,
+      "operator": "invert_parameter",
+      "path": "/Alarms/Alarms/tenMinDur"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 119,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/temAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 113,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/lowTemAla/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 75,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/intEqu4/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 151,
+      "operator": "drop_facets",
+      "path": "/Alarms/Parameters/booToInt2_false"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 52,
+      "operator": "change_block_type",
+      "path": "/Alarms/Alarms/or2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 121,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/levThrLow/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 103,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/booToInt/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 91,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/and1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 102,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/tenMinDur/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 159,
+      "operator": "drop_facets",
+      "path": "/Alarms/Parameters/thrDegLow_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 128,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/not4/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 88,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/or1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 123,
+      "operator": "delete_link",
+      "path": "/Alarms/Alarms/levTwoLow/Link"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "ThermalZones",
+   "id": "zone-alarms",
+   "parameters": {},
+   "scenarios": 9,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "default"
+  },
+  {
+   "controller": "ThermalZones.ZoneStates",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 29,
+    "errors": [],
+    "links": 27,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 0.3
+   },
+   "d4": {
+    "by_catcher": {
+     "loader": 1,
+     "suite": 16,
+     "survived": 13,
+     "validator": 10
+    },
+    "catch_rate": 0.675,
+    "caught": 27,
+    "mutants_generated": 75,
+    "passed": false,
+    "sample": 40,
+    "seconds": 3.2,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 32,
+      "operator": "delete_link",
+      "path": "/ZoneStates/ZoneStates/isHea/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 69,
+      "operator": "drop_facets",
+      "path": "/ZoneStates/Parameters/booToIntHea_true"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 38,
+      "operator": "delete_link",
+      "path": "/ZoneStates/ZoneStates/isCoo/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 28,
+      "operator": "delete_link",
+      "path": "/ZoneStates/ZoneStates/uHeaMinUCoo/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 48,
+      "operator": "delete_link",
+      "path": "/ZoneStates/ZoneStates/booToIntDea/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 30,
+      "operator": "delete_link",
+      "path": "/ZoneStates/ZoneStates/hysU/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 31,
+      "operator": "delete_link",
+      "path": "/ZoneStates/ZoneStates/isHea/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 71,
+      "operator": "change_priority_level",
+      "path": "/ZoneStates/Outputs/yZonSta/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 29,
+      "operator": "delete_link",
+      "path": "/ZoneStates/ZoneStates/uHeaMinUCoo/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 73,
+      "operator": "invert_parameter",
+      "path": "/ZoneStates/ZoneStates/hysUHea"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 34,
+      "operator": "delete_link",
+      "path": "/ZoneStates/ZoneStates/booToIntHea/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 70,
+      "operator": "drop_facets",
+      "path": "/ZoneStates/Outputs/yZonSta"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 18,
+      "operator": "change_block_type",
+      "path": "/ZoneStates/ZoneStates/uHeaMinUCoo"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "ThermalZones",
+   "id": "zone-states",
+   "parameters": {},
+   "scenarios": 3,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "default"
+  },
+  {
+   "controller": "VentilationZones.ASHRAE62_1.Setpoints",
+   "d1": {
+    "blockers": [],
+    "lane": "native_stock",
+    "passed": true
+   },
+   "d2": {
+    "components": 41,
+    "errors": [],
+    "links": 40,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 0.1
+   },
+   "d4": {
+    "by_catcher": {
+     "suite": 11,
+     "survived": 18,
+     "validator": 11
+    },
+    "catch_rate": 0.55,
+    "caught": 22,
+    "mutants_generated": 115,
+    "passed": false,
+    "sample": 40,
+    "seconds": 1.4,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 102,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Parameters/occMod"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 114,
+      "operator": "change_priority_level",
+      "path": "/Setpoints/Outputs/VOccZonMin_flow/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 86,
+      "operator": "alter_constant",
+      "path": "/Setpoints/Parameters/zer2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 45,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints/unpAreBreAir/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 51,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints/unpMinZonAir/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 57,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints/or2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 98,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Parameters/desAreAir"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 66,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints/modAreBreAir/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 95,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Inputs/uOpeMod"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 48,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints/airDisEff/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 42,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints/inOccMod/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 76,
+      "operator": "alter_constant",
+      "path": "/Setpoints/Inputs/TZon"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 35,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints/cooSup/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 108,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Outputs/VAdjPopBreZon_flow"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 109,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Outputs/VMinOA_flow"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 63,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints/modPopBreAir/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 100,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Parameters/gai1_parameter"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 111,
+      "operator": "change_priority_level",
+      "path": "/Setpoints/Outputs/VAdjAreBreZon_flow/Link"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "VentilationZones",
+   "id": "vent-ashrae62-1-setpoints",
+   "parameters": {
+    "VAreBreZon_flow": 0.014,
+    "VMin_flow": 0.094,
+    "VPopBreZon_flow": 0.024
+   },
+   "scenarios": 6,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "ASHRAE62_1"
+  },
+  {
+   "controller": "VentilationZones.Title24.Setpoints",
+   "d1": {
+    "blockers": [],
+    "lane": "native_stock",
+    "passed": true
+   },
+   "d2": {
+    "components": 34,
+    "errors": [],
+    "links": 32,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 0.0
+   },
+   "d4": {
+    "by_catcher": {
+     "suite": 12,
+     "survived": 20,
+     "validator": 8
+    },
+    "catch_rate": 0.5,
+    "caught": 20,
+    "mutants_generated": 88,
+    "passed": false,
+    "sample": 40,
+    "seconds": 0.6,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 85,
+      "operator": "change_priority_level",
+      "path": "/Setpoints/Outputs/VZonAbsMin_flow/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 33,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints/zonOccMin1/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 20,
+      "operator": "change_block_type",
+      "path": "/Setpoints/Setpoints/gai"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 72,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Parameters/one"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 87,
+      "operator": "change_priority_level",
+      "path": "/Setpoints/Outputs/yCO2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 21,
+      "operator": "change_block_type",
+      "path": "/Setpoints/Setpoints/gai1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 60,
+      "operator": "alter_constant",
+      "path": "/Setpoints/Parameters/zer"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 69,
+      "operator": "alter_constant",
+      "path": "/Setpoints/Outputs/yCO2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 57,
+      "operator": "alter_constant",
+      "path": "/Setpoints/Parameters/gai_parameter"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 38,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints/zonDesMin/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 44,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints/zonAbsMin2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 76,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Parameters/zer3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 71,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Parameters/gai_parameter"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 58,
+      "operator": "alter_constant",
+      "path": "/Setpoints/Parameters/one"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 24,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints/gai/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 75,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Parameters/zer1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 59,
+      "operator": "alter_constant",
+      "path": "/Setpoints/Parameters/one2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 78,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Parameters/zonMinFlo"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 79,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Parameters/zonOccOAMin"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 80,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Outputs/VOccZonMin_flow"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "VentilationZones",
+   "id": "vent-title24-setpoints",
+   "parameters": {
+    "VAreMin_flow": 0.014,
+    "VMin_flow": 0.094,
+    "VOccMin_flow": 0.024
+   },
+   "scenarios": 1,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "Title24"
+  },
+  {
+   "controller": "ZoneGroups.GroupStatus",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 229,
+    "errors": [],
+    "links": 220,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 12.7
+   },
+   "d4": {
+    "by_catcher": {
+     "suite": 14,
+     "survived": 18,
+     "validator": 8
+    },
+    "catch_rate": 0.55,
+    "caught": 22,
+    "mutants_generated": 641,
+    "passed": false,
+    "sample": 40,
+    "seconds": 164.6,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 549,
+      "operator": "alter_constant",
+      "path": "/GroupStatus/Outputs/yHotZon"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 504,
+      "operator": "alter_constant",
+      "path": "/GroupStatus/Inputs/uCooTim__5"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 243,
+      "operator": "change_block_type",
+      "path": "/GroupStatus/GroupStatus_2/schOcc_fold_4"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 282,
+      "operator": "delete_link",
+      "path": "/GroupStatus/GroupStatus_1/booToInt__2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 626,
+      "operator": "change_priority_level",
+      "path": "/GroupStatus/Outputs/nexOcc/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 493,
+      "operator": "alter_constant",
+      "path": "/GroupStatus/Inputs/TZon__4"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 558,
+      "operator": "drop_facets",
+      "path": "/GroupStatus/Inputs/THeaSetOff__2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 608,
+      "operator": "drop_facets",
+      "path": "/GroupStatus/Parameters/booToInt__4_false"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 561,
+      "operator": "drop_facets",
+      "path": "/GroupStatus/Inputs/THeaSetOff__5"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 501,
+      "operator": "alter_constant",
+      "path": "/GroupStatus/Inputs/uCooTim__2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 588,
+      "operator": "drop_facets",
+      "path": "/GroupStatus/Parameters/booToInt1__4_false"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 629,
+      "operator": "change_priority_level",
+      "path": "/GroupStatus/Outputs/yCooTim/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 188,
+      "operator": "change_block_type",
+      "path": "/GroupStatus/GroupStatus_1/intToRea"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 496,
+      "operator": "alter_constant",
+      "path": "/GroupStatus/Inputs/tNexOcc__2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 620,
+      "operator": "drop_facets",
+      "path": "/GroupStatus/Outputs/yCooTim"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 603,
+      "operator": "drop_facets",
+      "path": "/GroupStatus/Parameters/booToInt__1_true"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 394,
+      "operator": "delete_link",
+      "path": "/GroupStatus/GroupStatus_2/pro/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 550,
+      "operator": "alter_constant",
+      "path": "/GroupStatus/Outputs/yOpeWin"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "ZoneGroups",
+   "id": "zone-group-status",
+   "parameters": {},
+   "scenarios": 91,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "default"
+  },
+  {
+   "blocker": {
+    "reason": "RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
+    "stage": "translation"
+   },
+   "controller": "ZoneGroups.OperationMode",
+   "d1": {
+    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
+    "passed": false
+   },
+   "d2": {
+    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
+    "passed": false
+   },
+   "d3": {
+    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
+    "passed": false
+   },
+   "d4": {
+    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
+    "passed": false
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "ZoneGroups",
+   "id": "zone-group-operation-mode",
+   "parameters": {
+    "nZon": 1
+   },
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "one zone"
+  }
+ ],
+ "mutation_sample": 40,
+ "mutation_seed": 7,
+ "mutation_target": 0.95,
+ "schema": "bactalk.native-bog-coverage/v1",
+ "summary": {
+  "all_four": 4,
+  "blocked": 6,
+  "configurations": 24,
+  "d1": 18,
+  "d2": 18,
+  "d3": 16,
+  "d4": 6
+ }
+}

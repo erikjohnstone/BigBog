@@ -22,11 +22,14 @@ rather than a case-by-case call.
 2. **The catch rate is reported as measured, on a stated sample.** D4 asks for
    ≥ 95 %. `artifacts/native-bog/d4-tier1.json` records, per Tier 1 controller, the
    number of mutants the operators generate, the seeded sample judged, the catch rate
-   by operator and by oracle, and every survivor. The AHU suite meets the target; the
-   VAV reheat suite does not (its six scenarios never exercise time suppression, CO2
-   demand control, the heating-maximum branch or the flow-sensor alarm), and the
-   report says so with `target_met: false`. The tests pin the measured floor so a
-   regression is caught; they do not pretend the target is met.
+   by operator and by oracle, and every survivor. Neither Tier 1 suite meets the
+   target: VAV reheat 63.5 % (its six scenarios never exercise time suppression, CO2
+   demand control, the heating-maximum branch or the flow-sensor alarm) and the
+   multizone AHU 65.5 %. The AHU's first figure (200 of 200) was an artifact of a
+   baseline that failed its own suite, which made every mutant look caught;
+   `run_mutation_suite` now refuses such a baseline (N8 finding). The report says
+   `target_met: false`; the tests pin the measured floors so a regression is caught
+   and do not pretend the target is met.
 
 3. **Shadow Runtime evidence is a qualification job, append-once, and a failing
    scenario fails the candidate.** `qualify_with_shadow` mirrors the BOPTEST and

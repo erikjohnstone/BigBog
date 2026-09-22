@@ -1,0 +1,26 @@
+{
+ "ahu-singlezone-vav-ashrae": {
+  "reason": "RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
+  "stage": "translation"
+ },
+ "ahu-singlezone-vav-title24": {
+  "reason": "RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
+  "stage": "translation"
+ },
+ "fcu-controller": {
+  "reason": "RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+  "stage": "translation"
+ },
+ "tu-coolingonly-title24": {
+  "reason": "ValueError: first sample must initialize every public controller input; missing: TDis",
+  "stage": "reference"
+ },
+ "zone-group-operation-mode": {
+  "reason": "RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
+  "stage": "translation"
+ },
+ "zone-setpoints-occ-win": {
+  "reason": "RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+  "stage": "translation"
+ }
+}

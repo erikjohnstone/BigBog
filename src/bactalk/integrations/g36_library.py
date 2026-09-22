@@ -1124,6 +1124,22 @@ class G36Library:
         if controller is None:
             raise KeyError(controller_id)
         source = self.g36_root / controller["relative_path"]
+        # modelica-json takes minutes on a large controller and its output depends only
+        # on the pinned source, so one translation per (controller, source digest) is
+        # kept for the life of this library instance; callers get their own copy.
+        cache: dict[tuple[str, str], tuple[Any, Any, Any]] = self.__dict__.setdefault(
+            "_source_bundle_cache", {}
+        )
+        key = (controller_id, str(controller["source_sha256"]))
+        if key in cache:
+            return copy.deepcopy(cache[key])
+        bundle = self._source_bundle_uncached(controller, source)
+        cache[key] = copy.deepcopy(bundle)
+        return bundle
+
+    def _source_bundle_uncached(
+        self, controller: dict[str, Any], source: Path
+    ) -> tuple[dict[str, Any], dict[str, Any], dict[str, dict[str, Any]]]:
         with tempfile.TemporaryDirectory(prefix="bactalk-g36-") as directory:
             output = Path(directory).resolve()
             artifacts = self.translator.translate(source, output)
