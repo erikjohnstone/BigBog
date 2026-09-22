@@ -110,10 +110,26 @@ class ControllerChangeEnvelope(BaseModel):
         return payload
 
 
+class CustomRequirementsEnvelope(BaseModel):
+    """Structured output for the Tier 5 requirement draft (bactalk.protocol.custom).
+
+    The requirement set travels as JSON text so the provider schema stays closed while
+    BACTalk's own ``RequirementSet`` validator remains authoritative.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    requirements_json: str = Field(min_length=2)
+    assumptions: list[str]
+    questions: list[str]
+
+
 class StructuredChatProvider(Protocol):
     model: str
 
     def complete(self, messages: list[dict[str, str]]) -> AIEnvelope: ...
+
+    def draft_requirements(self, messages: list[dict[str, str]]) -> CustomRequirementsEnvelope: ...
 
     def converse(self, messages: list[dict[str, str]]) -> ConversationEnvelope: ...
 
@@ -162,11 +178,7 @@ class CerebrasProvider:
 
         try:
             response = self._client.models.list()
-            return {
-                item.id
-                for item in response.data
-                if isinstance(getattr(item, "id", None), str)
-            }
+            return {item.id for item in response.data if isinstance(getattr(item, "id", None), str)}
         except Exception as exc:
             raise AIProviderError(
                 "Cerebras model discovery failed; no artifact was changed"
@@ -215,6 +227,11 @@ class CerebrasProvider:
             messages,
             AIEnvelope,
             schema_name="bactalk_controls_code_response",
+        )
+
+    def draft_requirements(self, messages: list[dict[str, str]]) -> CustomRequirementsEnvelope:
+        return self._structured_completion(
+            messages, CustomRequirementsEnvelope, schema_name="bactalk_custom_requirements"
         )
 
     def converse(self, messages: list[dict[str, str]]) -> ConversationEnvelope:
@@ -345,9 +362,7 @@ def _library_job_context(
     """Keep large qualified plant graphs out of model context; topology is immutable."""
 
     inputs = [
-        block.id
-        for block in graph.blocks
-        if block.kind.value in {"numeric_input", "boolean_input"}
+        block.id for block in graph.blocks if block.kind.value in {"numeric_input", "boolean_input"}
     ]
     outputs = [
         block.id
@@ -362,9 +377,7 @@ def _library_job_context(
             "equipment_brick_class": job.equipment_brick_class,
             "sequence": job.sequence.model_dump(mode="json"),
             "points": [point.model_dump(mode="json") for point in job.points],
-            "acceptance_tests": [
-                case.model_dump(mode="json") for case in job.acceptance_tests
-            ],
+            "acceptance_tests": [case.model_dump(mode="json") for case in job.acceptance_tests],
             "notes": (job.notes or "")[:3_000],
         },
         "qualified_graph_summary": {

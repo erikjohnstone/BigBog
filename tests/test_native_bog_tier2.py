@@ -27,6 +27,7 @@ from bactalk.niagara.emit import emit_bog
 from bactalk.niagara.lowering import LoweringPolicy, plan_lowering
 from bactalk.niagara.module import declared_types
 from bactalk.niagara.validate import validate_bog
+from bactalk.protocol import catalog as protocol_catalog
 from bactalk.simulator import run_acceptance_suite
 
 pytestmark = [pytest.mark.native_bog]
@@ -121,7 +122,11 @@ def test_committed_coverage_report_matches_the_code() -> None:
     report = json.loads(COVERAGE.read_text(encoding="utf-8"))
     assert report["schema"] == "bactalk.native-bog-coverage/v1"
     ids = [item["id"] for item in report["items"]]
-    assert ids == ["tier1-vav-reheat", "tier1-ahu-multizone-vav"] + [c.id for c in CONFIGURATIONS]
+    assert ids == (
+        ["tier1-vav-reheat", "tier1-ahu-multizone-vav"]
+        + [c.id for c in CONFIGURATIONS]
+        + protocol_catalog.sequence_ids()
+    ), "Tier 1, Tier 2, then every protocol row (Tiers 3–5) in catalogue order"
     blockers = _blockers()
     for item in report["items"]:
         for proof in ("d1", "d2", "d3", "d4"):

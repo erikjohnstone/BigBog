@@ -15,6 +15,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -25,9 +26,10 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 10.3
+    "seconds": 11.3
    },
    "d4": {
+    "band_set": "default",
     "by_catcher": {
      "differential": 3,
      "suite": 8,
@@ -38,8 +40,9 @@
     "caught": 25,
     "mutants_generated": 1596,
     "passed": false,
+    "policy": "default",
     "sample": 40,
-    "seconds": 232.1,
+    "seconds": 288.9,
     "survivors": [
      {
       "caught_by": null,
@@ -171,6 +174,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -181,9 +185,10 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 12.9
+    "seconds": 13.7
    },
    "d4": {
+    "band_set": "default",
     "by_catcher": {
      "differential": 2,
      "suite": 6,
@@ -194,8 +199,9 @@
     "caught": 18,
     "mutants_generated": 1854,
     "passed": false,
+    "policy": "default",
     "sample": 40,
-    "seconds": 343.7,
+    "seconds": 435.9,
     "survivors": [
      {
       "caught_by": null,
@@ -429,24 +435,24 @@
   },
   {
    "blocker": {
-    "reason": "RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "reason": "CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj",
     "stage": "translation"
    },
    "controller": "FanCoilUnits.Controller",
    "d1": {
-    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "blocker": "translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj",
     "passed": false
    },
    "d2": {
-    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "blocker": "translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj",
     "passed": false
    },
    "d3": {
-    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "blocker": "translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj",
     "passed": false
    },
    "d4": {
-    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+    "blocker": "translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj",
     "passed": false
    },
    "expectations": "reference-derived (docs/decisions/010)",
@@ -475,6 +481,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -485,9 +492,10 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 31.5
+    "seconds": 34.2
    },
    "d4": {
+    "band_set": "default",
     "by_catcher": {
      "differential": 1,
      "loader": 1,
@@ -499,8 +507,9 @@
     "caught": 26,
     "mutants_generated": 1102,
     "passed": false,
+    "policy": "default",
     "sample": 40,
-    "seconds": 337.9,
+    "seconds": 410.2,
     "survivors": [
      {
       "caught_by": null,
@@ -672,6 +681,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [
      "TZon cold"
     ],
@@ -698,21 +708,143 @@
     ],
     "passed": false,
     "reference_available": true,
-    "seconds": 55.6
+    "seconds": 60.4
    },
    "d4": {
+    "band_set": "coarse",
     "by_catcher": {
-     "differential": 17,
      "suite": 16,
+     "survived": 17,
      "validator": 7
     },
-    "catch_rate": 1.0,
-    "caught": 40,
+    "catch_rate": 0.575,
+    "caught": 23,
     "mutants_generated": 1490,
-    "passed": true,
+    "passed": false,
+    "policy": "coarse-module-tick",
     "sample": 40,
-    "seconds": 672.7,
-    "survivors": []
+    "seconds": 168.4,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1416,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/THeaSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 798,
+      "operator": "delete_link",
+      "path": "/Controller/Ala_2/proInt1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 889,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_1/and2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 898,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_1/cooMax/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 924,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_1/add1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 833,
+      "operator": "delete_link",
+      "path": "/Controller/ConLoo/disCoo/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1290,
+      "operator": "alter_constant",
+      "path": "/Controller/Ala_1/booToInt7_true"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 628,
+      "operator": "change_block_type",
+      "path": "/Controller/SysReq_1/gai2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 767,
+      "operator": "delete_link",
+      "path": "/Controller/Ala_2/cloVal/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 872,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_1/lin__x/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 793,
+      "operator": "delete_link",
+      "path": "/Controller/Ala_2/not4/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 784,
+      "operator": "delete_link",
+      "path": "/Controller/Ala_2/greThr2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1402,
+      "operator": "alter_constant",
+      "path": "/Controller/Outputs/yHotWatPlaReq"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1194,
+      "operator": "delete_link",
+      "path": "/Controller/TimSup/samSet/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 693,
+      "operator": "delete_link",
+      "path": "/Controller/Ala_1/and8/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1451,
+      "operator": "change_priority_level",
+      "path": "/Controller/Outputs/yHeaValResReq/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1422,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/oveFan"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "TerminalUnits",
@@ -746,6 +878,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -756,20 +889,122 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 54.4
+    "seconds": 59.8
    },
    "d4": {
+    "band_set": "scan",
     "by_catcher": {
-     "suite": 30,
+     "suite": 16,
+     "survived": 14,
      "validator": 10
     },
-    "catch_rate": 1.0,
-    "caught": 40,
+    "catch_rate": 0.65,
+    "caught": 26,
     "mutants_generated": 1599,
-    "passed": true,
+    "passed": false,
+    "policy": "scan-module-tick",
     "sample": 40,
-    "seconds": 219.0,
-    "survivors": []
+    "seconds": 271.7,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 809,
+      "operator": "delete_link",
+      "path": "/Controller/Ala_2/not6/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 718,
+      "operator": "delete_link",
+      "path": "/Controller/ActAirSet/occModInd/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1438,
+      "operator": "alter_constant",
+      "path": "/Controller/DamVal_2/uno"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1324,
+      "operator": "delete_link",
+      "path": "/Controller/TimSup/abs1/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1118,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoi_1/lin__f/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 920,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_1/booToRea1/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 933,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_1/conTDisHeaSet__x/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 898,
+      "operator": "delete_link",
+      "path": "/Controller/ConLoo/zerHea/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 655,
+      "operator": "change_block_type",
+      "path": "/Controller/SetPoi_1/popBreOutAir_slope_x2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 960,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_1/cooMax/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1412,
+      "operator": "alter_constant",
+      "path": "/Controller/ConLoo/zerHea_true"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 958,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_1/cooMax/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1084,
+      "operator": "delete_link",
+      "path": "/Controller/SetOve/cloDam/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1304,
+      "operator": "delete_link",
+      "path": "/Controller/TimSup/pre1/Link"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "TerminalUnits",
@@ -804,6 +1039,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [
      "TZon cold"
     ],
@@ -830,21 +1066,123 @@
     ],
     "passed": false,
     "reference_available": true,
-    "seconds": 59.4
+    "seconds": 65.2
    },
    "d4": {
+    "band_set": "coarse",
     "by_catcher": {
      "differential": 1,
-     "suite": 23,
+     "suite": 9,
+     "survived": 14,
      "validator": 16
     },
-    "catch_rate": 1.0,
-    "caught": 40,
+    "catch_rate": 0.65,
+    "caught": 26,
     "mutants_generated": 1543,
-    "passed": true,
+    "passed": false,
+    "policy": "coarse-module-tick",
     "sample": 40,
-    "seconds": 243.8,
-    "survivors": []
+    "seconds": 180.1,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1219,
+      "operator": "delete_link",
+      "path": "/Controller/TimSup/triSam1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 977,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_2/zerFlo/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1319,
+      "operator": "alter_constant",
+      "path": "/Controller/Ala_1/addPar1_parameter"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1253,
+      "operator": "delete_link",
+      "path": "/Controller/TimSup/pasSupTim/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 731,
+      "operator": "delete_link",
+      "path": "/Controller/Ala_1/and19/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1162,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq_1/booToInt1/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 685,
+      "operator": "delete_link",
+      "path": "/Controller/ActAirSet/occModInd/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1512,
+      "operator": "invert_parameter",
+      "path": "/Controller/Ala_2/truDel2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1301,
+      "operator": "alter_constant",
+      "path": "/Controller/Inputs/TSup"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1390,
+      "operator": "alter_constant",
+      "path": "/Controller/SetPoi_1/airDisEff_false"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 923,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_1/minFlo/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 551,
+      "operator": "change_block_type",
+      "path": "/Controller/ConLoo/zerCon"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 584,
+      "operator": "change_block_type",
+      "path": "/Controller/DamVal_1/add1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 672,
+      "operator": "change_block_type",
+      "path": "/Controller/ZonSta/isDea_or"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "TerminalUnits",
@@ -878,6 +1216,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -888,21 +1227,110 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 56.5
+    "seconds": 61.5
    },
    "d4": {
+    "band_set": "scan",
     "by_catcher": {
+     "differential": 1,
      "loader": 2,
-     "suite": 28,
+     "suite": 15,
+     "survived": 12,
      "validator": 10
     },
-    "catch_rate": 1.0,
-    "caught": 40,
+    "catch_rate": 0.7,
+    "caught": 28,
     "mutants_generated": 1695,
-    "passed": true,
+    "passed": false,
+    "policy": "scan-module-tick",
     "sample": 40,
-    "seconds": 235.4,
-    "survivors": []
+    "seconds": 304.9,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1579,
+      "operator": "alter_constant",
+      "path": "/Controller/TimSup/abs1_zero"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1184,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoi_1/booToRea/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1645,
+      "operator": "change_priority_level",
+      "path": "/Controller/Outputs/VAdjAreBreZon_flow/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 996,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_1/conTDisHeaSet_upper_limit/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1672,
+      "operator": "invert_parameter",
+      "path": "/Controller/Ala_2/truDel6"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 903,
+      "operator": "delete_link",
+      "path": "/Controller/Ala_2/leaDamAla/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 964,
+      "operator": "delete_link",
+      "path": "/Controller/DamVal_1/booToRea/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1602,
+      "operator": "alter_constant",
+      "path": "/Controller/Outputs/yLeaValAla"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1371,
+      "operator": "delete_link",
+      "path": "/Controller/TimSup/gai/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1439,
+      "operator": "alter_constant",
+      "path": "/Controller/Inputs/VParFan_flow"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1385,
+      "operator": "delete_link",
+      "path": "/Controller/TimSup/tim/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1353,
+      "operator": "delete_link",
+      "path": "/Controller/TimSup/triSam1/Link1"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "TerminalUnits",
@@ -938,6 +1366,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -948,20 +1377,94 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 59.3
+    "seconds": 65.3
    },
    "d4": {
+    "band_set": "scan",
     "by_catcher": {
-     "suite": 30,
+     "suite": 20,
+     "survived": 10,
      "validator": 10
     },
-    "catch_rate": 1.0,
-    "caught": 40,
+    "catch_rate": 0.75,
+    "caught": 30,
     "mutants_generated": 1701,
-    "passed": true,
+    "passed": false,
+    "policy": "scan-module-tick",
     "sample": 40,
-    "seconds": 256.0,
-    "survivors": []
+    "seconds": 319.7,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1266,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq_1/greEqu3/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1190,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoi_1/co2Con/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1391,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupHea/triSam/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1428,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupHea/pasSupTim/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1322,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq_2/intSwi/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 775,
+      "operator": "delete_link",
+      "path": "/Controller/ActAirSet/occModInd/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1691,
+      "operator": "invert_parameter",
+      "path": "/Controller/SysReq_2/tim3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1380,
+      "operator": "delete_link",
+      "path": "/Controller/TimSupCoo/pasSupTim/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 551,
+      "operator": "change_block_type",
+      "path": "/Controller/ActAirSet/ifSetUp"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1646,
+      "operator": "drop_facets",
+      "path": "/Controller/Outputs/yColFloSenAla"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "TerminalUnits",
@@ -997,6 +1500,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -1007,9 +1511,10 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 43.2
+    "seconds": 46.1
    },
    "d4": {
+    "band_set": "default",
     "by_catcher": {
      "suite": 11,
      "survived": 16,
@@ -1019,8 +1524,9 @@
     "caught": 24,
     "mutants_generated": 1596,
     "passed": false,
+    "policy": "default",
     "sample": 40,
-    "seconds": 577.7,
+    "seconds": 737.5,
     "survivors": [
      {
       "caught_by": null,
@@ -1170,6 +1676,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -1180,9 +1687,10 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 55.7
+    "seconds": 61.6
    },
    "d4": {
+    "band_set": "default",
     "by_catcher": {
      "suite": 10,
      "survived": 17,
@@ -1192,8 +1700,9 @@
     "caught": 23,
     "mutants_generated": 1647,
     "passed": false,
+    "policy": "default",
     "sample": 40,
-    "seconds": 694.6,
+    "seconds": 2283.0,
     "survivors": [
      {
       "caught_by": null,
@@ -1349,6 +1858,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -1359,9 +1869,10 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 46.1
+    "seconds": 51.1
    },
    "d4": {
+    "band_set": "default",
     "by_catcher": {
      "suite": 12,
      "survived": 15,
@@ -1371,8 +1882,9 @@
     "caught": 25,
     "mutants_generated": 1615,
     "passed": false,
+    "policy": "default",
     "sample": 40,
-    "seconds": 557.2,
+    "seconds": 852.7,
     "survivors": [
      {
       "caught_by": null,
@@ -1514,6 +2026,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -1524,9 +2037,10 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 55.6
+    "seconds": 61.6
    },
    "d4": {
+    "band_set": "default",
     "by_catcher": {
      "suite": 7,
      "survived": 20,
@@ -1536,8 +2050,9 @@
     "caught": 20,
     "mutants_generated": 1650,
     "passed": false,
+    "policy": "default",
     "sample": 40,
-    "seconds": 753.0,
+    "seconds": 1083.7,
     "survivors": [
      {
       "caught_by": null,
@@ -1700,26 +2215,176 @@
    "variant": "ASHRAE62_1"
   },
   {
-   "blocker": {
-    "reason": "RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
-    "stage": "translation"
-   },
    "controller": "ThermalZones.Setpoints",
    "d1": {
-    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
-    "passed": false
+    "components": 170,
+    "errors": [],
+    "links": 218,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 4.2
    },
    "d4": {
-    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
-    "passed": false
+    "band_set": "default",
+    "by_catcher": {
+     "differential": 1,
+     "suite": 8,
+     "survived": 18,
+     "validator": 13
+    },
+    "catch_rate": 0.55,
+    "caught": 22,
+    "mutants_generated": 567,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 71.6,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 480,
+      "operator": "alter_constant",
+      "path": "/Setpoints/Parameters/con"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 317,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints_1/booToRea6/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 465,
+      "operator": "alter_constant",
+      "path": "/Setpoints/Parameters/booToRea1_true"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 401,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints_2/swi11/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 460,
+      "operator": "alter_constant",
+      "path": "/Setpoints/Parameters/addPar6_parameter"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 292,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints_1/booToRea/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 535,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Parameters/booToRea7_true"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 554,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Parameters/heaSetLim_maximum"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 505,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Inputs/TOccHeaSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 216,
+      "operator": "change_block_type",
+      "path": "/Setpoints/Setpoints_2/or8"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 503,
+      "operator": "alter_constant",
+      "path": "/Setpoints/Outputs/yAla"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 302,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints_1/booToRea3/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 322,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints_1/booToRea7/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 541,
+      "operator": "drop_facets",
+      "path": "/Setpoints/Parameters/conInt1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 371,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints_2/swi16/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 475,
+      "operator": "alter_constant",
+      "path": "/Setpoints/Parameters/booToRea6_true"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 193,
+      "operator": "change_block_type",
+      "path": "/Setpoints/Setpoints_1/add8"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 423,
+      "operator": "delete_link",
+      "path": "/Setpoints/Setpoints_2/swi22/Link1"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "ThermalZones",
@@ -1728,6 +2393,7 @@
     "have_occSen": true,
     "have_winSen": true
    },
+   "scenarios": 17,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2",
    "variant": "occupancy+window"
@@ -1747,6 +2413,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -1757,20 +2424,150 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 2.2
+    "seconds": 2.4
    },
    "d4": {
+    "band_set": "scan",
     "by_catcher": {
-     "suite": 30,
+     "suite": 12,
+     "survived": 18,
      "validator": 10
     },
-    "catch_rate": 1.0,
-    "caught": 40,
+    "catch_rate": 0.55,
+    "caught": 22,
     "mutants_generated": 98,
-    "passed": true,
+    "passed": false,
+    "policy": "scan-module-tick",
     "sample": 40,
-    "seconds": 5.0,
-    "survivors": []
+    "seconds": 3.1,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 51,
+      "operator": "delete_link",
+      "path": "/ControlLoops/ControlLoops/disHea/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 89,
+      "operator": "drop_facets",
+      "path": "/ControlLoops/Parameters/zerHea_true"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 86,
+      "operator": "drop_facets",
+      "path": "/ControlLoops/Parameters/zerCoo_false"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 48,
+      "operator": "delete_link",
+      "path": "/ControlLoops/ControlLoops/zerCon1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 91,
+      "operator": "drop_facets",
+      "path": "/ControlLoops/Outputs/yHea"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 77,
+      "operator": "alter_constant",
+      "path": "/ControlLoops/Outputs/yCoo"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 97,
+      "operator": "invert_parameter",
+      "path": "/ControlLoops/ControlLoops/disHea"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 47,
+      "operator": "delete_link",
+      "path": "/ControlLoops/ControlLoops/zerCon/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 56,
+      "operator": "delete_link",
+      "path": "/ControlLoops/ControlLoops/zerCoo/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 38,
+      "operator": "delete_link",
+      "path": "/ControlLoops/ControlLoops/colZon/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 92,
+      "operator": "change_priority_level",
+      "path": "/ControlLoops/Outputs/yCoo/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 63,
+      "operator": "delete_link",
+      "path": "/ControlLoops/ControlLoops/cooConSig/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 61,
+      "operator": "delete_link",
+      "path": "/ControlLoops/ControlLoops/zerHea/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 82,
+      "operator": "drop_facets",
+      "path": "/ControlLoops/Inputs/THeaSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 59,
+      "operator": "delete_link",
+      "path": "/ControlLoops/ControlLoops/zerHea/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 49,
+      "operator": "delete_link",
+      "path": "/ControlLoops/ControlLoops/zerCon1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 29,
+      "operator": "change_block_type",
+      "path": "/ControlLoops/ControlLoops/zerCon1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 85,
+      "operator": "drop_facets",
+      "path": "/ControlLoops/Parameters/zerCon_threshold"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "ThermalZones",
@@ -1796,6 +2593,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -1806,9 +2604,10 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 1.2
+    "seconds": 1.4
    },
    "d4": {
+    "band_set": "default",
     "by_catcher": {
      "suite": 6,
      "survived": 21,
@@ -1818,8 +2617,9 @@
     "caught": 19,
     "mutants_generated": 169,
     "passed": false,
+    "policy": "default",
     "sample": 40,
-    "seconds": 15.5,
+    "seconds": 22.8,
     "survivors": [
      {
       "caught_by": null,
@@ -1994,6 +2794,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -2007,6 +2808,7 @@
     "seconds": 0.3
    },
    "d4": {
+    "band_set": "default",
     "by_catcher": {
      "loader": 1,
      "suite": 16,
@@ -2017,8 +2819,9 @@
     "caught": 27,
     "mutants_generated": 75,
     "passed": false,
+    "policy": "default",
     "sample": 40,
-    "seconds": 3.2,
+    "seconds": 4.8,
     "survivors": [
      {
       "caught_by": null,
@@ -2137,6 +2940,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -2147,9 +2951,10 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 0.1
+    "seconds": 0.2
    },
    "d4": {
+    "band_set": "default",
     "by_catcher": {
      "suite": 11,
      "survived": 18,
@@ -2159,8 +2964,9 @@
     "caught": 22,
     "mutants_generated": 115,
     "passed": false,
+    "policy": "default",
     "sample": 40,
-    "seconds": 1.4,
+    "seconds": 2.2,
     "survivors": [
      {
       "caught_by": null,
@@ -2318,6 +3124,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -2331,6 +3138,7 @@
     "seconds": 0.0
    },
    "d4": {
+    "band_set": "default",
     "by_catcher": {
      "suite": 12,
      "survived": 20,
@@ -2340,8 +3148,9 @@
     "caught": 20,
     "mutants_generated": 88,
     "passed": false,
+    "policy": "default",
     "sample": 40,
-    "seconds": 0.6,
+    "seconds": 0.7,
     "survivors": [
      {
       "caught_by": null,
@@ -2513,6 +3322,7 @@
     "warnings": 0
    },
    "d3": {
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -2523,9 +3333,10 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 12.7
+    "seconds": 21.5
    },
    "d4": {
+    "band_set": "default",
     "by_catcher": {
      "suite": 14,
      "survived": 18,
@@ -2535,8 +3346,9 @@
     "caught": 22,
     "mutants_generated": 641,
     "passed": false,
+    "policy": "default",
     "sample": 40,
-    "seconds": 164.6,
+    "seconds": 232.8,
     "survivors": [
      {
       "caught_by": null,
@@ -2676,26 +3488,210 @@
    "variant": "default"
   },
   {
-   "blocker": {
-    "reason": "RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
-    "stage": "translation"
-   },
    "controller": "ZoneGroups.OperationMode",
    "d1": {
-    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
-    "passed": false
+    "components": 118,
+    "errors": [],
+    "links": 138,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 14.0
    },
    "d4": {
-    "blocker": "translation: RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
-    "passed": false
+    "band_set": "default",
+    "by_catcher": {
+     "suite": 5,
+     "survived": 23,
+     "validator": 12
+    },
+    "catch_rate": 0.425,
+    "caught": 17,
+    "mutants_generated": 350,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 249.0,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 263,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_2/swi1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 287,
+      "operator": "alter_constant",
+      "path": "/OperationMode/Inputs/uOpeWin"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 337,
+      "operator": "drop_facets",
+      "path": "/OperationMode/Parameters/occModInd"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 275,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_2/swi5/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 146,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_1/addInt7/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 149,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_1/freProSetBacMod/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 129,
+      "operator": "change_block_type",
+      "path": "/OperationMode/OperationMode_1/or5"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 301,
+      "operator": "alter_constant",
+      "path": "/OperationMode/Parameters/endFreProTem"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 195,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_1/or1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 115,
+      "operator": "change_block_type",
+      "path": "/OperationMode/OperationMode_1/and5"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 207,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_1/addInt1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 251,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_2/sub2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 108,
+      "operator": "change_block_type",
+      "path": "/OperationMode/OperationMode_1/intGreThr2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 302,
+      "operator": "alter_constant",
+      "path": "/OperationMode/Parameters/intGreThr1_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 314,
+      "operator": "drop_facets",
+      "path": "/OperationMode/Inputs/tNexOcc"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 225,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_1/booToRea3/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 163,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_1/setBacMod1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 256,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_2/sub5/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 336,
+      "operator": "drop_facets",
+      "path": "/OperationMode/Parameters/notOcc_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 277,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_2/swi5/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 188,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_1/addInt/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 249,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_1/not1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 223,
+      "operator": "delete_link",
+      "path": "/OperationMode/OperationMode_1/lat2/Link"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "ZoneGroups",
@@ -2703,9 +3699,1963 @@
    "parameters": {
     "nZon": 1
    },
+   "scenarios": 17,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2",
    "variant": "one zone"
+  },
+  {
+   "adequacy": {
+    "accepted": false,
+    "decisions_percent": 100.0,
+    "invariant_sequences": 10000,
+    "questions": 0,
+    "scenarios": 165
+   },
+   "controller": "Hot water plant: two boilers, two primary pumps, minimum flow bypass",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 109,
+    "errors": [],
+    "links": 132,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "legs": [
+     "default",
+     "scan"
+    ],
+    "note": "both legs retained",
+    "passed": true
+   },
+   "d4": {
+    "band_set": "scan",
+    "by_catcher": {
+     "differential": 1,
+     "suite": 109,
+     "survived": 35,
+     "validator": 55
+    },
+    "catch_rate": 0.825,
+    "caught": 165,
+    "mutants_generated": 320,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 200,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 270,
+      "operator": "alter_constant",
+      "path": "/HotWaterPlant/Inputs/dpHotWat"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 286,
+      "operator": "drop_facets",
+      "path": "/HotWaterPlant/Inputs/TSup"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 294,
+      "operator": "change_priority_level",
+      "path": "/HotWaterPlant/Outputs/TSupSet/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 234,
+      "operator": "delete_link",
+      "path": "/HotWaterPlant/Logic_2/Boiler_1_commanded__not_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 280,
+      "operator": "alter_constant",
+      "path": "/HotWaterPlant/Outputs/TSupSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 182,
+      "operator": "delete_link",
+      "path": "/HotWaterPlant/Logic_1/Runtimes_reset_at_rotation_or_plant_enable/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 300,
+      "operator": "change_priority_level",
+      "path": "/HotWaterPlant/Outputs/yPla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 268,
+      "operator": "alter_constant",
+      "path": "/HotWaterPlant/Inputs/TSup"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 251,
+      "operator": "delete_link",
+      "path": "/HotWaterPlant/Logic_2/Boiler_2_commanded__not_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 291,
+      "operator": "drop_facets",
+      "path": "/HotWaterPlant/Outputs/TSupSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 299,
+      "operator": "change_priority_level",
+      "path": "/HotWaterPlant/Outputs/yLowSupAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 293,
+      "operator": "drop_facets",
+      "path": "/HotWaterPlant/Outputs/yPumSpe"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 271,
+      "operator": "alter_constant",
+      "path": "/HotWaterPlant/Inputs/nReqPla"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 288,
+      "operator": "drop_facets",
+      "path": "/HotWaterPlant/Inputs/dpHotWat"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 226,
+      "operator": "delete_link",
+      "path": "/HotWaterPlant/Logic_2/Lead_boiler_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 137,
+      "operator": "delete_link",
+      "path": "/HotWaterPlant/Logic_1/Pump_1_commanded_last_scan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 245,
+      "operator": "delete_link",
+      "path": "/HotWaterPlant/Logic_2/Stage_down_or_plant_off/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 167,
+      "operator": "delete_link",
+      "path": "/HotWaterPlant/Logic_1/Lead_changed/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 141,
+      "operator": "delete_link",
+      "path": "/HotWaterPlant/Logic_1/Pump_2_led_last_scan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 154,
+      "operator": "delete_link",
+      "path": "/HotWaterPlant/Logic_1/Pump_1_commanded__not_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 180,
+      "operator": "delete_link",
+      "path": "/HotWaterPlant/Logic_1/Bypass_when_the_plant_runs__else_closed/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 292,
+      "operator": "drop_facets",
+      "path": "/HotWaterPlant/Outputs/yByp"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 221,
+      "operator": "delete_link",
+      "path": "/HotWaterPlant/Logic_1/Speed_when_a_pump_runs__else_0/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 302,
+      "operator": "change_priority_level",
+      "path": "/HotWaterPlant/Outputs/yPum2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 267,
+      "operator": "alter_constant",
+      "path": "/HotWaterPlant/Inputs/TOut"
+     }
+    ]
+   },
+   "expectations": "generated by the test author (docs/decisions/011)",
+   "family": "BACTALK_HW_PLANT",
+   "gate_g_eng": "unapproved",
+   "id": "hw-plant-boiler",
+   "label": "G36 sequence without an LBNL reference (Tier 3, Gate G-ENG)",
+   "parameters": {},
+   "requirements_digest": "fa88b56f6a7c3d1c373cedd0544e07324147571fd34cbe5d458404b700e1d07d",
+   "scenarios": 165,
+   "source_of_truth": "requirement set (Gate G-ENG)",
+   "tier": "3",
+   "variant": "default \u00b7 20 requirements"
+  },
+  {
+   "adequacy": {
+    "accepted": false,
+    "decisions_percent": 100.0,
+    "invariant_sequences": 10000,
+    "questions": 0,
+    "scenarios": 38
+   },
+   "controller": "Dedicated outdoor air system (BACTalk standard sequence)",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 27,
+    "errors": [],
+    "links": 26,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "legs": [
+     "default",
+     "scan"
+    ],
+    "note": "both legs retained",
+    "passed": true
+   },
+   "d4": {
+    "band_set": "scan",
+    "by_catcher": {
+     "differential": 2,
+     "suite": 31,
+     "survived": 19,
+     "validator": 17
+    },
+    "catch_rate": 0.7246,
+    "caught": 50,
+    "mutants_generated": 69,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 69,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 51,
+      "operator": "alter_constant",
+      "path": "/DedicatedOutdoorAir/Logic/Half_deadband"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 49,
+      "operator": "alter_constant",
+      "path": "/DedicatedOutdoorAir/Inputs/TSup"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 57,
+      "operator": "drop_facets",
+      "path": "/DedicatedOutdoorAir/Inputs/TOut"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 63,
+      "operator": "change_priority_level",
+      "path": "/DedicatedOutdoorAir/Outputs/yFanAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 62,
+      "operator": "change_priority_level",
+      "path": "/DedicatedOutdoorAir/Outputs/yCooVal/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 22,
+      "operator": "delete_link",
+      "path": "/DedicatedOutdoorAir/Logic/Supply_fan_commanded_and_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 65,
+      "operator": "change_priority_level",
+      "path": "/DedicatedOutdoorAir/Outputs/ySupFan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 48,
+      "operator": "alter_constant",
+      "path": "/DedicatedOutdoorAir/Inputs/TOut"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 29,
+      "operator": "delete_link",
+      "path": "/DedicatedOutdoorAir/Logic/Commanded__not_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 64,
+      "operator": "change_priority_level",
+      "path": "/DedicatedOutdoorAir/Outputs/yHeaVal/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 59,
+      "operator": "drop_facets",
+      "path": "/DedicatedOutdoorAir/Inputs/TSupSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 53,
+      "operator": "alter_constant",
+      "path": "/DedicatedOutdoorAir/Outputs/yCooVal"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 61,
+      "operator": "drop_facets",
+      "path": "/DedicatedOutdoorAir/Outputs/yHeaVal"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 43,
+      "operator": "delete_link",
+      "path": "/DedicatedOutdoorAir/Logic/Heating_coil_valve_position_with_the_fan_proven/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 40,
+      "operator": "delete_link",
+      "path": "/DedicatedOutdoorAir/Logic/Cooling_coil_valve_position_with_the_fan_proven/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 60,
+      "operator": "drop_facets",
+      "path": "/DedicatedOutdoorAir/Outputs/yCooVal"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 54,
+      "operator": "alter_constant",
+      "path": "/DedicatedOutdoorAir/Outputs/yHeaVal"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 58,
+      "operator": "drop_facets",
+      "path": "/DedicatedOutdoorAir/Inputs/TSup"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 50,
+      "operator": "alter_constant",
+      "path": "/DedicatedOutdoorAir/Inputs/TSupSet"
+     }
+    ]
+   },
+   "expectations": "generated by the test author (docs/decisions/011)",
+   "family": "BACTALK_STANDARD_SEQUENCE",
+   "gate_g_eng": "unapproved",
+   "id": "doas",
+   "label": "BACTalk standard sequence (engineer-approved requirements)",
+   "parameters": {
+    "energy_recovery": false
+   },
+   "requirements_digest": "348f4ac273ae950e140b4fdccc379a418994418b16be07578f773258397cb440",
+   "scenarios": 38,
+   "source_of_truth": "requirement set (Gate G-ENG)",
+   "tier": "4",
+   "variant": "no recovery \u00b7 6 requirements"
+  },
+  {
+   "adequacy": {
+    "accepted": false,
+    "decisions_percent": 100.0,
+    "invariant_sequences": 10000,
+    "questions": 0,
+    "scenarios": 61
+   },
+   "controller": "Dedicated outdoor air system with energy recovery (BACTalk standard sequence)",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 36,
+    "errors": [],
+    "links": 37,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "legs": [
+     "default",
+     "scan"
+    ],
+    "note": "both legs retained",
+    "passed": true
+   },
+   "d4": {
+    "band_set": "scan",
+    "by_catcher": {
+     "suite": 49,
+     "survived": 21,
+     "validator": 24
+    },
+    "catch_rate": 0.7766,
+    "caught": 73,
+    "mutants_generated": 94,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 94,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 44,
+      "operator": "delete_link",
+      "path": "/DedicatedOutdoorAir/Logic/Commanded__not_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 72,
+      "operator": "alter_constant",
+      "path": "/DedicatedOutdoorAir/Logic/Half_deadband"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 62,
+      "operator": "delete_link",
+      "path": "/DedicatedOutdoorAir/Logic/Heating_coil_valve_position_with_the_fan_proven/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 75,
+      "operator": "alter_constant",
+      "path": "/DedicatedOutdoorAir/Outputs/yHeaVal"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 82,
+      "operator": "drop_facets",
+      "path": "/DedicatedOutdoorAir/Outputs/yHeaVal"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 85,
+      "operator": "change_priority_level",
+      "path": "/DedicatedOutdoorAir/Outputs/yFanAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 81,
+      "operator": "drop_facets",
+      "path": "/DedicatedOutdoorAir/Outputs/yCooVal"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 59,
+      "operator": "delete_link",
+      "path": "/DedicatedOutdoorAir/Logic/Cooling_coil_valve_position_with_the_fan_proven/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 80,
+      "operator": "drop_facets",
+      "path": "/DedicatedOutdoorAir/Inputs/TSupSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 78,
+      "operator": "drop_facets",
+      "path": "/DedicatedOutdoorAir/Inputs/TOut"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 86,
+      "operator": "change_priority_level",
+      "path": "/DedicatedOutdoorAir/Outputs/yHeaVal/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 84,
+      "operator": "change_priority_level",
+      "path": "/DedicatedOutdoorAir/Outputs/yExhFan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 87,
+      "operator": "change_priority_level",
+      "path": "/DedicatedOutdoorAir/Outputs/ySupFan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 34,
+      "operator": "delete_link",
+      "path": "/DedicatedOutdoorAir/Logic/Supply_fan_commanded_and_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 88,
+      "operator": "change_priority_level",
+      "path": "/DedicatedOutdoorAir/Outputs/yWhe/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 69,
+      "operator": "alter_constant",
+      "path": "/DedicatedOutdoorAir/Inputs/TOut"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 71,
+      "operator": "alter_constant",
+      "path": "/DedicatedOutdoorAir/Inputs/TSupSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 70,
+      "operator": "alter_constant",
+      "path": "/DedicatedOutdoorAir/Inputs/TSup"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 79,
+      "operator": "drop_facets",
+      "path": "/DedicatedOutdoorAir/Inputs/TSup"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 74,
+      "operator": "alter_constant",
+      "path": "/DedicatedOutdoorAir/Outputs/yCooVal"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 83,
+      "operator": "change_priority_level",
+      "path": "/DedicatedOutdoorAir/Outputs/yCooVal/Link"
+     }
+    ]
+   },
+   "expectations": "generated by the test author (docs/decisions/011)",
+   "family": "BACTALK_STANDARD_SEQUENCE",
+   "gate_g_eng": "unapproved",
+   "id": "doas-erv",
+   "label": "BACTalk standard sequence (engineer-approved requirements)",
+   "parameters": {
+    "energy_recovery": true
+   },
+   "requirements_digest": "23187735863277bff08065c585ccae56334d07a8cd04d4dd277607edc9bd8f82",
+   "scenarios": 61,
+   "source_of_truth": "requirement set (Gate G-ENG)",
+   "tier": "4",
+   "variant": "energy recovery \u00b7 9 requirements"
+  },
+  {
+   "adequacy": {
+    "accepted": false,
+    "decisions_percent": 100.0,
+    "invariant_sequences": 10000,
+    "questions": 0,
+    "scenarios": 11
+   },
+   "controller": "Exhaust fan (BACTalk standard sequence)",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 12,
+    "errors": [],
+    "links": 6,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "legs": [
+     "default",
+     "scan"
+    ],
+    "note": "both legs retained",
+    "passed": true
+   },
+   "d4": {
+    "band_set": "scan",
+    "by_catcher": {
+     "suite": 8,
+     "survived": 3,
+     "validator": 3
+    },
+    "catch_rate": 0.7857,
+    "caught": 11,
+    "mutants_generated": 14,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 14,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 11,
+      "operator": "change_priority_level",
+      "path": "/ExhaustFan/Outputs/yFan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 12,
+      "operator": "change_priority_level",
+      "path": "/ExhaustFan/Outputs/yFanAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 6,
+      "operator": "delete_link",
+      "path": "/ExhaustFan/Logic/Commanded__not_proven/Link"
+     }
+    ]
+   },
+   "expectations": "generated by the test author (docs/decisions/011)",
+   "family": "BACTALK_STANDARD_SEQUENCE",
+   "gate_g_eng": "unapproved",
+   "id": "exhaust-fan",
+   "label": "BACTalk standard sequence (engineer-approved requirements)",
+   "parameters": {
+    "isolation_damper": false
+   },
+   "requirements_digest": "493055242b4a439f57bfc17638bdf0b762aa19409ed3b9ee3a0fc0a687d7469f",
+   "scenarios": 11,
+   "source_of_truth": "requirement set (Gate G-ENG)",
+   "tier": "4",
+   "variant": "basic \u00b7 3 requirements"
+  },
+  {
+   "adequacy": {
+    "accepted": false,
+    "decisions_percent": 100.0,
+    "invariant_sequences": 10000,
+    "questions": 0,
+    "scenarios": 21
+   },
+   "controller": "Exhaust fan with isolation damper (BACTalk standard sequence)",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 19,
+    "errors": [],
+    "links": 15,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "legs": [
+     "default",
+     "scan"
+    ],
+    "note": "both legs retained",
+    "passed": true
+   },
+   "d4": {
+    "band_set": "scan",
+    "by_catcher": {
+     "suite": 21,
+     "survived": 5,
+     "validator": 10
+    },
+    "catch_rate": 0.8611,
+    "caught": 31,
+    "mutants_generated": 36,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 36,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 31,
+      "operator": "change_priority_level",
+      "path": "/ExhaustFan/Outputs/yDam/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 33,
+      "operator": "change_priority_level",
+      "path": "/ExhaustFan/Outputs/yFanAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 18,
+      "operator": "delete_link",
+      "path": "/ExhaustFan/Logic/Enabled__damper_not_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 32,
+      "operator": "change_priority_level",
+      "path": "/ExhaustFan/Outputs/yFan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 25,
+      "operator": "delete_link",
+      "path": "/ExhaustFan/Logic/Commanded__not_proven/Link"
+     }
+    ]
+   },
+   "expectations": "generated by the test author (docs/decisions/011)",
+   "family": "BACTALK_STANDARD_SEQUENCE",
+   "gate_g_eng": "unapproved",
+   "id": "exhaust-fan-damper",
+   "label": "BACTalk standard sequence (engineer-approved requirements)",
+   "parameters": {
+    "isolation_damper": true
+   },
+   "requirements_digest": "7ab4c6fc0fbb41a2f135a8796091f58611d56f6d27f12ad8af8b7106bcd4bb46",
+   "scenarios": 21,
+   "source_of_truth": "requirement set (Gate G-ENG)",
+   "tier": "4",
+   "variant": "isolation damper \u00b7 5 requirements"
+  },
+  {
+   "adequacy": {
+    "accepted": false,
+    "decisions_percent": 100.0,
+    "invariant_sequences": 10000,
+    "questions": 0,
+    "scenarios": 38
+   },
+   "controller": "Air-source heat pump, single zone (BACTalk standard sequence)",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 34,
+    "errors": [],
+    "links": 34,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "legs": [
+     "default",
+     "scan"
+    ],
+    "note": "both legs retained",
+    "passed": true
+   },
+   "d4": {
+    "band_set": "scan",
+    "by_catcher": {
+     "loader": 2,
+     "suite": 46,
+     "survived": 18,
+     "validator": 24
+    },
+    "catch_rate": 0.8,
+    "caught": 72,
+    "mutants_generated": 90,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 90,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 78,
+      "operator": "drop_facets",
+      "path": "/HeatPump/Inputs/TZonCooSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 38,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Fan_commanded_and_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 80,
+      "operator": "change_priority_level",
+      "path": "/HeatPump/Outputs/yCom/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 60,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Cooling_stage/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 73,
+      "operator": "alter_constant",
+      "path": "/HeatPump/Inputs/TZon"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 77,
+      "operator": "drop_facets",
+      "path": "/HeatPump/Inputs/TZon"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 76,
+      "operator": "drop_facets",
+      "path": "/HeatPump/Inputs/TOut"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 81,
+      "operator": "change_priority_level",
+      "path": "/HeatPump/Outputs/yFan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 82,
+      "operator": "change_priority_level",
+      "path": "/HeatPump/Outputs/yFanAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 63,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Heating_stage_off/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 65,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Cooling_with_heating_off/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 72,
+      "operator": "alter_constant",
+      "path": "/HeatPump/Inputs/TOut"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 62,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Compressor_heating_stage/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 79,
+      "operator": "drop_facets",
+      "path": "/HeatPump/Inputs/TZonHeaSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 75,
+      "operator": "alter_constant",
+      "path": "/HeatPump/Inputs/TZonHeaSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 74,
+      "operator": "alter_constant",
+      "path": "/HeatPump/Inputs/TZonCooSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 46,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Commanded__not_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 83,
+      "operator": "change_priority_level",
+      "path": "/HeatPump/Outputs/yRev/Link"
+     }
+    ]
+   },
+   "expectations": "generated by the test author (docs/decisions/011)",
+   "family": "BACTALK_STANDARD_SEQUENCE",
+   "gate_g_eng": "unapproved",
+   "id": "heat-pump",
+   "label": "BACTalk standard sequence (engineer-approved requirements)",
+   "parameters": {
+    "aux_heat": false
+   },
+   "requirements_digest": "540b684e6a86538637c45f05b47f653b7f4bbae2f42b41263e1f1eab45b8f4fb",
+   "scenarios": 38,
+   "source_of_truth": "requirement set (Gate G-ENG)",
+   "tier": "4",
+   "variant": "compressor only \u00b7 5 requirements"
+  },
+  {
+   "adequacy": {
+    "accepted": false,
+    "decisions_percent": 100.0,
+    "invariant_sequences": 10000,
+    "questions": 0,
+    "scenarios": 63
+   },
+   "controller": "Air-source heat pump, single zone with auxiliary heat (BACTalk standard sequence)",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 44,
+    "errors": [],
+    "links": 49,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "legs": [
+     "default",
+     "scan"
+    ],
+    "note": "both legs retained",
+    "passed": true
+   },
+   "d4": {
+    "band_set": "scan",
+    "by_catcher": {
+     "loader": 1,
+     "suite": 57,
+     "survived": 18,
+     "validator": 24
+    },
+    "catch_rate": 0.82,
+    "caught": 82,
+    "mutants_generated": 127,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 100,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 91,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Heating_stage_off/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 106,
+      "operator": "alter_constant",
+      "path": "/HeatPump/Inputs/TZon"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 87,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Compressor_heating_stage/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 112,
+      "operator": "drop_facets",
+      "path": "/HeatPump/Inputs/TZonHeaSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 109,
+      "operator": "drop_facets",
+      "path": "/HeatPump/Inputs/TOut"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 113,
+      "operator": "change_priority_level",
+      "path": "/HeatPump/Outputs/yAux/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 56,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Fan_commanded_and_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 111,
+      "operator": "drop_facets",
+      "path": "/HeatPump/Inputs/TZonCooSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 84,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Cooling_stage/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 90,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Auxiliary_heat__lockout/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 116,
+      "operator": "change_priority_level",
+      "path": "/HeatPump/Outputs/yFanAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 95,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Cooling_with_heating_off/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 107,
+      "operator": "alter_constant",
+      "path": "/HeatPump/Inputs/TZonCooSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 117,
+      "operator": "change_priority_level",
+      "path": "/HeatPump/Outputs/yRev/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 81,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Heating_with_the_zone_still_far_below/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 93,
+      "operator": "delete_link",
+      "path": "/HeatPump/Logic/Auxiliary_heat__supplemental/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 108,
+      "operator": "alter_constant",
+      "path": "/HeatPump/Inputs/TZonHeaSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 115,
+      "operator": "change_priority_level",
+      "path": "/HeatPump/Outputs/yFan/Link"
+     }
+    ]
+   },
+   "expectations": "generated by the test author (docs/decisions/011)",
+   "family": "BACTALK_STANDARD_SEQUENCE",
+   "gate_g_eng": "unapproved",
+   "id": "heat-pump-aux",
+   "label": "BACTalk standard sequence (engineer-approved requirements)",
+   "parameters": {
+    "aux_heat": true
+   },
+   "requirements_digest": "be093372e98bb90ae5ade537b90f330413006eeecece90f52b51ab1ba45cc7ec",
+   "scenarios": 63,
+   "source_of_truth": "requirement set (Gate G-ENG)",
+   "tier": "4",
+   "variant": "auxiliary heat \u00b7 7 requirements"
+  },
+  {
+   "adequacy": {
+    "accepted": false,
+    "decisions_percent": 100.0,
+    "invariant_sequences": 10000,
+    "questions": 0,
+    "scenarios": 34
+   },
+   "controller": "Duty/standby pump pair (BACTalk standard sequence)",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 37,
+    "errors": [],
+    "links": 41,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "legs": [
+     "default",
+     "scan"
+    ],
+    "note": "both legs retained",
+    "passed": true
+   },
+   "d4": {
+    "band_set": "scan",
+    "by_catcher": {
+     "suite": 54,
+     "survived": 10,
+     "validator": 35
+    },
+    "catch_rate": 0.899,
+    "caught": 89,
+    "mutants_generated": 99,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 99,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 81,
+      "operator": "delete_link",
+      "path": "/PumpDutyStandby/Logic/Pump_1_commanded__not_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 65,
+      "operator": "delete_link",
+      "path": "/PumpDutyStandby/Logic/Lead_2_unavailable/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 93,
+      "operator": "change_priority_level",
+      "path": "/PumpDutyStandby/Outputs/yNoPumAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 61,
+      "operator": "delete_link",
+      "path": "/PumpDutyStandby/Logic/Lead_1_unavailable/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 95,
+      "operator": "change_priority_level",
+      "path": "/PumpDutyStandby/Outputs/yPum2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 94,
+      "operator": "change_priority_level",
+      "path": "/PumpDutyStandby/Outputs/yPum1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 96,
+      "operator": "change_priority_level",
+      "path": "/PumpDutyStandby/Outputs/yPumFaiAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 72,
+      "operator": "delete_link",
+      "path": "/PumpDutyStandby/Logic/Standby_1_available/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 74,
+      "operator": "delete_link",
+      "path": "/PumpDutyStandby/Logic/Pump_1_wanted/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 83,
+      "operator": "delete_link",
+      "path": "/PumpDutyStandby/Logic/Pump_2_commanded__not_proven/Link"
+     }
+    ]
+   },
+   "expectations": "generated by the test author (docs/decisions/011)",
+   "family": "BACTALK_STANDARD_SEQUENCE",
+   "gate_g_eng": "unapproved",
+   "id": "pump-duty-standby",
+   "label": "BACTalk standard sequence (engineer-approved requirements)",
+   "parameters": {},
+   "requirements_digest": "9464c84686cb29aa63ee8cf62a0e75e67fba7135b73aeb2086f6d91dbdd1ed58",
+   "scenarios": 34,
+   "source_of_truth": "requirement set (Gate G-ENG)",
+   "tier": "4",
+   "variant": "default \u00b7 7 requirements"
+  },
+  {
+   "adequacy": {
+    "accepted": false,
+    "decisions_percent": 100.0,
+    "invariant_sequences": 10000,
+    "questions": 0,
+    "scenarios": 36
+   },
+   "controller": "Packaged rooftop unit, single zone (BACTalk standard sequence)",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 35,
+    "errors": [],
+    "links": 33,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "legs": [
+     "default",
+     "scan"
+    ],
+    "note": "both legs retained",
+    "passed": true
+   },
+   "d4": {
+    "band_set": "scan",
+    "by_catcher": {
+     "loader": 2,
+     "suite": 44,
+     "survived": 20,
+     "validator": 22
+    },
+    "catch_rate": 0.7727,
+    "caught": 68,
+    "mutants_generated": 88,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 88,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 69,
+      "operator": "alter_constant",
+      "path": "/RooftopUnit/Inputs/TZonHeaSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 76,
+      "operator": "drop_facets",
+      "path": "/RooftopUnit/Inputs/TZonHeaSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 71,
+      "operator": "alter_constant",
+      "path": "/RooftopUnit/Logic/Half_deadband"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 58,
+      "operator": "delete_link",
+      "path": "/RooftopUnit/Logic/Cooling_stage/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 75,
+      "operator": "drop_facets",
+      "path": "/RooftopUnit/Inputs/TZonCooSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 59,
+      "operator": "delete_link",
+      "path": "/RooftopUnit/Logic/Heating_stage_off/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 78,
+      "operator": "change_priority_level",
+      "path": "/RooftopUnit/Outputs/yCoo/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 79,
+      "operator": "change_priority_level",
+      "path": "/RooftopUnit/Outputs/yFan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 45,
+      "operator": "delete_link",
+      "path": "/RooftopUnit/Logic/Damper_position_with_the_fan_proven/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 80,
+      "operator": "change_priority_level",
+      "path": "/RooftopUnit/Outputs/yFanAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 61,
+      "operator": "delete_link",
+      "path": "/RooftopUnit/Logic/Cooling_with_heating_off/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 81,
+      "operator": "change_priority_level",
+      "path": "/RooftopUnit/Outputs/yHea/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 56,
+      "operator": "delete_link",
+      "path": "/RooftopUnit/Logic/Heating_stage/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 82,
+      "operator": "change_priority_level",
+      "path": "/RooftopUnit/Outputs/yOutDam/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 67,
+      "operator": "alter_constant",
+      "path": "/RooftopUnit/Inputs/TZon"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 77,
+      "operator": "drop_facets",
+      "path": "/RooftopUnit/Outputs/yOutDam"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 73,
+      "operator": "alter_constant",
+      "path": "/RooftopUnit/Outputs/yOutDam"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 74,
+      "operator": "drop_facets",
+      "path": "/RooftopUnit/Inputs/TZon"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 68,
+      "operator": "alter_constant",
+      "path": "/RooftopUnit/Inputs/TZonCooSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 41,
+      "operator": "delete_link",
+      "path": "/RooftopUnit/Logic/Commanded__not_proven/Link"
+     }
+    ]
+   },
+   "expectations": "generated by the test author (docs/decisions/011)",
+   "family": "BACTALK_STANDARD_SEQUENCE",
+   "gate_g_eng": "unapproved",
+   "id": "rtu",
+   "label": "BACTalk standard sequence (engineer-approved requirements)",
+   "parameters": {
+    "economizer": false
+   },
+   "requirements_digest": "a3c1ff9ca922fcc950a834af7b6677559a29a88abaa350ceb92b7d032852fdde",
+   "scenarios": 36,
+   "source_of_truth": "requirement set (Gate G-ENG)",
+   "tier": "4",
+   "variant": "no economizer \u00b7 6 requirements"
+  },
+  {
+   "adequacy": {
+    "accepted": false,
+    "decisions_percent": 100.0,
+    "invariant_sequences": 10000,
+    "questions": 0,
+    "scenarios": 56
+   },
+   "controller": "Packaged rooftop unit, single zone with economizer (BACTalk standard sequence)",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 41,
+    "errors": [],
+    "links": 40,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "legs": [
+     "default",
+     "scan"
+    ],
+    "note": "both legs retained",
+    "passed": true
+   },
+   "d4": {
+    "band_set": "scan",
+    "by_catcher": {
+     "loader": 2,
+     "suite": 52,
+     "survived": 21,
+     "validator": 25
+    },
+    "catch_rate": 0.79,
+    "caught": 79,
+    "mutants_generated": 105,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 100,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 89,
+      "operator": "drop_facets",
+      "path": "/RooftopUnit/Inputs/TOut"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 96,
+      "operator": "change_priority_level",
+      "path": "/RooftopUnit/Outputs/yFanAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 86,
+      "operator": "alter_constant",
+      "path": "/RooftopUnit/Logic/Half_deadband"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 48,
+      "operator": "delete_link",
+      "path": "/RooftopUnit/Logic/Commanded__not_proven/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 98,
+      "operator": "change_priority_level",
+      "path": "/RooftopUnit/Outputs/yOutDam/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 81,
+      "operator": "alter_constant",
+      "path": "/RooftopUnit/Inputs/TZon"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 71,
+      "operator": "delete_link",
+      "path": "/RooftopUnit/Logic/Cooling_stage/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 66,
+      "operator": "delete_link",
+      "path": "/RooftopUnit/Logic/Heating_stage/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 92,
+      "operator": "drop_facets",
+      "path": "/RooftopUnit/Inputs/TZonHeaSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 91,
+      "operator": "drop_facets",
+      "path": "/RooftopUnit/Inputs/TZonCooSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 93,
+      "operator": "drop_facets",
+      "path": "/RooftopUnit/Outputs/yOutDam"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 97,
+      "operator": "change_priority_level",
+      "path": "/RooftopUnit/Outputs/yHea/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 69,
+      "operator": "delete_link",
+      "path": "/RooftopUnit/Logic/Damper_position_with_the_fan_proven/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 80,
+      "operator": "alter_constant",
+      "path": "/RooftopUnit/Inputs/TOut"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 88,
+      "operator": "alter_constant",
+      "path": "/RooftopUnit/Outputs/yOutDam"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 82,
+      "operator": "alter_constant",
+      "path": "/RooftopUnit/Inputs/TZonCooSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 95,
+      "operator": "change_priority_level",
+      "path": "/RooftopUnit/Outputs/yFan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 72,
+      "operator": "delete_link",
+      "path": "/RooftopUnit/Logic/Heating_stage_off/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 94,
+      "operator": "change_priority_level",
+      "path": "/RooftopUnit/Outputs/yCoo/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 90,
+      "operator": "drop_facets",
+      "path": "/RooftopUnit/Inputs/TZon"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 74,
+      "operator": "delete_link",
+      "path": "/RooftopUnit/Logic/Cooling_with_heating_off/Link1"
+     }
+    ]
+   },
+   "expectations": "generated by the test author (docs/decisions/011)",
+   "family": "BACTALK_STANDARD_SEQUENCE",
+   "gate_g_eng": "unapproved",
+   "id": "rtu-economizer",
+   "label": "BACTalk standard sequence (engineer-approved requirements)",
+   "parameters": {
+    "economizer": true
+   },
+   "requirements_digest": "fe83dfd809754fbc343229d9ace666b395c51f5f03aebce4558d150b4661a6ac",
+   "scenarios": 56,
+   "source_of_truth": "requirement set (Gate G-ENG)",
+   "tier": "4",
+   "variant": "economizer \u00b7 7 requirements"
+  },
+  {
+   "adequacy": {
+    "accepted": false,
+    "decisions_percent": 100.0,
+    "invariant_sequences": 10000,
+    "questions": 0,
+    "scenarios": 14
+   },
+   "controller": "Kitchen hood exhaust and makeup air interlock (custom, job-specific)",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 16,
+    "errors": [],
+    "links": 10,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "legs": [
+     "default",
+     "scan"
+    ],
+    "note": "both legs retained",
+    "passed": true
+   },
+   "d4": {
+    "band_set": "scan",
+    "by_catcher": {
+     "suite": 13,
+     "survived": 5,
+     "validator": 5
+    },
+    "catch_rate": 0.7826,
+    "caught": 18,
+    "mutants_generated": 23,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 23,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 18,
+      "operator": "change_priority_level",
+      "path": "/KitchenHoodInterlock/Outputs/yHooFan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 21,
+      "operator": "change_priority_level",
+      "path": "/KitchenHoodInterlock/Outputs/yMakFan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 20,
+      "operator": "change_priority_level",
+      "path": "/KitchenHoodInterlock/Outputs/yMakDam/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 19,
+      "operator": "change_priority_level",
+      "path": "/KitchenHoodInterlock/Outputs/yMakAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 11,
+      "operator": "delete_link",
+      "path": "/KitchenHoodInterlock/Logic/Commanded__not_proven/Link"
+     }
+    ]
+   },
+   "expectations": "generated by the test author (docs/decisions/011)",
+   "family": "CUSTOM_JOB_SPECIFIC",
+   "gate_g_eng": "unapproved",
+   "id": "custom-kitchen-hood-interlock",
+   "label": "custom, job-specific (fixture)",
+   "parameters": {},
+   "requirements_digest": "e396bfb6b009a0b08f788289db4ec5e65c8c4a915cb5c4335177c9ee23c7b058",
+   "scenarios": 14,
+   "source_of_truth": "requirement set (Gate G-ENG)",
+   "tier": "5",
+   "variant": "default \u00b7 4 requirements"
+  },
+  {
+   "adequacy": {
+    "accepted": false,
+    "decisions_percent": 100.0,
+    "invariant_sequences": 10000,
+    "questions": 0,
+    "scenarios": 30
+   },
+   "controller": "Seasonal heating/cooling changeover (custom, job-specific)",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 23,
+    "errors": [],
+    "links": 20,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "legs": [
+     "default",
+     "scan"
+    ],
+    "note": "both legs retained",
+    "passed": true
+   },
+   "d4": {
+    "band_set": "scan",
+    "by_catcher": {
+     "suite": 25,
+     "survived": 8,
+     "validator": 14
+    },
+    "catch_rate": 0.8298,
+    "caught": 39,
+    "mutants_generated": 47,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 47,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 39,
+      "operator": "alter_constant",
+      "path": "/SeasonalChangeover/Inputs/TOut"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 19,
+      "operator": "delete_link",
+      "path": "/SeasonalChangeover/Logic/No_cooling_override/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 28,
+      "operator": "delete_link",
+      "path": "/SeasonalChangeover/Logic/Not_in_automatic_heating/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 40,
+      "operator": "drop_facets",
+      "path": "/SeasonalChangeover/Inputs/TOut"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 27,
+      "operator": "delete_link",
+      "path": "/SeasonalChangeover/Logic/Automatic_heating__no_cooling_override/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 32,
+      "operator": "delete_link",
+      "path": "/SeasonalChangeover/Logic/Automatic_cooling__no_automatic_heating/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 42,
+      "operator": "change_priority_level",
+      "path": "/SeasonalChangeover/Outputs/yHeaSea/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 41,
+      "operator": "change_priority_level",
+      "path": "/SeasonalChangeover/Outputs/yCooSea/Link"
+     }
+    ]
+   },
+   "expectations": "generated by the test author (docs/decisions/011)",
+   "family": "CUSTOM_JOB_SPECIFIC",
+   "gate_g_eng": "unapproved",
+   "id": "custom-seasonal-changeover",
+   "label": "custom, job-specific (fixture)",
+   "parameters": {},
+   "requirements_digest": "d096a0e2be7be286084b5ca2796c9bff7950ea2ce34f4a0e8a50cc70cff2d4d6",
+   "scenarios": 30,
+   "source_of_truth": "requirement set (Gate G-ENG)",
+   "tier": "5",
+   "variant": "default \u00b7 4 requirements"
   }
  ],
  "mutation_sample": 40,
@@ -2713,12 +5663,12 @@
  "mutation_target": 0.95,
  "schema": "bactalk.native-bog-coverage/v1",
  "summary": {
-  "all_four": 4,
-  "blocked": 6,
-  "configurations": 24,
-  "d1": 18,
-  "d2": 18,
-  "d3": 16,
-  "d4": 6
+  "all_four": 0,
+  "blocked": 4,
+  "configurations": 36,
+  "d1": 32,
+  "d2": 32,
+  "d3": 30,
+  "d4": 0
  }
 }

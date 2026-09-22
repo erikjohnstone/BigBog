@@ -13,7 +13,7 @@ claim of runtime qualification.
 |---|---|
 | `STOCK_EXACT` | 28 |
 | `STOCK_WITHIN_BANDS` | 3 |
-| `MODULE` | 21 |
+| `MODULE` | 22 |
 | `UNSUPPORTED` | 6 |
 
 ## Matrix
@@ -50,6 +50,7 @@ claim of runtime qualification.
 | `boolean_set_reset` | `MODULE` | `bactalkG36:SetReset` | — | Clear-dominant latch with host-tick semantics; the stock OneShot/Or/And composite latched on transient values inside one link propagation (N7, D3). |
 | `one_shot` | `MODULE` | `bactalkG36:RisingEdge` | — | One execution true per rising edge, judged between execution periods; kitControl:OneShot fires on transient values inside one link propagation (N7, D3). |
 | `boolean_falling_edge` | `MODULE` | `bactalkG36:FallingEdge` | — | One execution true per falling edge, judged between execution periods. |
+| `numeric_round` | `MODULE` | `bactalkG36:Round` | — | Round half away from zero (CDL RealToInteger); kitControl has no rounding block. |
 | `boolean_delay` | `STOCK_WITHIN_BANDS` | `kitControl:BooleanDelay` | in→in, out→out | — |
 | `boolean_true_false_hold` | `MODULE` | `bactalkG36:TrueFalseHold` | — | No stock block holds both states for a minimum time. |
 | `boolean_pre_host_tick` | `MODULE` | `bactalkG36:Pre` | — | One-tick delay with host-tick semantics. |
@@ -129,6 +130,7 @@ Bounding scenarios:
 - `bactalkG36:PIDWithReset`: `pid_with_reset`
 - `bactalkG36:Pre`: `boolean_pre_host_tick`
 - `bactalkG36:RisingEdge`: `one_shot`
+- `bactalkG36:Round`: `numeric_round`
 - `bactalkG36:SampleTrigger`: `boolean_sample_trigger`
 - `bactalkG36:Sampler`: `numeric_sampler`
 - `bactalkG36:SetReset`: `boolean_set_reset`

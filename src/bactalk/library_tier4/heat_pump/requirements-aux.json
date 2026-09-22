@@ -1,0 +1,596 @@
+{
+ "schema": "bactalk.protocol-requirements/v1",
+ "sequence_id": "heat-pump-aux",
+ "title": "Air-source heat pump, single zone with auxiliary heat (BACTalk standard sequence)",
+ "version": "1.0 (N10 draft, awaiting Gate G-ENG)",
+ "tier": 4,
+ "equipment_brick_class": "brick:Heat_Pump",
+ "sources": [
+  {
+   "document": "BACTalk standard sequence: air-source heat pump",
+   "edition": "designer practice; not a Guideline 36 sequence"
+  }
+ ],
+ "step_seconds": 10.0,
+ "points": [
+  {
+   "name": "uOcc",
+   "label": "Occupied (schedule)",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Occupancy_Status"
+  },
+  {
+   "name": "TZon",
+   "label": "Zone temperature",
+   "data_type": "numeric",
+   "direction": "input",
+   "nominal": 295.15,
+   "unit": "K",
+   "minimum": 283.15,
+   "maximum": 313.15,
+   "resolution": 0.1,
+   "brick_class": "brick:Zone_Air_Temperature_Sensor"
+  },
+  {
+   "name": "TZonCooSet",
+   "label": "Zone cooling setpoint",
+   "data_type": "numeric",
+   "direction": "input",
+   "nominal": 297.15,
+   "unit": "K",
+   "minimum": 291.15,
+   "maximum": 303.15,
+   "resolution": 0.1,
+   "brick_class": "brick:Zone_Air_Cooling_Temperature_Setpoint"
+  },
+  {
+   "name": "TZonHeaSet",
+   "label": "Zone heating setpoint",
+   "data_type": "numeric",
+   "direction": "input",
+   "nominal": 293.15,
+   "unit": "K",
+   "minimum": 285.15,
+   "maximum": 297.15,
+   "resolution": 0.1,
+   "brick_class": "brick:Zone_Air_Heating_Temperature_Setpoint"
+  },
+  {
+   "name": "TOut",
+   "label": "Outdoor air temperature",
+   "data_type": "numeric",
+   "direction": "input",
+   "nominal": 283.15,
+   "unit": "K",
+   "minimum": 243.15,
+   "maximum": 323.15,
+   "resolution": 0.1,
+   "brick_class": "brick:Outside_Air_Temperature_Sensor"
+  },
+  {
+   "name": "uFanSta",
+   "label": "Indoor fan proof",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Run_Status"
+  },
+  {
+   "name": "yFan",
+   "label": "Indoor fan start command",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Run_Enable_Command"
+  },
+  {
+   "name": "yCom",
+   "label": "Compressor command",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Compressor_Command"
+  },
+  {
+   "name": "yRev",
+   "label": "Reversing valve (true = cooling)",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Reversing_Valve_Command"
+  },
+  {
+   "name": "yFanAla",
+   "label": "Indoor fan proof alarm",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Alarm"
+  },
+  {
+   "name": "yAux",
+   "label": "Auxiliary electric heat command",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Heating_Command"
+  }
+ ],
+ "requirements": [
+  {
+   "id": "R-01",
+   "title": "Indoor fan runs when occupied",
+   "kind": "control",
+   "text": "The indoor fan is commanded on whenever the unit is occupied and off when unoccupied.",
+   "citation": {
+    "document": "BACTalk standard sequence: air-source heat pump",
+    "section": "§1 fan",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uOcc",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "R-02",
+   "title": "Fan proof alarm",
+   "kind": "alarm",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "When the fan is commanded on and not proven for 60 seconds the fan proof alarm is raised; it clears when the fan proves or the command is removed.",
+   "citation": {
+    "document": "BACTalk standard sequence: air-source heat pump",
+    "section": "§6 alarms",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uFanSta",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "timing": {
+    "delay_seconds": 60.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "parameters": {
+    "proofDelay_s": 60.0
+   }
+  },
+  {
+   "id": "R-03",
+   "title": "Cooling: compressor with the reversing valve in cooling",
+   "kind": "staging",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With the fan proven and the cooling setpoint at its nominal 297.15 K, the compressor runs in cooling (reversing valve energised) when the zone temperature exceeds the cooling setpoint by more than 0.5 K for 2 minutes, and stops when it falls 0.5 K below the setpoint (1 K deadband). The stage is compared with the live setpoint.",
+   "citation": {
+    "document": "BACTalk standard sequence: air-source heat pump",
+    "section": "§2 cooling",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "TZon",
+     "operator": "gt",
+     "value": 297.65,
+     "deadband": 1.0
+    }
+   ],
+   "timing": {
+    "delay_seconds": 120.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yCom",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yRev",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yCom",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "parameters": {
+    "stageDelay_s": 120.0,
+    "deadband_K": 1.0
+   }
+  },
+  {
+   "id": "R-04",
+   "title": "Heating: compressor with the reversing valve in heating",
+   "kind": "staging",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With the fan proven, the outdoor air above the 268.15 K (−5 °C) compressor lockout (locked again below 267.15 K, a 1 K deadband) and the heating setpoint at its nominal 293.15 K, the compressor runs in heating (reversing valve de-energised) when the zone temperature falls more than 0.5 K below the heating setpoint for 2 minutes, and stops when it rises 0.5 K above the setpoint.",
+   "citation": {
+    "document": "BACTalk standard sequence: air-source heat pump",
+    "section": "§3 heating",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "TOut",
+     "operator": "gt",
+     "value": 268.15,
+     "deadband": 1.0
+    },
+    {
+     "point": "TZon",
+     "operator": "lt",
+     "value": 292.65,
+     "deadband": 1.0
+    }
+   ],
+   "timing": {
+    "delay_seconds": 120.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yCom",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yRev",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yAux",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yCom",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "parameters": {
+    "compressorLockout_K": 268.15
+   }
+  },
+  {
+   "id": "R-05",
+   "title": "Unoccupied shuts the unit down",
+   "kind": "safety",
+   "text": "When unoccupied the fan, the compressor, the auxiliary heat and the fan proof alarm are off in the same scan.",
+   "citation": {
+    "document": "BACTalk standard sequence: air-source heat pump",
+    "section": "§1 fan",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uOcc",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yCom",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yAux",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": "R-06",
+   "title": "Auxiliary heat below the compressor lockout",
+   "kind": "staging",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With the fan proven, the outdoor air below 267.15 K (the compressor lockout less its 1 K deadband; the compressor is allowed again above 268.15 K) and a heating demand (zone more than 0.5 K below the heating setpoint) for 2 minutes, the auxiliary electric heat runs alone: the compressor stays off.",
+   "citation": {
+    "document": "BACTalk standard sequence: air-source heat pump",
+    "section": "§4 auxiliary heat",
+    "fidelity": "designer",
+    "paragraph": "lockout"
+   },
+   "conditions": [
+    {
+     "point": "uFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "TOut",
+     "operator": "lt",
+     "value": 267.15,
+     "deadband": 1.0
+    },
+    {
+     "point": "TZon",
+     "operator": "lt",
+     "value": 292.65,
+     "deadband": 1.0
+    }
+   ],
+   "timing": {
+    "delay_seconds": 120.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yAux",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yCom",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yAux",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "R-07",
+   "title": "Supplemental heat when the compressor cannot hold",
+   "kind": "staging",
+   "assumes": [
+    "R-04"
+   ],
+   "text": "When a heating demand persists with the zone more than 2 K below the heating setpoint (1 K deadband) for 10 minutes from the start of the demand, the auxiliary heat is added to the compressor; it drops out when the zone is within 1 K of the setpoint.",
+   "citation": {
+    "document": "BACTalk standard sequence: air-source heat pump",
+    "section": "§4 auxiliary heat",
+    "fidelity": "designer",
+    "paragraph": "supplemental"
+   },
+   "conditions": [
+    {
+     "point": "TZon",
+     "operator": "lt",
+     "value": 291.15,
+     "deadband": 1.0
+    }
+   ],
+   "timing": {
+    "delay_seconds": 600.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yAux",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yCom",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "before": [
+    {
+     "point": "yAux",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yCom",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yAux",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "parameters": {
+    "auxDelay_s": 600.0,
+    "auxDrop_K": 2.0
+   }
+  }
+ ],
+ "invariants": [
+  {
+   "id": "I-01",
+   "text": "Nothing runs while unoccupied",
+   "citation": {
+    "document": "BACTalk standard sequence: air-source heat pump",
+    "section": "§1 fan",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "uOcc",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yCom",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yAux",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "I-02",
+   "text": "No compressor heating below the lockout",
+   "citation": {
+    "document": "BACTalk standard sequence: air-source heat pump",
+    "section": "§3 heating",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "TOut",
+     "operator": "lt",
+     "value": 267.15
+    },
+    {
+     "point": "yRev",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "point": "yCom",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "I-03",
+   "text": "No compressor without a proven fan",
+   "citation": {
+    "document": "BACTalk standard sequence: air-source heat pump",
+    "section": "§2 cooling",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "uFanSta",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "point": "yCom",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yAux",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "I-04",
+   "text": "Auxiliary heat only in heating mode",
+   "citation": {
+    "document": "BACTalk standard sequence: air-source heat pump",
+    "section": "§4 auxiliary heat",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "yAux",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "then": [
+    {
+     "point": "yRev",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  }
+ ],
+ "notes": "BACTalk standard sequence (engineer-approved requirements), never labelled G36. Configuration option aux_heat=true. Setpoints are inputs; staging requirements are stated at the nominal setpoints so their thresholds are numbers. Minimum compressor off time and defrost are out of scope of this draft."
+}

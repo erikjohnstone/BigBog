@@ -352,6 +352,18 @@ _TICK_NOTE = "steps only on the execution period (host-tick semantics)"
 COMPONENTS = (
     *COMPONENTS,
     ComponentSpec(
+        "Round",
+        "com/bactalk/g36/BRound",
+        (BlockKind.NUMERIC_ROUND,),
+        (
+            ("in", _STATUS_NUMERIC, "input"),
+            ("out", _STATUS_NUMERIC, "output"),
+        ),
+        (),
+        _map(**{"in": "in"}),
+        _map(out="out"),
+    ),
+    ComponentSpec(
         "RisingEdge",
         "com/bactalk/g36/BRisingEdge",
         (BlockKind.ONE_SHOT,),

@@ -13,6 +13,7 @@
   <p n="TrueFalseHold" t="bactalkG36:TrueFalseHold"/>
   <p n="Pre" t="bactalkG36:Pre"/>
   <p n="RisingEdge" t="bactalkG36:RisingEdge"/>
+  <p n="Round" t="bactalkG36:Round"/>
   <p n="FallingEdge" t="bactalkG36:FallingEdge"/>
   <p n="SetReset" t="bactalkG36:SetReset"/>
  </p>

@@ -1,0 +1,586 @@
+{
+  "accepted": false,
+  "approval_digest": "ab86fa1eb77f8d2802942e1e3992b35fe09c48f405e91bf0bcf4879656a4ee80",
+  "classifications": [],
+  "decisions": {
+    "decision_count": 10,
+    "fully_covered": true,
+    "gaps": [],
+    "outcomes_observed": 20,
+    "outcomes_possible": 20,
+    "percent": 100.0
+  },
+  "differential": {
+    "default": {
+      "band_set": "default",
+      "cases": 36,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "default",
+      "seconds": 0.7
+    },
+    "scan": {
+      "band_set": "scan",
+      "cases": 36,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "scan-module-tick",
+      "seconds": 0.4
+    }
+  },
+  "gaps": [
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uOcc stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-01"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uFanSta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-02"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uFanSta stuck, stale; TZon stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-03"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uFanSta stuck, stale; TZon stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-04"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uOcc stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-05"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uFanSta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-06"
+    }
+  ],
+  "gate_g_eng": "unapproved",
+  "invariant_sequences_required": 10000,
+  "invariants": {
+    "examples": [],
+    "invariants": [
+      "I-01",
+      "I-02",
+      "I-03",
+      "I-04"
+    ],
+    "passed": true,
+    "seconds": 41.3,
+    "seed": 7,
+    "sequences": 10000,
+    "steps_checked": 240000,
+    "steps_per_sequence": 24,
+    "violations": 0
+  },
+  "mutation": {
+    "band_set": "scan",
+    "by_catcher": {
+      "loader": 2,
+      "suite": 44,
+      "survived": 20,
+      "validator": 22
+    },
+    "by_operator": {
+      "alter_constant": {
+        "caught": 2,
+        "total": 7
+      },
+      "change_block_type": {
+        "caught": 14,
+        "total": 14
+      },
+      "change_priority_level": {
+        "caught": 0,
+        "total": 5
+      },
+      "delete_link": {
+        "caught": 27,
+        "total": 33
+      },
+      "drop_facets": {
+        "caught": 0,
+        "total": 4
+      },
+      "invert_parameter": {
+        "caught": 5,
+        "total": 5
+      },
+      "swap_link_slot": {
+        "caught": 20,
+        "total": 20
+      }
+    },
+    "catch_rate": 0.7727,
+    "caught": 68,
+    "mutants_generated": 88,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 88,
+    "seconds": 6.8,
+    "survivors": [
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 69,
+        "operator": "alter_constant",
+        "path": "/RooftopUnit/Inputs/TZonHeaSet"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 76,
+        "operator": "drop_facets",
+        "path": "/RooftopUnit/Inputs/TZonHeaSet"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 71,
+        "operator": "alter_constant",
+        "path": "/RooftopUnit/Logic/Half_deadband"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 58,
+        "operator": "delete_link",
+        "path": "/RooftopUnit/Logic/Cooling_stage/Link1"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 75,
+        "operator": "drop_facets",
+        "path": "/RooftopUnit/Inputs/TZonCooSet"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 59,
+        "operator": "delete_link",
+        "path": "/RooftopUnit/Logic/Heating_stage_off/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 78,
+        "operator": "change_priority_level",
+        "path": "/RooftopUnit/Outputs/yCoo/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 79,
+        "operator": "change_priority_level",
+        "path": "/RooftopUnit/Outputs/yFan/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 45,
+        "operator": "delete_link",
+        "path": "/RooftopUnit/Logic/Damper_position_with_the_fan_proven/Link2"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 80,
+        "operator": "change_priority_level",
+        "path": "/RooftopUnit/Outputs/yFanAla/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 61,
+        "operator": "delete_link",
+        "path": "/RooftopUnit/Logic/Cooling_with_heating_off/Link1"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 81,
+        "operator": "change_priority_level",
+        "path": "/RooftopUnit/Outputs/yHea/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 56,
+        "operator": "delete_link",
+        "path": "/RooftopUnit/Logic/Heating_stage/Link1"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 82,
+        "operator": "change_priority_level",
+        "path": "/RooftopUnit/Outputs/yOutDam/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 67,
+        "operator": "alter_constant",
+        "path": "/RooftopUnit/Inputs/TZon"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 77,
+        "operator": "drop_facets",
+        "path": "/RooftopUnit/Outputs/yOutDam"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 73,
+        "operator": "alter_constant",
+        "path": "/RooftopUnit/Outputs/yOutDam"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 74,
+        "operator": "drop_facets",
+        "path": "/RooftopUnit/Inputs/TZon"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 68,
+        "operator": "alter_constant",
+        "path": "/RooftopUnit/Inputs/TZonCooSet"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 41,
+        "operator": "delete_link",
+        "path": "/RooftopUnit/Logic/Commanded__not_proven/Link"
+      }
+    ]
+  },
+  "mutation_target": 0.95,
+  "plan_digest": "764afea0cd1085269107b4502d98aae496d972b6a7b25537a31f5c3ead91d3ed",
+  "questions": [],
+  "requirements_digest": "a3c1ff9ca922fcc950a834af7b6677559a29a88abaa350ceb92b7d032852fdde",
+  "schema": "bactalk.protocol-adequacy/v1",
+  "seconds": 49.3,
+  "sequence_id": "rtu",
+  "suite": {
+    "count": 36,
+    "failed": 0,
+    "invariant_violations": [],
+    "passed": true,
+    "scenarios": [
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-01 positive",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-01 negative",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-01 recovery",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-02 positive",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-02 negative",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-02 timing_before",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-02 timing_after",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-02 recovery",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-03 positive",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-03 negative",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-03 negative_single [uFanSta]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-03 negative_single [TZon]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-03 timing_before",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-03 timing_after",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-03 boundary_false [TZon at threshold]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-03 boundary_true [TZon just above]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_hold",
+        "name": "R-03 deadband_hold [TZon]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_release",
+        "name": "R-03 deadband_release [TZon]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-03 recovery",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-04 positive",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-04 negative",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-04 negative_single [uFanSta]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-04 negative_single [TZon]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-04 timing_before",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-04 timing_after",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-04 boundary_false [TZon at threshold]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-04 boundary_true [TZon just below]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_hold",
+        "name": "R-04 deadband_hold [TZon]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_release",
+        "name": "R-04 deadband_release [TZon]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-04 recovery",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-05 positive",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-05 negative",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-05 recovery",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-06 positive",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-06 negative",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-06 recovery",
+        "passed": true,
+        "requirement_id": "R-06"
+      }
+    ],
+    "seconds": 0.1
+  },
+  "traceability": {
+    "requirements_without_scenarios": [],
+    "scenarios_per_requirement": {
+      "R-01": 3,
+      "R-02": 5,
+      "R-03": 11,
+      "R-04": 11,
+      "R-05": 3,
+      "R-06": 3
+    }
+  }
+}

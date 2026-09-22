@@ -28,8 +28,10 @@ stack is present on the development box and the LBNL translation lane runs
 | N5 Point linking | **done** | `tests/test_native_bog_points.py` in `make test-native-bog`: one AHU + 25 VAVs linked in one station, validator clean | station structure is doc-only until Gate G-WB (docs/decisions/006) |
 | N6 Shadow Runtime | **done** | `make test-native-bog` (232 passed: `tests/test_native_bog_shadow_*.py` add the loader, block-semantics, kernel-equivalence and driver tests incl. both Tier 1 suites and the AHU + 25 VAVs fan-out); `make test-minimal` (408 passed, 1 skipped); `make shadow-check` | stock semantics are ASSUMED until Gate G-WB's calibration kit (N7); event-ordering hazard in the VAV time-suppression logic recorded for N7 (docs/niagara-semantics.md) |
 | N7 Prove it | **done (D4 target not met; recorded)** | `make test-native-bog` (calibration kit `--check` + 312 native_bog tests: differential, property, mutation, calibration, shadow qualification); `make test-minimal` (469 passed, 1 skipped); committed proofs `artifacts/native-bog/d1..d4-tier1.json`; web: `make web-lint`, `make web-build`, `make web-test`, Playwright `e2e/shadow.spec.ts` | D4 catch rate: neither Tier 1 suite meets ≥ 95 % (VAV reheat 63.5 %, multizone AHU 65.5 % on 200-mutant samples; the AHU's earlier 100 % was a failing-baseline artifact found in N8; survivors listed, N8's first work list, docs/decisions/009); stock semantics stay ASSUMED until a human runs `calibration/` (Gate G-WB) |
-| N8 Library Tier 2 | **partial** | `make test-native-bog` (337 passed: `tests/test_native_bog_tier2.py`, `tests/test_native_bog_requests.py`); `make test-minimal` (494 passed, 1 skipped); `docs/coverage.md` + `src/bactalk/library_tier2/coverage.json` from `make coverage-report` | 22 Tier 2 configurations defined; 16 retained with OCE references, 6 blocked with the exact reason in `docs/coverage.md` (single-zone AHU: OCE rejects the flattened CXF; fan coil, zone setpoints, zone-group operation mode: importer lacks `CDL.Reals.Limiter` / `CDL.Conversions.RealToInteger`; cooling-only Title 24: engine input mapping); D3 fails for the two constant-volume fan-powered boxes (Shadow Runtime valve PID transient, recorded below); D4 ≥ 95 % on 6 of 18 graded rows; chiller-plant pin (step 1) not started |
-| N9–N11 Library tiers 3–5 | not started | | Test Generation Protocol |
+| N8 Library Tier 2 | **partial** | `make test-native-bog` (`tests/test_native_bog_tier2.py`, `tests/test_native_bog_requests.py`); `make test-minimal`; `docs/coverage.md` + `src/bactalk/library_tier2/coverage.json` from `make coverage-report` | 22 Tier 2 configurations defined; 18 retained with OCE references, 4 blocked with the exact reason in `docs/coverage.md` (single-zone AHU ×2: OCE rejects the flattened CXF; fan coil: an array connector the importer does not scalarise; cooling-only Title 24: engine input mapping); D3 fails for the two constant-volume fan-powered boxes at the 1 s module tick and passes at the scan tick (reset-timing discretisation, recorded below); D4 ≥ 95 % on 0 of 18 graded rows (42.5–75 % on 200-mutant samples; the four earlier 100 % rows were the failing-baseline artifact, recorded below); chiller-plant pin (step 1) and Tier 2b plant templates not started |
+| N9 Tier 3 (Test Generation Protocol) | **done (Gate G-ENG waiting on a human)** | `make test-native-bog` (`tests/test_native_bog_tier3.py`), `make test-minimal` (`tests/test_protocol.py`, `tests/test_protocol_api.py`); `make tier3-adequacy` retains `library_tier3/hw_plant_boiler/adequacy.json` and `docs/test-plans/hw-plant-boiler.md`; web: `make web-lint`, `make web-build`, `make web-test` | hot water plant: 20 requirements, 5 invariants, 165 generated scenarios; suite passes, decision coverage 100 %, invariants 0 violations on 10 000 randomised sequences, Shadow differential both legs agree on all 165 scenarios, mutation 82.5 % (165 of 200) (scan leg, docs/decisions/011); 20 open questions (unstated failure behaviour) for the engineer; requirements `unapproved` until Gate G-ENG |
+| N10 Tier 4 standard sequences | **done (D4 target not met; recorded; Gate G-ENG waiting on a human)** | `make test-native-bog` (`tests/test_native_bog_tier4.py`: every configuration lowers, validates, passes its generated suite with full decision coverage and invariants, author reproduces the JSON, retained adequacy current); `make protocol-adequacy` | exhaust fan (basic, isolation damper), duty/standby pump pair, rooftop unit (with/without economizer), air-source heat pump (with/without auxiliary heat), DOAS (with/without energy recovery): 9 configurations, labelled BACTalk standard sequence, never G36; mutation 72–90 % on 100-mutant samples (docs/decisions/012) |
+| N11 Tier 5 custom sequences | **done (fixture; Gate G-ENG waiting on a human)** | `make test-minimal` (`tests/test_protocol_custom.py`: AI drafting through a fake provider, approval before program, adequacy, labelled run); `make test-native-bog` (`tests/test_native_bog_tier5.py`: Tier 1 AHU + VAV + two custom sequences in one validated `.bog`) | `bactalk.protocol.custom` + `/api/protocol/custom` + the web form; fixture custom sequences (kitchen hood interlock, seasonal changeover) mutation 78 % and 83 %; custom programs need an AI provider at runtime (docs/decisions/013) |
 
 ## N0 results
 
@@ -345,20 +347,36 @@ stack is present on the development box and the LBNL translation lane runs
   turned retention from hours into minutes.
 - **Coverage report.** `docs/coverage.md` and `src/bactalk/library_tier2/coverage.json`
   (`make coverage-report`, `GET /api/library/coverage`, the Libraries page) grade
-  all 24 rows: D1 and D2 pass on every retained row (18), D3 on 16, D4 at or above
-  95 % on 6 (the fan-powered VVF boxes, the dual-sensor snap-acting box and the
-  zone control loops); the rest report their measured catch rate. Six rows are
-  blocked with the exact reason.
+  all Tier 1 and Tier 2 rows (and, since N9–N11, every protocol row): D1 and D2 pass
+  on every retained Tier 2 row (18), D3 on 16, D4 at or above 95 % on none; every
+  graded row reports its measured catch rate (42.5–75 % on 200-mutant samples), the
+  leg it was judged on, and its survivors. Four rows are blocked with the exact
+  reason. `Round` and `Limiter` in the importer retained two more rows (zone-group
+  operation mode, zone setpoints with occupancy and window).
 - **Findings.** (1) The Tier 1 AHU's D4 figure in N7 (200 of 200) was an
   artifact: its acceptance suite was failing at the time, so every mutant was
-  "caught by the suite". `run_mutation_suite` now refuses a failing baseline and
-  the regenerated report reads 45 %. (2) The Shadow Runtime's valve PID lags the
-  interpreter and the reference by one scan and then integrates faster on the
-  constant-volume fan-powered boxes (`conVal`, first divergence at t = 300 s in
-  `DamVal_1`); the interpreter matches OCE exactly, so this is a runtime defect
-  to fix before those rows can pass D3. (3) `CDL.Reals.Limiter` and
-  `CDL.Conversions.RealToInteger` (round half away from zero; no stock Niagara
-  block) are the next importer/module additions; they unblock three rows.
+  "caught by the suite". `run_mutation_suite` now refuses a failing or already-caught
+  baseline and the regenerated report reads 45 %. The same artifact hid behind the
+  four Tier 2 rows that read 100 % (fan-powered VVF ×2, dual-sensor snap-acting box,
+  zone control loops): their per-second Shadow suite misses one reference-derived
+  expectation by a hair (a PID output 1–2 % off with the trajectories inside the
+  bands), so the suite oracle "caught" every mutant. They are now judged on the scan
+  leg, the leg their baseline passes (decision 010 item 8), and read 55–75 %. (2) On the constant-volume fan-powered boxes the
+  Shadow Runtime's valve PID (`conVal`, `DamVal_1`) diverges from the interpreter
+  and the reference at t = 300 s: its reset trigger rises a few seconds into the
+  first scan (module kernels tick every second) instead of at the scan boundary
+  where the 60 s-stepped reference and interpreter see it, and the bumpless reset
+  then starts from a different error. With the module period equal to the scan
+  (`coarse-module-tick`, tight bands) both rows pass, so this is a discretisation
+  difference between a per-second runtime and a per-scan reference, not a defect;
+  the coverage report grades both legs and says which one failed. (3) `CDL.Reals.Limiter` now expands in
+  the importer to stock `Maximum`/`Minimum` blocks and `CDL.Conversions.RealToInteger`
+  lowers to a new `bactalkG36:Round` kernel (round half away from zero; kitControl
+  has no rounding block; Java and Python ports agree on the equivalence rows;
+  matrix now MODULE 22). That unblocked the zone-group operation mode; the fan
+  coil then stopped at an array connector the importer does not scalarise
+  (`modSetPoi.TZonSet.setAdj`), and the zone setpoints at a demand-limit enum
+  constant, now added to the importer's enum table.
 - **Cross-equipment requests.** `ProjectSignalAggregation` (`sum`, `max`, `any`)
   joins the project model; `bactalk.library_tier2.requests` generates zone → AHU
   and AHU → plant request signals from the G36 request table and the project's
@@ -371,10 +389,112 @@ stack is present on the development box and the LBNL translation lane runs
   three importer gaps; the CVF runtime defect; the single-zone AHU (an OCE ingest
   rejection of LBNL's own CDL).
 
+## N9 results
+
+- **The protocol is code.** `bactalk.protocol` (docs/decisions/011): `requirements`
+  (a requirement set is a JSON document with a digest: points with ranges and
+  resolutions, numbered requirements with conditions, timing, outcomes, otherwise /
+  before / recovery states, failure behaviour and a cited source each, invariants),
+  `test_author` (every scenario family the protocol names, built from the set alone;
+  its import list is checked by a test so it can never see the logic), `invariants`
+  (evaluation and randomised input sequences), `adequacy` (suite, decision coverage,
+  invariants on ≥ 10 000 sequences, the Shadow differential and mutation, reported as
+  measured), `classify` (rule-based: test bug, ambiguous requirement → question, or
+  logic bug), `plan` (the readable requirement → scenario → result plan, which is also
+  the commissioning functional test plan) and `approvals` (Gate G-ENG records, one
+  per digest). `WorkbenchService.approve` and every export refuse a protocol job whose
+  digest is unapproved; `/api/protocol/sequences` and the Libraries → Requirements page
+  show the set, the plan, the adequacy report, the questions and the approve action.
+- **First Tier 3 item.** `bactalk.library_tier3.hw_plant_boiler`: a hot water plant
+  with two boilers, two primary pumps, minimum-flow bypass, supply temperature trim and
+  respond, staging, runtime lead/lag rotation and alarms, 20 requirements and 5
+  invariants drafted from Guideline 36 §5.21 (every citation is a paraphrase or a
+  designer default and says so), implemented in the typed IR from primitives only
+  (100 blocks, `native_with_module`, validator clean, traceability in the graph
+  metadata). The test author generates 165 scenarios; all pass on the interpreter,
+  every typed decision saw both outcomes, invariants held on 0 violations on 10 000 randomised sequences; the Shadow
+  Runtime agrees on the scan leg (both legs agree on all 165 scenarios); mutation 82.5 % (165 of 200). The requirement set is
+  `unapproved`: Gate G-ENG is a person.
+- **Findings.** (1) `pi_loop` cannot take a linked `direct` input (the matrix maps it
+  to the stock LoopPoint's enum `loopAction`; validator and Shadow Runtime both
+  refuse); Tier 3 uses `pid_with_reset`. (2) `coarse-module-tick` is a fixed 60 s
+  period; a new `scan-module-tick` policy (module period equal to the case's scan)
+  and a `scan` band set (three scans of timing slack for module-kernel chains,
+  measured on the rotation) make the cheap leg meaningful at any scan; the suite
+  driver had to resolve the policy per case. (3) Timing facts the mechanical author
+  needed: the runner primes each phase with a zero-length scan; a per-second runtime
+  sees a delay one scan late; trim and respond's first reset lands at the first
+  sample-period boundary after the delay from plant enable; an accumulator behind a
+  `Pre` block lags two scans. (4) Twenty of the protocol's questions are the same
+  shape, "what should the outputs do when input X is stuck, stale or out of range";
+  the guideline text does not say, so the requirement set does not either. (5) A scan longer
+  than a trim-and-respond period makes the per-scan interpreter and the per-second
+  runtime disagree on the setpoint: the requirement set's scan for any scenario must
+  be at most the shortest sample period in the logic; the rotation requirements now
+  say 300 s.
+- **Not claimed.** The per-second Shadow leg agrees on all 165 scenarios only after the rotation requirements were stepped at 300 s, the trim-and-respond period: at 1800 s scans it disagreed on the supply setpoint in the ten rotation scenarios because the scan under-sampled the period (finding 5). Nothing here is Niagara
+  runtime qualification. The requirement texts are drafts until an engineer approves
+  them; the 24 h rotation differential, the 3 min disable delay on every disable
+  condition and the alarm limits are designer defaults named in the requirements.
+
+## N10 results
+
+- **Configurable, not forked.** `bactalk.protocol.catalog` (decision 012) holds every
+  protocol item with its configurations; each configuration retains its own
+  requirement set (`<item>/author.py` writes it from the declared option, a test checks
+  the committed JSON), its own adequacy artifact, its own coverage row and Gate G-ENG
+  digest. One graph builder per type takes the option (`bactalk.library_tier4`).
+- **Five types, nine configurations.** Exhaust fan (basic / isolation damper with a
+  30 s end-switch timeout), duty/standby pump pair (fail-closed on explicit
+  availability), packaged rooftop unit (cooling and heating stages on hysteresis around
+  live setpoints, minimum outdoor air, economizer high limit), air-source heat pump
+  (reversing valve, −5 °C compressor lockout, auxiliary heat below the lockout and as
+  supplemental heat), dedicated outdoor air unit (two proportional coil loops around a
+  deadband, energy recovery wheel outside the free-cooling window). Every citation is
+  designer practice and says so; a test refuses "G36" in any Tier 4 requirement.
+- **As measured.** All nine pass their generated suites (358 scenarios) with
+  100 % decision coverage, 0 invariant violations on 10 000 randomised sequences
+  each, and Shadow Runtime agreement on both the per-second and the scan leg; mutation
+  catch rates on 100-mutant samples are 72–90 %. Of the 148 survivors across Tiers 4
+  and 5, 70 are priority-level or facet mutations on writable points and a further
+  share are input defaults the scenarios always drive, which no black-box scenario can
+  distinguish; the rest (48 deleted links, some altered constants) are behaviour the
+  requirement sets do not pin. All are listed per row in `docs/coverage.md`. The test author now also asserts every applicable
+  invariant at every phase end; it did not move the rates, which says the survivors
+  are not invariant breakers but behaviour the requirement sets do not pin (the
+  protocol's answer is more requirements, not more tests).
+- **Not claimed.** Gate G-ENG: nine digests wait on an engineer. Minimum compressor
+  off time, defrost, and setback cycling are out of scope of these drafts and named in
+  the notes.
+
+## N11 results
+
+- **The contractor's path.** `bactalk.protocol.custom` (decision 013): the
+  conversation-role model drafts the requirement set from the uploaded specification
+  section (validated by BACTalk's own model; sequence id and tier pinned; assumptions
+  and questions retained); the contractor approves the digest; only then the
+  coding-role model drafts the program (every point present, every requirement traced
+  to a block, `metadata.citations` requirement → paragraph); the protocol's adequacy
+  runs on it; the run is labelled `custom, job-specific` and cannot be approved or
+  exported before the requirements are. `/api/protocol/custom` and the Libraries →
+  Requirements page carry the flow; a fake provider proves it in tests, a real one is
+  configuration.
+- **Composition.** The fixture (`tests/test_native_bog_tier5.py`) exports the LBNL
+  AHU and VAV box with a kitchen hood / makeup air interlock (reads the AHU supply fan
+  status) and a seasonal changeover (drives the VAV's hot water plant status) as one
+  station `.bog` through `ProjectSignalBinding` records only; the project suite
+  passes, every program lowers natively, the station validates. The assembler now
+  finds boundary points under the native emitter's Inputs/Outputs folders.
+- **As measured.** The two fixture sequences pass their generated suites with 100 %
+  decision coverage, 0 invariant violations on 10 000 sequences, both Shadow legs;
+  mutation 78 % and 83 % on 100-mutant samples; every scenario traces to a requirement
+  that cites a specification paragraph. Their approvals wait on a human, as the
+  contractor's would.
+
 ## Gates
 
 | Gate | Status | File |
 |---|---|---|
 | G-SDK | WAITING_ON_HUMAN (ready to run after N3) | `gates/G-SDK.md` |
 | G-WB | WAITING_ON_HUMAN | `gates/G-WB.md` |
-| G-ENG | not yet needed (Tier 3+) | |
+| G-ENG | WAITING_ON_HUMAN (hw-plant-boiler requirements drafted; approve in Libraries → Requirements) | `gates/G-ENG.md` |

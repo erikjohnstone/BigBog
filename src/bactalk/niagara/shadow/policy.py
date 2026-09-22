@@ -26,7 +26,8 @@ class ExecutionPolicy:
 
     seed: int = 0
     module_period_seconds: float | None = None
-    """Override every bactalkG36 executionPeriod (None keeps the file's value, default 1 s)."""
+    """Override every bactalkG36 executionPeriod (None keeps the file's value, default 1 s;
+    0.0 means "equal to the scan interval of the case being run", resolved by the driver)."""
 
     one_shot_pulse_seconds: float = 0.5
     """kitControl:OneShot pulseWidth when the file does not set it (S-ONESHOT-2)."""
@@ -75,4 +76,8 @@ PLAUSIBLE_POLICIES: tuple[ExecutionPolicy, ...] = (
 )
 
 
-__all__ = ["DEFAULT_POLICY", "PLAUSIBLE_POLICIES", "ExecutionPolicy"]
+SCAN_POLICY = DEFAULT_POLICY.variant("scan-module-tick", module_period_seconds=0.0)
+"""Module kernels tick once per scan of the case (the interpreter's discretisation); the
+leg that separates a runtime defect from per-second discretisation, whatever the scan."""
+
+__all__ = ["DEFAULT_POLICY", "PLAUSIBLE_POLICIES", "SCAN_POLICY", "ExecutionPolicy"]

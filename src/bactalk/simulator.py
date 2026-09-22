@@ -244,6 +244,10 @@ class GraphInterpreter:
                     return math.nan
                 return math.copysign(math.inf, numerator * math.copysign(1.0, denominator))
             return numerator / denominator
+        if kind == BlockKind.NUMERIC_ROUND:
+            # CDL.Conversions.RealToInteger: round half away from zero.
+            value = self._number(args["in"])
+            return float(math.floor(value + 0.5)) if value > 0.0 else float(math.ceil(value - 0.5))
         if kind == BlockKind.MINIMUM:
             return min(self._number(args["a"]), self._number(args["b"]))
         if kind == BlockKind.MAXIMUM:

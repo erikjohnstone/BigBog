@@ -13,6 +13,7 @@ TrimAndRespond.displayName=Trim And Respond (G36)
 BooleanInitialization.displayName=Boolean Initialization
 NumericChange.displayName=Numeric Change Detector
 RisingEdge.displayName=Rising Edge (host tick)
+Round.displayName=Round (CDL RealToInteger)
 FallingEdge.displayName=Falling Edge (host tick)
 SetReset.displayName=Set/Reset Latch (CDL)
 Sampler.displayName=Sampler (CDL)

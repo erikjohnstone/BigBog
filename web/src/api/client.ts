@@ -1561,6 +1561,149 @@ const libraryCoverageSchema = z.object({
 export type LibraryCoverage = z.infer<typeof libraryCoverageSchema>;
 export type CoverageProof = z.infer<typeof coverageProofSchema>;
 
+// --- Test Generation Protocol (Tier 3+): requirement sets and Gate G-ENG ---------------
+const protocolValueSchema = z.union([z.number(), z.boolean()]);
+const protocolOutcomeSchema = z.object({
+  point: z.string(),
+  operator: z.string(),
+  value: protocolValueSchema,
+  upper: z.number().nullable().optional(),
+  tolerance: z.number().optional(),
+}).passthrough();
+const protocolConditionSchema = z.object({
+  point: z.string(),
+  operator: z.string(),
+  value: protocolValueSchema,
+  upper: z.number().nullable().optional(),
+  deadband: z.number().optional(),
+}).passthrough();
+const protocolCitationSchema = z.object({
+  document: z.string(),
+  section: z.string(),
+  paragraph: z.string().nullable().optional(),
+  fidelity: z.string(),
+  note: z.string().nullable().optional(),
+}).passthrough();
+const protocolRequirementSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  text: z.string(),
+  kind: z.string(),
+  citation: protocolCitationSchema,
+  assumes: z.array(z.string()),
+  conditions: z.array(protocolConditionSchema),
+  timing: z.object({
+    delay_seconds: z.number(),
+    release_seconds: z.number(),
+    reference: z.string().optional(),
+    tolerance_scans: z.number().optional(),
+  }).passthrough(),
+  outcomes: z.array(protocolOutcomeSchema),
+  otherwise: z.array(protocolOutcomeSchema),
+  parameters: z.record(z.string(), z.number()),
+}).passthrough();
+const protocolInvariantSchema = z.object({
+  id: z.string(),
+  text: z.string(),
+  citation: protocolCitationSchema,
+  when: z.array(protocolConditionSchema),
+  then: z.array(protocolOutcomeSchema),
+}).passthrough();
+const protocolGateSchema = z.enum(['approved', 'unapproved', 'stale']);
+const protocolConfigurationSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  options: z.record(z.string(), z.unknown()),
+}).passthrough();
+const protocolSequenceSummarySchema = z.object({
+  sequence_id: z.string(),
+  title: z.string(),
+  tier: z.number(),
+  label: z.string().optional(),
+  item: z.string().optional(),
+  configuration: protocolConfigurationSchema.optional(),
+  version: z.string(),
+  requirements_digest: z.string(),
+  gate_g_eng: protocolGateSchema,
+  adequacy_current: z.boolean(),
+  requirements: z.number(),
+  invariants: z.number(),
+  scenarios: z.number(),
+  gaps: z.number(),
+  accepted: z.boolean().nullable().optional(),
+  questions: z.number(),
+}).passthrough();
+const protocolSequenceListSchema = z.object({
+  schema: z.literal('bactalk.protocol-sequence-list/v1'),
+  items: z.array(protocolSequenceSummarySchema),
+});
+const protocolApprovalSchema = z.object({
+  reviewer: z.string(),
+  approved_at: z.string(),
+  requirements_digest: z.string(),
+  note: z.string().nullable().optional(),
+  authentication: z.string().optional(),
+}).passthrough();
+const protocolAdequacySchema = z.object({
+  accepted: z.boolean(),
+  mutation_target: z.number(),
+  invariant_sequences_required: z.number(),
+  suite: z.object({ passed: z.boolean(), count: z.number(), failed: z.number() }).passthrough(),
+  decisions: z.object({ percent: z.number().nullable().optional(), fully_covered: z.boolean().nullable().optional(), gaps: z.array(z.string()).nullable().optional() }).passthrough(),
+  invariants: z.object({ sequences: z.number(), steps_checked: z.number(), violations: z.number(), passed: z.boolean() }).passthrough(),
+  differential: z.record(z.string(), z.object({ policy: z.string(), band_set: z.string(), passed: z.boolean(), cases: z.number(), failing_cases: z.array(z.string()) }).passthrough()),
+  mutation: z.object({ catch_rate: z.number().optional(), sample: z.number().optional(), caught: z.number().optional(), policy: z.string().optional(), blocker: z.string().optional() }).passthrough().nullable(),
+  questions: z.array(z.string()),
+  gate_g_eng: z.string().optional(),
+}).passthrough();
+const protocolSequenceSchema = z.object({
+  schema: z.literal('bactalk.protocol-sequence/v1'),
+  sequence_id: z.string(),
+  title: z.string(),
+  tier: z.number(),
+  label: z.string().optional(),
+  item: z.string().optional(),
+  configuration: protocolConfigurationSchema.optional(),
+  version: z.string(),
+  requirements_digest: z.string(),
+  gate_g_eng: protocolGateSchema,
+  approval: protocolApprovalSchema.nullable(),
+  earlier_approvals: z.array(protocolApprovalSchema),
+  requirements: z.object({
+    title: z.string(),
+    version: z.string(),
+    notes: z.string().nullable().optional(),
+    sources: z.array(z.object({ document: z.string(), edition: z.string(), url: z.string().nullable().optional() }).passthrough()),
+    points: z.array(z.object({ name: z.string(), label: z.string(), data_type: z.string(), direction: z.string(), unit: z.string().nullable().optional() }).passthrough()),
+    requirements: z.array(protocolRequirementSchema),
+    invariants: z.array(protocolInvariantSchema),
+  }).passthrough(),
+  plan: z.object({
+    digest: z.string(),
+    generator: z.string(),
+    scenarios: z.number(),
+    per_requirement: z.record(z.string(), z.number()),
+    kinds: z.array(z.string()),
+    gaps: z.array(z.object({ requirement_id: z.string(), kind: z.string(), question: z.string() })),
+  }),
+  adequacy: protocolAdequacySchema.nullable(),
+  adequacy_current: z.boolean(),
+  custom: z.object({
+    spec_filename: z.string(),
+    spec_sha256: z.string(),
+    assumptions: z.array(z.string()),
+    questions: z.array(z.string()),
+    drafted_by: z.record(z.string(), z.string()),
+    has_program: z.boolean(),
+    created_at: z.string(),
+  }).passthrough().nullable().optional(),
+  test_plan_markdown: z.string(),
+}).passthrough();
+export type ProtocolSequenceSummary = z.infer<typeof protocolSequenceSummarySchema>;
+export type ProtocolSequence = z.infer<typeof protocolSequenceSchema>;
+export type ProtocolRequirement = z.infer<typeof protocolRequirementSchema>;
+export type ProtocolApproval = z.infer<typeof protocolApprovalSchema>;
+
 export const api = {
   async health() {
     return healthSchema.parse(await getJson('/api/health'));
@@ -1701,6 +1844,40 @@ export const api = {
   },
   async libraryCoverage() {
     return getArtifact('/api/library/coverage', libraryCoverageSchema);
+  },
+  async protocolSequences() {
+    return protocolSequenceListSchema.parse(await getJson('/api/protocol/sequences'));
+  },
+  async protocolSequence(sequenceId: string) {
+    return protocolSequenceSchema.parse(
+      await getJson(`/api/protocol/sequences/${encodeURIComponent(sequenceId)}`),
+    );
+  },
+  async createCustomSequence(body: { title: string; equipment_name: string; spec_text: string; spec_filename?: string }) {
+    return protocolSequenceSchema.parse(await postJson('/api/protocol/custom', body));
+  },
+  async draftCustomProgram(sequenceId: string) {
+    return protocolSequenceSchema.parse(
+      await postJson(`/api/protocol/custom/${encodeURIComponent(sequenceId)}/program`, {}),
+    );
+  },
+  async runCustomAdequacy(sequenceId: string, body: { mutants: number; invariant_sequences: number }) {
+    return protocolAdequacySchema.parse(
+      await postJson(`/api/protocol/custom/${encodeURIComponent(sequenceId)}/adequacy`, body),
+    );
+  },
+  async createCustomRun(sequenceId: string) {
+    return z.object({ id: z.string() }).passthrough().parse(
+      await postJson(`/api/protocol/custom/${encodeURIComponent(sequenceId)}/runs`, {}),
+    );
+  },
+  async approveProtocolRequirements(
+    sequenceId: string,
+    body: { reviewer?: string; requirements_digest: string; note?: string },
+  ) {
+    return protocolApprovalSchema.parse(
+      await postJson(`/api/protocol/sequences/${encodeURIComponent(sequenceId)}/approve`, body),
+    );
   },
   async libraryCatalogs() {
     const [g36, plant, faults, aixocat, niagara, ctrlFlow] = await Promise.all([

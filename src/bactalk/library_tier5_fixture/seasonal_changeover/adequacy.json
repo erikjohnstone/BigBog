@@ -1,0 +1,439 @@
+{
+  "accepted": false,
+  "approval_digest": "9b3dfa76009219379cf5e26659787cce7189c8a634067c33ad2ce19ee40dc82c",
+  "classifications": [],
+  "decisions": {
+    "decision_count": 11,
+    "fully_covered": true,
+    "gaps": [],
+    "outcomes_observed": 22,
+    "outcomes_possible": 22,
+    "percent": 100.0
+  },
+  "differential": {
+    "default": {
+      "band_set": "default",
+      "cases": 30,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "default",
+      "seconds": 3.0
+    },
+    "scan": {
+      "band_set": "scan",
+      "cases": 30,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "scan-module-tick",
+      "seconds": 0.5
+    }
+  },
+  "gaps": [
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when TOut stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-01"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when TOut stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-02"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uHeaOvr stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-03"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uCooOvr stuck, stale; uHeaOvr stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-04"
+    }
+  ],
+  "gate_g_eng": "unapproved",
+  "invariant_sequences_required": 10000,
+  "invariants": {
+    "examples": [],
+    "invariants": [
+      "I-01",
+      "I-02"
+    ],
+    "passed": true,
+    "seconds": 25.8,
+    "seed": 7,
+    "sequences": 10000,
+    "steps_checked": 240000,
+    "steps_per_sequence": 24,
+    "violations": 0
+  },
+  "mutation": {
+    "band_set": "scan",
+    "by_catcher": {
+      "suite": 25,
+      "survived": 8,
+      "validator": 14
+    },
+    "by_operator": {
+      "alter_constant": {
+        "caught": 0,
+        "total": 1
+      },
+      "change_block_type": {
+        "caught": 9,
+        "total": 9
+      },
+      "change_priority_level": {
+        "caught": 0,
+        "total": 2
+      },
+      "delete_link": {
+        "caught": 16,
+        "total": 20
+      },
+      "drop_facets": {
+        "caught": 0,
+        "total": 1
+      },
+      "invert_parameter": {
+        "caught": 4,
+        "total": 4
+      },
+      "swap_link_slot": {
+        "caught": 10,
+        "total": 10
+      }
+    },
+    "catch_rate": 0.8298,
+    "caught": 39,
+    "mutants_generated": 47,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 47,
+    "seconds": 4.5,
+    "survivors": [
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 39,
+        "operator": "alter_constant",
+        "path": "/SeasonalChangeover/Inputs/TOut"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 19,
+        "operator": "delete_link",
+        "path": "/SeasonalChangeover/Logic/No_cooling_override/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 28,
+        "operator": "delete_link",
+        "path": "/SeasonalChangeover/Logic/Not_in_automatic_heating/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 40,
+        "operator": "drop_facets",
+        "path": "/SeasonalChangeover/Inputs/TOut"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 27,
+        "operator": "delete_link",
+        "path": "/SeasonalChangeover/Logic/Automatic_heating__no_cooling_override/Link1"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 32,
+        "operator": "delete_link",
+        "path": "/SeasonalChangeover/Logic/Automatic_cooling__no_automatic_heating/Link1"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 42,
+        "operator": "change_priority_level",
+        "path": "/SeasonalChangeover/Outputs/yHeaSea/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 41,
+        "operator": "change_priority_level",
+        "path": "/SeasonalChangeover/Outputs/yCooSea/Link"
+      }
+    ]
+  },
+  "mutation_target": 0.95,
+  "plan_digest": "d44b854e57178f04ed45d1f2c440cd03427e0537358718c8f33052ab53874648",
+  "questions": [],
+  "requirements_digest": "d096a0e2be7be286084b5ca2796c9bff7950ea2ce34f4a0e8a50cc70cff2d4d6",
+  "schema": "bactalk.protocol-adequacy/v1",
+  "seconds": 34.0,
+  "sequence_id": "custom-seasonal-changeover",
+  "suite": {
+    "count": 30,
+    "failed": 0,
+    "invariant_violations": [],
+    "passed": true,
+    "scenarios": [
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-01 positive",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-01 negative",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-01 timing_before",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-01 timing_after",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "release_before",
+        "name": "R-01 release_before",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "release_after",
+        "name": "R-01 release_after",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-01 boundary_false [TOut at threshold]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-01 boundary_true [TOut just below]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_hold",
+        "name": "R-01 deadband_hold [TOut]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_release",
+        "name": "R-01 deadband_release [TOut]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-01 recovery",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-02 positive",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-02 negative",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-02 timing_before",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-02 timing_after",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "release_before",
+        "name": "R-02 release_before",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "release_after",
+        "name": "R-02 release_after",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-02 boundary_false [TOut at threshold]",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-02 boundary_true [TOut just above]",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_hold",
+        "name": "R-02 deadband_hold [TOut]",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_release",
+        "name": "R-02 deadband_release [TOut]",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-02 recovery",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-03 positive",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-03 negative",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-03 recovery",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-04 positive",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-04 negative",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-04 negative_single [uCooOvr]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-04 negative_single [uHeaOvr]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-04 recovery",
+        "passed": true,
+        "requirement_id": "R-04"
+      }
+    ],
+    "seconds": 0.2
+  },
+  "traceability": {
+    "requirements_without_scenarios": [],
+    "scenarios_per_requirement": {
+      "R-01": 11,
+      "R-02": 11,
+      "R-03": 3,
+      "R-04": 5
+    }
+  }
+}

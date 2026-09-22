@@ -1,0 +1,238 @@
+{
+  "accepted": false,
+  "approval_digest": "d704c7d0575ed67a28172b3f585ed1382846c073d205b206c8657b340e1f8a45",
+  "classifications": [],
+  "decisions": {
+    "decision_count": 2,
+    "fully_covered": true,
+    "gaps": [],
+    "outcomes_observed": 4,
+    "outcomes_possible": 4,
+    "percent": 100.0
+  },
+  "differential": {
+    "default": {
+      "band_set": "default",
+      "cases": 11,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "default",
+      "seconds": 0.0
+    },
+    "scan": {
+      "band_set": "scan",
+      "cases": 11,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "scan-module-tick",
+      "seconds": 0.1
+    }
+  },
+  "gaps": [
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uEna stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-01"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uFanSta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-02"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uEna stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-03"
+    }
+  ],
+  "gate_g_eng": "unapproved",
+  "invariant_sequences_required": 10000,
+  "invariants": {
+    "examples": [],
+    "invariants": [
+      "I-01",
+      "I-02"
+    ],
+    "passed": true,
+    "seconds": 9.8,
+    "seed": 7,
+    "sequences": 10000,
+    "steps_checked": 240000,
+    "steps_per_sequence": 24,
+    "violations": 0
+  },
+  "mutation": {
+    "band_set": "scan",
+    "by_catcher": {
+      "suite": 8,
+      "survived": 3,
+      "validator": 3
+    },
+    "by_operator": {
+      "change_block_type": {
+        "caught": 3,
+        "total": 3
+      },
+      "change_priority_level": {
+        "caught": 0,
+        "total": 2
+      },
+      "delete_link": {
+        "caught": 5,
+        "total": 6
+      },
+      "invert_parameter": {
+        "caught": 1,
+        "total": 1
+      },
+      "swap_link_slot": {
+        "caught": 2,
+        "total": 2
+      }
+    },
+    "catch_rate": 0.7857,
+    "caught": 11,
+    "mutants_generated": 14,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 14,
+    "seconds": 0.3,
+    "survivors": [
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 11,
+        "operator": "change_priority_level",
+        "path": "/ExhaustFan/Outputs/yFan/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 12,
+        "operator": "change_priority_level",
+        "path": "/ExhaustFan/Outputs/yFanAla/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 6,
+        "operator": "delete_link",
+        "path": "/ExhaustFan/Logic/Commanded__not_proven/Link"
+      }
+    ]
+  },
+  "mutation_target": 0.95,
+  "plan_digest": "0baf3eb678a8376653b4b77e0b2677ec3f4406f9ccb152bfb15396018f777399",
+  "questions": [],
+  "requirements_digest": "493055242b4a439f57bfc17638bdf0b762aa19409ed3b9ee3a0fc0a687d7469f",
+  "schema": "bactalk.protocol-adequacy/v1",
+  "seconds": 10.2,
+  "sequence_id": "exhaust-fan",
+  "suite": {
+    "count": 11,
+    "failed": 0,
+    "invariant_violations": [],
+    "passed": true,
+    "scenarios": [
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-01 positive",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-01 negative",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-01 recovery",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-02 positive",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-02 negative",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-02 timing_before",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-02 timing_after",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-02 recovery",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-03 positive",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-03 negative",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-03 recovery",
+        "passed": true,
+        "requirement_id": "R-03"
+      }
+    ],
+    "seconds": 0.0
+  },
+  "traceability": {
+    "requirements_without_scenarios": [],
+    "scenarios_per_requirement": {
+      "R-01": 3,
+      "R-02": 5,
+      "R-03": 3
+    }
+  }
+}

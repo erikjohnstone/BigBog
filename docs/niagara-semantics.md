@@ -116,7 +116,7 @@ note carries no behaviour.
 | Id | Rule | Status | Source |
 |---|---|---|---|
 | S-MODULE-1 | A component steps its kernel every `executionPeriod` (default 1 s) and only then: input changes are sampled at the next tick, never executed at once, so a transient value inside one link propagation cannot restart a delay, latch an edge or advance a state. Latency is bounded by the period. | OWN | `BKernelComponent.stepsOnInputChange` (false), `schedule` |
-| S-MODULE-2 | Per-execution kernels (`Pre`, `NumericChange`, `RisingEdge`, `FallingEdge`, `SetReset`, `Sampler`, `SampleTrigger`, `Hysteresis`) therefore see exactly one execution per period, so "the previous execution" is the previous host tick. | OWN | the tick-semantic kernels |
+| S-MODULE-2 | Per-execution kernels (`Pre`, `NumericChange`, `RisingEdge`, `FallingEdge`, `SetReset`, `Sampler`, `SampleTrigger`, `Hysteresis`; the stateless `Round`) therefore see exactly one execution per period, so "the previous execution" is the previous host tick. | OWN | the tick-semantic kernels |
 | S-MODULE-3 | When any used input is not valid (S-STATUS-2) the outputs are marked null and the kernel is not stepped. | OWN | `BKernelComponent.doExecute`, each wrapper's `inputsValid` |
 | S-MODULE-4 | The kernel's time base is seconds since the component started. | OWN | `BKernelComponent.doExecute` |
 | S-MODULE-6 | A sampling component (`UnitDelay`, `FirstOrderHold`, `Sampler`, `TrimAndRespond`) steps once more at the instant of its tick after everything else due at that instant has run (a zero-delay ticket), so the value it samples at a period boundary is the settled one, as a CDL solver samples after event iteration. | OWN | `BKernelComponent.resample`, `resamplesAtInstantEnd`; `ModuleBlock.on_timer` |
@@ -165,7 +165,12 @@ points, recorded here so N7 can act on them:
 2. **Time discretisation of module PIDs.** `bactalkG36:PIDWithReset` steps every
    second while the IR steps once per scan; both are explicit Euler, so the
    integral differs by up to one scan's contribution. The `coarse-module-tick`
-   policy reproduces the IR; the difference is a band, not a bug.
+   policy (60 s period) reproduces the IR at Tier 2's 60 s scans and the
+   `scan-module-tick` policy (period equal to the case's scan, resolved per case by
+   the driver) does so at any scan; the difference is a band, not a bug. Module
+   kernels in a chain tick once per scan in document order under those policies, so
+   an edge crossing `Pre → TimerAccumulating → SetReset` lands up to three scans
+   later than in the IR; the `scan` band set carries that slack (decision 011).
 3. **Kernel corrections made in N6** (both implementations, checked equal):
    `MovingAverage` kept a fixed 64-entry ring that truncated windows longer
    than 64 execution periods; `UnitDelay`, `FirstOrderHold` and the sampler

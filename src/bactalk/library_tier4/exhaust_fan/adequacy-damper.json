@@ -1,0 +1,344 @@
+{
+  "accepted": false,
+  "approval_digest": "e23e1e6dede608575be5a9094fa60ce8bfccece8ac038e981c7a13752a8e5a52",
+  "classifications": [],
+  "decisions": {
+    "decision_count": 6,
+    "fully_covered": true,
+    "gaps": [],
+    "outcomes_observed": 12,
+    "outcomes_possible": 12,
+    "percent": 100.0
+  },
+  "differential": {
+    "default": {
+      "band_set": "default",
+      "cases": 21,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "default",
+      "seconds": 0.1
+    },
+    "scan": {
+      "band_set": "scan",
+      "cases": 21,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "scan-module-tick",
+      "seconds": 0.1
+    }
+  },
+  "gaps": [
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uEna stuck, stale; uDamOpe stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-01"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uFanSta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-02"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uEna stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-03"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uDamOpe stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-04"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uEna stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-05"
+    }
+  ],
+  "gate_g_eng": "unapproved",
+  "invariant_sequences_required": 10000,
+  "invariants": {
+    "examples": [],
+    "invariants": [
+      "I-01",
+      "I-02"
+    ],
+    "passed": true,
+    "seconds": 19.9,
+    "seed": 7,
+    "sequences": 10000,
+    "steps_checked": 240000,
+    "steps_per_sequence": 24,
+    "violations": 0
+  },
+  "mutation": {
+    "band_set": "scan",
+    "by_catcher": {
+      "suite": 21,
+      "survived": 5,
+      "validator": 10
+    },
+    "by_operator": {
+      "change_block_type": {
+        "caught": 8,
+        "total": 8
+      },
+      "change_priority_level": {
+        "caught": 0,
+        "total": 3
+      },
+      "delete_link": {
+        "caught": 13,
+        "total": 15
+      },
+      "invert_parameter": {
+        "caught": 2,
+        "total": 2
+      },
+      "swap_link_slot": {
+        "caught": 8,
+        "total": 8
+      }
+    },
+    "catch_rate": 0.8611,
+    "caught": 31,
+    "mutants_generated": 36,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 36,
+    "seconds": 1.1,
+    "survivors": [
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 31,
+        "operator": "change_priority_level",
+        "path": "/ExhaustFan/Outputs/yDam/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 33,
+        "operator": "change_priority_level",
+        "path": "/ExhaustFan/Outputs/yFanAla/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 18,
+        "operator": "delete_link",
+        "path": "/ExhaustFan/Logic/Enabled__damper_not_proven/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 32,
+        "operator": "change_priority_level",
+        "path": "/ExhaustFan/Outputs/yFan/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 25,
+        "operator": "delete_link",
+        "path": "/ExhaustFan/Logic/Commanded__not_proven/Link"
+      }
+    ]
+  },
+  "mutation_target": 0.95,
+  "plan_digest": "078f1a460ba4551d4b592efee4cb3cbc16cd3312b31a590b34b7f640bc47d917",
+  "questions": [],
+  "requirements_digest": "7ab4c6fc0fbb41a2f135a8796091f58611d56f6d27f12ad8af8b7106bcd4bb46",
+  "schema": "bactalk.protocol-adequacy/v1",
+  "seconds": 21.4,
+  "sequence_id": "exhaust-fan-damper",
+  "suite": {
+    "count": 21,
+    "failed": 0,
+    "invariant_violations": [],
+    "passed": true,
+    "scenarios": [
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-01 positive",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-01 negative",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-01 negative_single [uEna]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-01 negative_single [uDamOpe]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-01 recovery",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-02 positive",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-02 negative",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-02 timing_before",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-02 timing_after",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-02 recovery",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-03 positive",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-03 negative",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-03 recovery",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-04 positive",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-04 negative",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-04 timing_before",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-04 timing_after",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-04 recovery",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-05 positive",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-05 negative",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-05 recovery",
+        "passed": true,
+        "requirement_id": "R-05"
+      }
+    ],
+    "seconds": 0.0
+  },
+  "traceability": {
+    "requirements_without_scenarios": [],
+    "scenarios_per_requirement": {
+      "R-01": 5,
+      "R-02": 5,
+      "R-03": 3,
+      "R-04": 5,
+      "R-05": 3
+    }
+  }
+}

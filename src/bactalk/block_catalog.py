@@ -42,6 +42,7 @@ _FAMILY: dict[BlockKind, str] = {
     BlockKind.MAXIMUM: "math",
     BlockKind.AVERAGE: "math",
     BlockKind.RESET: "math",
+    BlockKind.NUMERIC_ROUND: "math",
     BlockKind.GREATER_THAN: "compare",
     BlockKind.GREATER_THAN_OR_EQUAL: "compare",
     BlockKind.LESS_THAN: "compare",

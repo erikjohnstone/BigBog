@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 
 import type { Catalog } from '../../api/client';
 import type { CoverageProof, LibraryCoverage } from '../../api/client';
-import { useCtrlFlowTemplates, useLibraryCatalogs, useLibraryCoverage } from '../../api/queries';
+import { useCtrlFlowTemplates, useLibraryCatalogs, useLibraryCoverage, useProtocolSequences } from '../../api/queries';
 import { Input, StatusPill, buttonClass } from '../../design-system/primitives';
 import { ErrorState, LoadingState } from '../../design-system/states';
 import { KeyValue, SectionCard, StageFrame } from '../shared/StageFrame';
@@ -154,6 +154,41 @@ function proofCell(proof: CoverageProof): { tone: 'ok' | 'fail' | 'warn' | 'neut
  * (scripts/coverage_report.py). Every cell that is not a pass carries its reason
  * in the title; a blocked row is a configuration the toolchain refused.
  */
+/** Tier 3+ sequences built under the Test Generation Protocol, with Gate G-ENG. */
+function ProtocolSequences() {
+  const sequences = useProtocolSequences();
+  return (
+    <SectionCard
+      title="Requirements (Tier 3+, Test Generation Protocol)"
+      aside={
+        <Link to="/libraries/requirements" className="text-xs text-accent">
+          Open
+        </Link>
+      }
+    >
+      {sequences.data?.items.length ? (
+        <ul className="divide-y divide-line-1">
+          {sequences.data.items.map((item) => (
+            <li key={item.sequence_id} className="flex items-center gap-3 px-4 h-10 text-sm">
+              <span className="truncate">{item.title}</span>
+              <span className="font-mono text-2xs text-fg-2 truncate">Tier {item.tier} · {item.requirements} requirements · {item.scenarios} scenarios</span>
+              <span className="flex-1" />
+              <StatusPill tone={item.gate_g_eng === 'approved' ? 'ok' : item.gate_g_eng === 'stale' ? 'warn' : 'neutral'}>
+                Gate G-ENG {item.gate_g_eng}
+              </StatusPill>
+              <Link to={`/libraries/requirements/${encodeURIComponent(item.sequence_id)}`} className="text-xs text-accent whitespace-nowrap">
+                Review
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="px-4 py-3 text-sm text-fg-2">No Tier 3 sequences yet.</p>
+      )}
+    </SectionCard>
+  );
+}
+
 function CoverageMatrix({ coverage }: { coverage: LibraryCoverage }) {
   const summary = coverage.summary;
   return (
@@ -242,6 +277,7 @@ export function Libraries() {
           <p className="px-4 py-3 text-sm text-fg-2">No ctrl-flow templates are installed; the full bootstrap adds them.</p>
         )}
       </SectionCard>
+      <ProtocolSequences />
       {coverage.data?.state === 'available' ? (
         <CoverageMatrix coverage={coverage.data.data} />
       ) : (

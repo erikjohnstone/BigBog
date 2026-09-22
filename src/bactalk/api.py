@@ -12,7 +12,13 @@ from uuid import uuid4
 
 import httpx
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
+from fastapi.responses import (
+    FileResponse,
+    JSONResponse,
+    PlainTextResponse,
+    Response,
+    StreamingResponse,
+)
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -113,6 +119,12 @@ from bactalk.projects import (
     ProjectPreflight,
     ProjectSpec,
 )
+from bactalk.protocol import RequirementApproval, generate_test_plan
+from bactalk.protocol import catalog as protocol_catalog
+from bactalk.protocol.adequacy import assess_adequacy
+from bactalk.protocol.approvals import RequirementApprovalRepository
+from bactalk.protocol.custom import CUSTOM_LABEL, CustomSequenceRepository, custom_job
+from bactalk.protocol.plan import render_test_plan
 from bactalk.qualification_jobs import (
     TERMINAL_JOB_STATUSES,
     AlfalfaQualificationPayload,
@@ -165,6 +177,28 @@ class SPAStaticFiles(StaticFiles):
         if response.status_code == 404 and not Path(path).suffix:
             return await super().get_response("index.html", scope)
         return response
+
+
+class RequirementApprovalRequest(BaseModel):
+    """Gate G-ENG: approve one exact requirement set digest (gates/G-ENG.md)."""
+
+    reviewer: str | None = Field(default=None, min_length=2, max_length=120)
+    requirements_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+    note: str | None = Field(default=None, max_length=4_000)
+
+
+class CustomSequenceRequest(BaseModel):
+    """Tier 5: a contractor's specification section for the AI to draft requirements from."""
+
+    title: str = Field(min_length=3, max_length=200)
+    equipment_name: str = Field(pattern=r"^[A-Za-z_][A-Za-z0-9_]*$", max_length=120)
+    spec_text: str = Field(min_length=20, max_length=200_000)
+    spec_filename: str = Field(default="specification.txt", min_length=1, max_length=255)
+
+
+class CustomAdequacyRequest(BaseModel):
+    mutants: int = Field(default=0, ge=0, le=500)
+    invariant_sequences: int = Field(default=1_000, ge=1, le=100_000)
 
 
 class ApprovalRequest(BaseModel):
@@ -340,7 +374,9 @@ def create_app(
 ) -> FastAPI:
     root = run_root or Path(os.getenv("BACTALK_RUNS", ".bactalk/runs"))
     repository = RunRepository(root)
-    service = WorkbenchService(repository)
+    requirement_approvals = RequirementApprovalRepository(root.parent / "requirement-approvals")
+    custom_sequences = CustomSequenceRepository(root.parent / "custom-sequences")
+    service = WorkbenchService(repository, requirement_approvals=requirement_approvals)
     qualification_jobs = QualificationJobRepository(root.parent / "qualification-jobs")
     dispatch_qualification = qualification_dispatcher or RqQualificationDispatcher(
         queue_url=os.getenv(
@@ -737,6 +773,281 @@ def create_app(
                 status_code=404, detail="no coverage report; run scripts/coverage_report.py"
             )
         return report
+
+    # --- Test Generation Protocol (GOAL-NATIVE-BOG.md N9): Tier 3+ requirement sets --------
+
+    def _protocol_requirements(sequence_id: str):
+        """(requirements, label, item id, configuration dict, adequacy, custom record)."""
+
+        try:
+            entry = protocol_catalog.row(sequence_id)
+        except KeyError:
+            entry = None
+        if entry is not None:
+            return (
+                entry.requirement_set(),
+                entry.item.label,
+                entry.item.id,
+                {
+                    "id": entry.configuration.id,
+                    "label": entry.configuration.label,
+                    "options": entry.configuration.options,
+                },
+                entry.adequacy_artifact(),
+                None,
+            )
+        try:
+            record = custom_sequences.get(sequence_id)
+        except (KeyError, ValueError) as exc:
+            raise HTTPException(status_code=404, detail="protocol sequence not found") from exc
+        return (
+            record.requirement_set(),
+            CUSTOM_LABEL,
+            "custom",
+            {"id": "job", "label": record.equipment_name, "options": {}},
+            record.adequacy,
+            record,
+        )
+
+    def _protocol_item(sequence_id: str) -> dict:
+        requirements, label, item_id, configuration, adequacy, record = _protocol_requirements(
+            sequence_id
+        )
+        plan = generate_test_plan(requirements)
+        approvals = requirement_approvals.for_sequence(sequence_id)
+        exact = requirement_approvals.get(sequence_id, requirements.digest())
+        custom = None
+        if record is not None:
+            custom = {
+                "spec_filename": record.spec_filename,
+                "spec_sha256": record.spec_sha256,
+                "assumptions": record.assumptions,
+                "questions": record.questions,
+                "drafted_by": record.drafted_by,
+                "has_program": record.graph is not None,
+                "created_at": record.created_at.isoformat(),
+            }
+        return {
+            "schema": "bactalk.protocol-sequence/v1",
+            "sequence_id": sequence_id,
+            "title": requirements.title,
+            "tier": requirements.tier,
+            "label": label,
+            "item": item_id,
+            "configuration": configuration,
+            "custom": custom,
+            "version": requirements.version,
+            "requirements_digest": requirements.digest(),
+            "gate_g_eng": requirement_approvals.status(requirements),
+            "approval": exact.model_dump(mode="json", by_alias=True) if exact else None,
+            "earlier_approvals": [
+                item.model_dump(mode="json", by_alias=True)
+                for item in approvals
+                if item.requirements_digest != requirements.digest()
+            ],
+            "requirements": requirements.model_dump(mode="json", by_alias=True),
+            "plan": {
+                "digest": plan.digest(),
+                "generator": plan.generator,
+                "scenarios": len(plan.scenarios),
+                "per_requirement": {key: len(value) for key, value in plan.traceability().items()},
+                "kinds": sorted({scenario.kind for scenario in plan.scenarios}),
+                "gaps": plan.gaps,
+            },
+            "adequacy": adequacy,
+            "adequacy_current": bool(adequacy)
+            and adequacy.get("requirements_digest") == requirements.digest(),
+            "test_plan_markdown": render_test_plan(requirements, plan, adequacy, exact),
+        }
+
+    @app.get("/api/protocol/sequences")
+    def list_protocol_sequences() -> dict:
+        """Every Tier 3+ sequence with its Gate G-ENG status and adequacy summary."""
+
+        items = []
+        custom_ids = [record.id for record in custom_sequences.list()]
+        for sequence_id in [*protocol_catalog.sequence_ids(), *custom_ids]:
+            full = _protocol_item(sequence_id)
+            adequacy = full["adequacy"] or {}
+            items.append(
+                {
+                    key: full[key]
+                    for key in (
+                        "sequence_id",
+                        "title",
+                        "tier",
+                        "label",
+                        "item",
+                        "configuration",
+                        "version",
+                        "requirements_digest",
+                        "gate_g_eng",
+                        "adequacy_current",
+                    )
+                }
+                | {
+                    "requirements": len(full["requirements"]["requirements"]),
+                    "invariants": len(full["requirements"]["invariants"]),
+                    "scenarios": full["plan"]["scenarios"],
+                    "gaps": len(full["plan"]["gaps"]),
+                    "accepted": adequacy.get("accepted"),
+                    "questions": len(adequacy.get("questions", [])),
+                }
+            )
+        return {"schema": "bactalk.protocol-sequence-list/v1", "items": items}
+
+    @app.get("/api/protocol/sequences/{sequence_id}")
+    def get_protocol_sequence(sequence_id: str) -> dict:
+        return _protocol_item(sequence_id)
+
+    @app.get("/api/protocol/sequences/{sequence_id}/test-plan")
+    def get_protocol_test_plan(sequence_id: str) -> PlainTextResponse:
+        """The readable test plan (requirement → scenarios → expected → result), which is
+        also the commissioning functional test plan."""
+
+        return PlainTextResponse(
+            _protocol_item(sequence_id)["test_plan_markdown"], media_type="text/markdown"
+        )
+
+    @app.post("/api/protocol/sequences/{sequence_id}/approve", status_code=201)
+    def approve_protocol_requirements(
+        sequence_id: str, request: RequirementApprovalRequest, http_request: Request
+    ) -> dict:
+        """Gate G-ENG: a named engineer approves the exact requirement set digest."""
+
+        requirements = _protocol_requirements(sequence_id)[0]
+        if request.requirements_digest != requirements.digest():
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    "the digest approved is not the current requirement set: "
+                    f"submitted {request.requirements_digest[:12]}, current "
+                    f"{requirements.digest()[:12]}; reload and review the current set"
+                ),
+            )
+        reviewer, actor_id, tenant_id, authentication = review_identity(
+            http_request, request.reviewer
+        )
+        approval = RequirementApproval(
+            sequence_id=sequence_id,
+            requirements_digest=request.requirements_digest,
+            reviewer=reviewer,
+            actor_id=actor_id,
+            tenant_id=tenant_id,
+            authentication=authentication,
+            note=request.note,
+        )
+        try:
+            requirement_approvals.save(approval)
+        except FileExistsError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        return approval.model_dump(mode="json", by_alias=True)
+
+    # --- Tier 5: custom, job-specific sequences (N11) -------------------------------------
+
+    def _custom_record(sequence_id: str):
+        try:
+            return custom_sequences.get(sequence_id)
+        except (KeyError, ValueError) as exc:
+            raise HTTPException(status_code=404, detail="custom sequence not found") from exc
+
+    @app.post("/api/protocol/custom", status_code=201)
+    def create_custom_sequence(request: CustomSequenceRequest) -> dict:
+        """The AI (conversation role) drafts the requirement set from the uploaded
+        specification section; the contractor approves it like any protocol sequence."""
+
+        if chat_provider is None:
+            raise HTTPException(status_code=503, detail="AI provider unavailable")
+        try:
+            record = custom_sequences.create(
+                title=request.title,
+                equipment_name=request.equipment_name,
+                spec_text=request.spec_text,
+                spec_filename=request.spec_filename,
+                provider=chat_provider,
+            )
+        except AIProviderError as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+        return _protocol_item(record.id)
+
+    @app.get("/api/protocol/custom")
+    def list_custom_sequences() -> dict:
+        return {
+            "schema": "bactalk.custom-sequence-list/v1",
+            "items": [
+                {
+                    "sequence_id": record.id,
+                    "title": record.title,
+                    "equipment_name": record.equipment_name,
+                    "requirements_digest": record.requirements_digest,
+                    "gate_g_eng": requirement_approvals.status(record.requirement_set()),
+                    "has_program": record.graph is not None,
+                    "adequacy_accepted": (record.adequacy or {}).get("accepted"),
+                    "label": record.label,
+                }
+                for record in custom_sequences.list()
+            ],
+        }
+
+    @app.post("/api/protocol/custom/{sequence_id}/program", status_code=201)
+    def draft_custom_program(sequence_id: str) -> dict:
+        """The AI (coding role, a separate session and model from the drafter) implements
+        the approved requirements; refused while the requirements are unapproved."""
+
+        record = _custom_record(sequence_id)
+        if not requirement_approvals.is_approved(record.id, record.requirements_digest):
+            raise HTTPException(
+                status_code=409,
+                detail="requirements are unapproved (Gate G-ENG): the program is drafted "
+                "from approved requirements only",
+            )
+        if coding_provider is None:
+            raise HTTPException(status_code=503, detail="AI provider unavailable")
+        try:
+            custom_sequences.set_program(record.id, provider=coding_provider)
+        except AIProviderError as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+        return _protocol_item(record.id)
+
+    @app.post("/api/protocol/custom/{sequence_id}/adequacy")
+    def run_custom_adequacy(sequence_id: str, request: CustomAdequacyRequest) -> dict:
+        """The protocol's adequacy check on the drafted program: suite, decision coverage,
+        invariants, the Shadow scan leg and (when asked) a mutant sample; retained on the
+        record and reported as measured."""
+
+        record = _custom_record(sequence_id)
+        if record.graph is None:
+            raise HTTPException(status_code=409, detail="the custom sequence has no program yet")
+        requirements = record.requirement_set()
+        plan = generate_test_plan(requirements)
+        try:
+            job = custom_job(record, plan=plan)
+            report = assess_adequacy(
+                job,
+                requirements,
+                plan,
+                mutants=request.mutants or None,
+                invariant_sequences=request.invariant_sequences,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        payload = report.to_dict()
+        payload["gate_g_eng"] = requirement_approvals.status(requirements)
+        custom_sequences.set_adequacy(record.id, payload)
+        return payload
+
+    @app.post("/api/protocol/custom/{sequence_id}/runs", status_code=201)
+    def create_custom_run(sequence_id: str) -> dict:
+        """A programming run for the custom sequence, labelled custom, job-specific; it goes
+        through every normal gate and cannot be approved before its requirements are."""
+
+        record = _custom_record(sequence_id)
+        if record.graph is None:
+            raise HTTPException(status_code=409, detail="the custom sequence has no program yet")
+        try:
+            return service.create_run(custom_job(record)).model_dump(mode="json")
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     @app.get("/api/library/ctrl-flow/templates")
     def ctrl_flow_template_catalog() -> dict:

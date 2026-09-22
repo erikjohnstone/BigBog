@@ -746,6 +746,19 @@ class NumericChange:
         return (result,)
 
 
+class Round:
+    """``numeric_round``: CDL RealToInteger, round half away from zero. Stateless."""
+
+    def reset(self) -> None:
+        return None
+
+    def step(self, time_seconds: float, value: float) -> tuple[float]:
+        if not _finite(time_seconds, value):
+            raise ValueError("Round inputs must be finite")
+        rounded = math.floor(value + 0.5) if value > 0.0 else math.ceil(value - 0.5)
+        return (float(rounded),)
+
+
 class RisingEdge:
     """``one_shot``: one execution true per rising edge, judged between executions."""
 
@@ -956,6 +969,8 @@ def build_kernel(name: str, params: dict[str, object]) -> Kernel:
         return NumericChange(str(params.get("mode", "changed")), _num(params, "initial", 0.0))
     if name == "RisingEdge":
         return RisingEdge(_bool(params, "initial", False))
+    if name == "Round":
+        return Round()
     if name == "FallingEdge":
         return FallingEdge(_bool(params, "initial", False))
     if name == "SetReset":
@@ -991,6 +1006,7 @@ KERNEL_NAMES: tuple[str, ...] = (
     "Sampler",
     "SampleTrigger",
     "Hysteresis",
+    "Round",
 )
 
 
@@ -1014,6 +1030,7 @@ __all__ = [
     "PidWithReset",
     "Pre",
     "RisingEdge",
+    "Round",
     "SampleTrigger",
     "Sampler",
     "SetReset",

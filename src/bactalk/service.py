@@ -71,6 +71,8 @@ from bactalk.niagara.module import declared_types
 from bactalk.niagara.shadow.driver import ShadowRunOptions, run_shadow_suite
 from bactalk.niagara.shadow.policy import DEFAULT_POLICY, PLAUSIBLE_POLICIES
 from bactalk.niagara.validate import validate_bog
+from bactalk.protocol.approvals import RequirementApprovalRepository
+from bactalk.protocol.requirements import protocol_reference
 from bactalk.repository import RunRepository
 
 
@@ -124,8 +126,10 @@ class WorkbenchService:
         *,
         planner: ControlsPlanner | None = None,
         max_attempts: int = 3,
+        requirement_approvals: RequirementApprovalRepository | None = None,
     ):
         self.repository = repository
+        self.requirement_approvals = requirement_approvals
         self.compiler = NiagaraCompiler()
         self.template_analyzer = NiagaraTemplateAnalyzer()
         self.plant_controls = PlantControlsLibrary()
@@ -1296,6 +1300,7 @@ class WorkbenchService:
         if record.status != RunStatus.READY_FOR_REVIEW:
             raise ApprovalRequiredError("only a passing run can be approved")
         self._verify_integrity(record)
+        self._require_requirements_approval(record.job)
         if expected_artifact_sha256 is not None:
             if expected_artifact_sha256 != record.artifact_sha256:
                 raise ArtifactChangedError(
@@ -1349,11 +1354,30 @@ class WorkbenchService:
         self.repository.save(rejected)
         return rejected
 
+    def _require_requirements_approval(self, job: JobSpec) -> None:
+        """Gate G-ENG: a job built under the Test Generation Protocol (Tier 3 and up)
+        cannot be approved or exported until a qualified engineer approved the exact
+        requirement set it was built from."""
+
+        reference = protocol_reference(job)
+        if reference is None:
+            return
+        sequence_id, digest = reference
+        if self.requirement_approvals is None or not self.requirement_approvals.is_approved(
+            sequence_id, digest
+        ):
+            raise ApprovalRequiredError(
+                f"requirements for {sequence_id} ({digest[:12]}) are unapproved: Gate G-ENG "
+                "needs a qualified controls engineer's approval of the requirement set "
+                "before this candidate can be approved or exported"
+            )
+
     def export_path(self, run_id: str) -> Path:
         record = self.repository.get(run_id)
         if record.status != RunStatus.APPROVED or record.approval is None:
             raise ApprovalRequiredError("human approval is required before export")
         self._verify_integrity(record)
+        self._require_requirements_approval(record.job)
         target = record.assembled_bog_path or record.target_artifact_path or record.bog_path
         if target is None:
             raise ArtifactChangedError("run has no signed target artifact")

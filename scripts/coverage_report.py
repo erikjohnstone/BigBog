@@ -47,7 +47,9 @@ from bactalk.niagara.emit import emit_bog
 from bactalk.niagara.lowering import LoweringPolicy, plan_lowering
 from bactalk.niagara.module import declared_types
 from bactalk.niagara.mutate import generate_mutants, run_mutation_suite
+from bactalk.niagara.shadow.policy import DEFAULT_POLICY, PLAUSIBLE_POLICIES, SCAN_POLICY
 from bactalk.niagara.validate import validate_bog
+from bactalk.protocol import catalog as protocol_catalog
 from bactalk.simulator import run_acceptance_suite
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -56,6 +58,8 @@ DOCUMENT = ROOT / "docs" / "coverage.md"
 BLOCKERS = ROOT / "src" / "bactalk" / "library_tier2" / "blockers.json"
 MUTATION_TARGET = 0.95
 MUTATION_SEED = 7
+COARSE = next(policy for policy in PLAUSIBLE_POLICIES if policy.name == "coarse-module-tick")
+GRADING_VERSION = 3
 
 TIER_ONE = (
     ("tier1-vav-reheat", "TerminalUnits.Reheat.Controller", lbnl_vav_reheat_demo_job),
@@ -63,8 +67,9 @@ TIER_ONE = (
 )
 
 
-def grade(job: JobSpec, reference: dict[str, Any] | None, *, mutants: int) -> dict[str, Any]:
-    """D1–D4 for one job; every failure carries its reason."""
+def grade_static(job: JobSpec) -> dict[str, Any]:
+    """D1 (native lowering) and D2 (static validation); the emitted .bog rides along under
+    ``_content`` for the dynamic grades and is dropped from the row."""
 
     assert job.control_graph is not None
     graph = job.control_graph
@@ -91,14 +96,39 @@ def grade(job: JobSpec, reference: dict[str, Any] | None, *, mutants: int) -> di
     if not validation.ok:
         row["d3"] = row["d4"] = {"passed": False, "blocker": "static validation failed"}
         return row
+    row["_content"] = content
+    return row
+
+
+def grade(job: JobSpec, reference: dict[str, Any] | None, *, mutants: int) -> dict[str, Any]:
+    """D1–D4 for one job; every failure carries its reason."""
+
+    assert job.control_graph is not None
+    graph = job.control_graph
+    row = grade_static(job)
+    content = row.pop("_content", None)
+    if content is None:
+        return row
     interpreter = run_acceptance_suite(graph, job)
     started = time.time()
     differential = three_way_differential(
         job, bog=content, reference=reference, interpreter_report=interpreter
     )
     failing = [case.name for case in differential.cases if not case.passed]
+    # The reference is stepped at the scan interval while module kernels tick every
+    # second; a second leg with the module period equal to the scan (tight bands)
+    # separates a runtime defect from that discretisation difference.
+    coarse = three_way_differential(
+        job,
+        bog=content,
+        reference=reference,
+        interpreter_report=interpreter,
+        policy=COARSE,
+        band_set="coarse",
+    )
     row["d3"] = {
         "passed": differential.passed and interpreter.passed,
+        "coarse_passed": coarse.passed and interpreter.passed,
         "interpreter_passed": interpreter.passed,
         "reference_available": differential.reference_available,
         "legs": sorted({leg for case in differential.cases for leg in case.legs_available}),
@@ -110,17 +140,61 @@ def grade(job: JobSpec, reference: dict[str, Any] | None, *, mutants: int) -> di
     }
     started = time.time()
     generated = len(generate_mutants(content, seed=MUTATION_SEED))
-    report = run_mutation_suite(
-        content,
-        job.acceptance_tests,
-        seed=MUTATION_SEED,
-        limit=mutants,
-        job=job,
-        reference=reference,
-    )
+    # D4 is judged on the D3 leg the unmutated file passed: a mutant is "caught by the
+    # differential" only when it leaves bands the baseline stays inside. A row that
+    # fails both legs has no baseline to compare against and D4 is a blocker.
+    if row["d3"]["passed"]:
+        policy, band_set = DEFAULT_POLICY, "default"
+    elif row["d3"]["coarse_passed"]:
+        policy, band_set = COARSE, "coarse"
+    else:
+        row["d4"] = {
+            "passed": False,
+            "blocker": "D3: the unmutated .bog leaves the bands on "
+            + ", ".join(failing[:3])
+            + "; a catch rate would count that, not defects",
+            "mutants_generated": generated,
+        }
+        return row
+    report = None
+    attempts = [(policy, band_set)]
+    if band_set == "default":
+        # A per-second Shadow Runtime can miss a reference-derived end-of-scenario
+        # expectation by a hair while the trajectories agree inside the bands (the PID
+        # integration difference of decision 008); the mutation judge's suite oracle
+        # then catches the unmutated file. The scan leg reproduces the interpreter's
+        # discretisation and is the leg the baseline passes (decision 010 item 8).
+        attempts.append((SCAN_POLICY, "scan"))
+    failures: list[str] = []
+    for policy, band_set in attempts:
+        try:
+            report = run_mutation_suite(
+                content,
+                job.acceptance_tests,
+                seed=MUTATION_SEED,
+                limit=mutants,
+                job=job,
+                reference=reference,
+                policy=policy,
+                band_set=band_set,
+            )
+            break
+        except ValueError as exc:
+            failures.append(f"{policy.name}: {exc}")
+    if report is None:
+        row["d4"] = {
+            "passed": False,
+            "blocker": "baseline: " + " | ".join(failures),
+            "mutants_generated": generated,
+            "policy": policy.name,
+            "band_set": band_set,
+        }
+        return row
     summary = report.to_dict()
     row["d4"] = {
         "passed": summary["catch_rate"] >= MUTATION_TARGET,
+        "policy": policy.name,
+        "band_set": band_set,
         "mutants_generated": generated,
         "sample": summary["total"],
         "caught": summary["caught"],
@@ -128,6 +202,83 @@ def grade(job: JobSpec, reference: dict[str, Any] | None, *, mutants: int) -> di
         "by_catcher": summary["by_catcher"],
         "survivors": summary["survivors"][:25],
         "seconds": round(time.time() - started, 1),
+    }
+    return row
+
+
+def _protocol_row(entry: protocol_catalog.Row) -> dict[str, Any]:
+    """A Tier 3+ row under the Test Generation Protocol: D1 and D2 graded here, D3 and
+    D4 read from the retained adequacy artifact (scripts/protocol_adequacy.py), with
+    Gate G-ENG beside them. Nothing is graded from a reference model; there is none."""
+
+    requirements = entry.requirement_set()
+    job = protocol_catalog.protocol_job(requirements.sequence_id)
+    row: dict[str, Any] = {
+        "id": requirements.sequence_id,
+        "controller": requirements.title,
+        "family": job.sequence.family,
+        "variant": f"{entry.configuration.label} · {len(requirements.requirements)} requirements",
+        "tier": str(requirements.tier),
+        "label": entry.item.label,
+        "parameters": dict(entry.configuration.options),
+        "source_of_truth": "requirement set (Gate G-ENG)",
+        "expectations": "generated by the test author (docs/decisions/011)",
+        "requirements_digest": requirements.digest(),
+    }
+    row.update(grade_static(job))
+    row.pop("_content", None)
+    artifact = entry.adequacy_artifact()
+    if artifact is None or artifact.get("requirements_digest") != requirements.digest():
+        reason = (
+            "no retained adequacy artifact (scripts/protocol_adequacy.py)"
+            if artifact is None
+            else "retained adequacy artifact is for an earlier requirement digest"
+        )
+        row["d3"] = row["d4"] = {"passed": False, "blocker": reason}
+        row["gate_g_eng"] = "unknown"
+        return row
+    legs = artifact.get("differential", {})
+    scan = legs.get("scan") or {}
+    default = legs.get("default")
+    row["d3"] = {
+        "passed": bool(default and default.get("passed")),
+        "coarse_passed": bool(scan.get("passed")),
+        "legs": sorted(legs),
+        "failing_cases": (default or scan).get("failing_cases", [])[:10],
+        "first_divergence": (default or scan).get("first_divergence"),
+        "note": (
+            "default (per-second) leg not run; scan leg only"
+            if default is None
+            else "both legs retained"
+        ),
+    }
+    if default is None:
+        row["d3"]["blocker"] = (
+            "per-second leg not run (multi-day rotation scenarios); scan leg "
+            + ("passes" if scan.get("passed") else "fails")
+        )
+    mutation = artifact.get("mutation") or {}
+    if "catch_rate" in mutation:
+        row["d4"] = {
+            "passed": mutation["catch_rate"] >= MUTATION_TARGET,
+            "policy": mutation.get("policy"),
+            "band_set": mutation.get("band_set"),
+            "mutants_generated": mutation.get("mutants_generated"),
+            "sample": mutation.get("sample"),
+            "caught": mutation.get("caught"),
+            "catch_rate": mutation["catch_rate"],
+            "by_catcher": mutation.get("by_catcher"),
+            "survivors": mutation.get("survivors", [])[:25],
+        }
+    else:
+        row["d4"] = {"passed": False, "blocker": mutation.get("blocker", "mutation not run")}
+    row["gate_g_eng"] = artifact.get("gate_g_eng", "unknown")
+    row["adequacy"] = {
+        "accepted": artifact.get("accepted"),
+        "scenarios": artifact.get("suite", {}).get("count"),
+        "decisions_percent": artifact.get("decisions", {}).get("percent"),
+        "invariant_sequences": artifact.get("invariants", {}).get("sequences"),
+        "questions": len(artifact.get("questions", [])),
     }
     return row
 
@@ -166,13 +317,15 @@ def build(only: set[str] | None, *, mutants: int, resume: bool = False) -> dict[
             "source_of_truth": "Open Control Engine (retained reference)",
             "expectations": "hand-written from the G36 text (N0), reference-checked (D3)",
         }
-        if config_id in progress and progress[config_id].get("_mutants") == mutants:
-            row.update(progress[config_id])
+        cached = progress.get(config_id)
+        if cached and cached.get("_mutants") == mutants and cached.get("_v") == GRADING_VERSION:
+            row.update(cached)
         else:
             row.update(grade(job, tier1_reference(controller_id), mutants=mutants))
-            progress[config_id] = {**row, "_mutants": mutants}
+            progress[config_id] = {**row, "_mutants": mutants, "_v": GRADING_VERSION}
             _save_progress(progress)
         row.pop("_mutants", None)
+        row.pop("_v", None)
         items.append(row)
         _progress(config_id, row)
     for config in CONFIGURATIONS:
@@ -200,16 +353,25 @@ def build(only: set[str] | None, *, mutants: int, resume: bool = False) -> dict[
                 "passed": False,
                 "blocker": "no retained translation or reference (scripts/retain_tier2.py)",
             }
-        elif config.id in progress and progress[config.id].get("_mutants") == mutants:
-            row.update(progress[config.id])
+        elif (
+            (cached := progress.get(config.id))
+            and cached.get("_mutants") == mutants
+            and cached.get("_v") == GRADING_VERSION
+            and not str(cached.get("d4", {}).get("blocker", "")).startswith("baseline:")
+        ):
+            row.update(cached)
         else:
             job = tier2_job(config.id)
             row.update(grade(job, reference_trace(config.id), mutants=mutants))
-            progress[config.id] = {**row, "_mutants": mutants}
+            progress[config.id] = {**row, "_mutants": mutants, "_v": GRADING_VERSION}
             _save_progress(progress)
         row.pop("_mutants", None)
+        row.pop("_v", None)
         items.append(row)
         _progress(config.id, row)
+    for entry in protocol_catalog.rows():
+        items.append(_protocol_row(entry))
+        _progress(items[-1]["id"], items[-1])
     return {
         "schema": "bactalk.native-bog-coverage/v1",
         "mutation_sample": mutants,
@@ -245,15 +407,19 @@ def _one_line(text: str, limit: int = 160) -> str:
 
 
 def _mark(entry: dict[str, Any]) -> str:
+    leg = f" ({entry['band_set']} leg)" if entry.get("band_set") in {"coarse", "scan"} else ""
     if entry.get("passed"):
-        return "pass"
+        return f"pass{leg}"
     blocker = entry.get("blocker")
     if blocker:
         return f"blocked: {_one_line(blocker)}"
     if "catch_rate" in entry:
-        return f"{entry['catch_rate'] * 100:.1f} % (target 95 %)"
+        return f"{entry['catch_rate'] * 100:.1f} % (target 95 %){leg}"
     if entry.get("failing_cases"):
-        return "fail: " + ", ".join(entry["failing_cases"][:3])
+        detail = "fail: " + ", ".join(entry["failing_cases"][:3])
+        if entry.get("coarse_passed"):
+            detail += " (1 s module tick; passes at scan tick)"
+        return detail
     if entry.get("errors"):
         return "fail: " + entry["errors"][0]
     if entry.get("blockers"):
@@ -266,13 +432,20 @@ def render(report: dict[str, Any]) -> str:
     lines = [
         "# Library coverage (D1–D4 per configuration)",
         "",
-        "Generated by `scripts/coverage_report.py` from `bactalk.library_demo` (Tier 1) and",
-        "`bactalk.library_tier2` (Tier 2); do not edit by hand. Every row is one controller",
-        "with one complete parameter set. D1 native by default, D2 statically valid, D3 the",
+        "Generated by `scripts/coverage_report.py` from `bactalk.library_demo` (Tier 1),",
+        "`bactalk.library_tier2` (Tier 2) and the protocol catalogue (Tiers 3–5,",
+        "`bactalk.protocol.catalog`: requirement sets under Gate G-ENG, graded from their",
+        "retained adequacy artifacts, decisions 011–013); do not edit by hand. Every row is",
+        "one controller with one complete parameter set or one configuration. D1 native by",
+        "default, D2 statically valid, D3 the",
         "Shadow Runtime, the IR interpreter and the retained Open Control Engine reference",
-        "agree inside the documented bands on every scenario, D4 a seeded sample of",
-        f"{report['mutation_sample']} mutants is caught at ≥ 95 %. A configuration that fails or",
-        "cannot be built is listed with its exact blocker.",
+        "agree inside the documented bands on every scenario (a D3 fail that passes with the",
+        "module period equal to the scan says so: the reference is stepped at the scan",
+        "interval while module kernels tick every second), D4 a seeded sample of",
+        f"{report['mutation_sample']} mutants is caught at ≥ 95 %, judged on the D3 leg the",
+        "unmutated file passed (a row graded on the coarse leg says `coarse` beside its",
+        "rate). A configuration that fails or cannot be built is listed with its exact",
+        "blocker.",
         "",
         f"Summary: {summary['configurations']} configurations, "
         f"{summary['all_four']} pass all four; "
@@ -284,7 +457,9 @@ def render(report: dict[str, Any]) -> str:
     ]
     for item in report["items"]:
         lines.append(
-            f"| `{item['id']}` | {item['controller']} | {item['variant']} | {item['tier']} "
+            f"| `{item['id']}` | {item['controller']} | {item['variant']}"
+            + (f" · Gate G-ENG {item['gate_g_eng']}" if "gate_g_eng" in item else "")
+            + f" | {item['tier']} "
             f"| {item.get('scenarios', '—')} | {_mark(item['d1'])} | {_mark(item['d2'])} "
             f"| {_mark(item['d3'])} | {_mark(item['d4'])} |"
         )

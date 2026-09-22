@@ -1,0 +1,497 @@
+{
+  "accepted": false,
+  "approval_digest": "8a22864d33d173523cc96066b17ceebd6d37096dadd04bc98a489ff552c99b1a",
+  "classifications": [],
+  "decisions": {
+    "decision_count": 20,
+    "fully_covered": true,
+    "gaps": [],
+    "outcomes_observed": 40,
+    "outcomes_possible": 40,
+    "percent": 100.0
+  },
+  "differential": {
+    "default": {
+      "band_set": "default",
+      "cases": 34,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "default",
+      "seconds": 0.4
+    },
+    "scan": {
+      "band_set": "scan",
+      "cases": 34,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "scan-module-tick",
+      "seconds": 0.3
+    }
+  },
+  "gaps": [
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uEna stuck, stale; uLead2 stuck, stale; uPum1Ava stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-01"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uEna stuck, stale; uLead2 stuck, stale; uPum2Ava stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-02"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uPum1Ava stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-03"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uEna stuck, stale; uPum1Ava stuck, stale; uPum2Ava stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-04"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uPum1Sta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-05"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uEna stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-06"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uPum2Sta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-07"
+    }
+  ],
+  "gate_g_eng": "unapproved",
+  "invariant_sequences_required": 10000,
+  "invariants": {
+    "examples": [],
+    "invariants": [
+      "I-01",
+      "I-02",
+      "I-03",
+      "I-04"
+    ],
+    "passed": true,
+    "seconds": 43.1,
+    "seed": 7,
+    "sequences": 10000,
+    "steps_checked": 240000,
+    "steps_per_sequence": 24,
+    "violations": 0
+  },
+  "mutation": {
+    "band_set": "scan",
+    "by_catcher": {
+      "suite": 54,
+      "survived": 10,
+      "validator": 35
+    },
+    "by_operator": {
+      "change_block_type": {
+        "caught": 22,
+        "total": 22
+      },
+      "change_priority_level": {
+        "caught": 0,
+        "total": 4
+      },
+      "delete_link": {
+        "caught": 35,
+        "total": 41
+      },
+      "invert_parameter": {
+        "caught": 2,
+        "total": 2
+      },
+      "swap_link_slot": {
+        "caught": 30,
+        "total": 30
+      }
+    },
+    "catch_rate": 0.899,
+    "caught": 89,
+    "mutants_generated": 99,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 99,
+    "seconds": 6.2,
+    "survivors": [
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 81,
+        "operator": "delete_link",
+        "path": "/PumpDutyStandby/Logic/Pump_1_commanded__not_proven/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 65,
+        "operator": "delete_link",
+        "path": "/PumpDutyStandby/Logic/Lead_2_unavailable/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 93,
+        "operator": "change_priority_level",
+        "path": "/PumpDutyStandby/Outputs/yNoPumAla/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 61,
+        "operator": "delete_link",
+        "path": "/PumpDutyStandby/Logic/Lead_1_unavailable/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 95,
+        "operator": "change_priority_level",
+        "path": "/PumpDutyStandby/Outputs/yPum2/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 94,
+        "operator": "change_priority_level",
+        "path": "/PumpDutyStandby/Outputs/yPum1/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 96,
+        "operator": "change_priority_level",
+        "path": "/PumpDutyStandby/Outputs/yPumFaiAla/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 72,
+        "operator": "delete_link",
+        "path": "/PumpDutyStandby/Logic/Standby_1_available/Link1"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 74,
+        "operator": "delete_link",
+        "path": "/PumpDutyStandby/Logic/Pump_1_wanted/Link1"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 83,
+        "operator": "delete_link",
+        "path": "/PumpDutyStandby/Logic/Pump_2_commanded__not_proven/Link"
+      }
+    ]
+  },
+  "mutation_target": 0.95,
+  "plan_digest": "ee044af33999f9ebfa7df5566d726edce5482488d95d0b11c54f5d494febc2a9",
+  "questions": [],
+  "requirements_digest": "9464c84686cb29aa63ee8cf62a0e75e67fba7135b73aeb2086f6d91dbdd1ed58",
+  "schema": "bactalk.protocol-adequacy/v1",
+  "seconds": 50.0,
+  "sequence_id": "pump-duty-standby",
+  "suite": {
+    "count": 34,
+    "failed": 0,
+    "invariant_violations": [],
+    "passed": true,
+    "scenarios": [
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-01 positive",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-01 negative",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-01 negative_single [uEna]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-01 negative_single [uLead2]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-01 negative_single [uPum1Ava]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-01 recovery",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-02 positive",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-02 negative",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-02 negative_single [uEna]",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-02 negative_single [uLead2]",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-02 negative_single [uPum2Ava]",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-02 recovery",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-03 positive",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-03 negative",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-03 recovery",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-04 positive",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-04 negative",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-04 negative_single [uEna]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-04 negative_single [uPum1Ava]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-04 negative_single [uPum2Ava]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-04 recovery",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-05 positive",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-05 negative",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-05 timing_before",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-05 timing_after",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-05 recovery",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-06 positive",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-06 negative",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-06 recovery",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-07 positive",
+        "passed": true,
+        "requirement_id": "R-07"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-07 negative",
+        "passed": true,
+        "requirement_id": "R-07"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-07 timing_before",
+        "passed": true,
+        "requirement_id": "R-07"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-07 timing_after",
+        "passed": true,
+        "requirement_id": "R-07"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-07 recovery",
+        "passed": true,
+        "requirement_id": "R-07"
+      }
+    ],
+    "seconds": 0.1
+  },
+  "traceability": {
+    "requirements_without_scenarios": [],
+    "scenarios_per_requirement": {
+      "R-01": 6,
+      "R-02": 6,
+      "R-03": 3,
+      "R-04": 6,
+      "R-05": 5,
+      "R-06": 3,
+      "R-07": 5
+    }
+  }
+}

@@ -191,6 +191,11 @@ _ROWS: tuple[LoweringDecision, ...] = (
         "FallingEdge",
         "One execution true per falling edge, judged between execution periods.",
     ),
+    _module(
+        BlockKind.NUMERIC_ROUND,
+        "Round",
+        "Round half away from zero (CDL RealToInteger); kitControl has no rounding block.",
+    ),
     _bands(
         BlockKind.BOOLEAN_DELAY,
         "kitControl:BooleanDelay",

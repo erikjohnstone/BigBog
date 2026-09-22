@@ -1,0 +1,282 @@
+{
+  "accepted": false,
+  "approval_digest": "9867e7190fbfa7314fb482423dfb0a87bba1cc7ca32c19187828a0a40f98e062",
+  "classifications": [],
+  "decisions": {
+    "decision_count": 3,
+    "fully_covered": true,
+    "gaps": [],
+    "outcomes_observed": 6,
+    "outcomes_possible": 6,
+    "percent": 100.0
+  },
+  "differential": {
+    "default": {
+      "band_set": "default",
+      "cases": 14,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "default",
+      "seconds": 0.1
+    },
+    "scan": {
+      "band_set": "scan",
+      "cases": 14,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "scan-module-tick",
+      "seconds": 0.1
+    }
+  },
+  "gaps": [
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uHooSw stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-01"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uAhuFan stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-02"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uMakFanSta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-03"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uHooSw stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-04"
+    }
+  ],
+  "gate_g_eng": "unapproved",
+  "invariant_sequences_required": 10000,
+  "invariants": {
+    "examples": [],
+    "invariants": [
+      "I-01",
+      "I-02"
+    ],
+    "passed": true,
+    "seconds": 14.4,
+    "seed": 7,
+    "sequences": 10000,
+    "steps_checked": 240000,
+    "steps_per_sequence": 24,
+    "violations": 0
+  },
+  "mutation": {
+    "band_set": "scan",
+    "by_catcher": {
+      "suite": 13,
+      "survived": 5,
+      "validator": 5
+    },
+    "by_operator": {
+      "change_block_type": {
+        "caught": 4,
+        "total": 4
+      },
+      "change_priority_level": {
+        "caught": 0,
+        "total": 4
+      },
+      "delete_link": {
+        "caught": 9,
+        "total": 10
+      },
+      "invert_parameter": {
+        "caught": 1,
+        "total": 1
+      },
+      "swap_link_slot": {
+        "caught": 4,
+        "total": 4
+      }
+    },
+    "catch_rate": 0.7826,
+    "caught": 18,
+    "mutants_generated": 23,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 23,
+    "seconds": 0.7,
+    "survivors": [
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 18,
+        "operator": "change_priority_level",
+        "path": "/KitchenHoodInterlock/Outputs/yHooFan/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 21,
+        "operator": "change_priority_level",
+        "path": "/KitchenHoodInterlock/Outputs/yMakFan/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 20,
+        "operator": "change_priority_level",
+        "path": "/KitchenHoodInterlock/Outputs/yMakDam/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 19,
+        "operator": "change_priority_level",
+        "path": "/KitchenHoodInterlock/Outputs/yMakAla/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 11,
+        "operator": "delete_link",
+        "path": "/KitchenHoodInterlock/Logic/Commanded__not_proven/Link"
+      }
+    ]
+  },
+  "mutation_target": 0.95,
+  "plan_digest": "5f1c21a749c3ffab5c32df23e7392fa7cd5dc516b92eb13300b5711d15627e81",
+  "questions": [],
+  "requirements_digest": "e396bfb6b009a0b08f788289db4ec5e65c8c4a915cb5c4335177c9ee23c7b058",
+  "schema": "bactalk.protocol-adequacy/v1",
+  "seconds": 15.3,
+  "sequence_id": "custom-kitchen-hood-interlock",
+  "suite": {
+    "count": 14,
+    "failed": 0,
+    "invariant_violations": [],
+    "passed": true,
+    "scenarios": [
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-01 positive",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-01 negative",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-01 recovery",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-02 positive",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-02 negative",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-02 recovery",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-03 positive",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-03 negative",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-03 timing_before",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-03 timing_after",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-03 recovery",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-04 positive",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-04 negative",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-04 recovery",
+        "passed": true,
+        "requirement_id": "R-04"
+      }
+    ],
+    "seconds": 0.0
+  },
+  "traceability": {
+    "requirements_without_scenarios": [],
+    "scenarios_per_requirement": {
+      "R-01": 3,
+      "R-02": 3,
+      "R-03": 5,
+      "R-04": 3
+    }
+  }
+}

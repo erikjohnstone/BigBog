@@ -8,19 +8,11 @@
   "stage": "translation"
  },
  "fcu-controller": {
-  "reason": "RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
+  "reason": "CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj",
   "stage": "translation"
  },
  "tu-coolingonly-title24": {
   "reason": "ValueError: first sample must initialize every public controller input; missing: TDis",
   "stage": "reference"
- },
- "zone-group-operation-mode": {
-  "reason": "RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
-  "stage": "translation"
- },
- "zone-setpoints-occ-win": {
-  "reason": "RuntimeError: not translatable to the typed IR: importer lacks Buildings.Controls.OBC.CDL.Conversions.RealToInteger, Buildings.Controls.OBC.CDL.Reals.Limiter",
-  "stage": "translation"
  }
 }

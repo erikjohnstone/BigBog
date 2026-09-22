@@ -1,0 +1,522 @@
+{
+ "schema": "bactalk.protocol-requirements/v1",
+ "sequence_id": "pump-duty-standby",
+ "title": "Duty/standby pump pair (BACTalk standard sequence)",
+ "version": "1.0 (N10 draft, awaiting Gate G-ENG)",
+ "tier": 4,
+ "equipment_brick_class": "brick:Pump",
+ "sources": [
+  {
+   "document": "BACTalk standard sequence: duty/standby pump pair",
+   "edition": "designer practice; not a Guideline 36 sequence"
+  }
+ ],
+ "step_seconds": 5.0,
+ "points": [
+  {
+   "name": "uEna",
+   "label": "System enable",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Enable_Command"
+  },
+  {
+   "name": "uLead2",
+   "label": "Pump 2 selected as lead",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": false
+  },
+  {
+   "name": "uPum1Ava",
+   "label": "Pump 1 available (not in hand/off or faulted)",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Availability_Status"
+  },
+  {
+   "name": "uPum2Ava",
+   "label": "Pump 2 available",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Availability_Status"
+  },
+  {
+   "name": "uPum1Sta",
+   "label": "Pump 1 proof",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Run_Status"
+  },
+  {
+   "name": "uPum2Sta",
+   "label": "Pump 2 proof",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Run_Status"
+  },
+  {
+   "name": "yPum1",
+   "label": "Pump 1 start command",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Run_Enable_Command"
+  },
+  {
+   "name": "yPum2",
+   "label": "Pump 2 start command",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Run_Enable_Command"
+  },
+  {
+   "name": "yNoPumAla",
+   "label": "No pump available alarm",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Alarm"
+  },
+  {
+   "name": "yPumFaiAla",
+   "label": "Pump failure alarm",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Alarm"
+  }
+ ],
+ "requirements": [
+  {
+   "id": "R-01",
+   "title": "Lead pump runs when enabled",
+   "kind": "control",
+   "text": "With the system enabled, the selected lead pump (pump 1 unless pump 2 is selected) is commanded on when it is available; the standby pump stays off.",
+   "citation": {
+    "document": "BACTalk standard sequence: duty/standby pump pair",
+    "section": "§1 duty selection",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uEna",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "uLead2",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "uPum1Ava",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yPum1",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yPum1",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "R-02",
+   "title": "Pump 2 leads when selected",
+   "kind": "control",
+   "text": "With the system enabled and pump 2 selected as lead and available, pump 2 is commanded on and pump 1 stays off.",
+   "citation": {
+    "document": "BACTalk standard sequence: duty/standby pump pair",
+    "section": "§1 duty selection",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uEna",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "uLead2",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "uPum2Ava",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yPum2",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yPum1",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yPum2",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "R-03",
+   "title": "Standby takes over an unavailable lead",
+   "kind": "control",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With pump 1 leading, when pump 1 becomes unavailable the standby pump 2 is commanded on immediately and pump 1 is commanded off.",
+   "citation": {
+    "document": "BACTalk standard sequence: duty/standby pump pair",
+    "section": "§2 failover",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uPum1Ava",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yPum2",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yPum1",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yPum1",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yPum2",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "R-04",
+   "title": "No pump available alarm",
+   "kind": "alarm",
+   "text": "When the system is enabled and neither pump is available, both pumps are commanded off and the no-pump-available alarm is raised; it clears when a pump becomes available or the system is disabled.",
+   "citation": {
+    "document": "BACTalk standard sequence: duty/standby pump pair",
+    "section": "§3 alarms",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uEna",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "uPum1Ava",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "uPum2Ava",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yNoPumAla",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yPum1",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yPum2",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yNoPumAla",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "R-05",
+   "title": "Pump failure alarm",
+   "kind": "alarm",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "When a commanded pump is not proven for 30 seconds the pump failure alarm is raised; it clears when the pump proves or its command is removed.",
+   "citation": {
+    "document": "BACTalk standard sequence: duty/standby pump pair",
+    "section": "§3 alarms",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uPum1Sta",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "timing": {
+    "delay_seconds": 30.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yPumFaiAla",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yPumFaiAla",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "parameters": {
+    "proofDelay_s": 30.0
+   }
+  },
+  {
+   "id": "R-06",
+   "title": "Disable stops both pumps",
+   "kind": "safety",
+   "text": "When the system is disabled both pumps and both alarms are off in the same scan.",
+   "citation": {
+    "document": "BACTalk standard sequence: duty/standby pump pair",
+    "section": "§1 duty selection",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uEna",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yPum1",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yPum2",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yNoPumAla",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yPumFaiAla",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yPum1",
+     "operator": "eq",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": "R-07",
+   "title": "Standby pump failure alarm",
+   "kind": "alarm",
+   "assumes": [
+    "R-02"
+   ],
+   "text": "With pump 2 leading, when pump 2 is commanded and not proven for 30 seconds the pump failure alarm is raised; it clears when the pump proves or its command is removed.",
+   "citation": {
+    "document": "BACTalk standard sequence: duty/standby pump pair",
+    "section": "§3 alarms",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uPum2Sta",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "timing": {
+    "delay_seconds": 30.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yPumFaiAla",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yPumFaiAla",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  }
+ ],
+ "invariants": [
+  {
+   "id": "I-01",
+   "text": "Nothing runs while disabled",
+   "citation": {
+    "document": "BACTalk standard sequence: duty/standby pump pair",
+    "section": "§1 duty selection",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "uEna",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "point": "yPum1",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yPum2",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yNoPumAla",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "I-02",
+   "text": "An unavailable pump is never commanded",
+   "citation": {
+    "document": "BACTalk standard sequence: duty/standby pump pair",
+    "section": "§2 failover",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "uPum1Ava",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "point": "yPum1",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "I-03",
+   "text": "An unavailable pump is never commanded",
+   "citation": {
+    "document": "BACTalk standard sequence: duty/standby pump pair",
+    "section": "§2 failover",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "uPum2Ava",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "point": "yPum2",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "I-04",
+   "text": "The no-pump alarm implies both pumps off",
+   "citation": {
+    "document": "BACTalk standard sequence: duty/standby pump pair",
+    "section": "§3 alarms",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "yNoPumAla",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "then": [
+    {
+     "point": "yPum1",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yPum2",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  }
+ ],
+ "notes": "BACTalk standard sequence (engineer-approved requirements), never labelled G36. Availability is an explicit input (hand/off/auto and fault status resolved upstream); the sequence is fail-closed: with nothing available nothing runs."
+}

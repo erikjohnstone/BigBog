@@ -1,0 +1,598 @@
+{
+  "accepted": false,
+  "approval_digest": "2b7222aed278b59c3364e09d0d74af3afa0695a912b718e6cf28a1a283b56f6f",
+  "classifications": [],
+  "decisions": {
+    "decision_count": 5,
+    "fully_covered": true,
+    "gaps": [],
+    "outcomes_observed": 10,
+    "outcomes_possible": 10,
+    "percent": 100.0
+  },
+  "differential": {
+    "default": {
+      "band_set": "default",
+      "cases": 38,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "default",
+      "seconds": 0.5
+    },
+    "scan": {
+      "band_set": "scan",
+      "cases": 38,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "scan-module-tick",
+      "seconds": 0.3
+    }
+  },
+  "gaps": [
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uOcc stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-01"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uSupFanSta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-02"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uSupFanSta stuck, stale; TSup stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-03"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uSupFanSta stuck, stale; TSup stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-04"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uSupFanSta stuck, stale; TSup stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-05"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uOcc stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-06"
+    }
+  ],
+  "gate_g_eng": "unapproved",
+  "invariant_sequences_required": 10000,
+  "invariants": {
+    "examples": [],
+    "invariants": [
+      "I-01",
+      "I-02",
+      "I-03"
+    ],
+    "passed": true,
+    "seconds": 31.9,
+    "seed": 7,
+    "sequences": 10000,
+    "steps_checked": 240000,
+    "steps_per_sequence": 24,
+    "violations": 0
+  },
+  "mutation": {
+    "band_set": "scan",
+    "by_catcher": {
+      "differential": 2,
+      "suite": 31,
+      "survived": 19,
+      "validator": 17
+    },
+    "by_operator": {
+      "alter_constant": {
+        "caught": 1,
+        "total": 7
+      },
+      "change_block_type": {
+        "caught": 6,
+        "total": 6
+      },
+      "change_priority_level": {
+        "caught": 0,
+        "total": 4
+      },
+      "delete_link": {
+        "caught": 22,
+        "total": 26
+      },
+      "drop_facets": {
+        "caught": 0,
+        "total": 5
+      },
+      "flip_loop_action": {
+        "caught": 2,
+        "total": 2
+      },
+      "invert_parameter": {
+        "caught": 3,
+        "total": 3
+      },
+      "swap_link_slot": {
+        "caught": 16,
+        "total": 16
+      }
+    },
+    "catch_rate": 0.7246,
+    "caught": 50,
+    "mutants_generated": 69,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 69,
+    "seconds": 7.2,
+    "survivors": [
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 51,
+        "operator": "alter_constant",
+        "path": "/DedicatedOutdoorAir/Logic/Half_deadband"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 49,
+        "operator": "alter_constant",
+        "path": "/DedicatedOutdoorAir/Inputs/TSup"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 57,
+        "operator": "drop_facets",
+        "path": "/DedicatedOutdoorAir/Inputs/TOut"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 63,
+        "operator": "change_priority_level",
+        "path": "/DedicatedOutdoorAir/Outputs/yFanAla/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 62,
+        "operator": "change_priority_level",
+        "path": "/DedicatedOutdoorAir/Outputs/yCooVal/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 22,
+        "operator": "delete_link",
+        "path": "/DedicatedOutdoorAir/Logic/Supply_fan_commanded_and_proven/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 65,
+        "operator": "change_priority_level",
+        "path": "/DedicatedOutdoorAir/Outputs/ySupFan/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 48,
+        "operator": "alter_constant",
+        "path": "/DedicatedOutdoorAir/Inputs/TOut"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 29,
+        "operator": "delete_link",
+        "path": "/DedicatedOutdoorAir/Logic/Commanded__not_proven/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 64,
+        "operator": "change_priority_level",
+        "path": "/DedicatedOutdoorAir/Outputs/yHeaVal/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 59,
+        "operator": "drop_facets",
+        "path": "/DedicatedOutdoorAir/Inputs/TSupSet"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 53,
+        "operator": "alter_constant",
+        "path": "/DedicatedOutdoorAir/Outputs/yCooVal"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 61,
+        "operator": "drop_facets",
+        "path": "/DedicatedOutdoorAir/Outputs/yHeaVal"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 43,
+        "operator": "delete_link",
+        "path": "/DedicatedOutdoorAir/Logic/Heating_coil_valve_position_with_the_fan_proven/Link2"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 40,
+        "operator": "delete_link",
+        "path": "/DedicatedOutdoorAir/Logic/Cooling_coil_valve_position_with_the_fan_proven/Link2"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 60,
+        "operator": "drop_facets",
+        "path": "/DedicatedOutdoorAir/Outputs/yCooVal"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 54,
+        "operator": "alter_constant",
+        "path": "/DedicatedOutdoorAir/Outputs/yHeaVal"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 58,
+        "operator": "drop_facets",
+        "path": "/DedicatedOutdoorAir/Inputs/TSup"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 50,
+        "operator": "alter_constant",
+        "path": "/DedicatedOutdoorAir/Inputs/TSupSet"
+      }
+    ]
+  },
+  "mutation_target": 0.95,
+  "plan_digest": "4de590062db1ee2a814bfcd0f10d4ac7f2bfade8e46bd1b77586c83018b89181",
+  "questions": [],
+  "requirements_digest": "348f4ac273ae950e140b4fdccc379a418994418b16be07578f773258397cb440",
+  "schema": "bactalk.protocol-adequacy/v1",
+  "seconds": 39.9,
+  "sequence_id": "doas",
+  "suite": {
+    "count": 38,
+    "failed": 0,
+    "invariant_violations": [],
+    "passed": true,
+    "scenarios": [
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-01 positive",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-01 negative",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-01 recovery",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-02 positive",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-02 negative",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-02 timing_before",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-02 timing_after",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-02 recovery",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-03 positive",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-03 negative",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-03 negative_single [uSupFanSta]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-03 negative_single [TSup]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-03 timing_before",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-03 timing_after",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-03 boundary_false [TSup at threshold]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-03 boundary_true [TSup just below]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-03 recovery",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-04 positive",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-04 negative",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-04 negative_single [uSupFanSta]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-04 negative_single [TSup]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-04 timing_before",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-04 timing_after",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-04 boundary_false [TSup at threshold]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-04 boundary_true [TSup just above]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-04 recovery",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-05 positive",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-05 negative",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-05 negative_single [uSupFanSta]",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-05 negative_single [TSup]",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-05 boundary_true [TSup at lower edge]",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-05 boundary_false [TSup just below lower edge]",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-05 boundary_true [TSup at upper edge]",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-05 boundary_false [TSup just above upper edge]",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-05 recovery",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-06 positive",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-06 negative",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-06 recovery",
+        "passed": true,
+        "requirement_id": "R-06"
+      }
+    ],
+    "seconds": 0.1
+  },
+  "traceability": {
+    "requirements_without_scenarios": [],
+    "scenarios_per_requirement": {
+      "R-01": 3,
+      "R-02": 5,
+      "R-03": 9,
+      "R-04": 9,
+      "R-05": 9,
+      "R-06": 3
+    }
+  }
+}

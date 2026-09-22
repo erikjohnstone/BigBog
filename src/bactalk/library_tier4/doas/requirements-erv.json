@@ -1,0 +1,649 @@
+{
+ "schema": "bactalk.protocol-requirements/v1",
+ "sequence_id": "doas-erv",
+ "title": "Dedicated outdoor air system with energy recovery (BACTalk standard sequence)",
+ "version": "1.0 (N10 draft, awaiting Gate G-ENG)",
+ "tier": 4,
+ "equipment_brick_class": "brick:DOAS",
+ "sources": [
+  {
+   "document": "BACTalk standard sequence: dedicated outdoor air system",
+   "edition": "designer practice; not a Guideline 36 sequence"
+  }
+ ],
+ "step_seconds": 10.0,
+ "points": [
+  {
+   "name": "uOcc",
+   "label": "Occupied (schedule)",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Occupancy_Status"
+  },
+  {
+   "name": "TOut",
+   "label": "Outdoor air temperature",
+   "data_type": "numeric",
+   "direction": "input",
+   "nominal": 291.15,
+   "unit": "K",
+   "minimum": 243.15,
+   "maximum": 323.15,
+   "resolution": 0.1,
+   "brick_class": "brick:Outside_Air_Temperature_Sensor"
+  },
+  {
+   "name": "TSup",
+   "label": "Supply air temperature",
+   "data_type": "numeric",
+   "direction": "input",
+   "nominal": 291.15,
+   "unit": "K",
+   "minimum": 273.15,
+   "maximum": 313.15,
+   "resolution": 0.1,
+   "brick_class": "brick:Supply_Air_Temperature_Sensor"
+  },
+  {
+   "name": "TSupSet",
+   "label": "Supply air temperature setpoint",
+   "data_type": "numeric",
+   "direction": "input",
+   "nominal": 291.15,
+   "unit": "K",
+   "minimum": 285.15,
+   "maximum": 299.15,
+   "resolution": 0.1,
+   "brick_class": "brick:Supply_Air_Temperature_Setpoint"
+  },
+  {
+   "name": "uSupFanSta",
+   "label": "Supply fan proof",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Run_Status"
+  },
+  {
+   "name": "uExhFanSta",
+   "label": "Exhaust fan proof",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Run_Status"
+  },
+  {
+   "name": "ySupFan",
+   "label": "Supply fan start command",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Run_Enable_Command"
+  },
+  {
+   "name": "yHeaVal",
+   "label": "Heating coil valve position",
+   "data_type": "numeric",
+   "direction": "output",
+   "nominal": 0.0,
+   "unit": "1",
+   "minimum": 0.0,
+   "maximum": 1.0,
+   "resolution": 0.01,
+   "brick_class": "brick:Heating_Valve_Command"
+  },
+  {
+   "name": "yCooVal",
+   "label": "Cooling coil valve position",
+   "data_type": "numeric",
+   "direction": "output",
+   "nominal": 0.0,
+   "unit": "1",
+   "minimum": 0.0,
+   "maximum": 1.0,
+   "resolution": 0.01,
+   "brick_class": "brick:Cooling_Valve_Command"
+  },
+  {
+   "name": "yFanAla",
+   "label": "Fan proof alarm",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Alarm"
+  },
+  {
+   "name": "yExhFan",
+   "label": "Exhaust fan start command",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Run_Enable_Command"
+  },
+  {
+   "name": "yWhe",
+   "label": "Energy recovery wheel enable",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Enable_Command"
+  }
+ ],
+ "requirements": [
+  {
+   "id": "R-01",
+   "title": "Supply fan runs when occupied",
+   "kind": "control",
+   "text": "The supply fan is commanded on whenever the unit is occupied and off when unoccupied.",
+   "citation": {
+    "document": "BACTalk standard sequence: dedicated outdoor air system",
+    "section": "§1 fans",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uOcc",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "ySupFan",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "ySupFan",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "R-02",
+   "title": "Supply fan proof alarm",
+   "kind": "alarm",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "When the supply fan is commanded on and not proven for 60 seconds the fan proof alarm is raised; it clears when the fan proves or the command is removed.",
+   "citation": {
+    "document": "BACTalk standard sequence: dedicated outdoor air system",
+    "section": "§5 alarms",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uSupFanSta",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "timing": {
+    "delay_seconds": 60.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "parameters": {
+    "proofDelay_s": 60.0
+   }
+  },
+  {
+   "id": "R-03",
+   "title": "Heating coil holds the supply setpoint",
+   "kind": "loop",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With the supply fan proven, the heating coil valve is modulated (proportional, 0.5 per K) to hold the supply air temperature at the setpoint less half the 1 K deadband; with the supply 3 K or more below the nominal 291.15 K setpoint for 60 seconds the valve is at least 90 % open, and it is closed whenever the supply is above the setpoint.",
+   "citation": {
+    "document": "BACTalk standard sequence: dedicated outdoor air system",
+    "section": "§2 supply temperature",
+    "fidelity": "designer",
+    "paragraph": "heating"
+   },
+   "conditions": [
+    {
+     "point": "uSupFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "TSup",
+     "operator": "lt",
+     "value": 288.15
+    }
+   ],
+   "timing": {
+    "delay_seconds": 60.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yHeaVal",
+     "operator": "gte",
+     "value": 0.9
+    },
+    {
+     "point": "yCooVal",
+     "operator": "eq",
+     "value": 0.0,
+     "tolerance": 0.001
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yHeaVal",
+     "operator": "between",
+     "value": 0.0,
+     "upper": 1.0
+    }
+   ],
+   "parameters": {
+    "loopGain_perK": 0.5,
+    "deadband_K": 1.0
+   }
+  },
+  {
+   "id": "R-04",
+   "title": "Cooling coil holds the supply setpoint",
+   "kind": "loop",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With the supply fan proven, the cooling coil valve is modulated (proportional, 0.5 per K) to hold the supply air temperature at the setpoint plus half the deadband; with the supply 3 K or more above the nominal setpoint for 60 seconds the valve is at least 90 % open, and it is closed whenever the supply is below the setpoint.",
+   "citation": {
+    "document": "BACTalk standard sequence: dedicated outdoor air system",
+    "section": "§2 supply temperature",
+    "fidelity": "designer",
+    "paragraph": "cooling"
+   },
+   "conditions": [
+    {
+     "point": "uSupFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "TSup",
+     "operator": "gt",
+     "value": 294.15
+    }
+   ],
+   "timing": {
+    "delay_seconds": 60.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yCooVal",
+     "operator": "gte",
+     "value": 0.9
+    },
+    {
+     "point": "yHeaVal",
+     "operator": "eq",
+     "value": 0.0,
+     "tolerance": 0.001
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yCooVal",
+     "operator": "between",
+     "value": 0.0,
+     "upper": 1.0
+    }
+   ]
+  },
+  {
+   "id": "R-05",
+   "title": "Both valves closed inside the deadband",
+   "kind": "loop",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With the supply fan proven and the supply air temperature inside the 1 K deadband around the nominal setpoint (290.65 K to 291.65 K), both coil valves are closed.",
+   "citation": {
+    "document": "BACTalk standard sequence: dedicated outdoor air system",
+    "section": "§2 supply temperature",
+    "fidelity": "designer",
+    "paragraph": "deadband"
+   },
+   "conditions": [
+    {
+     "point": "uSupFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "TSup",
+     "operator": "between",
+     "value": 290.65,
+     "upper": 291.65
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yHeaVal",
+     "operator": "eq",
+     "value": 0.0,
+     "tolerance": 0.001
+    },
+    {
+     "point": "yCooVal",
+     "operator": "eq",
+     "value": 0.0,
+     "tolerance": 0.001
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yHeaVal",
+     "operator": "between",
+     "value": 0.0,
+     "upper": 1.0
+    }
+   ]
+  },
+  {
+   "id": "R-06",
+   "title": "Unoccupied shuts the unit down",
+   "kind": "safety",
+   "text": "When unoccupied the supply fan, the exhaust fan, the wheel and both valves are off in the same scan, and the fan proof alarm is off.",
+   "citation": {
+    "document": "BACTalk standard sequence: dedicated outdoor air system",
+    "section": "§1 fans",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uOcc",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "ySupFan",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yHeaVal",
+     "operator": "eq",
+     "value": 0.0,
+     "tolerance": 0.001
+    },
+    {
+     "point": "yCooVal",
+     "operator": "eq",
+     "value": 0.0,
+     "tolerance": 0.001
+    },
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yExhFan",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yWhe",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "ySupFan",
+     "operator": "eq",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": "R-07",
+   "title": "Exhaust fan runs with the supply fan",
+   "kind": "control",
+   "text": "The exhaust fan is commanded on whenever the unit is occupied and off when unoccupied.",
+   "citation": {
+    "document": "BACTalk standard sequence: dedicated outdoor air system",
+    "section": "§1 fans",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uOcc",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yExhFan",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yExhFan",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "R-08",
+   "title": "Energy recovery wheel in cold weather",
+   "kind": "control",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With both fans proven, the energy recovery wheel is enabled when the outdoor air is below 285.15 K (12 °C, 1 K deadband) and disabled inside the free-cooling window between the cold and warm limits.",
+   "citation": {
+    "document": "BACTalk standard sequence: dedicated outdoor air system",
+    "section": "§3 energy recovery",
+    "fidelity": "designer",
+    "paragraph": "cold"
+   },
+   "conditions": [
+    {
+     "point": "uSupFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "uExhFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "TOut",
+     "operator": "lt",
+     "value": 285.15,
+     "deadband": 1.0
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yWhe",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yWhe",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "parameters": {
+    "ervColdLimit_K": 285.15,
+    "ervWarmLimit_K": 297.15
+   }
+  },
+  {
+   "id": "R-09",
+   "title": "Energy recovery wheel in warm weather",
+   "kind": "control",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With both fans proven, the energy recovery wheel is enabled when the outdoor air is above 297.15 K (24 °C, 1 K deadband) and disabled inside the free-cooling window.",
+   "citation": {
+    "document": "BACTalk standard sequence: dedicated outdoor air system",
+    "section": "§3 energy recovery",
+    "fidelity": "designer",
+    "paragraph": "warm"
+   },
+   "conditions": [
+    {
+     "point": "uSupFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "uExhFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "TOut",
+     "operator": "gt",
+     "value": 297.15,
+     "deadband": 1.0
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yWhe",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yWhe",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  }
+ ],
+ "invariants": [
+  {
+   "id": "I-01",
+   "text": "Nothing runs while unoccupied",
+   "citation": {
+    "document": "BACTalk standard sequence: dedicated outdoor air system",
+    "section": "§1 fans",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "uOcc",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "point": "ySupFan",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yHeaVal",
+     "operator": "eq",
+     "value": 0.0
+    },
+    {
+     "point": "yCooVal",
+     "operator": "eq",
+     "value": 0.0
+    },
+    {
+     "point": "yExhFan",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yWhe",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "I-02",
+   "text": "Heating and cooling valves never open together",
+   "citation": {
+    "document": "BACTalk standard sequence: dedicated outdoor air system",
+    "section": "§2 supply temperature",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "yHeaVal",
+     "operator": "gt",
+     "value": 0.001
+    }
+   ],
+   "then": [
+    {
+     "point": "yCooVal",
+     "operator": "eq",
+     "value": 0.0,
+     "tolerance": 0.001
+    }
+   ]
+  },
+  {
+   "id": "I-03",
+   "text": "Valve positions are fractions",
+   "citation": {
+    "document": "BACTalk standard sequence: dedicated outdoor air system",
+    "section": "§2 supply temperature",
+    "fidelity": "designer"
+   },
+   "then": [
+    {
+     "point": "yHeaVal",
+     "operator": "between",
+     "value": 0.0,
+     "upper": 1.0
+    },
+    {
+     "point": "yCooVal",
+     "operator": "between",
+     "value": 0.0,
+     "upper": 1.0
+    }
+   ]
+  }
+ ],
+ "notes": "BACTalk standard sequence (engineer-approved requirements), never labelled G36. Configuration option energy_recovery=true. The supply setpoint is an input; the loop requirements are stated at the nominal setpoint so their thresholds are numbers."
+}

@@ -226,6 +226,10 @@ public final class KernelHarness {
         BooleanInitialization k = new BooleanInitialization(bool(params, "initial", false));
         return row -> Boolean.toString(k.step(b(row[1])));
       }
+      case "Round": {
+        Round k = new Round();
+        return row -> Double.toString(k.step(row[1]));
+      }
       case "RisingEdge": {
         RisingEdge k = new RisingEdge(bool(params, "initial", false));
         return row -> Boolean.toString(k.step(b(row[1])));

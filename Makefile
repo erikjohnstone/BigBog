@@ -305,6 +305,14 @@ tier2-retain:
 coverage-report:
 	PYTHONPATH=src .venv/bin/python scripts/coverage_report.py
 
+tier3-adequacy:
+	PYTHONPATH=src .venv/bin/python scripts/protocol_adequacy.py hw-plant-boiler
+
+protocol-adequacy:
+	for sid in $$(PYTHONPATH=src .venv/bin/python -c "from bactalk.protocol import catalog; print(' '.join(catalog.sequence_ids()))"); do \
+		PYTHONPATH=src .venv/bin/python scripts/protocol_adequacy.py $$sid --mutants 100 --d3-default || exit 1; \
+	done
+
 # Render docs/niagara-lowering-matrix.md from src/bactalk/niagara/lowering.py.
 lowering-matrix:
 	PYTHONPATH=src .venv/bin/python -m bactalk.niagara.lowering --write

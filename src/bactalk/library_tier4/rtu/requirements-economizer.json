@@ -1,0 +1,565 @@
+{
+ "schema": "bactalk.protocol-requirements/v1",
+ "sequence_id": "rtu-economizer",
+ "title": "Packaged rooftop unit, single zone with economizer (BACTalk standard sequence)",
+ "version": "1.0 (N10 draft, awaiting Gate G-ENG)",
+ "tier": 4,
+ "equipment_brick_class": "brick:RTU",
+ "sources": [
+  {
+   "document": "BACTalk standard sequence: packaged rooftop unit",
+   "edition": "designer practice; not a Guideline 36 sequence"
+  }
+ ],
+ "step_seconds": 10.0,
+ "points": [
+  {
+   "name": "uOcc",
+   "label": "Occupied (schedule)",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Occupancy_Status"
+  },
+  {
+   "name": "TZon",
+   "label": "Zone temperature",
+   "data_type": "numeric",
+   "direction": "input",
+   "nominal": 295.15,
+   "unit": "K",
+   "minimum": 283.15,
+   "maximum": 313.15,
+   "resolution": 0.1,
+   "brick_class": "brick:Zone_Air_Temperature_Sensor"
+  },
+  {
+   "name": "TZonCooSet",
+   "label": "Zone cooling setpoint",
+   "data_type": "numeric",
+   "direction": "input",
+   "nominal": 297.15,
+   "unit": "K",
+   "minimum": 291.15,
+   "maximum": 303.15,
+   "resolution": 0.1,
+   "brick_class": "brick:Zone_Air_Cooling_Temperature_Setpoint"
+  },
+  {
+   "name": "TZonHeaSet",
+   "label": "Zone heating setpoint",
+   "data_type": "numeric",
+   "direction": "input",
+   "nominal": 293.15,
+   "unit": "K",
+   "minimum": 285.15,
+   "maximum": 297.15,
+   "resolution": 0.1,
+   "brick_class": "brick:Zone_Air_Heating_Temperature_Setpoint"
+  },
+  {
+   "name": "uFanSta",
+   "label": "Supply fan proof",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Run_Status"
+  },
+  {
+   "name": "TOut",
+   "label": "Outdoor air temperature",
+   "data_type": "numeric",
+   "direction": "input",
+   "nominal": 283.15,
+   "unit": "K",
+   "minimum": 243.15,
+   "maximum": 323.15,
+   "resolution": 0.1,
+   "brick_class": "brick:Outside_Air_Temperature_Sensor"
+  },
+  {
+   "name": "yFan",
+   "label": "Supply fan start command",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Run_Enable_Command"
+  },
+  {
+   "name": "yCoo",
+   "label": "Cooling stage 1 (compressor) command",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Cooling_Command"
+  },
+  {
+   "name": "yHea",
+   "label": "Heating stage 1 command",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Heating_Command"
+  },
+  {
+   "name": "yOutDam",
+   "label": "Outdoor air damper position",
+   "data_type": "numeric",
+   "direction": "output",
+   "nominal": 0.0,
+   "unit": "1",
+   "minimum": 0.0,
+   "maximum": 1.0,
+   "resolution": 0.01,
+   "brick_class": "brick:Damper_Position_Command"
+  },
+  {
+   "name": "yFanAla",
+   "label": "Supply fan proof alarm",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Alarm"
+  }
+ ],
+ "requirements": [
+  {
+   "id": "R-01",
+   "title": "Supply fan runs when occupied",
+   "kind": "control",
+   "text": "The supply fan is commanded on whenever the unit is occupied and off when unoccupied (no setback cycling in this sequence).",
+   "citation": {
+    "document": "BACTalk standard sequence: packaged rooftop unit",
+    "section": "§1 fan",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uOcc",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "R-02",
+   "title": "Fan proof alarm",
+   "kind": "alarm",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "When the fan is commanded on and not proven for 60 seconds the fan proof alarm is raised; it clears when the fan proves or the command is removed.",
+   "citation": {
+    "document": "BACTalk standard sequence: packaged rooftop unit",
+    "section": "§5 alarms",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uFanSta",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "timing": {
+    "delay_seconds": 60.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "parameters": {
+    "proofDelay_s": 60.0
+   }
+  },
+  {
+   "id": "R-03",
+   "title": "Cooling stage on high zone temperature",
+   "kind": "staging",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With the fan proven and the cooling setpoint at its nominal 297.15 K, the cooling stage is commanded on when the zone temperature exceeds the cooling setpoint by more than 0.5 K for 2 minutes, and off when it falls 0.5 K below the setpoint (1 K deadband). The stage is compared with the live setpoint.",
+   "citation": {
+    "document": "BACTalk standard sequence: packaged rooftop unit",
+    "section": "§2 cooling",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "TZon",
+     "operator": "gt",
+     "value": 297.65,
+     "deadband": 1.0
+    }
+   ],
+   "timing": {
+    "delay_seconds": 120.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yCoo",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yHea",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yCoo",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "parameters": {
+    "stageDelay_s": 120.0,
+    "deadband_K": 1.0
+   }
+  },
+  {
+   "id": "R-04",
+   "title": "Heating stage on low zone temperature",
+   "kind": "staging",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With the fan proven and the heating setpoint at its nominal 293.15 K, the heating stage is commanded on when the zone temperature falls more than 0.5 K below the heating setpoint for 2 minutes, and off when it rises 0.5 K above the setpoint (1 K deadband).",
+   "citation": {
+    "document": "BACTalk standard sequence: packaged rooftop unit",
+    "section": "§3 heating",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "TZon",
+     "operator": "lt",
+     "value": 292.65,
+     "deadband": 1.0
+    }
+   ],
+   "timing": {
+    "delay_seconds": 120.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yHea",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yCoo",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yHea",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "R-05",
+   "title": "Unoccupied shuts the unit down",
+   "kind": "safety",
+   "text": "When unoccupied the fan, cooling and heating stages are off and the outdoor air damper is closed in the same scan; the fan proof alarm is off.",
+   "citation": {
+    "document": "BACTalk standard sequence: packaged rooftop unit",
+    "section": "§1 fan",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uOcc",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yCoo",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yHea",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yOutDam",
+     "operator": "eq",
+     "value": 0.0
+    },
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": "R-06",
+   "title": "Minimum outdoor air with the fan proven",
+   "kind": "control",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With the fan proven and no free cooling, the outdoor air damper holds its minimum ventilation position (20 %).",
+   "citation": {
+    "document": "BACTalk standard sequence: packaged rooftop unit",
+    "section": "§4 outdoor air",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "TOut",
+     "operator": "gt",
+     "value": 291.15,
+     "deadband": 1.0
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yOutDam",
+     "operator": "eq",
+     "value": 0.2,
+     "tolerance": 0.001
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yOutDam",
+     "operator": "between",
+     "value": 0.0,
+     "upper": 1.0
+    }
+   ],
+   "parameters": {
+    "minOutdoorAir": 0.2
+   }
+  },
+  {
+   "id": "R-07",
+   "title": "Economizer free cooling",
+   "kind": "control",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "With the fan proven, the outdoor air below the 291.15 K (18 °C) high limit (1 K deadband) and a cooling demand (zone above the cooling setpoint by more than 0.5 K), the outdoor air damper opens fully; when the outdoor air is above the high limit the damper returns to minimum position, and mechanical cooling still stages per R-03.",
+   "citation": {
+    "document": "BACTalk standard sequence: packaged rooftop unit",
+    "section": "§4 outdoor air",
+    "fidelity": "designer",
+    "paragraph": "economizer"
+   },
+   "conditions": [
+    {
+     "point": "uFanSta",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "TOut",
+     "operator": "lt",
+     "value": 291.15,
+     "deadband": 1.0
+    },
+    {
+     "point": "TZon",
+     "operator": "gt",
+     "value": 297.65,
+     "deadband": 1.0
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yOutDam",
+     "operator": "eq",
+     "value": 1.0,
+     "tolerance": 0.001
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yOutDam",
+     "operator": "lte",
+     "value": 0.2,
+     "tolerance": 0.001
+    }
+   ],
+   "parameters": {
+    "economizerHighLimit_K": 291.15
+   }
+  }
+ ],
+ "invariants": [
+  {
+   "id": "I-01",
+   "text": "Nothing runs while unoccupied",
+   "citation": {
+    "document": "BACTalk standard sequence: packaged rooftop unit",
+    "section": "§1 fan",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "uOcc",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yCoo",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yHea",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yOutDam",
+     "operator": "eq",
+     "value": 0.0
+    }
+   ]
+  },
+  {
+   "id": "I-02",
+   "text": "Heating and cooling never together",
+   "citation": {
+    "document": "BACTalk standard sequence: packaged rooftop unit",
+    "section": "§2 cooling",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "yCoo",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "then": [
+    {
+     "point": "yHea",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "I-03",
+   "text": "No stage without a proven fan",
+   "citation": {
+    "document": "BACTalk standard sequence: packaged rooftop unit",
+    "section": "§2 cooling",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "uFanSta",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "point": "yCoo",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yHea",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "I-04",
+   "text": "The damper position is a fraction",
+   "citation": {
+    "document": "BACTalk standard sequence: packaged rooftop unit",
+    "section": "§4 outdoor air",
+    "fidelity": "designer"
+   },
+   "then": [
+    {
+     "point": "yOutDam",
+     "operator": "between",
+     "value": 0.0,
+     "upper": 1.0
+    }
+   ]
+  }
+ ],
+ "notes": "BACTalk standard sequence (engineer-approved requirements), never labelled G36. Configuration option economizer=true. Setpoints are inputs; the staging requirements are stated at the nominal setpoints so their thresholds are numbers."
+}

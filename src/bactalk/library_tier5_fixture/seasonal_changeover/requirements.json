@@ -1,0 +1,292 @@
+{
+ "schema": "bactalk.protocol-requirements/v1",
+ "sequence_id": "custom-seasonal-changeover",
+ "title": "Seasonal heating/cooling changeover (custom, job-specific)",
+ "version": "1.0 (N11 fixture, contractor approval pending)",
+ "tier": 5,
+ "equipment_brick_class": "brick:Equipment",
+ "sources": [
+  {
+   "document": "Project specification 23 09 93, seasonal changeover (contractor upload)",
+   "edition": "fixture text in the style of a specification section; the contractor approves it"
+  }
+ ],
+ "step_seconds": 60.0,
+ "points": [
+  {
+   "name": "TOut",
+   "label": "Outdoor air temperature",
+   "data_type": "numeric",
+   "direction": "input",
+   "nominal": 283.15,
+   "unit": "K",
+   "minimum": 243.15,
+   "maximum": 323.15,
+   "resolution": 0.1,
+   "brick_class": "brick:Outside_Air_Temperature_Sensor"
+  },
+  {
+   "name": "uHeaOvr",
+   "label": "Operator override: heating season",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": false
+  },
+  {
+   "name": "uCooOvr",
+   "label": "Operator override: cooling season",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": false
+  },
+  {
+   "name": "yHeaSea",
+   "label": "Heating season (bound to VAV_21.u1HotPla)",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Heating_Enable_Command"
+  },
+  {
+   "name": "yCooSea",
+   "label": "Cooling season",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Cooling_Enable_Command"
+  }
+ ],
+ "requirements": [
+  {
+   "id": "R-01",
+   "title": "Heating season on sustained cold outdoor air",
+   "kind": "control",
+   "text": "The heating season shall be declared when the outdoor air temperature has been below 15 °C (288.15 K) for 30 minutes and shall end when it has risen above 17 °C (2 K deadband) for 30 minutes.",
+   "citation": {
+    "document": "Project specification 23 09 93, seasonal changeover (contractor upload)",
+    "section": "3.7.A",
+    "fidelity": "verbatim",
+    "paragraph": "paragraph 1"
+   },
+   "conditions": [
+    {
+     "point": "TOut",
+     "operator": "lt",
+     "value": 288.15,
+     "deadband": 2.0
+    }
+   ],
+   "timing": {
+    "delay_seconds": 1800.0,
+    "release_seconds": 1800.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yHeaSea",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yCooSea",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yHeaSea",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "parameters": {
+    "heatingLimit_K": 288.15,
+    "deadband_K": 2.0,
+    "changeoverDelay_s": 1800.0
+   }
+  },
+  {
+   "id": "R-02",
+   "title": "Cooling season on sustained warm outdoor air",
+   "kind": "control",
+   "text": "The cooling season shall be declared when the outdoor air temperature has been above 19 °C (292.15 K) for 30 minutes and shall end when it has fallen below 17 °C for 30 minutes.",
+   "citation": {
+    "document": "Project specification 23 09 93, seasonal changeover (contractor upload)",
+    "section": "3.7.B",
+    "fidelity": "verbatim",
+    "paragraph": "paragraph 2"
+   },
+   "conditions": [
+    {
+     "point": "TOut",
+     "operator": "gt",
+     "value": 292.15,
+     "deadband": 2.0
+    }
+   ],
+   "timing": {
+    "delay_seconds": 1800.0,
+    "release_seconds": 1800.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yCooSea",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yHeaSea",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yCooSea",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "parameters": {
+    "coolingLimit_K": 292.15
+   }
+  },
+  {
+   "id": "R-03",
+   "title": "Heating override",
+   "kind": "control",
+   "text": "An operator heating override shall force the heating season immediately regardless of outdoor temperature.",
+   "citation": {
+    "document": "Project specification 23 09 93, seasonal changeover (contractor upload)",
+    "section": "3.7.C",
+    "fidelity": "verbatim",
+    "paragraph": "paragraph 3"
+   },
+   "conditions": [
+    {
+     "point": "uHeaOvr",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yHeaSea",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yCooSea",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yCooSea",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "R-04",
+   "title": "Cooling override",
+   "kind": "control",
+   "text": "An operator cooling override shall force the cooling season immediately regardless of outdoor temperature; when both overrides are set the heating override prevails.",
+   "citation": {
+    "document": "Project specification 23 09 93, seasonal changeover (contractor upload)",
+    "section": "3.7.C",
+    "fidelity": "verbatim",
+    "paragraph": "paragraph 3"
+   },
+   "conditions": [
+    {
+     "point": "uCooOvr",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "uHeaOvr",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yCooSea",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yHeaSea",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yCooSea",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  }
+ ],
+ "invariants": [
+  {
+   "id": "I-01",
+   "text": "Never both seasons",
+   "citation": {
+    "document": "Project specification 23 09 93, seasonal changeover (contractor upload)",
+    "section": "3.7",
+    "fidelity": "paraphrase"
+   },
+   "when": [
+    {
+     "point": "yHeaSea",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "then": [
+    {
+     "point": "yCooSea",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "I-02",
+   "text": "The heating override always wins",
+   "citation": {
+    "document": "Project specification 23 09 93, seasonal changeover (contractor upload)",
+    "section": "3.7.C",
+    "fidelity": "paraphrase"
+   },
+   "when": [
+    {
+     "point": "uHeaOvr",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "then": [
+    {
+     "point": "yHeaSea",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "yCooSea",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  }
+ ],
+ "notes": "Custom, job-specific sequence (Tier 5). Its heating-season output feeds the Tier 1 VAV box's hot water plant status through the project signal binding CHG_1.yHeaSea -> VAV_21.u1HotPla."
+}

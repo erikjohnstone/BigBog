@@ -1,0 +1,325 @@
+{
+ "schema": "bactalk.protocol-requirements/v1",
+ "sequence_id": "exhaust-fan-damper",
+ "title": "Exhaust fan with isolation damper (BACTalk standard sequence)",
+ "version": "1.0 (N10 draft, awaiting Gate G-ENG)",
+ "tier": 4,
+ "equipment_brick_class": "brick:Exhaust_Fan",
+ "sources": [
+  {
+   "document": "BACTalk standard sequence: exhaust fan",
+   "edition": "designer practice; not a Guideline 36 sequence"
+  }
+ ],
+ "step_seconds": 5.0,
+ "points": [
+  {
+   "name": "uEna",
+   "label": "Fan enable (schedule or request)",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Enable_Command"
+  },
+  {
+   "name": "uFanSta",
+   "label": "Fan proof (current switch or status)",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Run_Status"
+  },
+  {
+   "name": "uDamOpe",
+   "label": "Isolation damper open end switch",
+   "data_type": "boolean",
+   "direction": "input",
+   "nominal": true,
+   "brick_class": "brick:Damper_Position_Status"
+  },
+  {
+   "name": "yFan",
+   "label": "Fan start command",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Run_Enable_Command"
+  },
+  {
+   "name": "yFanAla",
+   "label": "Fan proof alarm",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Alarm"
+  },
+  {
+   "name": "yDam",
+   "label": "Isolation damper open command",
+   "data_type": "boolean",
+   "direction": "output",
+   "nominal": false,
+   "brick_class": "brick:Damper_Command"
+  }
+ ],
+ "requirements": [
+  {
+   "id": "R-01",
+   "title": "Fan runs when enabled and the damper proves open",
+   "kind": "control",
+   "text": "With the enable input true, the fan is commanded on once the isolation damper's open end switch proves; it is commanded off when the enable input is false.",
+   "citation": {
+    "document": "BACTalk standard sequence: exhaust fan",
+    "section": "§1 fan control",
+    "fidelity": "designer",
+    "paragraph": "isolation damper interlock"
+   },
+   "conditions": [
+    {
+     "point": "uEna",
+     "operator": "eq",
+     "value": true
+    },
+    {
+     "point": "uDamOpe",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "R-02",
+   "title": "Proof-of-flow alarm",
+   "kind": "alarm",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "When the fan is commanded on and its proof input stays false for 60 seconds, the proof alarm is raised; it clears as soon as the fan proves or the command is removed.",
+   "citation": {
+    "document": "BACTalk standard sequence: exhaust fan",
+    "section": "§3 alarms",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uFanSta",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "timing": {
+    "delay_seconds": 60.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "parameters": {
+    "proofDelay_s": 60.0
+   }
+  },
+  {
+   "id": "R-03",
+   "title": "Disable stops everything",
+   "kind": "safety",
+   "text": "When the enable input is false the fan command, the damper command and the proof alarm are all off in the same scan.",
+   "citation": {
+    "document": "BACTalk standard sequence: exhaust fan",
+    "section": "§1 fan control",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uEna",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yDam",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": true
+    }
+   ]
+  },
+  {
+   "id": "R-04",
+   "title": "Fan starts after the damper timeout",
+   "kind": "control",
+   "assumes": [
+    "R-01"
+   ],
+   "text": "If the damper end switch has not proved open 30 seconds after the enable input became true, the fan starts anyway (a failed end switch must not keep the space unventilated).",
+   "citation": {
+    "document": "BACTalk standard sequence: exhaust fan",
+    "section": "§1 fan control",
+    "fidelity": "designer",
+    "paragraph": "end switch timeout"
+   },
+   "conditions": [
+    {
+     "point": "uDamOpe",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "timing": {
+    "delay_seconds": 30.0,
+    "tolerance_scans": 1
+   },
+   "outcomes": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "before": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "parameters": {
+    "damperTimeout_s": 30.0
+   }
+  },
+  {
+   "id": "R-05",
+   "title": "Damper opens when enabled",
+   "kind": "control",
+   "text": "The isolation damper is commanded open whenever the enable input is true and closed when it is false.",
+   "citation": {
+    "document": "BACTalk standard sequence: exhaust fan",
+    "section": "§2 isolation damper",
+    "fidelity": "designer"
+   },
+   "conditions": [
+    {
+     "point": "uEna",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "outcomes": [
+    {
+     "point": "yDam",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "otherwise": [
+    {
+     "point": "yDam",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  }
+ ],
+ "invariants": [
+  {
+   "id": "I-01",
+   "text": "Nothing runs while disabled",
+   "citation": {
+    "document": "BACTalk standard sequence: exhaust fan",
+    "section": "§1 fan control",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "uEna",
+     "operator": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": false
+    },
+    {
+     "point": "yDam",
+     "operator": "eq",
+     "value": false
+    }
+   ]
+  },
+  {
+   "id": "I-02",
+   "text": "The proof alarm implies a fan command",
+   "citation": {
+    "document": "BACTalk standard sequence: exhaust fan",
+    "section": "§3 alarms",
+    "fidelity": "designer"
+   },
+   "when": [
+    {
+     "point": "yFanAla",
+     "operator": "eq",
+     "value": true
+    }
+   ],
+   "then": [
+    {
+     "point": "yFan",
+     "operator": "eq",
+     "value": true
+    }
+   ]
+  }
+ ],
+ "notes": "BACTalk standard sequence (engineer-approved requirements), never labelled G36. Configuration option isolation_damper=true."
+}

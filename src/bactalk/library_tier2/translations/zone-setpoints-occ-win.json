@@ -1,0 +1,3245 @@
+{
+ "configuration_id": "zone-setpoints-occ-win",
+ "controller_id": "ThermalZones.Setpoints",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints",
+  "inputs": [
+   {
+    "description": "Occupied zone cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.TOccCooSet",
+    "label": "TOccCooSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Occupied zone heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.TOccHeaSet",
+    "label": "TOccHeaSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Unoccupied zone cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.TUnoCooSet",
+    "label": "TUnoCooSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Unoccupied zone heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.TUnoHeaSet",
+    "label": "TUnoHeaSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Cooling setpoint adjustment value",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.cooSetAdj",
+    "label": "cooSetAdj",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Heating setpoint adjustment value",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.heaSetAdj",
+    "label": "heaSetAdj",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Occupancy sensor (occupied=true, unoccupied=false)",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.u1Occ",
+    "label": "u1Occ",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Window status, normally closed (true), when windows open, it becomes false",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.u1Win",
+    "label": "u1Win",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Cooling demand limit level",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.uCooDemLimLev",
+    "label": "uCooDemLimLev",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "Heating demand limit level",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.uHeaDemLimLev",
+    "label": "uHeaDemLimLev",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "AHU operation mode status signal",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.uOpeMod",
+    "label": "uOpeMod",
+    "type": "S231:IntegerInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Cooling setpoint temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.TCooSet",
+    "label": "TCooSet",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Heating setpoint temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.THeaSet",
+    "label": "THeaSet",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Alarm level",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.yAla",
+    "label": "yAla",
+    "type": "S231:IntegerOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 6
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "have_occSen": true,
+  "have_winSen": true
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TOccCooSet",
+   "name": "TOccCooSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.TOccCooSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TOccHeaSet",
+   "name": "TOccHeaSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.TOccHeaSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TUnoCooSet",
+   "name": "TUnoCooSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.TUnoCooSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TUnoHeaSet",
+   "name": "TUnoHeaSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.TUnoHeaSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "cooSetAdj",
+   "name": "cooSetAdj",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.cooSetAdj",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "heaSetAdj",
+   "name": "heaSetAdj",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.heaSetAdj",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Occ",
+   "name": "u1Occ",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.u1Occ",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Win",
+   "name": "u1Win",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.u1Win",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uCooDemLimLev",
+   "name": "uCooDemLimLev",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.uCooDemLimLev",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uHeaDemLimLev",
+   "name": "uHeaDemLimLev",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.uHeaDemLimLev",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uOpeMod",
+   "name": "uOpeMod",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.uOpeMod",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TCooSet",
+   "name": "TCooSet",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.TCooSet",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "THeaSet",
+   "name": "THeaSet",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.THeaSet",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yAla",
+   "name": "yAla",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints.yAla",
+   "source_interface_type": "S231:IntegerOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "ThermalZones/Setpoints.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "56ccb4e8adbe781986595fb6d48a0d9fbe9e0662ece6ef6ec87192c012339870",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "03df7fb6234bb2e0339b8925cbe595195044e8da9cca91a99e62b43588df040a",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "cooSetAdj",
+    "kind": "numeric_input",
+    "label": "cooSetAdj",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "heaSetAdj",
+    "kind": "numeric_input",
+    "label": "heaSetAdj",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TOccCooSet",
+    "kind": "numeric_input",
+    "label": "TOccCooSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TOccHeaSet",
+    "kind": "numeric_input",
+    "label": "TOccHeaSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TUnoCooSet",
+    "kind": "numeric_input",
+    "label": "TUnoCooSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TUnoHeaSet",
+    "kind": "numeric_input",
+    "label": "TUnoHeaSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Occ",
+    "kind": "boolean_input",
+    "label": "u1Occ",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Win",
+    "kind": "boolean_input",
+    "label": "u1Win",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uCooDemLimLev",
+    "kind": "numeric_input",
+    "label": "uCooDemLimLev",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uHeaDemLimLev",
+    "kind": "numeric_input",
+    "label": "uHeaDemLimLev",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uOpeMod",
+    "kind": "numeric_input",
+    "label": "uOpeMod",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "TCooSet",
+    "kind": "numeric_output",
+    "label": "TCooSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "THeaSet",
+    "kind": "numeric_output",
+    "label": "THeaSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yAla",
+    "kind": "numeric_output",
+    "label": "yAla",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "add1",
+    "kind": "add",
+    "label": "add1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "add2",
+    "kind": "add",
+    "label": "add2",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "add3",
+    "kind": "add",
+    "label": "add3",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "add4",
+    "kind": "add",
+    "label": "add4",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "add5",
+    "kind": "add",
+    "label": "add5",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "add6",
+    "kind": "add",
+    "label": "add6",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "add7",
+    "kind": "add",
+    "label": "add7",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "add8",
+    "kind": "add",
+    "label": "add8",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": -0.5
+    },
+    "id": "addPar_parameter",
+    "kind": "numeric_const",
+    "label": "addPar parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar",
+    "kind": "add",
+    "label": "addPar",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "addPar1_parameter",
+    "kind": "numeric_const",
+    "label": "addPar1 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar1",
+    "kind": "add",
+    "label": "addPar1",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "addPar2_parameter",
+    "kind": "numeric_const",
+    "label": "addPar2 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar2",
+    "kind": "add",
+    "label": "addPar2",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "addPar3_parameter",
+    "kind": "numeric_const",
+    "label": "addPar3 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar3",
+    "kind": "add",
+    "label": "addPar3",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": -2.0
+    },
+    "id": "addPar4_parameter",
+    "kind": "numeric_const",
+    "label": "addPar4 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar4",
+    "kind": "add",
+    "label": "addPar4",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": -1.0
+    },
+    "id": "addPar5_parameter",
+    "kind": "numeric_const",
+    "label": "addPar5 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar5",
+    "kind": "add",
+    "label": "addPar5",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": -0.5
+    },
+    "id": "addPar6_parameter",
+    "kind": "numeric_const",
+    "label": "addPar6 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar6",
+    "kind": "add",
+    "label": "addPar6",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 3.8
+    },
+    "id": "alaFou",
+    "kind": "numeric_const",
+    "label": "alaFou",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": -0.2
+    },
+    "id": "alaZer",
+    "kind": "numeric_const",
+    "label": "alaZer",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "and10",
+    "kind": "and",
+    "label": "and10",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "and11",
+    "kind": "and",
+    "label": "and11",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea_true",
+    "kind": "numeric_const",
+    "label": "booToRea true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea_false",
+    "kind": "numeric_const",
+    "label": "booToRea false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea",
+    "kind": "numeric_switch",
+    "label": "booToRea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea1_true",
+    "kind": "numeric_const",
+    "label": "booToRea1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea1_false",
+    "kind": "numeric_const",
+    "label": "booToRea1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea1",
+    "kind": "numeric_switch",
+    "label": "booToRea1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea2_true",
+    "kind": "numeric_const",
+    "label": "booToRea2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea2_false",
+    "kind": "numeric_const",
+    "label": "booToRea2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea2",
+    "kind": "numeric_switch",
+    "label": "booToRea2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea3_true",
+    "kind": "numeric_const",
+    "label": "booToRea3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea3_false",
+    "kind": "numeric_const",
+    "label": "booToRea3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea3",
+    "kind": "numeric_switch",
+    "label": "booToRea3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea4_true",
+    "kind": "numeric_const",
+    "label": "booToRea4 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea4_false",
+    "kind": "numeric_const",
+    "label": "booToRea4 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea4",
+    "kind": "numeric_switch",
+    "label": "booToRea4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea5_true",
+    "kind": "numeric_const",
+    "label": "booToRea5 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea5_false",
+    "kind": "numeric_const",
+    "label": "booToRea5 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea5",
+    "kind": "numeric_switch",
+    "label": "booToRea5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea6_true",
+    "kind": "numeric_const",
+    "label": "booToRea6 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea6_false",
+    "kind": "numeric_const",
+    "label": "booToRea6 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea6",
+    "kind": "numeric_switch",
+    "label": "booToRea6",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea7_true",
+    "kind": "numeric_const",
+    "label": "booToRea7 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea7_false",
+    "kind": "numeric_const",
+    "label": "booToRea7 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea7",
+    "kind": "numeric_switch",
+    "label": "booToRea7",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "con",
+    "kind": "numeric_const",
+    "label": "con",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "con1",
+    "kind": "numeric_const",
+    "label": "con1",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "con2",
+    "kind": "boolean_const",
+    "label": "con2",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "conInt",
+    "kind": "numeric_const",
+    "label": "conInt",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "conInt1",
+    "kind": "numeric_const",
+    "label": "conInt1",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conInt2",
+    "kind": "numeric_const",
+    "label": "conInt2",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conInt3",
+    "kind": "numeric_const",
+    "label": "conInt3",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "conInt4",
+    "kind": "numeric_const",
+    "label": "conInt4",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "conInt5",
+    "kind": "numeric_const",
+    "label": "conInt5",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conInt6",
+    "kind": "numeric_const",
+    "label": "conInt6",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "conInt7",
+    "kind": "numeric_const",
+    "label": "conInt7",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "conInt8",
+    "kind": "numeric_const",
+    "label": "conInt8",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "cooSetAdjCon",
+    "kind": "boolean_const",
+    "label": "cooSetAdjCon",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {
+     "initial": 0.0,
+     "semantic_contract": "CDL.Discrete.TriggeredSampler"
+    },
+    "id": "cooSetFre",
+    "kind": "numeric_latch",
+    "label": "cooSetFre",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "cooSetInc_parameter",
+    "kind": "numeric_const",
+    "label": "cooSetInc parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cooSetInc",
+    "kind": "add",
+    "label": "cooSetInc",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 295.15
+    },
+    "id": "cooSetLim_minimum",
+    "kind": "numeric_const",
+    "label": "cooSetLim minimum",
+    "x": 0,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 300.15
+    },
+    "id": "cooSetLim_maximum",
+    "kind": "numeric_const",
+    "label": "cooSetLim maximum",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "cooSetLim_clamp",
+    "kind": "maximum",
+    "label": "cooSetLim clamp",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "cooSetLim_clamp_2",
+    "kind": "minimum",
+    "label": "cooSetLim clamp",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {
+     "initial": 0.0,
+     "semantic_contract": "CDL.Discrete.TriggeredSampler"
+    },
+    "id": "cooSetSam",
+    "kind": "numeric_latch",
+    "label": "cooSetSam",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 322.15
+    },
+    "id": "cooSetWinOpe",
+    "kind": "numeric_const",
+    "label": "cooSetWinOpe",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg",
+    "kind": "one_shot",
+    "label": "edg",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg1",
+    "kind": "one_shot",
+    "label": "edg1",
+    "x": 180,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "gre",
+    "kind": "greater_than",
+    "label": "gre",
+    "x": 360,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "gre2",
+    "kind": "greater_than",
+    "label": "gre2",
+    "x": 540,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "have_occSenCon",
+    "kind": "boolean_const",
+    "label": "have_occSenCon",
+    "x": 720,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "heaSetAdjCon",
+    "kind": "boolean_const",
+    "label": "heaSetAdjCon",
+    "x": 900,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": -0.5
+    },
+    "id": "heaSetDec_parameter",
+    "kind": "numeric_const",
+    "label": "heaSetDec parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "heaSetDec",
+    "kind": "add",
+    "label": "heaSetDec",
+    "x": 0,
+    "y": 1080
+   },
+   {
+    "config": {
+     "initial": 0.0,
+     "semantic_contract": "CDL.Discrete.TriggeredSampler"
+    },
+    "id": "heaSetFre",
+    "kind": "numeric_latch",
+    "label": "heaSetFre",
+    "x": 180,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": 291.15
+    },
+    "id": "heaSetLim_minimum",
+    "kind": "numeric_const",
+    "label": "heaSetLim minimum",
+    "x": 360,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": 295.15
+    },
+    "id": "heaSetLim_maximum",
+    "kind": "numeric_const",
+    "label": "heaSetLim maximum",
+    "x": 540,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "heaSetLim_clamp",
+    "kind": "maximum",
+    "label": "heaSetLim clamp",
+    "x": 720,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "heaSetLim_clamp_2",
+    "kind": "minimum",
+    "label": "heaSetLim clamp",
+    "x": 900,
+    "y": 1080
+   },
+   {
+    "config": {
+     "initial": 0.0,
+     "semantic_contract": "CDL.Discrete.TriggeredSampler"
+    },
+    "id": "heaSetSam",
+    "kind": "numeric_latch",
+    "label": "heaSetSam",
+    "x": 0,
+    "y": 1200
+   },
+   {
+    "config": {
+     "value": 277.15
+    },
+    "id": "heaSetWinOpe",
+    "kind": "numeric_const",
+    "label": "heaSetWinOpe",
+    "x": 180,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "intEqu",
+    "kind": "equal",
+    "label": "intEqu",
+    "x": 360,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "intEqu1",
+    "kind": "equal",
+    "label": "intEqu1",
+    "x": 540,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "intEqu2",
+    "kind": "equal",
+    "label": "intEqu2",
+    "x": 720,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "intEqu3",
+    "kind": "equal",
+    "label": "intEqu3",
+    "x": 900,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "intEqu4",
+    "kind": "equal",
+    "label": "intEqu4",
+    "x": 0,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "intEqu5",
+    "kind": "equal",
+    "label": "intEqu5",
+    "x": 180,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "intEqu6",
+    "kind": "equal",
+    "label": "intEqu6",
+    "x": 360,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "intEqu7",
+    "kind": "equal",
+    "label": "intEqu7",
+    "x": 540,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "intEqu8",
+    "kind": "equal",
+    "label": "intEqu8",
+    "x": 720,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intGreThr_threshold",
+    "kind": "numeric_const",
+    "label": "intGreThr threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intGreThr",
+    "kind": "greater_than",
+    "label": "intGreThr",
+    "x": 900,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intGreThr1_threshold",
+    "kind": "numeric_const",
+    "label": "intGreThr1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intGreThr1",
+    "kind": "greater_than",
+    "label": "intGreThr1",
+    "x": 0,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "les",
+    "kind": "less_than",
+    "label": "les",
+    "x": 180,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "not1",
+    "kind": "not",
+    "label": "not1",
+    "x": 360,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "not2",
+    "kind": "not",
+    "label": "not2",
+    "x": 540,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "not3",
+    "kind": "not",
+    "label": "not3",
+    "x": 720,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "not4",
+    "kind": "not",
+    "label": "not4",
+    "x": 900,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "not5",
+    "kind": "not",
+    "label": "not5",
+    "x": 0,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "or1",
+    "kind": "or",
+    "label": "or1",
+    "x": 180,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "or2",
+    "kind": "or",
+    "label": "or2",
+    "x": 360,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "or4",
+    "kind": "or",
+    "label": "or4",
+    "x": 540,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "or5",
+    "kind": "or",
+    "label": "or5",
+    "x": 720,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "or6",
+    "kind": "or",
+    "label": "or6",
+    "x": 900,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "or7",
+    "kind": "or",
+    "label": "or7",
+    "x": 0,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "or8",
+    "kind": "or",
+    "label": "or8",
+    "x": 180,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "or9",
+    "kind": "or",
+    "label": "or9",
+    "x": 360,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "pro",
+    "kind": "multiply",
+    "label": "pro",
+    "x": 540,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "pro1",
+    "kind": "multiply",
+    "label": "pro1",
+    "x": 720,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "pro2",
+    "kind": "multiply",
+    "label": "pro2",
+    "x": 900,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "pro3",
+    "kind": "multiply",
+    "label": "pro3",
+    "x": 0,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "pro4",
+    "kind": "multiply",
+    "label": "pro4",
+    "x": 180,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "pro5",
+    "kind": "multiply",
+    "label": "pro5",
+    "x": 360,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "pro6",
+    "kind": "multiply",
+    "label": "pro6",
+    "x": 540,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "pro7",
+    "kind": "multiply",
+    "label": "pro7",
+    "x": 720,
+    "y": 1800
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "reaToInt",
+    "kind": "numeric_round",
+    "label": "reaToInt",
+    "x": 900,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "numeric_switch",
+    "label": "swi",
+    "x": 0,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "swi1",
+    "kind": "numeric_switch",
+    "label": "swi1",
+    "x": 180,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "swi10",
+    "kind": "numeric_switch",
+    "label": "swi10",
+    "x": 360,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "swi11",
+    "kind": "numeric_switch",
+    "label": "swi11",
+    "x": 540,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "swi12",
+    "kind": "numeric_switch",
+    "label": "swi12",
+    "x": 720,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "swi13",
+    "kind": "numeric_switch",
+    "label": "swi13",
+    "x": 900,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "swi14",
+    "kind": "numeric_switch",
+    "label": "swi14",
+    "x": 0,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "swi15",
+    "kind": "numeric_switch",
+    "label": "swi15",
+    "x": 180,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "swi16",
+    "kind": "numeric_switch",
+    "label": "swi16",
+    "x": 360,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "swi17",
+    "kind": "numeric_switch",
+    "label": "swi17",
+    "x": 540,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "swi18",
+    "kind": "numeric_switch",
+    "label": "swi18",
+    "x": 720,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "swi19",
+    "kind": "numeric_switch",
+    "label": "swi19",
+    "x": 900,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "swi2",
+    "kind": "numeric_switch",
+    "label": "swi2",
+    "x": 0,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "swi20",
+    "kind": "numeric_switch",
+    "label": "swi20",
+    "x": 180,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "swi21",
+    "kind": "numeric_switch",
+    "label": "swi21",
+    "x": 360,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "swi22",
+    "kind": "numeric_switch",
+    "label": "swi22",
+    "x": 540,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "swi3",
+    "kind": "numeric_switch",
+    "label": "swi3",
+    "x": 720,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "swi4",
+    "kind": "numeric_switch",
+    "label": "swi4",
+    "x": 900,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "swi6",
+    "kind": "numeric_switch",
+    "label": "swi6",
+    "x": 0,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "swi7",
+    "kind": "numeric_switch",
+    "label": "swi7",
+    "x": 180,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "swi8",
+    "kind": "numeric_switch",
+    "label": "swi8",
+    "x": 360,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "swi9",
+    "kind": "numeric_switch",
+    "label": "swi9",
+    "x": 540,
+    "y": 2280
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 300.0
+    },
+    "id": "tim",
+    "kind": "timer",
+    "label": "tim",
+    "x": 720,
+    "y": 2280
+   },
+   {
+    "config": {
+     "false_hold_seconds": 0.0,
+     "true_hold_seconds": 60.0
+    },
+    "id": "truHol",
+    "kind": "boolean_true_false_hold",
+    "label": "truHol",
+    "x": 900,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "winOpe",
+    "kind": "not",
+    "label": "winOpe",
+    "x": 0,
+    "y": 2400
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "winSenCon",
+    "kind": "boolean_const",
+    "label": "winSenCon",
+    "x": 180,
+    "y": 2400
+   }
+  ],
+  "links": [
+   {
+    "source": "addPar_parameter",
+    "source_slot": "out",
+    "target": "addPar",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar1_parameter",
+    "source_slot": "out",
+    "target": "addPar1",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar2_parameter",
+    "source_slot": "out",
+    "target": "addPar2",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar3_parameter",
+    "source_slot": "out",
+    "target": "addPar3",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar4_parameter",
+    "source_slot": "out",
+    "target": "addPar4",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar5_parameter",
+    "source_slot": "out",
+    "target": "addPar5",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar6_parameter",
+    "source_slot": "out",
+    "target": "addPar6",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea_true",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea_false",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea1_true",
+    "source_slot": "out",
+    "target": "booToRea1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea1_false",
+    "source_slot": "out",
+    "target": "booToRea1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea2_true",
+    "source_slot": "out",
+    "target": "booToRea2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea2_false",
+    "source_slot": "out",
+    "target": "booToRea2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea3_true",
+    "source_slot": "out",
+    "target": "booToRea3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea3_false",
+    "source_slot": "out",
+    "target": "booToRea3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea4_true",
+    "source_slot": "out",
+    "target": "booToRea4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea4_false",
+    "source_slot": "out",
+    "target": "booToRea4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea5_true",
+    "source_slot": "out",
+    "target": "booToRea5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea5_false",
+    "source_slot": "out",
+    "target": "booToRea5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea6_true",
+    "source_slot": "out",
+    "target": "booToRea6",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea6_false",
+    "source_slot": "out",
+    "target": "booToRea6",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea7_true",
+    "source_slot": "out",
+    "target": "booToRea7",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea7_false",
+    "source_slot": "out",
+    "target": "booToRea7",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "cooSetInc_parameter",
+    "source_slot": "out",
+    "target": "cooSetInc",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaSetDec_parameter",
+    "source_slot": "out",
+    "target": "heaSetDec",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr_threshold",
+    "source_slot": "out",
+    "target": "intGreThr",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr1_threshold",
+    "source_slot": "out",
+    "target": "intGreThr1",
+    "target_slot": "b"
+   },
+   {
+    "source": "cooSetAdj",
+    "source_slot": "out",
+    "target": "swi4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "heaSetAdj",
+    "source_slot": "out",
+    "target": "swi6",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "TOccCooSet",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "TOccHeaSet",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "TUnoCooSet",
+    "source_slot": "out",
+    "target": "les",
+    "target_slot": "b"
+   },
+   {
+    "source": "TUnoCooSet",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "TUnoCooSet",
+    "source_slot": "out",
+    "target": "swi9",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "TUnoHeaSet",
+    "source_slot": "out",
+    "target": "gre",
+    "target_slot": "b"
+   },
+   {
+    "source": "TUnoHeaSet",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "TUnoHeaSet",
+    "source_slot": "out",
+    "target": "swi8",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "u1Occ",
+    "source_slot": "out",
+    "target": "not4",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Win",
+    "source_slot": "out",
+    "target": "winOpe",
+    "target_slot": "in"
+   },
+   {
+    "source": "uCooDemLimLev",
+    "source_slot": "out",
+    "target": "intEqu3",
+    "target_slot": "a"
+   },
+   {
+    "source": "uCooDemLimLev",
+    "source_slot": "out",
+    "target": "intEqu4",
+    "target_slot": "a"
+   },
+   {
+    "source": "uCooDemLimLev",
+    "source_slot": "out",
+    "target": "intEqu5",
+    "target_slot": "a"
+   },
+   {
+    "source": "uCooDemLimLev",
+    "source_slot": "out",
+    "target": "intGreThr",
+    "target_slot": "a"
+   },
+   {
+    "source": "uHeaDemLimLev",
+    "source_slot": "out",
+    "target": "intEqu6",
+    "target_slot": "a"
+   },
+   {
+    "source": "uHeaDemLimLev",
+    "source_slot": "out",
+    "target": "intEqu7",
+    "target_slot": "a"
+   },
+   {
+    "source": "uHeaDemLimLev",
+    "source_slot": "out",
+    "target": "intEqu8",
+    "target_slot": "a"
+   },
+   {
+    "source": "uHeaDemLimLev",
+    "source_slot": "out",
+    "target": "intGreThr1",
+    "target_slot": "a"
+   },
+   {
+    "source": "uOpeMod",
+    "source_slot": "out",
+    "target": "intEqu",
+    "target_slot": "a"
+   },
+   {
+    "source": "uOpeMod",
+    "source_slot": "out",
+    "target": "intEqu1",
+    "target_slot": "a"
+   },
+   {
+    "source": "uOpeMod",
+    "source_slot": "out",
+    "target": "intEqu2",
+    "target_slot": "a"
+   },
+   {
+    "source": "add1",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "add2",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "add3",
+    "source_slot": "out",
+    "target": "add5",
+    "target_slot": "a"
+   },
+   {
+    "source": "add4",
+    "source_slot": "out",
+    "target": "add5",
+    "target_slot": "b"
+   },
+   {
+    "source": "add5",
+    "source_slot": "out",
+    "target": "swi10",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "add6",
+    "source_slot": "out",
+    "target": "add8",
+    "target_slot": "a"
+   },
+   {
+    "source": "add7",
+    "source_slot": "out",
+    "target": "add8",
+    "target_slot": "b"
+   },
+   {
+    "source": "add8",
+    "source_slot": "out",
+    "target": "swi11",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "addPar",
+    "source_slot": "out",
+    "target": "gre2",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar",
+    "source_slot": "out",
+    "target": "swi7",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "addPar1",
+    "source_slot": "out",
+    "target": "pro1",
+    "target_slot": "a"
+   },
+   {
+    "source": "addPar2",
+    "source_slot": "out",
+    "target": "pro",
+    "target_slot": "a"
+   },
+   {
+    "source": "addPar3",
+    "source_slot": "out",
+    "target": "pro2",
+    "target_slot": "a"
+   },
+   {
+    "source": "addPar4",
+    "source_slot": "out",
+    "target": "pro5",
+    "target_slot": "a"
+   },
+   {
+    "source": "addPar5",
+    "source_slot": "out",
+    "target": "pro4",
+    "target_slot": "a"
+   },
+   {
+    "source": "addPar6",
+    "source_slot": "out",
+    "target": "pro3",
+    "target_slot": "a"
+   },
+   {
+    "source": "alaFou",
+    "source_slot": "out",
+    "target": "swi16",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "alaZer",
+    "source_slot": "out",
+    "target": "swi16",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "and10",
+    "source_slot": "out",
+    "target": "tim",
+    "target_slot": "in"
+   },
+   {
+    "source": "and11",
+    "source_slot": "out",
+    "target": "swi16",
+    "target_slot": "selector"
+   },
+   {
+    "source": "booToRea",
+    "source_slot": "out",
+    "target": "pro",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea1",
+    "source_slot": "out",
+    "target": "pro1",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea2",
+    "source_slot": "out",
+    "target": "pro2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea3",
+    "source_slot": "out",
+    "target": "pro3",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea4",
+    "source_slot": "out",
+    "target": "pro4",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea5",
+    "source_slot": "out",
+    "target": "pro5",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea6",
+    "source_slot": "out",
+    "target": "pro6",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToRea7",
+    "source_slot": "out",
+    "target": "pro7",
+    "target_slot": "a"
+   },
+   {
+    "source": "con",
+    "source_slot": "out",
+    "target": "swi4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "con1",
+    "source_slot": "out",
+    "target": "swi6",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "con2",
+    "source_slot": "out",
+    "target": "or5",
+    "target_slot": "a"
+   },
+   {
+    "source": "conInt",
+    "source_slot": "out",
+    "target": "intEqu",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt1",
+    "source_slot": "out",
+    "target": "intEqu1",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt2",
+    "source_slot": "out",
+    "target": "intEqu2",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt3",
+    "source_slot": "out",
+    "target": "intEqu3",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt4",
+    "source_slot": "out",
+    "target": "intEqu4",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt5",
+    "source_slot": "out",
+    "target": "intEqu5",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt6",
+    "source_slot": "out",
+    "target": "intEqu6",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt7",
+    "source_slot": "out",
+    "target": "intEqu7",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt8",
+    "source_slot": "out",
+    "target": "intEqu8",
+    "target_slot": "b"
+   },
+   {
+    "source": "cooSetAdjCon",
+    "source_slot": "out",
+    "target": "swi4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "cooSetFre",
+    "source_slot": "out",
+    "target": "addPar1",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooSetFre",
+    "source_slot": "out",
+    "target": "addPar2",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooSetFre",
+    "source_slot": "out",
+    "target": "addPar3",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooSetFre",
+    "source_slot": "out",
+    "target": "pro6",
+    "target_slot": "b"
+   },
+   {
+    "source": "cooSetInc",
+    "source_slot": "out",
+    "target": "swi12",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "cooSetLim_minimum",
+    "source_slot": "out",
+    "target": "cooSetLim_clamp",
+    "target_slot": "b"
+   },
+   {
+    "source": "cooSetLim_maximum",
+    "source_slot": "out",
+    "target": "cooSetLim_clamp_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "cooSetLim_clamp",
+    "source_slot": "out",
+    "target": "cooSetLim_clamp_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooSetLim_clamp_2",
+    "source_slot": "out",
+    "target": "swi17",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "cooSetSam",
+    "source_slot": "out",
+    "target": "cooSetInc",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooSetWinOpe",
+    "source_slot": "out",
+    "target": "swi14",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "edg",
+    "source_slot": "out",
+    "target": "cooSetFre",
+    "target_slot": "clock"
+   },
+   {
+    "source": "edg",
+    "source_slot": "out",
+    "target": "heaSetFre",
+    "target_slot": "clock"
+   },
+   {
+    "source": "edg1",
+    "source_slot": "out",
+    "target": "cooSetSam",
+    "target_slot": "clock"
+   },
+   {
+    "source": "edg1",
+    "source_slot": "out",
+    "target": "heaSetSam",
+    "target_slot": "clock"
+   },
+   {
+    "source": "gre",
+    "source_slot": "out",
+    "target": "swi8",
+    "target_slot": "selector"
+   },
+   {
+    "source": "gre2",
+    "source_slot": "out",
+    "target": "swi7",
+    "target_slot": "selector"
+   },
+   {
+    "source": "have_occSenCon",
+    "source_slot": "out",
+    "target": "swi19",
+    "target_slot": "selector"
+   },
+   {
+    "source": "have_occSenCon",
+    "source_slot": "out",
+    "target": "swi20",
+    "target_slot": "selector"
+   },
+   {
+    "source": "heaSetAdjCon",
+    "source_slot": "out",
+    "target": "swi6",
+    "target_slot": "selector"
+   },
+   {
+    "source": "heaSetDec",
+    "source_slot": "out",
+    "target": "swi13",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "heaSetFre",
+    "source_slot": "out",
+    "target": "addPar4",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaSetFre",
+    "source_slot": "out",
+    "target": "addPar5",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaSetFre",
+    "source_slot": "out",
+    "target": "addPar6",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaSetFre",
+    "source_slot": "out",
+    "target": "pro7",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaSetLim_minimum",
+    "source_slot": "out",
+    "target": "heaSetLim_clamp",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaSetLim_maximum",
+    "source_slot": "out",
+    "target": "heaSetLim_clamp_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaSetLim_clamp",
+    "source_slot": "out",
+    "target": "heaSetLim_clamp_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaSetLim_clamp_2",
+    "source_slot": "out",
+    "target": "swi18",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "heaSetSam",
+    "source_slot": "out",
+    "target": "heaSetDec",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaSetWinOpe",
+    "source_slot": "out",
+    "target": "swi15",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "intEqu",
+    "source_slot": "out",
+    "target": "or6",
+    "target_slot": "a"
+   },
+   {
+    "source": "intEqu1",
+    "source_slot": "out",
+    "target": "or6",
+    "target_slot": "b"
+   },
+   {
+    "source": "intEqu2",
+    "source_slot": "out",
+    "target": "and10",
+    "target_slot": "a"
+   },
+   {
+    "source": "intEqu2",
+    "source_slot": "out",
+    "target": "not5",
+    "target_slot": "in"
+   },
+   {
+    "source": "intEqu2",
+    "source_slot": "out",
+    "target": "or9",
+    "target_slot": "b"
+   },
+   {
+    "source": "intEqu2",
+    "source_slot": "out",
+    "target": "swi17",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu2",
+    "source_slot": "out",
+    "target": "swi18",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu2",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu3",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu3",
+    "source_slot": "out",
+    "target": "or1",
+    "target_slot": "a"
+   },
+   {
+    "source": "intEqu4",
+    "source_slot": "out",
+    "target": "booToRea1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu4",
+    "source_slot": "out",
+    "target": "or1",
+    "target_slot": "b"
+   },
+   {
+    "source": "intEqu5",
+    "source_slot": "out",
+    "target": "booToRea2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu5",
+    "source_slot": "out",
+    "target": "or7",
+    "target_slot": "b"
+   },
+   {
+    "source": "intEqu6",
+    "source_slot": "out",
+    "target": "booToRea3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu6",
+    "source_slot": "out",
+    "target": "or4",
+    "target_slot": "a"
+   },
+   {
+    "source": "intEqu7",
+    "source_slot": "out",
+    "target": "booToRea4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu7",
+    "source_slot": "out",
+    "target": "or4",
+    "target_slot": "b"
+   },
+   {
+    "source": "intEqu8",
+    "source_slot": "out",
+    "target": "booToRea5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu8",
+    "source_slot": "out",
+    "target": "or8",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "a"
+   },
+   {
+    "source": "intGreThr1",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "b"
+   },
+   {
+    "source": "les",
+    "source_slot": "out",
+    "target": "swi9",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not1",
+    "source_slot": "out",
+    "target": "booToRea6",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not2",
+    "source_slot": "out",
+    "target": "booToRea7",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not3",
+    "source_slot": "out",
+    "target": "or5",
+    "target_slot": "b"
+   },
+   {
+    "source": "not4",
+    "source_slot": "out",
+    "target": "and10",
+    "target_slot": "b"
+   },
+   {
+    "source": "not5",
+    "source_slot": "out",
+    "target": "and11",
+    "target_slot": "a"
+   },
+   {
+    "source": "or1",
+    "source_slot": "out",
+    "target": "or7",
+    "target_slot": "a"
+   },
+   {
+    "source": "or2",
+    "source_slot": "out",
+    "target": "edg",
+    "target_slot": "in"
+   },
+   {
+    "source": "or2",
+    "source_slot": "out",
+    "target": "not3",
+    "target_slot": "in"
+   },
+   {
+    "source": "or4",
+    "source_slot": "out",
+    "target": "or8",
+    "target_slot": "a"
+   },
+   {
+    "source": "or5",
+    "source_slot": "out",
+    "target": "swi10",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or5",
+    "source_slot": "out",
+    "target": "swi11",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or6",
+    "source_slot": "out",
+    "target": "or9",
+    "target_slot": "a"
+   },
+   {
+    "source": "or7",
+    "source_slot": "out",
+    "target": "not1",
+    "target_slot": "in"
+   },
+   {
+    "source": "or8",
+    "source_slot": "out",
+    "target": "not2",
+    "target_slot": "in"
+   },
+   {
+    "source": "or9",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or9",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or9",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "pro",
+    "source_slot": "out",
+    "target": "add3",
+    "target_slot": "b"
+   },
+   {
+    "source": "pro1",
+    "source_slot": "out",
+    "target": "add4",
+    "target_slot": "a"
+   },
+   {
+    "source": "pro2",
+    "source_slot": "out",
+    "target": "add4",
+    "target_slot": "b"
+   },
+   {
+    "source": "pro3",
+    "source_slot": "out",
+    "target": "add6",
+    "target_slot": "b"
+   },
+   {
+    "source": "pro4",
+    "source_slot": "out",
+    "target": "add7",
+    "target_slot": "a"
+   },
+   {
+    "source": "pro5",
+    "source_slot": "out",
+    "target": "add7",
+    "target_slot": "b"
+   },
+   {
+    "source": "pro6",
+    "source_slot": "out",
+    "target": "add3",
+    "target_slot": "a"
+   },
+   {
+    "source": "pro7",
+    "source_slot": "out",
+    "target": "add6",
+    "target_slot": "a"
+   },
+   {
+    "source": "reaToInt",
+    "source_slot": "out",
+    "target": "yAla",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "add2",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi1",
+    "source_slot": "out",
+    "target": "add1",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi1",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi10",
+    "source_slot": "out",
+    "target": "cooSetSam",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi10",
+    "source_slot": "out",
+    "target": "swi12",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi10",
+    "source_slot": "out",
+    "target": "swi20",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi11",
+    "source_slot": "out",
+    "target": "heaSetSam",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi11",
+    "source_slot": "out",
+    "target": "swi13",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi11",
+    "source_slot": "out",
+    "target": "swi19",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi12",
+    "source_slot": "out",
+    "target": "swi20",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi13",
+    "source_slot": "out",
+    "target": "swi19",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi14",
+    "source_slot": "out",
+    "target": "swi22",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi15",
+    "source_slot": "out",
+    "target": "swi21",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi16",
+    "source_slot": "out",
+    "target": "reaToInt",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi17",
+    "source_slot": "out",
+    "target": "les",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi17",
+    "source_slot": "out",
+    "target": "swi9",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi18",
+    "source_slot": "out",
+    "target": "gre",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi18",
+    "source_slot": "out",
+    "target": "swi8",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi19",
+    "source_slot": "out",
+    "target": "swi15",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi19",
+    "source_slot": "out",
+    "target": "swi21",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi2",
+    "source_slot": "out",
+    "target": "cooSetFre",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi2",
+    "source_slot": "out",
+    "target": "swi10",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi20",
+    "source_slot": "out",
+    "target": "swi14",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi20",
+    "source_slot": "out",
+    "target": "swi22",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi21",
+    "source_slot": "out",
+    "target": "heaSetLim_clamp",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi21",
+    "source_slot": "out",
+    "target": "swi18",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi22",
+    "source_slot": "out",
+    "target": "cooSetLim_clamp",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi22",
+    "source_slot": "out",
+    "target": "swi17",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi3",
+    "source_slot": "out",
+    "target": "heaSetFre",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi3",
+    "source_slot": "out",
+    "target": "swi11",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi4",
+    "source_slot": "out",
+    "target": "add2",
+    "target_slot": "b"
+   },
+   {
+    "source": "swi6",
+    "source_slot": "out",
+    "target": "add1",
+    "target_slot": "b"
+   },
+   {
+    "source": "swi7",
+    "source_slot": "out",
+    "target": "THeaSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi8",
+    "source_slot": "out",
+    "target": "gre2",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi8",
+    "source_slot": "out",
+    "target": "swi7",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi9",
+    "source_slot": "out",
+    "target": "TCooSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi9",
+    "source_slot": "out",
+    "target": "addPar",
+    "target_slot": "a"
+   },
+   {
+    "source": "tim",
+    "source_slot": "passed",
+    "target": "truHol",
+    "target_slot": "in"
+   },
+   {
+    "source": "truHol",
+    "source_slot": "out",
+    "target": "edg1",
+    "target_slot": "in"
+   },
+   {
+    "source": "truHol",
+    "source_slot": "out",
+    "target": "swi12",
+    "target_slot": "selector"
+   },
+   {
+    "source": "truHol",
+    "source_slot": "out",
+    "target": "swi13",
+    "target_slot": "selector"
+   },
+   {
+    "source": "winOpe",
+    "source_slot": "out",
+    "target": "and11",
+    "target_slot": "b"
+   },
+   {
+    "source": "winOpe",
+    "source_slot": "out",
+    "target": "swi14",
+    "target_slot": "selector"
+   },
+   {
+    "source": "winOpe",
+    "source_slot": "out",
+    "target": "swi15",
+    "target_slot": "selector"
+   },
+   {
+    "source": "winSenCon",
+    "source_slot": "out",
+    "target": "swi21",
+    "target_slot": "selector"
+   },
+   {
+    "source": "winSenCon",
+    "source_slot": "out",
+    "target": "swi22",
+    "target_slot": "selector"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "add1": "add1",
+    "add2": "add2",
+    "add3": "add3",
+    "add4": "add4",
+    "add5": "add5",
+    "add6": "add6",
+    "add7": "add7",
+    "add8": "add8",
+    "addPar": "addPar",
+    "addPar1": "addPar1",
+    "addPar1_parameter": "addPar1",
+    "addPar2": "addPar2",
+    "addPar2_parameter": "addPar2",
+    "addPar3": "addPar3",
+    "addPar3_parameter": "addPar3",
+    "addPar4": "addPar4",
+    "addPar4_parameter": "addPar4",
+    "addPar5": "addPar5",
+    "addPar5_parameter": "addPar5",
+    "addPar6": "addPar6",
+    "addPar6_parameter": "addPar6",
+    "addPar_parameter": "addPar",
+    "alaFou": "alaFou",
+    "alaZer": "alaZer",
+    "and10": "and10",
+    "and11": "and11",
+    "booToRea": "booToRea",
+    "booToRea1": "booToRea1",
+    "booToRea1_false": "booToRea1",
+    "booToRea1_true": "booToRea1",
+    "booToRea2": "booToRea2",
+    "booToRea2_false": "booToRea2",
+    "booToRea2_true": "booToRea2",
+    "booToRea3": "booToRea3",
+    "booToRea3_false": "booToRea3",
+    "booToRea3_true": "booToRea3",
+    "booToRea4": "booToRea4",
+    "booToRea4_false": "booToRea4",
+    "booToRea4_true": "booToRea4",
+    "booToRea5": "booToRea5",
+    "booToRea5_false": "booToRea5",
+    "booToRea5_true": "booToRea5",
+    "booToRea6": "booToRea6",
+    "booToRea6_false": "booToRea6",
+    "booToRea6_true": "booToRea6",
+    "booToRea7": "booToRea7",
+    "booToRea7_false": "booToRea7",
+    "booToRea7_true": "booToRea7",
+    "booToRea_false": "booToRea",
+    "booToRea_true": "booToRea",
+    "con": "con",
+    "con1": "con1",
+    "con2": "con2",
+    "conInt": "conInt",
+    "conInt1": "conInt1",
+    "conInt2": "conInt2",
+    "conInt3": "conInt3",
+    "conInt4": "conInt4",
+    "conInt5": "conInt5",
+    "conInt6": "conInt6",
+    "conInt7": "conInt7",
+    "conInt8": "conInt8",
+    "cooSetAdjCon": "cooSetAdjCon",
+    "cooSetFre": "cooSetFre",
+    "cooSetInc": "cooSetInc",
+    "cooSetInc_parameter": "cooSetInc",
+    "cooSetLim_clamp": "cooSetLim__lower",
+    "cooSetLim_clamp_2": "cooSetLim__upper",
+    "cooSetLim_maximum": "cooSetLim__maximum",
+    "cooSetLim_minimum": "cooSetLim__minimum",
+    "cooSetSam": "cooSetSam",
+    "cooSetWinOpe": "cooSetWinOpe",
+    "edg": "edg",
+    "edg1": "edg1",
+    "gre": "gre",
+    "gre2": "gre2",
+    "have_occSenCon": "have_occSenCon",
+    "heaSetAdjCon": "heaSetAdjCon",
+    "heaSetDec": "heaSetDec",
+    "heaSetDec_parameter": "heaSetDec",
+    "heaSetFre": "heaSetFre",
+    "heaSetLim_clamp": "heaSetLim__lower",
+    "heaSetLim_clamp_2": "heaSetLim__upper",
+    "heaSetLim_maximum": "heaSetLim__maximum",
+    "heaSetLim_minimum": "heaSetLim__minimum",
+    "heaSetSam": "heaSetSam",
+    "heaSetWinOpe": "heaSetWinOpe",
+    "intEqu": "intEqu",
+    "intEqu1": "intEqu1",
+    "intEqu2": "intEqu2",
+    "intEqu3": "intEqu3",
+    "intEqu4": "intEqu4",
+    "intEqu5": "intEqu5",
+    "intEqu6": "intEqu6",
+    "intEqu7": "intEqu7",
+    "intEqu8": "intEqu8",
+    "intGreThr": "intGreThr",
+    "intGreThr1": "intGreThr1",
+    "intGreThr1_threshold": "intGreThr1",
+    "intGreThr_threshold": "intGreThr",
+    "les": "les",
+    "not1": "not1",
+    "not2": "not2",
+    "not3": "not3",
+    "not4": "not4",
+    "not5": "not5",
+    "or1": "or1",
+    "or2": "or2",
+    "or4": "or4",
+    "or5": "or5",
+    "or6": "or6",
+    "or7": "or7",
+    "or8": "or8",
+    "or9": "or9",
+    "pro": "pro",
+    "pro1": "pro1",
+    "pro2": "pro2",
+    "pro3": "pro3",
+    "pro4": "pro4",
+    "pro5": "pro5",
+    "pro6": "pro6",
+    "pro7": "pro7",
+    "reaToInt": "reaToInt",
+    "swi": "swi",
+    "swi1": "swi1",
+    "swi10": "swi10",
+    "swi11": "swi11",
+    "swi12": "swi12",
+    "swi13": "swi13",
+    "swi14": "swi14",
+    "swi15": "swi15",
+    "swi16": "swi16",
+    "swi17": "swi17",
+    "swi18": "swi18",
+    "swi19": "swi19",
+    "swi2": "swi2",
+    "swi20": "swi20",
+    "swi21": "swi21",
+    "swi22": "swi22",
+    "swi3": "swi3",
+    "swi4": "swi4",
+    "swi6": "swi6",
+    "swi7": "swi7",
+    "swi8": "swi8",
+    "swi9": "swi9",
+    "tim": "tim",
+    "truHol": "truHol",
+    "winOpe": "winOpe",
+    "winSenCon": "winSenCon"
+   },
+   "coverage": {
+    "boundary_inputs": 11,
+    "boundary_outputs": 3,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal": 8,
+     "Buildings.Controls.OBC.CDL.Conversions.RealToInteger": 1,
+     "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler": 4,
+     "Buildings.Controls.OBC.CDL.Integers.Equal": 9,
+     "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold": 2,
+     "Buildings.Controls.OBC.CDL.Integers.Sources.Constant": 9,
+     "Buildings.Controls.OBC.CDL.Logical.And": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Edge": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 6,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 8,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 5,
+     "Buildings.Controls.OBC.CDL.Logical.Timer": 1,
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 8,
+     "Buildings.Controls.OBC.CDL.Reals.AddParameter": 9,
+     "Buildings.Controls.OBC.CDL.Reals.Greater": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Less": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Max": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Min": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Multiply": 8,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 10,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 22
+    },
+    "component_count": 122,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler",
+     "Buildings.Controls.OBC.CDL.Logical.Timer",
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold"
+    ],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.ThermalZones.Setpoints",
+    "root_label": "Setpoints",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "03df7fb6234bb2e0339b8925cbe595195044e8da9cca91a99e62b43588df040a",
+    "supported_class_count": 122,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "03df7fb6234bb2e0339b8925cbe595195044e8da9cca91a99e62b43588df040a"
+  },
+  "name": "Setpoints"
+ }
+}

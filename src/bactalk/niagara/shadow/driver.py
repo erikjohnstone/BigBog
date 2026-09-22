@@ -82,6 +82,15 @@ def _sample_keys(runtime: ShadowRuntime, *, internals: bool) -> dict[str, tuple[
     return {key: value for key, value in keys.items() if isinstance(value[0], WritablePoint)}
 
 
+def _policy_for(policy: ExecutionPolicy, case: AcceptanceCase) -> ExecutionPolicy:
+    """SCAN_POLICY (module period 0.0) resolves to the case's scan interval."""
+
+    if policy.module_period_seconds != 0.0:
+        return policy
+    steps = [phase.step_seconds for phase in case.timeline] or [case.step_seconds]
+    return policy.variant(policy.name, module_period_seconds=float(min(steps)))
+
+
 def run_shadow_case(
     source: Path | bytes | Program,
     case: AcceptanceCase,
@@ -92,7 +101,9 @@ def run_shadow_case(
 ) -> tuple[ScenarioResult, dict[str, float | bool]]:
     """Run one case; returns the graded result and the final values."""
 
-    runtime = ShadowRuntime(source, policy=options.policy, kernel_backend=options.kernel_backend)
+    runtime = ShadowRuntime(
+        source, policy=_policy_for(options.policy, case), kernel_backend=options.kernel_backend
+    )
     try:
         return _run_case(runtime, case, options, scan_offset, scan_total or _scan_total([case]))
     finally:
@@ -252,7 +263,7 @@ def run_shadow_suite(
     backend_name = ""
     for case in cases:
         runtime = ShadowRuntime(
-            source, policy=options.policy, kernel_backend=options.kernel_backend
+            source, policy=_policy_for(options.policy, case), kernel_backend=options.kernel_backend
         )
         backend_name = runtime.kernels.name
         try:

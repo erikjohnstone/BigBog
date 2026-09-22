@@ -52,6 +52,30 @@ Engine.
    (`library_tier2/blockers.json`) and appears in `docs/coverage.md` with the exact
    reason, which is what the N8 exit asks for.
 
+7. **D3 is graded twice.** The reference is the engine stepped at the scan
+   interval; module kernels in the Shadow Runtime tick every second. A reset or
+   edge that falls inside a scan therefore lands at a different instant in the two
+   engines, and a loop restarted from that instant can leave the engineering band
+   for a few scans (the constant-volume fan-powered boxes' valve PID). The coverage
+   report grades the default policy and, beside it, the `coarse-module-tick`
+   policy with tight bands; a row that fails the first and passes the second is
+   reported as a discretisation difference, not a defect, and is not counted as a
+   D3 pass.
+
+8. **D4 is judged on the D3 leg the baseline passed.** `run_mutation_suite`
+   refuses a file its own oracles already catch (a failing suite or a baseline
+   outside the bands), because every mutant would then be "caught" by the
+   baseline's failure and the rate would say nothing. The coverage report mutates a
+   row under the default policy when its default D3 leg passes, under
+   `coarse-module-tick` with the coarse bands when only that leg passes (the row's
+   D4 entry names the policy and band set), and records a D4 blocker when neither
+   does. When the default leg's D3 passes but the mutation judge's suite oracle
+   still catches the unmutated file (a per-second PID missing a reference-derived
+   expectation by a hair while the trajectories agree inside the bands), the row is
+   mutated on the `scan-module-tick` leg with the `scan` bands instead (decision
+   011), which is the leg that baseline passes; the four fan-powered and control-loop
+   rows whose earlier 100 % was this artifact are graded that way.
+
 ## Consequences
 
 - `scripts/retain_tier2.py` regenerates translations, references and blockers;

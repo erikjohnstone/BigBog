@@ -1123,6 +1123,13 @@ KERNEL_BINDINGS: tuple[KernelBinding, ...] = (
         source_at_start=True,
     ),
     KernelBinding(
+        "Round",
+        "Round",
+        (("in", NUMERIC),),
+        (("out", NUMERIC),),
+        (),
+    ),
+    KernelBinding(
         "UnitDelay",
         "UnitDelay",
         (("in", NUMERIC),),

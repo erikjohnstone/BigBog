@@ -1,0 +1,1742 @@
+{
+  "accepted": false,
+  "approval_digest": "4064388f57eb514eb84a9d02fad85439708e061e1ead20cce4347ffc8eeb25f5",
+  "classifications": [],
+  "decisions": {
+    "decision_count": 45,
+    "fully_covered": true,
+    "gaps": [],
+    "outcomes_observed": 90,
+    "outcomes_possible": 90,
+    "percent": 100.0
+  },
+  "differential": {
+    "default": {
+      "band_set": "default",
+      "cases": 165,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "default",
+      "seconds": 1811.3
+    },
+    "scan": {
+      "band_set": "scan",
+      "cases": 165,
+      "failing_cases": [],
+      "first_divergence": null,
+      "passed": true,
+      "policy": "scan-module-tick",
+      "seconds": 34.6
+    }
+  },
+  "gaps": [
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uSchOn stuck, stale; TOut stuck, stale, out of range low, out of range high; nReqPla stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-01"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uPum1Sta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-02"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uBoi1Sta stuck, stale; TSup stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-03"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when TSup stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-04"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uSchOn stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-05"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when nReqRes stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-06"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when nReqRes stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-07"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uSchOn stuck, stale; TOut stuck, stale, out of range low, out of range high; nReqPla stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-08"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when VHotWat_flow stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-09"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when dpHotWat stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-10"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when dpHotWat stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-11"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when VHotWat_flow stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-12"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when VHotWat_flow stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-13"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uBoi1Sta stuck, stale; TSup stuck, stale, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-14"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uPum1Sta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-15"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uBoi1Sta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-16"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uSchOn stuck, stale; TOut stuck, stale, out of range low, out of range high; nReqPla stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-17"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uPum2Sta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-18"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uBoi2Sta stuck, stale? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-19"
+    },
+    {
+      "kind": "failure_behaviour",
+      "question": "what should the outputs do when uSchOn stuck, stale; TOut stuck, stale, out of range low, out of range high; nReqPla stuck, stale, out of range low, out of range high? No behaviour is stated, so no failure scenario asserts it.",
+      "requirement_id": "R-20"
+    }
+  ],
+  "gate_g_eng": "unapproved",
+  "invariant_sequences_required": 10000,
+  "invariants": {
+    "examples": [],
+    "invariants": [
+      "I-01",
+      "I-02",
+      "I-03",
+      "I-04",
+      "I-05"
+    ],
+    "passed": true,
+    "seconds": 160.6,
+    "seed": 7,
+    "sequences": 10000,
+    "steps_checked": 240000,
+    "steps_per_sequence": 24,
+    "violations": 0
+  },
+  "mutation": {
+    "band_set": "scan",
+    "by_catcher": {
+      "differential": 1,
+      "suite": 109,
+      "survived": 35,
+      "validator": 55
+    },
+    "by_operator": {
+      "alter_constant": {
+        "caught": 5,
+        "total": 10
+      },
+      "change_block_type": {
+        "caught": 31,
+        "total": 33
+      },
+      "change_priority_level": {
+        "caught": 0,
+        "total": 8
+      },
+      "delete_link": {
+        "caught": 71,
+        "total": 86
+      },
+      "drop_facets": {
+        "caught": 0,
+        "total": 5
+      },
+      "flip_loop_action": {
+        "caught": 1,
+        "total": 1
+      },
+      "invert_parameter": {
+        "caught": 8,
+        "total": 8
+      },
+      "swap_link_slot": {
+        "caught": 49,
+        "total": 49
+      }
+    },
+    "catch_rate": 0.825,
+    "caught": 165,
+    "mutants_generated": 320,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 200,
+    "seconds": 669.4,
+    "survivors": [
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 270,
+        "operator": "alter_constant",
+        "path": "/HotWaterPlant/Inputs/dpHotWat"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 286,
+        "operator": "drop_facets",
+        "path": "/HotWaterPlant/Inputs/TSup"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 294,
+        "operator": "change_priority_level",
+        "path": "/HotWaterPlant/Outputs/TSupSet/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 234,
+        "operator": "delete_link",
+        "path": "/HotWaterPlant/Logic_2/Boiler_1_commanded__not_proven/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 280,
+        "operator": "alter_constant",
+        "path": "/HotWaterPlant/Outputs/TSupSet"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 182,
+        "operator": "delete_link",
+        "path": "/HotWaterPlant/Logic_1/Runtimes_reset_at_rotation_or_plant_enable/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 300,
+        "operator": "change_priority_level",
+        "path": "/HotWaterPlant/Outputs/yPla/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 268,
+        "operator": "alter_constant",
+        "path": "/HotWaterPlant/Inputs/TSup"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 251,
+        "operator": "delete_link",
+        "path": "/HotWaterPlant/Logic_2/Boiler_2_commanded__not_proven/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 291,
+        "operator": "drop_facets",
+        "path": "/HotWaterPlant/Outputs/TSupSet"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 299,
+        "operator": "change_priority_level",
+        "path": "/HotWaterPlant/Outputs/yLowSupAla/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 293,
+        "operator": "drop_facets",
+        "path": "/HotWaterPlant/Outputs/yPumSpe"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 271,
+        "operator": "alter_constant",
+        "path": "/HotWaterPlant/Inputs/nReqPla"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 288,
+        "operator": "drop_facets",
+        "path": "/HotWaterPlant/Inputs/dpHotWat"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 226,
+        "operator": "delete_link",
+        "path": "/HotWaterPlant/Logic_2/Lead_boiler_proven/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 137,
+        "operator": "delete_link",
+        "path": "/HotWaterPlant/Logic_1/Pump_1_commanded_last_scan/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 245,
+        "operator": "delete_link",
+        "path": "/HotWaterPlant/Logic_2/Stage_down_or_plant_off/Link1"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 167,
+        "operator": "delete_link",
+        "path": "/HotWaterPlant/Logic_1/Lead_changed/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 141,
+        "operator": "delete_link",
+        "path": "/HotWaterPlant/Logic_1/Pump_2_led_last_scan/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 154,
+        "operator": "delete_link",
+        "path": "/HotWaterPlant/Logic_1/Pump_1_commanded__not_proven/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 180,
+        "operator": "delete_link",
+        "path": "/HotWaterPlant/Logic_1/Bypass_when_the_plant_runs__else_closed/Link2"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 292,
+        "operator": "drop_facets",
+        "path": "/HotWaterPlant/Outputs/yByp"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 221,
+        "operator": "delete_link",
+        "path": "/HotWaterPlant/Logic_1/Speed_when_a_pump_runs__else_0/Link2"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 302,
+        "operator": "change_priority_level",
+        "path": "/HotWaterPlant/Outputs/yPum2/Link"
+      },
+      {
+        "caught_by": null,
+        "detail": "every scenario still passes",
+        "index": 267,
+        "operator": "alter_constant",
+        "path": "/HotWaterPlant/Inputs/TOut"
+      }
+    ]
+  },
+  "mutation_target": 0.95,
+  "plan_digest": "0c9758034e26c7a1615b2ac9481550a9b6b61b4ed511522f1f6568ea839b94ad",
+  "questions": [],
+  "requirements_digest": "fa88b56f6a7c3d1c373cedd0544e07324147571fd34cbe5d458404b700e1d07d",
+  "schema": "bactalk.protocol-adequacy/v1",
+  "seconds": 2692.5,
+  "sequence_id": "hw-plant-boiler",
+  "suite": {
+    "count": 165,
+    "failed": 0,
+    "invariant_violations": [],
+    "passed": true,
+    "scenarios": [
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-01 positive",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-01 negative",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-01 negative_single [uSchOn]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-01 negative_single [TOut]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-01 negative_single [nReqPla]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "release_before",
+        "name": "R-01 release_before",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "release_after",
+        "name": "R-01 release_after",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-01 boundary_false [TOut at threshold]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-01 boundary_true [TOut just below]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_hold",
+        "name": "R-01 deadband_hold [TOut]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_release",
+        "name": "R-01 deadband_release [TOut]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-01 boundary_false [nReqPla just below]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-01 boundary_true [nReqPla at threshold]",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-01 recovery",
+        "passed": true,
+        "requirement_id": "R-01"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-02 positive",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-02 negative",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-02 recovery",
+        "passed": true,
+        "requirement_id": "R-02"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-03 positive",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-03 negative",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-03 negative_single [uBoi1Sta]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-03 negative_single [TSup]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-03 timing_before",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-03 timing_after",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-03 boundary_false [TSup at threshold]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-03 boundary_true [TSup just below]",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-03 recovery",
+        "passed": true,
+        "requirement_id": "R-03"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-04 positive",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-04 negative",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-04 timing_before",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-04 timing_after",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-04 boundary_false [TSup at threshold]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-04 boundary_true [TSup just above]",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-04 recovery",
+        "passed": true,
+        "requirement_id": "R-04"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-05 positive",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-05 negative",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-05 timing_before",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-05 timing_after",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-05 recovery",
+        "passed": true,
+        "requirement_id": "R-05"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-06 positive",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-06 negative",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-06 timing_before",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-06 timing_after",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-06 boundary_false [nReqRes just above]",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-06 boundary_true [nReqRes at threshold]",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-06 recovery",
+        "passed": true,
+        "requirement_id": "R-06"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-07 positive",
+        "passed": true,
+        "requirement_id": "R-07"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-07 negative",
+        "passed": true,
+        "requirement_id": "R-07"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-07 timing_before",
+        "passed": true,
+        "requirement_id": "R-07"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-07 timing_after",
+        "passed": true,
+        "requirement_id": "R-07"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-07 boundary_false [nReqRes just below]",
+        "passed": true,
+        "requirement_id": "R-07"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-07 boundary_true [nReqRes at threshold]",
+        "passed": true,
+        "requirement_id": "R-07"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-07 recovery",
+        "passed": true,
+        "requirement_id": "R-07"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-08 positive",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-08 negative",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-08 negative_single [uSchOn]",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-08 negative_single [TOut]",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-08 negative_single [nReqPla]",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "release_before",
+        "name": "R-08 release_before",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "release_after",
+        "name": "R-08 release_after",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-08 boundary_false [TOut at threshold]",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-08 boundary_true [TOut just below]",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_hold",
+        "name": "R-08 deadband_hold [TOut]",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_release",
+        "name": "R-08 deadband_release [TOut]",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-08 boundary_false [nReqPla just below]",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-08 boundary_true [nReqPla at threshold]",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-08 recovery",
+        "passed": true,
+        "requirement_id": "R-08"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-09 positive",
+        "passed": true,
+        "requirement_id": "R-09"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-09 negative",
+        "passed": true,
+        "requirement_id": "R-09"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-09 timing_before",
+        "passed": true,
+        "requirement_id": "R-09"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-09 timing_after",
+        "passed": true,
+        "requirement_id": "R-09"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "release_before",
+        "name": "R-09 release_before",
+        "passed": true,
+        "requirement_id": "R-09"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "release_after",
+        "name": "R-09 release_after",
+        "passed": true,
+        "requirement_id": "R-09"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-09 boundary_false [VHotWat_flow at threshold]",
+        "passed": true,
+        "requirement_id": "R-09"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-09 boundary_true [VHotWat_flow just above]",
+        "passed": true,
+        "requirement_id": "R-09"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_hold",
+        "name": "R-09 deadband_hold [VHotWat_flow]",
+        "passed": true,
+        "requirement_id": "R-09"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_release",
+        "name": "R-09 deadband_release [VHotWat_flow]",
+        "passed": true,
+        "requirement_id": "R-09"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-09 recovery",
+        "passed": true,
+        "requirement_id": "R-09"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-10 positive",
+        "passed": true,
+        "requirement_id": "R-10"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-10 negative",
+        "passed": true,
+        "requirement_id": "R-10"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-10 timing_before",
+        "passed": true,
+        "requirement_id": "R-10"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-10 timing_after",
+        "passed": true,
+        "requirement_id": "R-10"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-10 boundary_false [dpHotWat at threshold]",
+        "passed": true,
+        "requirement_id": "R-10"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-10 boundary_true [dpHotWat just below]",
+        "passed": true,
+        "requirement_id": "R-10"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-10 recovery",
+        "passed": true,
+        "requirement_id": "R-10"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-11 positive",
+        "passed": true,
+        "requirement_id": "R-11"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-11 negative",
+        "passed": true,
+        "requirement_id": "R-11"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-11 timing_before",
+        "passed": true,
+        "requirement_id": "R-11"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-11 timing_after",
+        "passed": true,
+        "requirement_id": "R-11"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-11 boundary_false [dpHotWat at threshold]",
+        "passed": true,
+        "requirement_id": "R-11"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-11 boundary_true [dpHotWat just above]",
+        "passed": true,
+        "requirement_id": "R-11"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-11 recovery",
+        "passed": true,
+        "requirement_id": "R-11"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-12 positive",
+        "passed": true,
+        "requirement_id": "R-12"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-12 negative",
+        "passed": true,
+        "requirement_id": "R-12"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-12 timing_before",
+        "passed": true,
+        "requirement_id": "R-12"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-12 timing_after",
+        "passed": true,
+        "requirement_id": "R-12"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-12 boundary_false [VHotWat_flow at threshold]",
+        "passed": true,
+        "requirement_id": "R-12"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-12 boundary_true [VHotWat_flow just below]",
+        "passed": true,
+        "requirement_id": "R-12"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-12 recovery",
+        "passed": true,
+        "requirement_id": "R-12"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-13 positive",
+        "passed": true,
+        "requirement_id": "R-13"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-13 negative",
+        "passed": true,
+        "requirement_id": "R-13"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-13 timing_before",
+        "passed": true,
+        "requirement_id": "R-13"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-13 timing_after",
+        "passed": true,
+        "requirement_id": "R-13"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-13 boundary_false [VHotWat_flow at threshold]",
+        "passed": true,
+        "requirement_id": "R-13"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-13 boundary_true [VHotWat_flow just above]",
+        "passed": true,
+        "requirement_id": "R-13"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-13 recovery",
+        "passed": true,
+        "requirement_id": "R-13"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-14 positive",
+        "passed": true,
+        "requirement_id": "R-14"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-14 negative",
+        "passed": true,
+        "requirement_id": "R-14"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-14 negative_single [uBoi1Sta]",
+        "passed": true,
+        "requirement_id": "R-14"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-14 negative_single [TSup]",
+        "passed": true,
+        "requirement_id": "R-14"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-14 timing_before",
+        "passed": true,
+        "requirement_id": "R-14"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-14 timing_after",
+        "passed": true,
+        "requirement_id": "R-14"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-14 boundary_false [TSup at threshold]",
+        "passed": true,
+        "requirement_id": "R-14"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-14 boundary_true [TSup just below]",
+        "passed": true,
+        "requirement_id": "R-14"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_hold",
+        "name": "R-14 deadband_hold [TSup]",
+        "passed": true,
+        "requirement_id": "R-14"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_release",
+        "name": "R-14 deadband_release [TSup]",
+        "passed": true,
+        "requirement_id": "R-14"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "failure",
+        "name": "R-14 failure [TSup out of range low]",
+        "passed": true,
+        "requirement_id": "R-14"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-14 recovery",
+        "passed": true,
+        "requirement_id": "R-14"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-15 positive",
+        "passed": true,
+        "requirement_id": "R-15"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-15 negative",
+        "passed": true,
+        "requirement_id": "R-15"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-15 timing_before",
+        "passed": true,
+        "requirement_id": "R-15"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-15 timing_after",
+        "passed": true,
+        "requirement_id": "R-15"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-15 recovery",
+        "passed": true,
+        "requirement_id": "R-15"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-16 positive",
+        "passed": true,
+        "requirement_id": "R-16"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-16 negative",
+        "passed": true,
+        "requirement_id": "R-16"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-16 timing_before",
+        "passed": true,
+        "requirement_id": "R-16"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-16 timing_after",
+        "passed": true,
+        "requirement_id": "R-16"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-16 recovery",
+        "passed": true,
+        "requirement_id": "R-16"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-17 positive",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-17 negative",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-17 negative_single [uSchOn]",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-17 negative_single [TOut]",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-17 negative_single [nReqPla]",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-17 timing_before",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-17 timing_after",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-17 boundary_false [TOut at threshold]",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-17 boundary_true [TOut just below]",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_hold",
+        "name": "R-17 deadband_hold [TOut]",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_release",
+        "name": "R-17 deadband_release [TOut]",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-17 boundary_false [nReqPla just below]",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-17 boundary_true [nReqPla at threshold]",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-17 recovery",
+        "passed": true,
+        "requirement_id": "R-17"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-18 positive",
+        "passed": true,
+        "requirement_id": "R-18"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-18 negative",
+        "passed": true,
+        "requirement_id": "R-18"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-18 timing_before",
+        "passed": true,
+        "requirement_id": "R-18"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-18 timing_after",
+        "passed": true,
+        "requirement_id": "R-18"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-18 recovery",
+        "passed": true,
+        "requirement_id": "R-18"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-19 positive",
+        "passed": true,
+        "requirement_id": "R-19"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-19 negative",
+        "passed": true,
+        "requirement_id": "R-19"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-19 timing_before",
+        "passed": true,
+        "requirement_id": "R-19"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-19 timing_after",
+        "passed": true,
+        "requirement_id": "R-19"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-19 recovery",
+        "passed": true,
+        "requirement_id": "R-19"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "positive",
+        "name": "R-20 positive",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative",
+        "name": "R-20 negative",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-20 negative_single [uSchOn]",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-20 negative_single [TOut]",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "negative_single",
+        "name": "R-20 negative_single [nReqPla]",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_before",
+        "name": "R-20 timing_before",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "timing_after",
+        "name": "R-20 timing_after",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-20 boundary_false [TOut at threshold]",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-20 boundary_true [TOut just below]",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_hold",
+        "name": "R-20 deadband_hold [TOut]",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "deadband_release",
+        "name": "R-20 deadband_release [TOut]",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_false",
+        "name": "R-20 boundary_false [nReqPla just below]",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "boundary_true",
+        "name": "R-20 boundary_true [nReqPla at threshold]",
+        "passed": true,
+        "requirement_id": "R-20"
+      },
+      {
+        "failures": [],
+        "invariant_violations": 0,
+        "kind": "recovery",
+        "name": "R-20 recovery",
+        "passed": true,
+        "requirement_id": "R-20"
+      }
+    ],
+    "seconds": 16.4
+  },
+  "traceability": {
+    "requirements_without_scenarios": [],
+    "scenarios_per_requirement": {
+      "R-01": 14,
+      "R-02": 3,
+      "R-03": 9,
+      "R-04": 7,
+      "R-05": 5,
+      "R-06": 7,
+      "R-07": 7,
+      "R-08": 14,
+      "R-09": 11,
+      "R-10": 7,
+      "R-11": 7,
+      "R-12": 7,
+      "R-13": 7,
+      "R-14": 12,
+      "R-15": 5,
+      "R-16": 5,
+      "R-17": 14,
+      "R-18": 5,
+      "R-19": 5,
+      "R-20": 14
+    }
+  }
+}

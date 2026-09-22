@@ -13,6 +13,7 @@ const GuidedIntake = lazy(() => import('../features/intake/GuidedIntake').then((
 const DesignFlow = lazy(() => import('../features/intake/design/DesignFlow').then((m) => ({ default: m.DesignFlow })));
 const Projects = lazy(() => import('../features/projects/Projects').then((m) => ({ default: m.Projects })));
 const Libraries = lazy(() => import('../features/libraries/Libraries').then((m) => ({ default: m.Libraries })));
+const Requirements = lazy(() => import('../features/libraries/Requirements').then((m) => ({ default: m.Requirements })));
 const Connections = lazy(() => import('../features/connections/Connections').then((m) => ({ default: m.Connections })));
 const Admin = lazy(() => import('../features/admin/Admin').then((m) => ({ default: m.Admin })));
 
@@ -44,6 +45,8 @@ export function App() {
             <Route path="/projects/:projectId" element={<Projects />} />
             <Route path="/projects/new" element={<Projects />} />
             <Route path="/libraries" element={<Libraries />} />
+            <Route path="/libraries/requirements" element={<Requirements />} />
+            <Route path="/libraries/requirements/:sequenceId" element={<Requirements />} />
             <Route path="/connections" element={<Connections />} />
             <Route path="/environments" element={<Navigate to="/connections" replace />} />
             <Route path="/admin" element={<Admin />} />

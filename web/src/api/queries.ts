@@ -41,6 +41,8 @@ export const keys = {
   projectReport: (id: string) => ['project', id, 'report'] as const,
   libraryCatalogs: ['library-catalogs'] as const,
   libraryCoverage: ['library-coverage'] as const,
+  protocolSequences: ['protocol-sequences'] as const,
+  protocolSequence: (id: string) => ['protocol-sequence', id] as const,
   ctrlFlowTemplates: ['ctrl-flow-templates'] as const,
   ctrlFlowConfiguration: (templateId: string, selections: Record<string, unknown>) => ['ctrl-flow-configuration', templateId, selections] as const,
   g36Parameters: (controllerId: string) => ['g36-parameters', controllerId] as const,
@@ -121,6 +123,17 @@ export function useProjectReport(id: string | undefined) {
 }
 export function useLibraryCoverage() {
   return useQuery({ queryKey: keys.libraryCoverage, queryFn: api.libraryCoverage, staleTime: 300_000 });
+}
+export function useProtocolSequences() {
+  return useQuery({ queryKey: keys.protocolSequences, queryFn: api.protocolSequences, staleTime: 60_000 });
+}
+export function useProtocolSequence(sequenceId: string | undefined) {
+  return useQuery({
+    queryKey: keys.protocolSequence(sequenceId ?? ''),
+    queryFn: () => api.protocolSequence(sequenceId ?? ''),
+    enabled: Boolean(sequenceId),
+    staleTime: 60_000,
+  });
 }
 export function useLibraryCatalogs() {
   return useQuery({ queryKey: keys.libraryCatalogs, queryFn: api.libraryCatalogs, staleTime: 5 * 60_000 });

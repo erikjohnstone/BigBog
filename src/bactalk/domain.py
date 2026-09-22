@@ -784,6 +784,7 @@ class BlockKind(StrEnum):
     NUMERIC_CHANGED = "numeric_changed"
     NUMERIC_INCREASED = "numeric_increased"
     NUMERIC_DECREASED = "numeric_decreased"
+    NUMERIC_ROUND = "numeric_round"
     NUMERIC_LATCH = "numeric_latch"
     BOOLEAN_LATCH = "boolean_latch"
     BOOLEAN_PRE_HOST_TICK = "boolean_pre_host_tick"
@@ -899,6 +900,9 @@ BLOCK_SLOTS: dict[BlockKind, SlotSpec] = {
         inputs={"in": DataType.BOOLEAN}, outputs={"out": DataType.BOOLEAN}
     ),
     BlockKind.MOVING_AVERAGE: SlotSpec(
+        inputs={"in": DataType.NUMERIC}, outputs={"out": DataType.NUMERIC}
+    ),
+    BlockKind.NUMERIC_ROUND: SlotSpec(
         inputs={"in": DataType.NUMERIC}, outputs={"out": DataType.NUMERIC}
     ),
     BlockKind.NUMERIC_SAMPLER: SlotSpec(

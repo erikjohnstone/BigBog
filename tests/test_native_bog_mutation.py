@@ -51,6 +51,28 @@ def test_a_deleted_output_link_is_caught_before_the_differential() -> None:
     assert "yDam" in detail
 
 
+def test_the_judge_runs_on_the_coarse_leg_when_asked() -> None:
+    """docs/decisions/010 item 8: a row graded on the coarse D3 leg is mutated under it."""
+    from bactalk.niagara.shadow.policy import PLAUSIBLE_POLICIES
+
+    coarse = next(policy for policy in PLAUSIBLE_POLICIES if policy.name == "coarse-module-tick")
+    job = lbnl_vav_reheat_demo_job()
+    content = emit_bog(job.control_graph, points=job.points).content
+    report = run_mutation_suite(
+        content,
+        job.acceptance_tests,
+        seed=SEED,
+        limit=2,
+        job=job,
+        reference=reference_trace(job.sequence.controller_id),
+        policy=coarse,
+        band_set="coarse",
+    )
+    assert report.total == 2
+    for outcome in report.outcomes:
+        assert outcome.caught_by in {None, "validator", "loader", "suite", "differential"}
+
+
 @pytest.mark.parametrize("build", [lbnl_vav_reheat_demo_job, lbnl_multizone_ahu_demo_job])
 def test_seeded_sample_meets_the_recorded_floor_and_lists_survivors(build) -> None:
     job = build()

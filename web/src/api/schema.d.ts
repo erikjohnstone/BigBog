@@ -873,6 +873,170 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/protocol/custom": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Custom Sequences */
+        get: operations["list_custom_sequences_api_protocol_custom_get"];
+        put?: never;
+        /**
+         * Create Custom Sequence
+         * @description The AI (conversation role) drafts the requirement set from the uploaded
+         *     specification section; the contractor approves it like any protocol sequence.
+         */
+        post: operations["create_custom_sequence_api_protocol_custom_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/protocol/custom/{sequence_id}/adequacy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Run Custom Adequacy
+         * @description The protocol's adequacy check on the drafted program: suite, decision coverage,
+         *     invariants, the Shadow scan leg and (when asked) a mutant sample; retained on the
+         *     record and reported as measured.
+         */
+        post: operations["run_custom_adequacy_api_protocol_custom__sequence_id__adequacy_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/protocol/custom/{sequence_id}/program": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Draft Custom Program
+         * @description The AI (coding role, a separate session and model from the drafter) implements
+         *     the approved requirements; refused while the requirements are unapproved.
+         */
+        post: operations["draft_custom_program_api_protocol_custom__sequence_id__program_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/protocol/custom/{sequence_id}/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Custom Run
+         * @description A programming run for the custom sequence, labelled custom, job-specific; it goes
+         *     through every normal gate and cannot be approved before its requirements are.
+         */
+        post: operations["create_custom_run_api_protocol_custom__sequence_id__runs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/protocol/sequences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Protocol Sequences
+         * @description Every Tier 3+ sequence with its Gate G-ENG status and adequacy summary.
+         */
+        get: operations["list_protocol_sequences_api_protocol_sequences_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/protocol/sequences/{sequence_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Protocol Sequence */
+        get: operations["get_protocol_sequence_api_protocol_sequences__sequence_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/protocol/sequences/{sequence_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Approve Protocol Requirements
+         * @description Gate G-ENG: a named engineer approves the exact requirement set digest.
+         */
+        post: operations["approve_protocol_requirements_api_protocol_sequences__sequence_id__approve_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/protocol/sequences/{sequence_id}/test-plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Protocol Test Plan
+         * @description The readable test plan (requirement → scenarios → expected → result), which is
+         *     also the commissioning functional test plan.
+         */
+        get: operations["get_protocol_test_plan_api_protocol_sequences__sequence_id__test_plan_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/qualification-jobs/{job_id}": {
         parameters: {
             query?: never;
@@ -2080,7 +2244,7 @@ export interface components {
          * BlockKind
          * @enum {string}
          */
-        BlockKind: "numeric_input" | "boolean_input" | "numeric_output" | "boolean_output" | "numeric_const" | "boolean_const" | "add" | "subtract" | "multiply" | "divide" | "minimum" | "maximum" | "average" | "greater_than" | "greater_than_or_equal" | "less_than" | "less_than_or_equal" | "equal" | "not_equal" | "and" | "or" | "xor" | "not" | "numeric_switch" | "boolean_switch" | "boolean_delay" | "one_shot" | "boolean_falling_edge" | "moving_average" | "numeric_sampler" | "numeric_first_order_hold" | "boolean_sample_trigger" | "numeric_unit_delay" | "numeric_changed" | "numeric_increased" | "numeric_decreased" | "numeric_latch" | "boolean_latch" | "boolean_pre_host_tick" | "boolean_initialization" | "boolean_set_reset" | "boolean_true_false_hold" | "hysteresis" | "timer" | "timer_with_reset" | "timer_accumulating" | "boolean_assert_warning" | "trim_and_respond" | "trim_and_respond_hold" | "reset" | "pi_loop" | "pid_with_reset" | "plant_equipment_availability" | "plant_enable" | "plant_hrc_enable" | "plant_hrc_mode_control" | "plant_stage_completion" | "plant_stage_index";
+        BlockKind: "numeric_input" | "boolean_input" | "numeric_output" | "boolean_output" | "numeric_const" | "boolean_const" | "add" | "subtract" | "multiply" | "divide" | "minimum" | "maximum" | "average" | "greater_than" | "greater_than_or_equal" | "less_than" | "less_than_or_equal" | "equal" | "not_equal" | "and" | "or" | "xor" | "not" | "numeric_switch" | "boolean_switch" | "boolean_delay" | "one_shot" | "boolean_falling_edge" | "moving_average" | "numeric_sampler" | "numeric_first_order_hold" | "boolean_sample_trigger" | "numeric_unit_delay" | "numeric_changed" | "numeric_increased" | "numeric_decreased" | "numeric_round" | "numeric_latch" | "boolean_latch" | "boolean_pre_host_tick" | "boolean_initialization" | "boolean_set_reset" | "boolean_true_false_hold" | "hysteresis" | "timer" | "timer_with_reset" | "timer_accumulating" | "boolean_assert_warning" | "trim_and_respond" | "trim_and_respond_hold" | "reset" | "pi_loop" | "pid_with_reset" | "plant_equipment_availability" | "plant_enable" | "plant_hrc_enable" | "plant_hrc_mode_control" | "plant_stage_completion" | "plant_stage_index";
         /** Body_approve_ctrl_flow_sequence_requirements_api_library_ctrl_flow_templates__template_id__review_requirements_approve_post */
         Body_approve_ctrl_flow_sequence_requirements_api_library_ctrl_flow_templates__template_id__review_requirements_approve_post: {
             /** Point Reconciliation Id */
@@ -2453,6 +2617,36 @@ export interface components {
             selections?: {
                 [key: string]: string | number | boolean | null;
             };
+        };
+        /** CustomAdequacyRequest */
+        CustomAdequacyRequest: {
+            /**
+             * Invariant Sequences
+             * @default 1000
+             */
+            invariant_sequences: number;
+            /**
+             * Mutants
+             * @default 0
+             */
+            mutants: number;
+        };
+        /**
+         * CustomSequenceRequest
+         * @description Tier 5: a contractor's specification section for the AI to draft requirements from.
+         */
+        CustomSequenceRequest: {
+            /** Equipment Name */
+            equipment_name: string;
+            /**
+             * Spec Filename
+             * @default specification.txt
+             */
+            spec_filename: string;
+            /** Spec Text */
+            spec_text: string;
+            /** Title */
+            title: string;
         };
         /** CxfExecutionRequest */
         CxfExecutionRequest: {
@@ -2897,6 +3091,18 @@ export interface components {
         RejectionRequest: {
             /** Reason */
             reason?: string | null;
+            /** Reviewer */
+            reviewer?: string | null;
+        };
+        /**
+         * RequirementApprovalRequest
+         * @description Gate G-ENG: approve one exact requirement set digest (gates/G-ENG.md).
+         */
+        RequirementApprovalRequest: {
+            /** Note */
+            note?: string | null;
+            /** Requirements Digest */
+            requirements_digest: string;
             /** Reviewer */
             reviewer?: string | null;
         };
@@ -4848,6 +5054,289 @@ export interface operations {
             header?: never;
             path: {
                 project_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_custom_sequences_api_protocol_custom_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    create_custom_sequence_api_protocol_custom_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CustomSequenceRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    run_custom_adequacy_api_protocol_custom__sequence_id__adequacy_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sequence_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CustomAdequacyRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    draft_custom_program_api_protocol_custom__sequence_id__program_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sequence_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_custom_run_api_protocol_custom__sequence_id__runs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sequence_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_protocol_sequences_api_protocol_sequences_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    get_protocol_sequence_api_protocol_sequences__sequence_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sequence_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    approve_protocol_requirements_api_protocol_sequences__sequence_id__approve_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sequence_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequirementApprovalRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_protocol_test_plan_api_protocol_sequences__sequence_id__test_plan_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                sequence_id: string;
             };
             cookie?: never;
         };

@@ -38,5 +38,24 @@
       "atoly": 0.0,
       "rationale": "Same discretisation as the IR."
     }
+  },
+  "scan": {
+    "note": "Bands for the scan-module-tick leg (module period equal to the case's scan, whatever the scan): values as the coarse leg, timing within three scans, because every module kernel in a chain ticks once per scan in document order, so an edge that crosses a chain of Pre, TimerAccumulating and SetReset kernels lands up to three scans later than in the IR (measured on the Tier 3 hot water plant's runtime rotation). docs/decisions/011.",
+    "numeric": {
+      "atolx_scans": 3,
+      "atoly_relative": 0.001,
+      "atoly_minimum": 1e-09,
+      "rationale": "Same discretisation as the IR; any difference is a semantic disagreement. Same scale rule as the default set. Scan leg: three scans of timing slack for module-kernel chains (docs/decisions/011)."
+    },
+    "boolean": {
+      "atolx_scans": 3,
+      "atoly": 0.0,
+      "rationale": "Same discretisation as the IR. Scan leg: three scans of timing slack for module-kernel chains (docs/decisions/011)."
+    },
+    "integer": {
+      "atolx_scans": 3,
+      "atoly": 0.0,
+      "rationale": "Same discretisation as the IR. Scan leg: three scans of timing slack for module-kernel chains (docs/decisions/011)."
+    }
   }
 }

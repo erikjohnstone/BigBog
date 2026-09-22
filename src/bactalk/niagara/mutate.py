@@ -24,6 +24,7 @@ from bactalk.niagara.differential import three_way_differential
 from bactalk.niagara.module import declared_types
 from bactalk.niagara.shadow.driver import ShadowRunOptions, run_shadow_case, run_shadow_suite
 from bactalk.niagara.shadow.loader import ShadowLoadError
+from bactalk.niagara.shadow.policy import DEFAULT_POLICY, ExecutionPolicy
 from bactalk.niagara.validate import validate_bog
 from bactalk.simulator import run_acceptance_suite
 
@@ -495,6 +496,8 @@ def judge_mutant(
     job: JobSpec | None = None,
     reference: Mapping[str, Any] | None = None,
     interpreter_report: TestReport | None = None,
+    policy: ExecutionPolicy = DEFAULT_POLICY,
+    band_set: str = "default",
 ) -> tuple[str | None, str]:
     """(caught_by, detail) for one mutant, cheapest oracle first.
 
@@ -503,7 +506,10 @@ def judge_mutant(
     ``job`` is given, ``differential`` (D3: the mutant's output trajectories leave the
     documented bands around the interpreter and the reference on some scenario). The
     last is the oracle that matters: a mutation that no end-of-scenario expectation
-    notices still changes what the controller does over time.
+    notices still changes what the controller does over time. ``policy`` and
+    ``band_set`` choose the D3 leg the mutant is judged on (docs/decisions/010: a
+    row that only agrees with the module period equal to the scan is mutated under
+    that policy, so its catch rate measures defects, not discretisation).
     """
 
     report = validate_bog(content, declared_types=declared_types())
@@ -511,7 +517,10 @@ def judge_mutant(
         return "validator", "; ".join(str(issue) for issue in report.errors[:3])
     family = job.sequence.family if job is not None else None
     options = ShadowRunOptions(
-        kernel_backend=kernel_backend, record_internals=False, sequence_family=family
+        policy=policy,
+        kernel_backend=kernel_backend,
+        record_internals=False,
+        sequence_family=family,
     )
     try:
         for case in cases:
@@ -528,9 +537,11 @@ def judge_mutant(
                 job,
                 bog=content,
                 reference=reference,
+                policy=policy,
                 kernel_backend=kernel_backend,
                 shadow_report=shadow_report,
                 interpreter_report=interpreter_report,
+                band_set=band_set,
             )
             failing_case = next((c for c in differential.cases if not c.passed), None)
             if failing_case is not None:
@@ -554,6 +565,8 @@ def _judge_serialised(
         job=JobSpec.model_validate(oracle["job"]),
         reference=oracle["reference"],
         interpreter_report=TestReport.model_validate(oracle["interpreter_report"]),
+        policy=oracle.get("policy", DEFAULT_POLICY),
+        band_set=oracle.get("band_set", "default"),
     )
 
 
@@ -568,12 +581,17 @@ def run_mutation_suite(
     max_workers: int | None = None,
     job: JobSpec | None = None,
     reference: Mapping[str, Any] | None = None,
+    policy: ExecutionPolicy = DEFAULT_POLICY,
+    band_set: str = "default",
 ) -> MutationReport:
     """Generate mutants and judge each; parallel through a process pool.
 
     With ``job`` the D3 differential joins the oracles: the interpreter runs the
     suite once here and every mutant's Shadow Runtime trajectories are compared with
-    it (and with ``reference`` when given) inside the documented bands.
+    it (and with ``reference`` when given) inside the documented bands of
+    ``band_set`` under ``policy``. The unmutated file must pass every oracle first;
+    otherwise the catch rate would count the baseline's own failure and the call
+    refuses with ``ValueError``.
     """
 
     mutants = generate_mutants(content, seed=seed, limit=limit, operators=operators)
@@ -600,6 +618,8 @@ def run_mutation_suite(
             "job": job.model_dump(mode="json"),
             "reference": dict(reference) if reference is not None else None,
             "interpreter_report": interpreter_report.model_dump(mode="json"),
+            "policy": policy,
+            "band_set": band_set,
         }
     baseline, detail = _judge_serialised((content, payload, kernel_backend, oracle))
     if baseline is not None:

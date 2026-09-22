@@ -346,6 +346,13 @@ def _resolve_slot_ord(station_root: ElementTree.Element, ord_value: str) -> Elem
     return current
 
 
+def _optional_program_point(program: ElementTree.Element, name: str) -> ElementTree.Element | None:
+    try:
+        return _find_program_point(program, name)
+    except ValueError:
+        return None
+
+
 def _find_program_point(program: ElementTree.Element, name: str) -> ElementTree.Element:
     matches = [
         element
@@ -730,8 +737,14 @@ def _add_project_program_links(
             raise ValueError("cross-program link references unassembled equipment")
         source_job, source_graph, source_program = source_entry
         target_job, target_graph, target_program = target_entry
-        source = _named_child(source_program, link.source_point)
-        target = _named_child(target_program, link.target_point)
+        # The legacy compiler keeps boundary points as direct children of the program;
+        # the native emitter (N4) files them under Inputs/Outputs folders.
+        source = _named_child(source_program, link.source_point) or _optional_program_point(
+            source_program, link.source_point
+        )
+        target = _named_child(target_program, link.target_point) or _optional_program_point(
+            target_program, link.target_point
+        )
         if source is None or target is None:
             raise ValueError("cross-program link references a missing boundary component")
         source_handle = source.get("h")

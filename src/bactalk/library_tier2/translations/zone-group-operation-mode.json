@@ -1,0 +1,2311 @@
+{
+ "configuration_id": "zone-group-operation-mode",
+ "controller_id": "ZoneGroups.OperationMode",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode",
+  "inputs": [
+   {
+    "description": "Minimum zone temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.TZonMin",
+    "label": "TZonMin",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Maximum cool-down time among all the zones",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.maxCooDowTim",
+    "label": "maxCooDowTim",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Maximum warm-up time among all the zones",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.maxWarUpTim",
+    "label": "maxWarUpTim",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Time to next occupied period",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.tNexOcc",
+    "label": "tNexOcc",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Total number of cold zone",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.totColZon",
+    "label": "totColZon",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "Total number of hot zone",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.totHotZon",
+    "label": "totHotZon",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "True when the setback mode could end",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1EndSetBac",
+    "label": "u1EndSetBac",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the setup mode could end",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1EndSetUp",
+    "label": "u1EndSetUp",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when there is zone with the temperature being higher than the occupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1HigOccCoo",
+    "label": "u1HigOccCoo",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True: zone scheduled to be occupied",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1Occ",
+    "label": "u1Occ",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when there is zone with the temperature being lower than the occupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1OccHeaHig",
+    "label": "u1OccHeaHig",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the average zone temperature falls below the average unoccupied heating setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1SetBac",
+    "label": "u1SetBac",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "True when the average zone temperature rises above the average unoccupied cooling setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1SetUp",
+    "label": "u1SetUp",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Total number of zones with opening window",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.uOpeWin",
+    "label": "uOpeWin",
+    "type": "S231:IntegerInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Operation mode",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.yOpeMod",
+    "label": "yOpeMod",
+    "type": "S231:IntegerOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 13
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "nZon": 1
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZonMin",
+   "name": "TZonMin",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.TZonMin",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "maxCooDowTim",
+   "name": "maxCooDowTim",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.maxCooDowTim",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "maxWarUpTim",
+   "name": "maxWarUpTim",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.maxWarUpTim",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "tNexOcc",
+   "name": "tNexOcc",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.tNexOcc",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "totColZon",
+   "name": "totColZon",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.totColZon",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "totHotZon",
+   "name": "totHotZon",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.totHotZon",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1EndSetBac",
+   "name": "u1EndSetBac",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1EndSetBac",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1EndSetUp",
+   "name": "u1EndSetUp",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1EndSetUp",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1HigOccCoo",
+   "name": "u1HigOccCoo",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1HigOccCoo",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Occ",
+   "name": "u1Occ",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1Occ",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1OccHeaHig",
+   "name": "u1OccHeaHig",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1OccHeaHig",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1SetBac",
+   "name": "u1SetBac",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1SetBac",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1SetUp",
+   "name": "u1SetUp",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.u1SetUp",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uOpeWin",
+   "name": "uOpeWin",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.uOpeWin",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yOpeMod",
+   "name": "yOpeMod",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode.yOpeMod",
+   "source_interface_type": "S231:IntegerOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "ZoneGroups/OperationMode.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "ad27a6b4900e581d813b1ac56a27cdfb79297e94d5679f1422b0d4ddf1874949",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "fb0c0406151146286a0bef1d3bace017cb737088674f3d3ce9ea596eb297fa6f",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "maxCooDowTim",
+    "kind": "numeric_input",
+    "label": "maxCooDowTim",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "maxWarUpTim",
+    "kind": "numeric_input",
+    "label": "maxWarUpTim",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "tNexOcc",
+    "kind": "numeric_input",
+    "label": "tNexOcc",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "totColZon",
+    "kind": "numeric_input",
+    "label": "totColZon",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "totHotZon",
+    "kind": "numeric_input",
+    "label": "totHotZon",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TZonMin",
+    "kind": "numeric_input",
+    "label": "TZonMin",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1EndSetBac",
+    "kind": "boolean_input",
+    "label": "u1EndSetBac",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1EndSetUp",
+    "kind": "boolean_input",
+    "label": "u1EndSetUp",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1HigOccCoo",
+    "kind": "boolean_input",
+    "label": "u1HigOccCoo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Occ",
+    "kind": "boolean_input",
+    "label": "u1Occ",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1OccHeaHig",
+    "kind": "boolean_input",
+    "label": "u1OccHeaHig",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1SetBac",
+    "kind": "boolean_input",
+    "label": "u1SetBac",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1SetUp",
+    "kind": "boolean_input",
+    "label": "u1SetUp",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uOpeWin",
+    "kind": "numeric_input",
+    "label": "uOpeWin",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yOpeMod",
+    "kind": "numeric_output",
+    "label": "yOpeMod",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 277.15
+    },
+    "id": "actFreProTem",
+    "kind": "numeric_const",
+    "label": "actFreProTem",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addInt",
+    "kind": "add",
+    "label": "addInt",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addInt1",
+    "kind": "add",
+    "label": "addInt1",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addInt2",
+    "kind": "add",
+    "label": "addInt2",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addInt3",
+    "kind": "add",
+    "label": "addInt3",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addInt4",
+    "kind": "add",
+    "label": "addInt4",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addInt5",
+    "kind": "add",
+    "label": "addInt5",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "addInt6",
+    "kind": "add",
+    "label": "addInt6",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "addInt7",
+    "kind": "add",
+    "label": "addInt7",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "allCol",
+    "kind": "equal",
+    "label": "allCol",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "allHot",
+    "kind": "equal",
+    "label": "allHot",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "and1",
+    "kind": "and",
+    "label": "and1",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "and2",
+    "kind": "and",
+    "label": "and2",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "and3",
+    "kind": "and",
+    "label": "and3",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "and4",
+    "kind": "and",
+    "label": "and4",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "and5",
+    "kind": "and",
+    "label": "and5",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {
+     "message": "Level 3 alarm: freeze protection setback",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "assMes",
+    "kind": "boolean_assert_warning",
+    "label": "assMes",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 7.0
+    },
+    "id": "booToInt3_true",
+    "kind": "numeric_const",
+    "label": "booToInt3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt3_false",
+    "kind": "numeric_const",
+    "label": "booToInt3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt3",
+    "kind": "numeric_switch",
+    "label": "booToInt3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "booToRea_true",
+    "kind": "numeric_const",
+    "label": "booToRea true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea_false",
+    "kind": "numeric_const",
+    "label": "booToRea false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea",
+    "kind": "numeric_switch",
+    "label": "booToRea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "booToRea1_true",
+    "kind": "numeric_const",
+    "label": "booToRea1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea1_false",
+    "kind": "numeric_const",
+    "label": "booToRea1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea1",
+    "kind": "numeric_switch",
+    "label": "booToRea1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "booToRea3_true",
+    "kind": "numeric_const",
+    "label": "booToRea3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea3_false",
+    "kind": "numeric_const",
+    "label": "booToRea3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea3",
+    "kind": "numeric_switch",
+    "label": "booToRea3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 6.0
+    },
+    "id": "booToRea4_true",
+    "kind": "numeric_const",
+    "label": "booToRea4 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea4_false",
+    "kind": "numeric_const",
+    "label": "booToRea4 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea4",
+    "kind": "numeric_switch",
+    "label": "booToRea4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "booToRea6_true",
+    "kind": "numeric_const",
+    "label": "booToRea6 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea6_false",
+    "kind": "numeric_const",
+    "label": "booToRea6 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea6",
+    "kind": "numeric_switch",
+    "label": "booToRea6",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "corCooDowTim",
+    "kind": "numeric_switch",
+    "label": "corCooDowTim",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "corWarUpTim",
+    "kind": "numeric_switch",
+    "label": "corWarUpTim",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg",
+    "kind": "one_shot",
+    "label": "edg",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg1",
+    "kind": "one_shot",
+    "label": "edg1",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 280.15
+    },
+    "id": "endFreProTem",
+    "kind": "numeric_const",
+    "label": "endFreProTem",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "endSetBac",
+    "kind": "one_shot",
+    "label": "endSetBac",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "endSetUp",
+    "kind": "one_shot",
+    "label": "endSetUp",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "freProSetBacMod",
+    "kind": "numeric_round",
+    "label": "freProSetBacMod",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": -0.1
+    },
+    "id": "hys10",
+    "kind": "hysteresis",
+    "label": "hys10",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {
+     "initial": true,
+     "u_high": 0.0,
+     "u_low": -60.0
+    },
+    "id": "hys2",
+    "kind": "hysteresis",
+    "label": "hys2",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {
+     "initial": true,
+     "u_high": 0.0,
+     "u_low": -60.0
+    },
+    "id": "hys3",
+    "kind": "hysteresis",
+    "label": "hys3",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.0,
+     "u_low": -60.0
+    },
+    "id": "hys4",
+    "kind": "hysteresis",
+    "label": "hys4",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.0,
+     "u_low": -60.0
+    },
+    "id": "hys5",
+    "kind": "hysteresis",
+    "label": "hys5",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": -0.1
+    },
+    "id": "hys9",
+    "kind": "hysteresis",
+    "label": "hys9",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "intGreThr_threshold",
+    "kind": "numeric_const",
+    "label": "intGreThr threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intGreThr",
+    "kind": "greater_than",
+    "label": "intGreThr",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "intGreThr1_threshold",
+    "kind": "numeric_const",
+    "label": "intGreThr1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intGreThr1",
+    "kind": "greater_than",
+    "label": "intGreThr1",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "intGreThr2_threshold",
+    "kind": "numeric_const",
+    "label": "intGreThr2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intGreThr2",
+    "kind": "greater_than",
+    "label": "intGreThr2",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat",
+    "kind": "boolean_set_reset",
+    "label": "lat",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat1",
+    "kind": "boolean_set_reset",
+    "label": "lat1",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat2",
+    "kind": "boolean_set_reset",
+    "label": "lat2",
+    "x": 0,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 10800.0
+    },
+    "id": "maxWarCooTime",
+    "kind": "numeric_const",
+    "label": "maxWarCooTime",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "not1",
+    "kind": "not",
+    "label": "not1",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "not2",
+    "kind": "not",
+    "label": "not2",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "not5",
+    "kind": "not",
+    "label": "not5",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "notOcc_threshold",
+    "kind": "numeric_const",
+    "label": "notOcc threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notOcc",
+    "kind": "greater_than",
+    "label": "notOcc",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "occMod",
+    "kind": "numeric_round",
+    "label": "occMod",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "occModInd",
+    "kind": "numeric_const",
+    "label": "occModInd",
+    "x": 180,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "or1",
+    "kind": "or",
+    "label": "or1",
+    "x": 360,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "or10",
+    "kind": "or",
+    "label": "or10",
+    "x": 540,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "or2",
+    "kind": "or",
+    "label": "or2",
+    "x": 720,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "or4",
+    "kind": "or",
+    "label": "or4",
+    "x": 900,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "or5",
+    "kind": "or",
+    "label": "or5",
+    "x": 0,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "or6",
+    "kind": "or",
+    "label": "or6",
+    "x": 180,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "or7",
+    "kind": "or",
+    "label": "or7",
+    "x": 360,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "or8",
+    "kind": "or",
+    "label": "or8",
+    "x": 540,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "or9",
+    "kind": "or",
+    "label": "or9",
+    "x": 720,
+    "y": 1080
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "setBacMod",
+    "kind": "numeric_round",
+    "label": "setBacMod",
+    "x": 900,
+    "y": 1080
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "setBacMod1",
+    "kind": "numeric_round",
+    "label": "setBacMod1",
+    "x": 0,
+    "y": 1200
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "setBacMod2",
+    "kind": "numeric_round",
+    "label": "setBacMod2",
+    "x": 180,
+    "y": 1200
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "setUpMod",
+    "kind": "numeric_round",
+    "label": "setUpMod",
+    "x": 360,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "sub1",
+    "kind": "subtract",
+    "label": "sub1",
+    "x": 540,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "sub2",
+    "kind": "subtract",
+    "label": "sub2",
+    "x": 720,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "sub3",
+    "kind": "subtract",
+    "label": "sub3",
+    "x": 900,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "sub4",
+    "kind": "subtract",
+    "label": "sub4",
+    "x": 0,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "sub5",
+    "kind": "subtract",
+    "label": "sub5",
+    "x": 180,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "sub6",
+    "kind": "subtract",
+    "label": "sub6",
+    "x": 360,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "numeric_switch",
+    "label": "swi",
+    "x": 540,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "swi1",
+    "kind": "numeric_switch",
+    "label": "swi1",
+    "x": 720,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "swi2",
+    "kind": "numeric_switch",
+    "label": "swi2",
+    "x": 900,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "swi3",
+    "kind": "numeric_switch",
+    "label": "swi3",
+    "x": 0,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "swi4",
+    "kind": "numeric_switch",
+    "label": "swi4",
+    "x": 180,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "swi5",
+    "kind": "numeric_switch",
+    "label": "swi5",
+    "x": 360,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "totZon",
+    "kind": "numeric_const",
+    "label": "totZon",
+    "x": 540,
+    "y": 1440
+   },
+   {
+    "config": {
+     "false_hold_seconds": 10800.0,
+     "true_hold_seconds": 10800.0
+    },
+    "id": "truFalHol",
+    "kind": "boolean_true_false_hold",
+    "label": "truFalHol",
+    "x": 720,
+    "y": 1440
+   },
+   {
+    "config": {
+     "false_hold_seconds": 10800.0,
+     "true_hold_seconds": 10800.0
+    },
+    "id": "truFalHol1",
+    "kind": "boolean_true_false_hold",
+    "label": "truFalHol1",
+    "x": 900,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "unoPerInd",
+    "kind": "numeric_const",
+    "label": "unoPerInd",
+    "x": 0,
+    "y": 1560
+   },
+   {
+    "config": {
+     "message": "Level 4 alarm: window open during modes other than occupied mode",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "winOpe",
+    "kind": "boolean_assert_warning",
+    "label": "winOpe",
+    "x": 180,
+    "y": 1560
+   }
+  ],
+  "links": [
+   {
+    "source": "booToInt3_true",
+    "source_slot": "out",
+    "target": "booToInt3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt3_false",
+    "source_slot": "out",
+    "target": "booToInt3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea_true",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea_false",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea1_true",
+    "source_slot": "out",
+    "target": "booToRea1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea1_false",
+    "source_slot": "out",
+    "target": "booToRea1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea3_true",
+    "source_slot": "out",
+    "target": "booToRea3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea3_false",
+    "source_slot": "out",
+    "target": "booToRea3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea4_true",
+    "source_slot": "out",
+    "target": "booToRea4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea4_false",
+    "source_slot": "out",
+    "target": "booToRea4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea6_true",
+    "source_slot": "out",
+    "target": "booToRea6",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea6_false",
+    "source_slot": "out",
+    "target": "booToRea6",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "intGreThr_threshold",
+    "source_slot": "out",
+    "target": "intGreThr",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr1_threshold",
+    "source_slot": "out",
+    "target": "intGreThr1",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr2_threshold",
+    "source_slot": "out",
+    "target": "intGreThr2",
+    "target_slot": "b"
+   },
+   {
+    "source": "notOcc_threshold",
+    "source_slot": "out",
+    "target": "notOcc",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxCooDowTim",
+    "source_slot": "out",
+    "target": "corCooDowTim",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "maxCooDowTim",
+    "source_slot": "out",
+    "target": "sub3",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxWarUpTim",
+    "source_slot": "out",
+    "target": "corWarUpTim",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "maxWarUpTim",
+    "source_slot": "out",
+    "target": "sub4",
+    "target_slot": "b"
+   },
+   {
+    "source": "tNexOcc",
+    "source_slot": "out",
+    "target": "sub5",
+    "target_slot": "b"
+   },
+   {
+    "source": "tNexOcc",
+    "source_slot": "out",
+    "target": "sub6",
+    "target_slot": "b"
+   },
+   {
+    "source": "totColZon",
+    "source_slot": "out",
+    "target": "addInt6",
+    "target_slot": "b"
+   },
+   {
+    "source": "totColZon",
+    "source_slot": "out",
+    "target": "intGreThr",
+    "target_slot": "a"
+   },
+   {
+    "source": "totHotZon",
+    "source_slot": "out",
+    "target": "addInt7",
+    "target_slot": "b"
+   },
+   {
+    "source": "totHotZon",
+    "source_slot": "out",
+    "target": "intGreThr2",
+    "target_slot": "a"
+   },
+   {
+    "source": "TZonMin",
+    "source_slot": "out",
+    "target": "sub1",
+    "target_slot": "a"
+   },
+   {
+    "source": "TZonMin",
+    "source_slot": "out",
+    "target": "sub2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1EndSetBac",
+    "source_slot": "out",
+    "target": "endSetBac",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1EndSetUp",
+    "source_slot": "out",
+    "target": "endSetUp",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1HigOccCoo",
+    "source_slot": "out",
+    "target": "and2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Occ",
+    "source_slot": "out",
+    "target": "or8",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Occ",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1Occ",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1Occ",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1OccHeaHig",
+    "source_slot": "out",
+    "target": "and5",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1SetBac",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1SetUp",
+    "source_slot": "out",
+    "target": "or7",
+    "target_slot": "b"
+   },
+   {
+    "source": "uOpeWin",
+    "source_slot": "out",
+    "target": "addInt6",
+    "target_slot": "a"
+   },
+   {
+    "source": "uOpeWin",
+    "source_slot": "out",
+    "target": "addInt7",
+    "target_slot": "a"
+   },
+   {
+    "source": "uOpeWin",
+    "source_slot": "out",
+    "target": "intGreThr1",
+    "target_slot": "a"
+   },
+   {
+    "source": "actFreProTem",
+    "source_slot": "out",
+    "target": "sub2",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt",
+    "source_slot": "out",
+    "target": "addInt1",
+    "target_slot": "b"
+   },
+   {
+    "source": "addInt1",
+    "source_slot": "out",
+    "target": "addInt5",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt2",
+    "source_slot": "out",
+    "target": "addInt3",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt3",
+    "source_slot": "out",
+    "target": "addInt4",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt4",
+    "source_slot": "out",
+    "target": "addInt5",
+    "target_slot": "b"
+   },
+   {
+    "source": "addInt5",
+    "source_slot": "out",
+    "target": "notOcc",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt5",
+    "source_slot": "out",
+    "target": "yOpeMod",
+    "target_slot": "in"
+   },
+   {
+    "source": "addInt6",
+    "source_slot": "out",
+    "target": "allCol",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt7",
+    "source_slot": "out",
+    "target": "allHot",
+    "target_slot": "a"
+   },
+   {
+    "source": "allCol",
+    "source_slot": "out",
+    "target": "or1",
+    "target_slot": "b"
+   },
+   {
+    "source": "allHot",
+    "source_slot": "out",
+    "target": "or4",
+    "target_slot": "b"
+   },
+   {
+    "source": "and1",
+    "source_slot": "out",
+    "target": "booToRea1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "and1",
+    "source_slot": "out",
+    "target": "or9",
+    "target_slot": "a"
+   },
+   {
+    "source": "and2",
+    "source_slot": "out",
+    "target": "edg1",
+    "target_slot": "in"
+   },
+   {
+    "source": "and3",
+    "source_slot": "out",
+    "target": "not1",
+    "target_slot": "in"
+   },
+   {
+    "source": "and4",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "selector"
+   },
+   {
+    "source": "and4",
+    "source_slot": "out",
+    "target": "or9",
+    "target_slot": "b"
+   },
+   {
+    "source": "and5",
+    "source_slot": "out",
+    "target": "edg",
+    "target_slot": "in"
+   },
+   {
+    "source": "booToInt3",
+    "source_slot": "out",
+    "target": "addInt4",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea1",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea3",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea4",
+    "source_slot": "out",
+    "target": "swi4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea6",
+    "source_slot": "out",
+    "target": "swi5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "corCooDowTim",
+    "source_slot": "out",
+    "target": "sub5",
+    "target_slot": "a"
+   },
+   {
+    "source": "corWarUpTim",
+    "source_slot": "out",
+    "target": "sub6",
+    "target_slot": "a"
+   },
+   {
+    "source": "edg",
+    "source_slot": "out",
+    "target": "truFalHol1",
+    "target_slot": "in"
+   },
+   {
+    "source": "edg1",
+    "source_slot": "out",
+    "target": "truFalHol",
+    "target_slot": "in"
+   },
+   {
+    "source": "endFreProTem",
+    "source_slot": "out",
+    "target": "sub1",
+    "target_slot": "b"
+   },
+   {
+    "source": "endSetBac",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "clear"
+   },
+   {
+    "source": "endSetUp",
+    "source_slot": "out",
+    "target": "lat2",
+    "target_slot": "clear"
+   },
+   {
+    "source": "freProSetBacMod",
+    "source_slot": "out",
+    "target": "addInt2",
+    "target_slot": "b"
+   },
+   {
+    "source": "hys10",
+    "source_slot": "out",
+    "target": "lat1",
+    "target_slot": "clear"
+   },
+   {
+    "source": "hys2",
+    "source_slot": "out",
+    "target": "corCooDowTim",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hys3",
+    "source_slot": "out",
+    "target": "corWarUpTim",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hys4",
+    "source_slot": "out",
+    "target": "and2",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys4",
+    "source_slot": "out",
+    "target": "and4",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys5",
+    "source_slot": "out",
+    "target": "and1",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys5",
+    "source_slot": "out",
+    "target": "and5",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys9",
+    "source_slot": "out",
+    "target": "lat1",
+    "target_slot": "set"
+   },
+   {
+    "source": "intGreThr",
+    "source_slot": "out",
+    "target": "or1",
+    "target_slot": "a"
+   },
+   {
+    "source": "intGreThr1",
+    "source_slot": "out",
+    "target": "and3",
+    "target_slot": "a"
+   },
+   {
+    "source": "intGreThr2",
+    "source_slot": "out",
+    "target": "or4",
+    "target_slot": "a"
+   },
+   {
+    "source": "lat",
+    "source_slot": "out",
+    "target": "booToRea3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lat",
+    "source_slot": "out",
+    "target": "or10",
+    "target_slot": "b"
+   },
+   {
+    "source": "lat1",
+    "source_slot": "out",
+    "target": "booToRea4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lat1",
+    "source_slot": "out",
+    "target": "not5",
+    "target_slot": "in"
+   },
+   {
+    "source": "lat1",
+    "source_slot": "out",
+    "target": "or5",
+    "target_slot": "b"
+   },
+   {
+    "source": "lat2",
+    "source_slot": "out",
+    "target": "booToRea6",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lat2",
+    "source_slot": "out",
+    "target": "or5",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxWarCooTime",
+    "source_slot": "out",
+    "target": "corCooDowTim",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "maxWarCooTime",
+    "source_slot": "out",
+    "target": "corWarUpTim",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "maxWarCooTime",
+    "source_slot": "out",
+    "target": "sub3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxWarCooTime",
+    "source_slot": "out",
+    "target": "sub4",
+    "target_slot": "a"
+   },
+   {
+    "source": "not1",
+    "source_slot": "out",
+    "target": "winOpe",
+    "target_slot": "condition"
+   },
+   {
+    "source": "not2",
+    "source_slot": "out",
+    "target": "booToInt3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not5",
+    "source_slot": "out",
+    "target": "assMes",
+    "target_slot": "condition"
+   },
+   {
+    "source": "notOcc",
+    "source_slot": "out",
+    "target": "and3",
+    "target_slot": "b"
+   },
+   {
+    "source": "occMod",
+    "source_slot": "out",
+    "target": "addInt1",
+    "target_slot": "a"
+   },
+   {
+    "source": "occModInd",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "or1",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "a"
+   },
+   {
+    "source": "or10",
+    "source_slot": "out",
+    "target": "or6",
+    "target_slot": "a"
+   },
+   {
+    "source": "or2",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "set"
+   },
+   {
+    "source": "or4",
+    "source_slot": "out",
+    "target": "or7",
+    "target_slot": "a"
+   },
+   {
+    "source": "or5",
+    "source_slot": "out",
+    "target": "or10",
+    "target_slot": "a"
+   },
+   {
+    "source": "or6",
+    "source_slot": "out",
+    "target": "not2",
+    "target_slot": "in"
+   },
+   {
+    "source": "or7",
+    "source_slot": "out",
+    "target": "lat2",
+    "target_slot": "set"
+   },
+   {
+    "source": "or8",
+    "source_slot": "out",
+    "target": "or6",
+    "target_slot": "b"
+   },
+   {
+    "source": "or8",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or8",
+    "source_slot": "out",
+    "target": "swi4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or8",
+    "source_slot": "out",
+    "target": "swi5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or9",
+    "source_slot": "out",
+    "target": "or8",
+    "target_slot": "a"
+   },
+   {
+    "source": "setBacMod",
+    "source_slot": "out",
+    "target": "addInt2",
+    "target_slot": "a"
+   },
+   {
+    "source": "setBacMod1",
+    "source_slot": "out",
+    "target": "addInt",
+    "target_slot": "a"
+   },
+   {
+    "source": "setBacMod2",
+    "source_slot": "out",
+    "target": "addInt",
+    "target_slot": "b"
+   },
+   {
+    "source": "setUpMod",
+    "source_slot": "out",
+    "target": "addInt3",
+    "target_slot": "b"
+   },
+   {
+    "source": "sub1",
+    "source_slot": "out",
+    "target": "hys10",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub2",
+    "source_slot": "out",
+    "target": "hys9",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub3",
+    "source_slot": "out",
+    "target": "hys2",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub4",
+    "source_slot": "out",
+    "target": "hys3",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub5",
+    "source_slot": "out",
+    "target": "hys4",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub6",
+    "source_slot": "out",
+    "target": "hys5",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "occMod",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi1",
+    "source_slot": "out",
+    "target": "setBacMod1",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi2",
+    "source_slot": "out",
+    "target": "setBacMod2",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi3",
+    "source_slot": "out",
+    "target": "setBacMod",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi4",
+    "source_slot": "out",
+    "target": "freProSetBacMod",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi5",
+    "source_slot": "out",
+    "target": "setUpMod",
+    "target_slot": "in"
+   },
+   {
+    "source": "totZon",
+    "source_slot": "out",
+    "target": "allCol",
+    "target_slot": "b"
+   },
+   {
+    "source": "totZon",
+    "source_slot": "out",
+    "target": "allHot",
+    "target_slot": "b"
+   },
+   {
+    "source": "truFalHol",
+    "source_slot": "out",
+    "target": "and4",
+    "target_slot": "b"
+   },
+   {
+    "source": "truFalHol1",
+    "source_slot": "out",
+    "target": "and1",
+    "target_slot": "b"
+   },
+   {
+    "source": "unoPerInd",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "unoPerInd",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "unoPerInd",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "unoPerInd",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "unoPerInd",
+    "source_slot": "out",
+    "target": "swi4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "unoPerInd",
+    "source_slot": "out",
+    "target": "swi5",
+    "target_slot": "when_true"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "actFreProTem": "actFreProTem",
+    "addInt": "addInt",
+    "addInt1": "addInt1",
+    "addInt2": "addInt2",
+    "addInt3": "addInt3",
+    "addInt4": "addInt4",
+    "addInt5": "addInt5",
+    "addInt6": "addInt6",
+    "addInt7": "addInt7",
+    "allCol": "allCol",
+    "allHot": "allHot",
+    "and1": "and1",
+    "and2": "and2",
+    "and3": "and3",
+    "and4": "and4",
+    "and5": "and5",
+    "assMes": "assMes",
+    "booToInt3": "booToInt3",
+    "booToInt3_false": "booToInt3",
+    "booToInt3_true": "booToInt3",
+    "booToRea": "booToRea",
+    "booToRea1": "booToRea1",
+    "booToRea1_false": "booToRea1",
+    "booToRea1_true": "booToRea1",
+    "booToRea3": "booToRea3",
+    "booToRea3_false": "booToRea3",
+    "booToRea3_true": "booToRea3",
+    "booToRea4": "booToRea4",
+    "booToRea4_false": "booToRea4",
+    "booToRea4_true": "booToRea4",
+    "booToRea6": "booToRea6",
+    "booToRea6_false": "booToRea6",
+    "booToRea6_true": "booToRea6",
+    "booToRea_false": "booToRea",
+    "booToRea_true": "booToRea",
+    "corCooDowTim": "corCooDowTim",
+    "corWarUpTim": "corWarUpTim",
+    "edg": "edg",
+    "edg1": "edg1",
+    "endFreProTem": "endFreProTem",
+    "endSetBac": "endSetBac",
+    "endSetUp": "endSetUp",
+    "freProSetBacMod": "freProSetBacMod",
+    "hys10": "hys10",
+    "hys2": "hys2",
+    "hys3": "hys3",
+    "hys4": "hys4",
+    "hys5": "hys5",
+    "hys9": "hys9",
+    "intGreThr": "intGreThr",
+    "intGreThr1": "intGreThr1",
+    "intGreThr1_threshold": "intGreThr1",
+    "intGreThr2": "intGreThr2",
+    "intGreThr2_threshold": "intGreThr2",
+    "intGreThr_threshold": "intGreThr",
+    "lat": "lat",
+    "lat1": "lat1",
+    "lat2": "lat2",
+    "maxWarCooTime": "maxWarCooTime",
+    "not1": "not1",
+    "not2": "not2",
+    "not5": "not5",
+    "notOcc": "notOcc",
+    "notOcc_threshold": "notOcc",
+    "occMod": "occMod",
+    "occModInd": "occModInd",
+    "or1": "or1",
+    "or10": "or10",
+    "or2": "or2",
+    "or4": "or4",
+    "or5": "or5",
+    "or6": "or6",
+    "or7": "or7",
+    "or8": "or8",
+    "or9": "or9",
+    "setBacMod": "setBacMod",
+    "setBacMod1": "setBacMod1",
+    "setBacMod2": "setBacMod2",
+    "setUpMod": "setUpMod",
+    "sub1": "sub1",
+    "sub2": "sub2",
+    "sub3": "sub3",
+    "sub4": "sub4",
+    "sub5": "sub5",
+    "sub6": "sub6",
+    "swi": "swi",
+    "swi1": "swi1",
+    "swi2": "swi2",
+    "swi3": "swi3",
+    "swi4": "swi4",
+    "swi5": "swi5",
+    "totZon": "totZon",
+    "truFalHol": "truFalHol",
+    "truFalHol1": "truFalHol1",
+    "unoPerInd": "unoPerInd",
+    "winOpe": "winOpe"
+   },
+   "coverage": {
+    "boundary_inputs": 14,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger": 1,
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal": 5,
+     "Buildings.Controls.OBC.CDL.Conversions.RealToInteger": 6,
+     "Buildings.Controls.OBC.CDL.Integers.Add": 8,
+     "Buildings.Controls.OBC.CDL.Integers.Equal": 2,
+     "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold": 4,
+     "Buildings.Controls.OBC.CDL.Integers.Sources.Constant": 1,
+     "Buildings.Controls.OBC.CDL.Logical.And": 5,
+     "Buildings.Controls.OBC.CDL.Logical.Edge": 4,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 9,
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Hysteresis": 6,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 5,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 6,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 8,
+     "Buildings.Controls.OBC.CDL.Utilities.Assert": 2
+    },
+    "component_count": 80,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold",
+     "Buildings.Controls.OBC.CDL.Reals.Hysteresis",
+     "Buildings.Controls.OBC.CDL.Utilities.Assert"
+    ],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.ZoneGroups.OperationMode",
+    "root_label": "OperationMode",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "fb0c0406151146286a0bef1d3bace017cb737088674f3d3ce9ea596eb297fa6f",
+    "supported_class_count": 80,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "fb0c0406151146286a0bef1d3bace017cb737088674f3d3ce9ea596eb297fa6f"
+  },
+  "name": "OperationMode"
+ }
+}

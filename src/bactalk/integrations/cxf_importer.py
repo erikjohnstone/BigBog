@@ -76,6 +76,14 @@ _NAMED_NUMERIC_CONSTANTS: dict[str, float] = {
     "Buildings.Controls.OBC.ASHRAE.G36.Types.OperationModes.setBack": 5.0,
     "Buildings.Controls.OBC.ASHRAE.G36.Types.OperationModes.freezeProtection": 6.0,
     "Buildings.Controls.OBC.ASHRAE.G36.Types.OperationModes.unoccupied": 7.0,
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.DemandLimitLevels.cooling0": 0.0,
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.DemandLimitLevels.cooling1": 1.0,
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.DemandLimitLevels.cooling2": 2.0,
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.DemandLimitLevels.cooling3": 3.0,
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.DemandLimitLevels.heating0": 0.0,
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.DemandLimitLevels.heating1": 1.0,
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.DemandLimitLevels.heating2": 2.0,
+    "Buildings.Controls.OBC.ASHRAE.G36.Types.DemandLimitLevels.heating3": 3.0,
 }
 TRIM_AND_RESPOND_CLASS = "Buildings.Controls.OBC.ASHRAE.G36.Generic.TrimAndRespond"
 TRUE_FALSE_HOLD_CLASS = "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold"
@@ -127,6 +135,8 @@ SUPPORTED_CLASSES = frozenset(
         "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal",
         "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger",
         "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal",
+        "Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
+        "Buildings.Controls.OBC.CDL.Reals.Limiter",
         "Buildings.Controls.OBC.CDL.Integers.Equal",
         "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold",
         "Buildings.Controls.OBC.CDL.Integers.GreaterEqualThreshold",
@@ -235,6 +245,8 @@ INSTANCE_SCHEMAS: dict[str, dict[str, tuple[str, ...]]] = {
         ("u",), parameters=("integerTrue", "integerFalse")
     ),
     "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal": _schema(("u",)),
+    "Buildings.Controls.OBC.CDL.Conversions.RealToInteger": _schema(("u",)),
+    "Buildings.Controls.OBC.CDL.Reals.Limiter": _schema(("u",), parameters=("uMax", "uMin")),
     "Buildings.Controls.OBC.CDL.Integers.Equal": _schema(("u1", "u2")),
     "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold": _schema(("u",), parameters=("t",)),
     "Buildings.Controls.OBC.CDL.Integers.GreaterEqualThreshold": _schema(("u",), parameters=("t",)),
@@ -1047,6 +1059,49 @@ class CxfImporter:
                     )
                 )
                 links.append(Link(source=zero_id, target=block_id, target_slot="b"))
+            elif class_name == "Buildings.Controls.OBC.CDL.Conversions.RealToInteger":
+                # Integers are numeric in BACTalk; the rounding is what remains.
+                kind = BlockKind.NUMERIC_ROUND
+                slot_map = {"u": "in"}
+                config = {"semantic_contract": "CDL.Conversions.RealToInteger"}
+            elif class_name == "Buildings.Controls.OBC.CDL.Reals.Limiter":
+                # y = min(max(u, uMin), uMax), exactly as CDL states it, from stock blocks.
+                append_primary = False
+                u_max = _numeric_parameter(parameters, label, "uMax", 1.0)
+                u_min = _numeric_parameter(parameters, label, "uMin", 0.0)
+                if u_min >= u_max:
+                    raise CxfImportError(f"{label} Limiter needs uMin < uMax")
+                min_id = unique_id(f"{block_id}_uMin", "Lower")
+                max_id = unique_id(f"{block_id}_uMax", "Upper")
+                lower_id = unique_id(f"{block_id}_lower", "Floor")
+                blocks.extend(
+                    [
+                        Block(
+                            id=min_id,
+                            kind=BlockKind.NUMERIC_CONST,
+                            label=f"{label} uMin",
+                            config={"value": u_min},
+                        ),
+                        Block(
+                            id=max_id,
+                            kind=BlockKind.NUMERIC_CONST,
+                            label=f"{label} uMax",
+                            config={"value": u_max},
+                        ),
+                        Block(id=lower_id, kind=BlockKind.MAXIMUM, label=f"{label} lower"),
+                        Block(id=block_id, kind=BlockKind.MINIMUM, label=label),
+                    ]
+                )
+                links.extend(
+                    [
+                        Link(source=min_id, target=lower_id, target_slot="b"),
+                        Link(source=lower_id, target=block_id, target_slot="a"),
+                        Link(source=max_id, target=block_id, target_slot="b"),
+                    ]
+                )
+                expanded_inputs = {"u": [(lower_id, "a")]}
+                slot_map = {}
+                kind = BlockKind.MINIMUM
             elif class_name == "Buildings.Controls.OBC.CDL.Integers.Equal":
                 kind = BlockKind.EQUAL
                 slot_map = {"u1": "a", "u2": "b"}
