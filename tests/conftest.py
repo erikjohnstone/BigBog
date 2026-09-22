@@ -105,6 +105,20 @@ TEST_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "vendor:n4-hvac-optimization-blocks",
         "vendor:nhaystack",
     ),
+    # The Shadow Runtime's Python kernel ports run everywhere; only the row-by-row
+    # comparison with the Java kernels and the JVM backend need a JDK.
+    "test_native_bog_shadow_kernels::test_python_ports_equal_the_java_kernels_row_by_row": (
+        "tool:javac",
+        "tool:java",
+    ),
+    "test_native_bog_shadow_kernels::test_sidecar_session_serves_many_kernels_at_once": (
+        "tool:javac",
+        "tool:java",
+    ),
+    "test_native_bog_shadow_driver::test_jvm_backend_reaches_the_same_verdicts": (
+        "tool:javac",
+        "tool:java",
+    ),
 }
 
 # Modules that exercise only the base install and must run everywhere.

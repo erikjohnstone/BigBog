@@ -1,86 +1,74 @@
 package com.bactalk.g36.kernel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * CDL-exact {@code Buildings.Controls.OBC.CDL.Reals.MovingAverage} kernel: the
- * time-window mean of the input, integrated between steps and read back through a
- * ring buffer of checkpoints.
+ * time-window mean of the input, integrated between steps and read back through
+ * checkpoints of the running integral.
+ *
+ * <p>Checkpoints are kept for the whole window and pruned by time, so the kernel
+ * is exact at any execution period (a fixed 64-entry ring truncated windows longer
+ * than 64 periods; found by the Shadow Runtime, GOAL-NATIVE-BOG.md N6).
  */
 public final class MovingAverage {
   private static final double MIN_WINDOW_SECONDS = 1.0e-5;
 
   private final double windowSeconds;
-  private final int capacity;
 
   private double mu = 0.0;
   private double startTimeSeconds = 0.0;
   private double previousTimeSeconds = Double.NaN;
-  private final double[] checkpointTimes;
-  private final double[] checkpointMus;
-  private int checkpointHead = 0;
-  private int checkpointLength = 0;
+  private final List<double[]> checkpoints = new ArrayList<>();
 
   public MovingAverage(double windowSeconds) {
-    this(windowSeconds, 64);
+    this.windowSeconds = windowSeconds;
   }
 
+  /** Kept for callers that sized the old ring; the capacity is ignored. */
   public MovingAverage(double windowSeconds, int checkpointCapacity) {
+    this(windowSeconds);
     if (checkpointCapacity < 2) {
       throw new IllegalArgumentException("MovingAverage needs at least two checkpoints");
     }
-    this.windowSeconds = windowSeconds;
-    this.capacity = checkpointCapacity;
-    this.checkpointTimes = new double[checkpointCapacity];
-    this.checkpointMus = new double[checkpointCapacity];
   }
 
   public void reset() {
     mu = 0.0;
     startTimeSeconds = 0.0;
     previousTimeSeconds = Double.NaN;
-    checkpointHead = 0;
-    checkpointLength = 0;
+    checkpoints.clear();
   }
 
-  private int physicalIndex(int logicalIndex) {
-    return (checkpointHead + logicalIndex) % capacity;
+  private double checkpointTime(int index) {
+    return checkpoints.get(index)[0];
   }
 
-  private double checkpointTime(int logicalIndex) {
-    return checkpointTimes[physicalIndex(logicalIndex)];
-  }
-
-  private double checkpointMu(int logicalIndex) {
-    return checkpointMus[physicalIndex(logicalIndex)];
+  private double checkpointMu(int index) {
+    return checkpoints.get(index)[1];
   }
 
   private void prune(double cutoff) {
-    while (checkpointLength > 1 && checkpointTime(1) <= cutoff) {
-      checkpointHead = (checkpointHead + 1) % capacity;
-      checkpointLength -= 1;
+    while (checkpoints.size() > 1 && checkpointTime(1) <= cutoff) {
+      checkpoints.remove(0);
     }
   }
 
   private void store(double timeSeconds, double muNow) {
-    if (checkpointLength > 0) {
-      int last = physicalIndex(checkpointLength - 1);
-      if (Double.doubleToRawLongBits(checkpointTimes[last])
-          == Double.doubleToRawLongBits(timeSeconds)) {
-        checkpointMus[last] = muNow;
+    if (!checkpoints.isEmpty()) {
+      double[] last = checkpoints.get(checkpoints.size() - 1);
+      if (Double.doubleToRawLongBits(last[0]) == Double.doubleToRawLongBits(timeSeconds)) {
+        last[1] = muNow;
         return;
       }
     }
-    if (checkpointLength == capacity) {
-      checkpointHead = (checkpointHead + 1) % capacity;
-      checkpointLength -= 1;
-    }
-    int slot = physicalIndex(checkpointLength);
-    checkpointTimes[slot] = timeSeconds;
-    checkpointMus[slot] = muNow;
-    checkpointLength += 1;
+    checkpoints.add(new double[] {timeSeconds, muNow});
   }
 
   private double muAt(double target, double timeSeconds, double muNow) {
-    if (checkpointLength == 0) {
+    int length = checkpoints.size();
+    if (length == 0) {
       return muNow;
     }
     double firstTime = checkpointTime(0);
@@ -90,7 +78,7 @@ public final class MovingAverage {
     }
     double previousTime = firstTime;
     double previousMu = firstMu;
-    for (int index = 1; index < checkpointLength; index += 1) {
+    for (int index = 1; index < length; index += 1) {
       double nextTime = checkpointTime(index);
       double nextMu = checkpointMu(index);
       if (target <= nextTime) {
@@ -127,7 +115,7 @@ public final class MovingAverage {
     double delayedMu = muAt(target, timeSeconds, muNow);
     double denominator;
     if (timeSeconds >= start + delta) {
-      double retainedLow = checkpointLength > 0 ? checkpointTime(0) : start;
+      double retainedLow = checkpoints.isEmpty() ? start : checkpointTime(0);
       double low = Math.max(Math.max(target, retainedLow), start);
       denominator = Math.max(timeSeconds - low, MIN_WINDOW_SECONDS);
     } else {

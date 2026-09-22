@@ -55,6 +55,7 @@ public final class FirstOrderHold {
     }
     long index = (long) Math.floor((timeSeconds - t0) / samplePeriodSeconds + 1.0e-9);
     boolean due = index > lastIndex;
+    boolean sameInstant = !due && Math.abs(timeSeconds - tSample) <= 1.0e-9;
     double output = due ? uSample : preUSample + slope * (timeSeconds - tSample);
     if (due) {
       double previous = uSample;
@@ -65,6 +66,12 @@ public final class FirstOrderHold {
       slope = timeSeconds <= t0 + samplePeriodSeconds / 2.0
           ? 0.0
           : (input - previous) / samplePeriodSeconds;
+    } else if (sameInstant) {
+      // Another execution at the sample instant: the sample follows the last input.
+      uSample = input;
+      slope = timeSeconds <= t0 + samplePeriodSeconds / 2.0
+          ? 0.0
+          : (input - preUSample) / samplePeriodSeconds;
     }
     previousTimeSeconds = timeSeconds;
     return output;

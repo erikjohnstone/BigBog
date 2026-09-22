@@ -81,6 +81,7 @@ jobs:
         run: |
           python -m bactalk.niagara.lowering --check
           python -m bactalk.niagara.kernels --check
+          python -m bactalk.niagara.shadow check
           python -m pytest -m native_bog
 
       - name: Contractor workflow end to end

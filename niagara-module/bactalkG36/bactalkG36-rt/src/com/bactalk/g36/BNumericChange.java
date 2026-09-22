@@ -55,6 +55,11 @@ public final class BNumericChange extends BKernelComponent {
   }
 
   @Override
+  protected boolean stepsOnInputChange() {
+    return false; // one step per execution period: "previous" means the previous tick
+  }
+
+  @Override
   protected boolean inputsValid() {
     return valid(getIn());
   }

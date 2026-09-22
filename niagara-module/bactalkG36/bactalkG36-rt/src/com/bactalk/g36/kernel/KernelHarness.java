@@ -3,6 +3,7 @@ package com.bactalk.g36.kernel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Locale;
@@ -25,6 +26,19 @@ import java.util.Map;
  * Each {@code row} carries the absolute time in seconds followed by the kernel's
  * inputs (booleans as 0/1). One output line per row, values comma-separated,
  * booleans as {@code true}/{@code false}, doubles via {@link Double#toString}.
+ *
+ * <p>The same process also serves the Shadow Runtime's JVM sidecar with a session
+ * protocol that keeps many kernels open and answers every step at once:
+ *
+ * <pre>
+ * open k1 TrueDelay delaySeconds=1800 delayOnInit=false
+ * step k1 0 1
+ * close k1
+ * end
+ * </pre>
+ *
+ * {@code open} answers {@code ok <id>}, {@code step} answers the kernel's output
+ * line, {@code close} answers {@code ok <id>}; each answer is flushed immediately.
  */
 public final class KernelHarness {
   private KernelHarness() {}
@@ -36,13 +50,42 @@ public final class KernelHarness {
     Map<String, String> params = new LinkedHashMap<>();
     StringBuilder out = new StringBuilder();
     Stepper stepper = null;
+    Map<String, Stepper> session = new LinkedHashMap<>();
+    PrintStream reply = new PrintStream(System.out, true, StandardCharsets.UTF_8);
     String line;
     while ((line = reader.readLine()) != null) {
       line = line.trim();
       if (line.isEmpty() || line.startsWith("#")) {
         continue;
       }
-      if (line.startsWith("kernel ")) {
+      if (line.startsWith("open ")) {
+        String[] parts = line.substring(5).trim().split("\\s+");
+        if (parts.length < 2) {
+          throw new IllegalArgumentException("open needs an id and a kernel: " + line);
+        }
+        Map<String, String> opened = new LinkedHashMap<>();
+        for (int index = 2; index < parts.length; index += 1) {
+          String[] pair = parts[index].split("=", 2);
+          opened.put(pair[0].trim(), pair.length > 1 ? pair[1].trim() : "");
+        }
+        session.put(parts[0], build(parts[1], opened));
+        reply.println("ok " + parts[0]);
+      } else if (line.startsWith("step ")) {
+        String[] parts = line.substring(5).trim().split("\\s+");
+        Stepper target = session.get(parts[0]);
+        if (target == null) {
+          throw new IllegalArgumentException("unknown session id " + parts[0]);
+        }
+        double[] values = new double[parts.length - 1];
+        for (int index = 1; index < parts.length; index += 1) {
+          values[index - 1] = Double.parseDouble(parts[index]);
+        }
+        reply.println(target.step(values));
+      } else if (line.startsWith("close ")) {
+        String id = line.substring(6).trim();
+        session.remove(id);
+        reply.println("ok " + id);
+      } else if (line.startsWith("kernel ")) {
         kernel = line.substring(7).trim();
       } else if (line.startsWith("param ")) {
         String[] pair = line.substring(6).split("=", 2);

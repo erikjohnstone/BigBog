@@ -187,6 +187,9 @@ public final class TrimAndRespond {
       if (sampleIndex > samplerLastIndex) {
         samplerLastIndex = sampleIndex;
         samplerHeld = requestCount;
+      } else if (Math.abs(timeSeconds - (samplerT0 + samplerLastIndex * samplePeriodSeconds))
+          <= 1.0e-9) {
+        samplerHeld = requestCount; // still at the sample instant: last input wins
       }
     }
 

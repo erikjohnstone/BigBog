@@ -26,7 +26,7 @@ stack is present on the development box and the LBNL translation lane runs
 | N3 bactalkG36 kernels | **done (CI part)** | `make kernels-check`; `tests/test_native_bog_kernels.py` in `make test-native-bog` | building and signing the real module is Gate G-SDK (WAITING_ON_HUMAN) |
 | N4 Native emitter | **done** | `make test-native-bog` (`tests/test_native_bog_emit.py`); both retained Tier 1 controllers export one validated `.bog` | descriptions and writable parameters wait on N5 (docs/decisions/005) |
 | N5 Point linking | **done** | `tests/test_native_bog_points.py` in `make test-native-bog`: one AHU + 25 VAVs linked in one station, validator clean | station structure is doc-only until Gate G-WB (docs/decisions/006) |
-| N6 Shadow Runtime | not started | | |
+| N6 Shadow Runtime | **done** | `make test-native-bog` (232 passed: `tests/test_native_bog_shadow_*.py` add the loader, block-semantics, kernel-equivalence and driver tests incl. both Tier 1 suites and the AHU + 25 VAVs fan-out); `make test-minimal` (408 passed, 1 skipped); `make shadow-check` | stock semantics are ASSUMED until Gate G-WB's calibration kit (N7); event-ordering hazard in the VAV time-suppression logic recorded for N7 (docs/niagara-semantics.md) |
 | N7 Prove it | not started | | Gate G-WB written |
 | N8–N11 Library tiers | not started | | |
 
@@ -209,6 +209,53 @@ stack is present on the development box and the LBNL translation lane runs
 - **Not claimed.** The station structure comes from documentation and a
   generated fixture, not a real export; Gate G-WB will surface differences.
   Writable `Parameters` and interface descriptions on points remain open.
+
+## N6 results
+
+- **The file is the only input.** `bactalk.niagara.shadow` loads an exported
+  `.bog` (module symbols in document order, handles and `slot:` ORDs, every
+  property and link) and refuses unknown types. Both Tier 1 exports load with
+  every link resolved: VAV reheat 496 components / 650 links, multizone AHU
+  606 / 792.
+- **Semantics with sources.** `docs/niagara-semantics.md` lists 59 rules
+  (`S-*`) as DOCUMENTED, ASSUMED or OWN with their source; a test fails if the
+  document and the block tests cite different sets. Status bits, writable
+  priority arrays with level 1/8 overrides, expiry and BooleanWritable minimum
+  times, event-driven links with loop detection, timed kitControl blocks,
+  LoopPoint, schedules and interval histories run on one simulated clock.
+- **Uncertainty is a policy.** Every ASSUMED ordering or timing rule is an
+  `ExecutionPolicy` knob; `run_under_policies` runs a suite under nine plausible
+  policies. VAV reheat: verdicts and final outputs identical under all nine.
+  AHU: verdicts identical; one final output (`ySupFan`) varies between 0.2766
+  and 0.2791 because module PIDs integrate at the policy's tick rate. That is a
+  band for N7, not a defect.
+- **Module kernels, two implementations.** Python ports of the 13 Java kernels
+  agree with the Java kernels on 4560 random rows through the `KernelHarness`
+  session protocol (`make shadow-check`, also in CI); the runtime uses the JVM
+  sidecar when a JDK is present and the ports otherwise (docs/decisions/007).
+  N6 corrected three kernels in both implementations: `MovingAverage`'s
+  64-entry ring truncated windows longer than 64 execution periods;
+  `UnitDelay`, `FirstOrderHold` and the sampler in `TrimAndRespond` sampled the
+  first value seen at a sample instant instead of the last. `Pre` and
+  `NumericChange` wrappers now step only on the execution period.
+- **Exit met.** Both Tier 1 exports pass their full acceptance suites in the
+  Shadow Runtime with either backend (VAV 12 s, AHU 11 s with Python kernels;
+  62 s and 43 s through the JVM), grading the same cases the IR suite grades,
+  with the same sample shape (`step`, `phase`, inputs, `fault.*`, `effective.*`,
+  every slot, sparse `.status`). An AHU plus 25 VAVs through the full suite
+  takes 107 s with Python kernels and 293 s through the JVM on four cores via
+  `run_project_suite`; `enqueue_project_suite` puts the same jobs on the RQ
+  queue.
+- **Finding for N7 (D3 will have to resolve it).** In the VAV's time
+  suppression, a `MultiVibrator`-clocked latch and a `UnitDelay` update in
+  separate events at one instant; between them `|swi − uniDel|` trips a
+  `OneShot` and a set/reset latch stays set. The synchronous IR never sees it.
+  The `one_shot`, `boolean_set_reset` and sampler lowerings need a glitch-free
+  form (or a host-tick driver in the module) before their matrix rows leave
+  "provisional".
+- **Not claimed.** Every stock-block rule marked ASSUMED is exactly that until
+  a human runs the calibration kit in Workbench (Gate G-WB). LoopPoint's
+  execute period, disabled behaviour and integral form are the least certain.
 
 ## Gates
 

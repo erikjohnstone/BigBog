@@ -3,7 +3,8 @@ package com.bactalk.g36.kernel;
 /**
  * CDL-exact {@code Buildings.Controls.OBC.CDL.Discrete.UnitDelay} kernel: the
  * output is the input sampled one period earlier, with sample instants aligned to
- * multiples of the period from time zero.
+ * multiples of the period from time zero. Several steps at one sample instant
+ * (event-driven executions) sample the last input seen at that instant.
  */
 public final class UnitDelay {
   private final double samplePeriodSeconds;
@@ -56,6 +57,10 @@ public final class UnitDelay {
       held = staged;
       staged = input;
       lastIndex = index;
+    } else if (Math.abs(timeSeconds - (t0 + lastIndex * samplePeriodSeconds)) <= 1.0e-9) {
+      // Still at the sample instant: the value sampled is the last one seen there,
+      // as a CDL solver samples after its event iteration settles.
+      staged = input;
     }
     previousTimeSeconds = timeSeconds;
     return held;

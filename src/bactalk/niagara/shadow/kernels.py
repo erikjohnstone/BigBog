@@ -1,0 +1,846 @@
+"""Python ports of the ``bactalkG36`` Java kernels (docs/decisions/007).
+
+The Java sources under ``niagara-module/bactalkG36/bactalkG36-rt/src/com/bactalk/
+g36/kernel`` are the module's truth. Each class here mirrors one of them field
+for field and operation for operation, so the two implementations produce the
+same doubles on the same rows; ``tests/test_native_bog_shadow_kernels.py`` runs
+both against the goldens and, when a JVM is present, against each other.
+
+The ports keep Java's argument checks (finite inputs, monotonic time) so a
+mistake in the runtime fails the same way in both backends.
+"""
+
+from __future__ import annotations
+
+import math
+from typing import Protocol
+
+_MIN_WINDOW_SECONDS = 1.0e-5
+
+
+def _finite(*values: float) -> bool:
+    return all(math.isfinite(value) for value in values)
+
+
+class Kernel(Protocol):
+    """One kernel; ``step`` takes the absolute time then the inputs, in harness order."""
+
+    def reset(self) -> None: ...
+
+    def step(self, *args: float | bool) -> tuple[float | bool, ...]: ...
+
+
+class PidWithReset:
+    def __init__(
+        self,
+        controller_type: str,
+        reverse_acting: bool,
+        k: float,
+        ti: float,
+        td: float,
+        r: float,
+        ni: float,
+        nd: float,
+        y_min: float,
+        y_max: float,
+        xi_start: float,
+        yd_start: float,
+        y_reset: float,
+    ) -> None:
+        kind = controller_type.upper()
+        if kind not in {"P", "PI", "PD", "PID"}:
+            raise ValueError(f"unknown controller type {controller_type!r}")
+        self.with_integral = kind in {"PI", "PID"}
+        self.with_derivative = kind in {"PD", "PID"}
+        self.reverse_acting = reverse_acting
+        self.k = k
+        self.ti = ti
+        self.td = td
+        self.r = r
+        self.ni = ni
+        self.nd = nd
+        self.y_min = y_min
+        self.y_max = y_max
+        self.xi_start = xi_start
+        self.yd_start = yd_start
+        self.y_reset = y_reset
+        self.integral = xi_start
+        self.derivative_state = 0.0
+        self.previous_trigger = False
+        self.previous_time = math.nan
+
+    def reset(self) -> None:
+        self.integral = self.xi_start
+        self.derivative_state = 0.0
+        self.previous_trigger = False
+        self.previous_time = math.nan
+
+    def step(
+        self, time_seconds: float, setpoint: float, measurement: float, trigger: bool
+    ) -> tuple[float]:
+        if not _finite(time_seconds, setpoint, measurement):
+            raise ValueError("PIDWithReset inputs must be finite")
+        first_tick = math.isnan(self.previous_time)
+        if not first_tick and time_seconds < self.previous_time:
+            raise ValueError("PIDWithReset time must be monotonic")
+        dt = 0.0 if first_tick else time_seconds - self.previous_time
+        reverse_sign = 1.0 if self.reverse_acting else -1.0
+        error = reverse_sign * (setpoint - measurement) / self.r
+        proportional = self.k * error
+        derivative_gain = self.k * self.td
+        derivative_time = self.td / self.nd
+        if self.with_derivative:
+            derivative = (
+                self.yd_start
+                if first_tick
+                else (derivative_gain / derivative_time) * (error - self.derivative_state)
+            )
+        else:
+            derivative = 0.0
+        integral_output = self.integral if self.with_integral else 0.0
+        proportional_derivative = proportional + derivative
+        unlimited = proportional_derivative + integral_output
+        output = (
+            self.y_max
+            if unlimited > self.y_max
+            else (self.y_min if unlimited < self.y_min else unlimited)
+        )
+        if self.with_integral:
+            rising_reset = trigger and not self.previous_trigger
+            if rising_reset:
+                self.integral = self.y_reset - proportional_derivative
+            else:
+                anti_windup = (unlimited - output) / (self.k * self.ni)
+                corrected_error = error - anti_windup
+                self.integral = integral_output + (self.k / self.ti) * corrected_error * dt
+            self.previous_trigger = trigger
+        if self.with_derivative:
+            if first_tick:
+                initial = (
+                    error
+                    if abs(derivative_gain) < 1.0e-15
+                    else error - derivative_time * self.yd_start / derivative_gain
+                )
+            else:
+                initial = self.derivative_state
+            ratio = dt / derivative_time
+            self.derivative_state = (initial + ratio * error) / (1.0 + ratio)
+        self.previous_time = time_seconds
+        return (output,)
+
+
+class TrueDelay:
+    def __init__(self, delay_seconds: float, delay_on_init: bool) -> None:
+        if delay_seconds < 0.0:
+            raise ValueError("TrueDelay delay must be non-negative")
+        self.delay_seconds = delay_seconds
+        self.delay_on_init = delay_on_init
+        self.reset()
+
+    def reset(self) -> None:
+        self.initialized = False
+        self.previous_input = False
+        self.held = False
+        self.timer = 0.0
+        self.previous_time = math.nan
+
+    def step(self, time_seconds: float, value: bool) -> tuple[bool]:
+        if not math.isfinite(time_seconds):
+            raise ValueError("TrueDelay time must be finite")
+        if not math.isnan(self.previous_time) and time_seconds < self.previous_time:
+            raise ValueError("TrueDelay time must be monotonic")
+        if not value:
+            output = False
+            next_timer = 0.0
+        elif not self.initialized:
+            if self.delay_on_init and self.delay_seconds > 0.0:
+                output = False
+                next_timer = 0.0
+            else:
+                output = True
+                next_timer = self.delay_seconds
+        elif self.held:
+            output = True
+            next_timer = self.delay_seconds
+        elif not self.previous_input:
+            output = self.delay_seconds <= 0.0
+            next_timer = 0.0
+        else:
+            next_timer = self.timer + time_seconds - self.previous_time
+            output = next_timer >= self.delay_seconds
+        self.initialized = True
+        self.previous_input = value
+        self.held = output
+        self.timer = next_timer
+        self.previous_time = time_seconds
+        return (output,)
+
+
+class Timer:
+    def __init__(self, threshold_seconds: float) -> None:
+        self.threshold_seconds = threshold_seconds
+        self.reset()
+
+    def reset(self) -> None:
+        self.initialized = False
+        self.entry_time = 0.0
+        self.previous_time = math.nan
+        self.previous_input = False
+        self.passed = self.threshold_seconds <= 0.0
+        self.elapsed_output = 0.0
+        self.passed_output = self.threshold_seconds <= 0.0
+
+    def step(self, time_seconds: float, value: bool) -> tuple[float, bool]:
+        if not math.isfinite(time_seconds):
+            raise ValueError("Timer time must be finite")
+        if not math.isnan(self.previous_time) and time_seconds < self.previous_time:
+            raise ValueError("Timer time must be monotonic")
+        if not value or not self.initialized or not self.previous_input:
+            elapsed = 0.0
+        else:
+            elapsed = time_seconds - self.entry_time
+        if value and not self.previous_input:
+            next_passed = self.threshold_seconds <= 0.0
+        elif value and elapsed >= self.threshold_seconds:
+            next_passed = True
+        elif not value and self.previous_input:
+            next_passed = False
+        else:
+            next_passed = self.passed
+        if value and (not self.initialized or not self.previous_input):
+            self.entry_time = time_seconds
+        self.initialized = True
+        self.previous_time = time_seconds
+        self.previous_input = value
+        self.passed = next_passed
+        self.elapsed_output = elapsed
+        self.passed_output = next_passed
+        return (elapsed, next_passed)
+
+
+class TimerWithReset:
+    def __init__(self, threshold_seconds: float) -> None:
+        self.threshold_seconds = threshold_seconds
+        self.reset()
+
+    def reset(self) -> None:
+        self.initialized = False
+        self.entry_time = 0.0
+        self.previous_time = math.nan
+        self.previous_input = False
+        self.previous_reset = False
+        self.elapsed_output = 0.0
+        self.passed_output = False
+
+    def step(self, time_seconds: float, value: bool, reset_input: bool) -> tuple[float, bool]:
+        if not math.isfinite(time_seconds):
+            raise ValueError("TimerWithReset time must be finite")
+        if not math.isnan(self.previous_time) and time_seconds < self.previous_time:
+            raise ValueError("TimerWithReset time must be monotonic")
+        if not self.initialized:
+            self.entry_time = time_seconds
+            self.elapsed_output = 0.0
+            self.passed_output = value and self.threshold_seconds <= 0.0
+            self.initialized = True
+        else:
+            rising_input = value and not self.previous_input
+            rising_reset = reset_input and not self.previous_reset
+            if rising_input or rising_reset:
+                self.entry_time = time_seconds
+                self.passed_output = value and self.threshold_seconds <= 0.0
+            elif value and time_seconds >= self.entry_time + self.threshold_seconds:
+                self.passed_output = True
+            elif not value and self.previous_input:
+                self.passed_output = False
+            self.elapsed_output = time_seconds - self.entry_time if value else 0.0
+        self.previous_time = time_seconds
+        self.previous_input = value
+        self.previous_reset = reset_input
+        return (self.elapsed_output, self.passed_output)
+
+
+class TimerAccumulating:
+    def __init__(self, threshold_seconds: float) -> None:
+        self.threshold_seconds = threshold_seconds
+        self.reset()
+
+    def reset(self) -> None:
+        self.initialized = False
+        self.previous_time = math.nan
+        self.previous_input = False
+        self.previous_reset = False
+        self.elapsed_output = 0.0
+        self.passed_output = self.threshold_seconds <= 0.0
+
+    def step(self, time_seconds: float, value: bool, reset_input: bool) -> tuple[float, bool]:
+        if not math.isfinite(time_seconds):
+            raise ValueError("TimerAccumulating time must be finite")
+        if not math.isnan(self.previous_time) and time_seconds < self.previous_time:
+            raise ValueError("TimerAccumulating time must be monotonic")
+        if not self.initialized:
+            self.initialized = True
+        elif reset_input and not self.previous_reset:
+            self.elapsed_output = 0.0
+            self.passed_output = self.threshold_seconds <= 0.0
+        else:
+            if self.previous_input:
+                self.elapsed_output += time_seconds - self.previous_time
+            if value and self.elapsed_output >= self.threshold_seconds:
+                self.passed_output = True
+        self.previous_time = time_seconds
+        self.previous_input = value
+        self.previous_reset = reset_input
+        return (self.elapsed_output, self.passed_output)
+
+
+class TrueFalseHold:
+    def __init__(self, true_hold_seconds: float, false_hold_seconds: float) -> None:
+        self.true_hold_seconds = true_hold_seconds
+        self.false_hold_seconds = false_hold_seconds
+        self.reset()
+
+    def reset(self) -> None:
+        self.initialized = False
+        self.held = False
+        self.elapsed = 0.0
+        self.previous_time = math.nan
+
+    def step(self, time_seconds: float, value: bool) -> tuple[bool]:
+        if not math.isfinite(time_seconds):
+            raise ValueError("TrueFalseHold time must be finite")
+        if not math.isnan(self.previous_time) and time_seconds < self.previous_time:
+            raise ValueError("TrueFalseHold time must be monotonic")
+        if not self.initialized:
+            self.initialized = True
+            self.held = value
+            self.elapsed = 0.0
+            self.previous_time = time_seconds
+            return (self.held,)
+        self.elapsed += time_seconds - self.previous_time
+        self.previous_time = time_seconds
+        if value != self.held:
+            required = max(0.0, self.true_hold_seconds if self.held else self.false_hold_seconds)
+            if self.elapsed >= required:
+                self.held = value
+                self.elapsed = 0.0
+        return (self.held,)
+
+
+class Pre:
+    def __init__(self, initial: bool) -> None:
+        self.initial = initial
+        self.previous = initial
+
+    def reset(self) -> None:
+        self.previous = self.initial
+
+    def step(self, time_seconds: float, current: bool) -> tuple[bool]:
+        output = self.previous
+        self.previous = current
+        return (output,)
+
+
+class UnitDelay:
+    def __init__(self, sample_period_seconds: float, initial: float) -> None:
+        if not sample_period_seconds > 0.0:
+            raise ValueError("UnitDelay period must be positive")
+        self.sample_period_seconds = sample_period_seconds
+        self.initial = initial
+        self.reset()
+
+    def reset(self) -> None:
+        self.initialized = False
+        self.held = self.initial
+        self.staged = self.initial
+        self.t0 = 0.0
+        self.last_index = 0
+        self.previous_time = math.nan
+
+    def step(self, time_seconds: float, value: float) -> tuple[float]:
+        if not _finite(time_seconds, value):
+            raise ValueError("UnitDelay inputs must be finite")
+        if not math.isnan(self.previous_time) and time_seconds < self.previous_time:
+            raise ValueError("UnitDelay time must be monotonic")
+        period = self.sample_period_seconds
+        if not self.initialized:
+            self.t0 = math.floor(time_seconds / period) * period
+            self.last_index = int(math.floor((time_seconds - self.t0) / period + 1.0e-9))
+            boundary = self.t0 + self.last_index * period
+            self.staged = value if abs(time_seconds - boundary) <= 1.0e-9 else self.initial
+            self.initialized = True
+            self.previous_time = time_seconds
+            return (self.initial,)
+        index = int(math.floor((time_seconds - self.t0) / period + 1.0e-9))
+        if index > self.last_index:
+            self.held = self.staged
+            self.staged = value
+            self.last_index = index
+        elif abs(time_seconds - (self.t0 + self.last_index * period)) <= 1.0e-9:
+            self.staged = value  # still at the sample instant: the last input wins
+        self.previous_time = time_seconds
+        return (self.held,)
+
+
+class FirstOrderHold:
+    def __init__(self, sample_period_seconds: float) -> None:
+        if not sample_period_seconds > 0.0:
+            raise ValueError("FirstOrderHold period must be positive")
+        self.sample_period_seconds = sample_period_seconds
+        self.reset()
+
+    def reset(self) -> None:
+        self.initialized = False
+        self.t0 = 0.0
+        self.last_index = 0
+        self.t_sample = 0.0
+        self.u_sample = 0.0
+        self.pre_u_sample = 0.0
+        self.slope = 0.0
+        self.previous_time = math.nan
+
+    def step(self, time_seconds: float, value: float) -> tuple[float]:
+        if not _finite(time_seconds, value):
+            raise ValueError("FirstOrderHold inputs must be finite")
+        if not math.isnan(self.previous_time) and time_seconds < self.previous_time:
+            raise ValueError("FirstOrderHold time must be monotonic")
+        period = self.sample_period_seconds
+        if not self.initialized:
+            # Java: Math.rint(Math.floor(t / p) * p * 1e6) / 1e6
+            self.t0 = _rint(math.floor(time_seconds / period) * period * 1.0e6) / 1.0e6
+            self.last_index = int(math.floor((time_seconds - self.t0) / period + 1.0e-9))
+            self.t_sample = self.t0
+            self.u_sample = value
+            self.pre_u_sample = value
+            self.slope = 0.0
+            self.initialized = True
+            self.previous_time = time_seconds
+            return (value,)
+        index = int(math.floor((time_seconds - self.t0) / period + 1.0e-9))
+        due = index > self.last_index
+        same_instant = (not due) and abs(time_seconds - self.t_sample) <= 1.0e-9
+        output = (
+            self.u_sample
+            if due
+            else self.pre_u_sample + self.slope * (time_seconds - self.t_sample)
+        )
+        if due:
+            previous = self.u_sample
+            self.last_index = index
+            self.t_sample = time_seconds
+            self.u_sample = value
+            self.pre_u_sample = previous
+            self.slope = (
+                0.0 if time_seconds <= self.t0 + period / 2.0 else (value - previous) / period
+            )
+        elif same_instant:
+            self.u_sample = value
+            self.slope = (
+                0.0
+                if time_seconds <= self.t0 + period / 2.0
+                else (value - self.pre_u_sample) / period
+            )
+        self.previous_time = time_seconds
+        return (output,)
+
+
+def _rint(value: float) -> float:
+    """Java ``Math.rint``: round half to even."""
+
+    return float(round(value))
+
+
+class MovingAverage:
+    """Checkpoints of the running integral are kept for the whole window (no ring cap)."""
+
+    def __init__(self, window_seconds: float, checkpoint_capacity: int = 64) -> None:
+        if checkpoint_capacity < 2:
+            raise ValueError("MovingAverage needs at least two checkpoints")
+        self.window_seconds = window_seconds
+        self.reset()
+
+    def reset(self) -> None:
+        self.mu = 0.0
+        self.start_time = 0.0
+        self.previous_time = math.nan
+        self.times: list[float] = []
+        self.mus: list[float] = []
+
+    def _prune(self, cutoff: float) -> None:
+        while len(self.times) > 1 and self.times[1] <= cutoff:
+            self.times.pop(0)
+            self.mus.pop(0)
+
+    def _store(self, time_seconds: float, mu_now: float) -> None:
+        if self.times and self.times[-1] == time_seconds:
+            self.mus[-1] = mu_now
+            return
+        self.times.append(time_seconds)
+        self.mus.append(mu_now)
+
+    def _mu_at(self, target: float, time_seconds: float, mu_now: float) -> float:
+        if not self.times:
+            return mu_now
+        first_time = self.times[0]
+        first_mu = self.mus[0]
+        if target <= first_time:
+            return first_mu
+        previous_time = first_time
+        previous_mu = first_mu
+        for next_time, next_mu in zip(self.times[1:], self.mus[1:], strict=True):
+            if target <= next_time:
+                denominator = next_time - previous_time
+                return (
+                    next_mu
+                    if denominator == 0.0
+                    else previous_mu
+                    + (next_mu - previous_mu) * ((target - previous_time) / denominator)
+                )
+            previous_time = next_time
+            previous_mu = next_mu
+        if target <= time_seconds:
+            denominator = time_seconds - previous_time
+            return (
+                mu_now
+                if denominator == 0.0
+                else previous_mu + (mu_now - previous_mu) * ((target - previous_time) / denominator)
+            )
+        return mu_now
+
+    def step(self, time_seconds: float, value: float) -> tuple[float]:
+        if not _finite(time_seconds, value):
+            raise ValueError("MovingAverage inputs must be finite")
+        first_tick = math.isnan(self.previous_time)
+        if not first_tick and time_seconds < self.previous_time:
+            raise ValueError("MovingAverage time must be monotonic")
+        delta = max(self.window_seconds, _MIN_WINDOW_SECONDS)
+        start = time_seconds if first_tick else self.start_time
+        dt = 0.0 if first_tick else time_seconds - self.previous_time
+        mu_now = self.mu + value * dt
+        target = time_seconds - delta
+        delayed_mu = self._mu_at(target, time_seconds, mu_now)
+        if time_seconds >= start + delta:
+            retained_low = self.times[0] if self.times else start
+            low = max(max(target, retained_low), start)
+            denominator = max(time_seconds - low, _MIN_WINDOW_SECONDS)
+        else:
+            denominator = time_seconds - start + 1.0e-3
+        output = (mu_now - delayed_mu) / denominator
+        if first_tick:
+            self.start_time = time_seconds
+        self._prune(target)
+        self._store(time_seconds, mu_now)
+        self.mu = mu_now
+        self.previous_time = time_seconds
+        return (output,)
+
+
+class TrimAndRespond:
+    def __init__(
+        self,
+        initial_setpoint: float,
+        minimum_setpoint: float,
+        maximum_setpoint: float,
+        delay_seconds: float,
+        sample_period_seconds: float,
+        ignored_requests: float,
+        trim_amount: float,
+        respond_amount: float,
+        maximum_response: float,
+        hold_enabled: bool = False,
+        hold_duration_seconds: float = 0.0,
+    ) -> None:
+        if not sample_period_seconds > 0.0:
+            raise ValueError("TrimAndRespond sample period must be positive")
+        self.initial_setpoint = initial_setpoint
+        self.minimum_setpoint = minimum_setpoint
+        self.maximum_setpoint = maximum_setpoint
+        self.delay_seconds = delay_seconds
+        self.sample_period_seconds = sample_period_seconds
+        self.ignored_requests = ignored_requests
+        self.trim_amount = trim_amount
+        self.respond_amount = respond_amount
+        self.maximum_response = maximum_response
+        self.hold_enabled = hold_enabled
+        self.hold_duration_seconds = hold_duration_seconds
+        self.reset()
+
+    def reset(self) -> None:
+        self.delay_out = False
+        self.delay_pending = False
+        self.delay_elapsed = 0.0
+        self.sampler_initialized = False
+        self.sampler_held = 0.0
+        self.sampler_t0 = 0.0
+        self.sampler_last_index = -1
+        self.unit_initialized = False
+        self.unit_held = self.initial_setpoint
+        self.unit_staged = self.initial_setpoint
+        self.unit_t0 = 0.0
+        self.unit_last_index = -1
+        self.previous_time = math.nan
+        self.hold_initialized = False
+        self.hold_out = False
+        self.hold_elapsed = 0.0
+        self.hold_latch = False
+        self.sample_trigger_last_index = -1
+
+    def step(
+        self, time_seconds: float, request_count: float, device_on: bool, hold: bool = False
+    ) -> tuple[float]:
+        if not _finite(time_seconds, request_count):
+            raise ValueError("TrimAndRespond inputs must be finite")
+        first_tick = math.isnan(self.previous_time)
+        if not first_tick and time_seconds < self.previous_time:
+            raise ValueError("TrimAndRespond time must be monotonic")
+        dt = 0.0 if first_tick else time_seconds - self.previous_time
+        period = self.sample_period_seconds
+        true_delay = self.delay_seconds + period
+        hold_reset = False
+        if self.hold_enabled:
+            if not self.hold_initialized:
+                self.hold_initialized = True
+                self.hold_out = hold
+                self.hold_elapsed = 0.0
+            else:
+                self.hold_elapsed += dt
+                if hold != self.hold_out:
+                    required_hold = self.hold_duration_seconds if self.hold_out else 0.0
+                    if self.hold_elapsed >= required_hold:
+                        self.hold_out = hold
+                        self.hold_elapsed = 0.0
+            trigger_index = int(math.floor(time_seconds / period + 1.0e-9))
+            if trigger_index > self.sample_trigger_last_index:
+                self.sample_trigger_last_index = trigger_index
+                self.hold_latch = self.hold_out
+            hold_reset = self.hold_latch
+
+        if device_on == self.delay_out:
+            self.delay_elapsed = 0.0
+            self.delay_pending = device_on
+        elif device_on != self.delay_pending:
+            self.delay_pending = device_on
+            self.delay_elapsed = 0.0
+            if not device_on or true_delay <= 0.0:
+                self.delay_out = device_on
+        else:
+            self.delay_elapsed += dt
+            active_delay = true_delay if device_on else 0.0
+            if self.delay_elapsed >= active_delay:
+                self.delay_out = device_on
+                self.delay_elapsed = 0.0
+
+        if not self.sampler_initialized:
+            self.sampler_t0 = math.floor(time_seconds / period) * period
+            self.sampler_last_index = int(
+                math.floor((time_seconds - self.sampler_t0) / period + 1.0e-9)
+            )
+            self.sampler_initialized = True
+            self.sampler_held = request_count
+        else:
+            sample_index = int(math.floor((time_seconds - self.sampler_t0) / period + 1.0e-9))
+            if sample_index > self.sampler_last_index:
+                self.sampler_last_index = sample_index
+                self.sampler_held = request_count
+            elif abs(time_seconds - (self.sampler_t0 + self.sampler_last_index * period)) <= 1.0e-9:
+                self.sampler_held = request_count  # still at the sample instant: last input wins
+
+        unit_due = False
+        if not self.unit_initialized:
+            unit_output = self.initial_setpoint
+        else:
+            unit_index = int(math.floor((time_seconds - self.unit_t0) / period + 1.0e-9))
+            unit_due = unit_index > self.unit_last_index
+            unit_output = self.unit_staged if unit_due else self.unit_held
+
+        request_delta = self.sampler_held - self.ignored_requests
+        response = math.copysign(
+            min(abs(self.respond_amount) * request_delta, abs(self.maximum_response)),
+            self.respond_amount,
+        )
+        if hold_reset:
+            net_reset = 0.0
+        elif not self.delay_out:
+            net_reset = 0.0
+        elif request_delta > 0.0:
+            net_reset = self.trim_amount + response
+        else:
+            net_reset = self.trim_amount
+        candidate = max(self.minimum_setpoint, min(self.maximum_setpoint, unit_output + net_reset))
+        output = candidate if device_on else self.initial_setpoint
+
+        if not self.unit_initialized:
+            self.unit_t0 = math.floor(time_seconds / period) * period
+            self.unit_initialized = True
+            self.unit_last_index = int(math.floor((time_seconds - self.unit_t0) / period + 1.0e-9))
+            self.unit_staged = output
+        elif unit_due:
+            self.unit_last_index = int(math.floor((time_seconds - self.unit_t0) / period + 1.0e-9))
+            self.unit_held = self.unit_staged
+            self.unit_staged = output
+        self.previous_time = time_seconds
+        return (output,)
+
+
+class BooleanInitialization:
+    def __init__(self, initial: bool) -> None:
+        self.initial = initial
+        self.first = True
+
+    def reset(self) -> None:
+        self.first = True
+
+    def step(self, time_seconds: float, value: bool) -> tuple[bool]:
+        if self.first:
+            self.first = False
+            return (self.initial,)
+        return (value,)
+
+
+class NumericChange:
+    def __init__(self, mode: str, initial: float) -> None:
+        key = mode.upper()
+        if key not in {"CHANGED", "INCREASED", "DECREASED"}:
+            raise ValueError(f"unknown change mode {mode!r}")
+        self.mode = key
+        self.initial = initial
+        self.previous = initial
+
+    def reset(self) -> None:
+        self.previous = self.initial
+
+    def step(self, time_seconds: float, current: float) -> tuple[bool]:
+        if not math.isfinite(current):
+            raise ValueError("change-detector input must be finite")
+        if self.mode == "INCREASED":
+            result = current > self.previous
+        elif self.mode == "DECREASED":
+            result = current < self.previous
+        else:
+            result = current != self.previous
+        self.previous = current
+        return (result,)
+
+
+# --- harness-compatible construction ---------------------------------------------
+
+
+def _num(params: dict[str, object], key: str, fallback: float | None = None) -> float:
+    value = params.get(key)
+    if value is None:
+        if fallback is None:
+            raise ValueError(f"missing parameter {key}")
+        return fallback
+    return float(value)  # type: ignore[arg-type]
+
+
+def _bool(params: dict[str, object], key: str, fallback: bool) -> bool:
+    value = params.get(key)
+    if value is None:
+        return fallback
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() == "true"
+
+
+def build_kernel(name: str, params: dict[str, object]) -> Kernel:
+    """Construct a kernel from the same parameter names ``KernelHarness`` accepts."""
+
+    if name == "PidWithReset":
+        return PidWithReset(
+            str(params.get("controllerType", "PI")),
+            _bool(params, "reverseActing", False),
+            _num(params, "k"),
+            _num(params, "ti"),
+            _num(params, "td"),
+            _num(params, "r", 1.0),
+            _num(params, "ni", 0.9),
+            _num(params, "nd", 10.0),
+            _num(params, "yMin"),
+            _num(params, "yMax"),
+            _num(params, "xiStart", 0.0),
+            _num(params, "ydStart", 0.0),
+            _num(params, "yReset", 0.0),
+        )
+    if name == "TrueDelay":
+        return TrueDelay(_num(params, "delaySeconds"), _bool(params, "delayOnInit", False))
+    if name == "Timer":
+        return Timer(_num(params, "thresholdSeconds", 0.0))
+    if name == "TimerWithReset":
+        return TimerWithReset(_num(params, "thresholdSeconds", 0.0))
+    if name == "TimerAccumulating":
+        return TimerAccumulating(_num(params, "thresholdSeconds", 0.0))
+    if name == "TrueFalseHold":
+        return TrueFalseHold(_num(params, "trueHoldSeconds"), _num(params, "falseHoldSeconds"))
+    if name == "Pre":
+        return Pre(_bool(params, "initial", False))
+    if name == "UnitDelay":
+        return UnitDelay(_num(params, "samplePeriodSeconds"), _num(params, "initial", 0.0))
+    if name == "FirstOrderHold":
+        return FirstOrderHold(_num(params, "samplePeriodSeconds"))
+    if name == "MovingAverage":
+        return MovingAverage(_num(params, "windowSeconds"))
+    if name == "TrimAndRespond":
+        return TrimAndRespond(
+            _num(params, "initialSetpoint"),
+            _num(params, "minimumSetpoint"),
+            _num(params, "maximumSetpoint"),
+            _num(params, "delaySeconds"),
+            _num(params, "samplePeriodSeconds"),
+            _num(params, "ignoredRequests"),
+            _num(params, "trimAmount"),
+            _num(params, "respondAmount"),
+            _num(params, "maximumResponse"),
+            _bool(params, "holdEnabled", False),
+            _num(params, "holdDurationSeconds", 0.0),
+        )
+    if name == "BooleanInitialization":
+        return BooleanInitialization(_bool(params, "initial", False))
+    if name == "NumericChange":
+        return NumericChange(str(params.get("mode", "changed")), _num(params, "initial", 0.0))
+    raise ValueError(f"unknown kernel {name}")
+
+
+KERNEL_NAMES: tuple[str, ...] = (
+    "PidWithReset",
+    "TrueDelay",
+    "Timer",
+    "TimerWithReset",
+    "TimerAccumulating",
+    "TrueFalseHold",
+    "Pre",
+    "UnitDelay",
+    "FirstOrderHold",
+    "MovingAverage",
+    "TrimAndRespond",
+    "BooleanInitialization",
+    "NumericChange",
+)
+
+
+def format_row(values: tuple[float | bool, ...]) -> str:
+    """Render a step result the way ``KernelHarness`` prints it (booleans as true/false)."""
+
+    return ",".join(
+        ("true" if v else "false") if isinstance(v, bool) else repr(float(v)) for v in values
+    )
+
+
+__all__ = [
+    "KERNEL_NAMES",
+    "BooleanInitialization",
+    "FirstOrderHold",
+    "Kernel",
+    "MovingAverage",
+    "NumericChange",
+    "PidWithReset",
+    "Pre",
+    "Timer",
+    "TimerAccumulating",
+    "TimerWithReset",
+    "TrimAndRespond",
+    "TrueDelay",
+    "TrueFalseHold",
+    "UnitDelay",
+    "build_kernel",
+    "format_row",
+]

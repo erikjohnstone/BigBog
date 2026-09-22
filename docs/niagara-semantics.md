@@ -1,0 +1,165 @@
+# Niagara semantics as the Shadow Runtime implements them
+
+The Shadow Runtime (`src/bactalk/niagara/shadow/`) executes an exported `.bog`
+with Niagara-like semantics. This document lists every behavioural rule it
+relies on, with an identifier, its status and its source. The runtime's block
+tests (`tests/test_native_bog_shadow_blocks.py`) cite these identifiers, and a
+test fails if an identifier here has no test or a test cites an identifier that
+is not here.
+
+Status meanings:
+
+- **DOCUMENTED**: stated in a Tridium document (Niagara kitControl Guide,
+  Niagara Station Guide, Niagara Developer Guide / `javax.baja` javadoc).
+  Where a rule is an inference from documented behaviour, the source says so.
+- **ASSUMED**: not stated precisely enough in a document we hold, or chosen
+  among plausible alternatives. Every ASSUMED rule is either a policy knob
+  (`ExecutionPolicy`) exercised by the robustness suite, or a calibration item
+  for Gate G-WB (N7 builds one small `.bog` per assumption; a human runs it in
+  Workbench once and the recorded trace marks the rule VERIFIED or CONTRADICTED).
+- **OWN**: behaviour of BACTalk's own `bactalkG36` Java wrappers and kernels,
+  which the runtime must match exactly (docs/decisions/007).
+
+Nothing below claims Niagara runtime qualification; that is Gate G-WB.
+
+## Status values
+
+| Id | Rule | Status | Source |
+|---|---|---|---|
+| S-STATUS-1 | Every slot value carries the eight `BStatus` bits: disabled, fault, down, alarm, stale, overridden, null, unackedAlarm. | DOCUMENTED | Developer Guide, `javax.baja.status.BStatus` |
+| S-STATUS-2 | A value is *valid* when none of disabled, fault, down, stale or null is set (`BStatus.isValid`). | DOCUMENTED | `BStatus.isValid` javadoc; same rule in `niagara-module/stubs` |
+| S-STATUS-3 | An unlinked kitControl input has null status and is ignored by the block. | DOCUMENTED (inference) | kitControl Guide, Math and Logic objects: "unlinked inputs are ignored"; their default status is null |
+| S-STATUS-4 | Only the bits named in a block's `propagateFlags` travel from inputs to `out`; the default is none. | ASSUMED (policy `propagate_flags`) | kitControl Guide describes `propagateFlags`; the default set is not stated for every object |
+| S-STATUS-5 | A null output keeps its last value and gains the null bit; downstream blocks treat it as absent. | ASSUMED (calibration) | Workbench shows `value {null}` on such slots |
+| S-STATUS-6 | At station start an output slot holds the type's zero value with ok status (its saved default); the first execution replaces it. | ASSUMED (calibration; policy `start_order` explores the consequences) | Component defaults in `.bog` files carry no `out` element; `BStatusNumeric()` defaults to 0.0 ok |
+
+## kitControl math, comparison and logic
+
+| Id | Rule | Status | Source |
+|---|---|---|---|
+| S-MATH-1 | Add, Multiply, Minimum, Maximum and Average combine the non-null inputs among inA..inD; all null gives null. | DOCUMENTED | kitControl Guide, Math objects |
+| S-MATH-2 | Subtract and Divide anchor on inA (inA minus / divided by each non-null other input); a null inA gives null. | ASSUMED (calibration) | kitControl Guide states the formula `inA - inB - inC - inD`; treatment of a null inA is not stated |
+| S-MATH-3 | Division by zero gives the IEEE result (±inf or nan) with the fault bit. | ASSUMED (calibration) | Not stated; chosen so a bad divisor is visible downstream |
+| S-CMP-1 | GreaterThan, GreaterThanEqual, LessThan, LessThanEqual, Equal, NotEqual give null when either input is null. | ASSUMED (calibration) | kitControl Guide, Logic/Comparison objects |
+| S-CMP-2 | The operators are strict or inclusive as named; Equal is exact. | DOCUMENTED | kitControl Guide, Comparison objects |
+| S-LOGIC-1 | And, Or and Xor ignore null inputs among inA..inD; all null gives null. | DOCUMENTED (inference) | kitControl Guide, Logic objects |
+| S-LOGIC-2 | Not gives null for a null input. | ASSUMED (calibration) | Not stated |
+| S-LOGIC-3 | Xor is true when exactly one non-null input is true. | DOCUMENTED | kitControl Guide, Xor |
+
+## Switches and latches
+
+| Id | Rule | Status | Source |
+|---|---|---|---|
+| S-SWITCH-1 | NumericSwitch/BooleanSwitch copy inTrue when inSwitch is true, else inFalse; a null selector or a null selected input gives null. | DOCUMENTED (selection) / ASSUMED (null cases) | kitControl Guide, Switch objects |
+| S-LATCH-1 | NumericLatch/BooleanLatch copy `in` to `out` on the rising edge of `clock` (from false or null to true). | DOCUMENTED | kitControl Guide, Latch objects |
+| S-LATCH-2 | Before the first rising edge `out` is the type's zero value with ok status (S-STATUS-6). | ASSUMED (calibration) | Not stated |
+
+## Timed stock blocks
+
+| Id | Rule | Status | Source |
+|---|---|---|---|
+| S-ONESHOT-1 | OneShot raises `out` on each rising edge of `in` for `pulseWidth`, then drops it. | DOCUMENTED | kitControl Guide, OneShot |
+| S-ONESHOT-2 | When the file sets no `pulseWidth` the runtime uses the policy value (default 0.5 s). | ASSUMED (policy `one_shot_pulse_seconds`) | The product default is not recorded here |
+| S-ONESHOT-3 | A rising edge during a pulse restarts the pulse timer. | ASSUMED (calibration) | Not stated |
+| S-DELAY-1 | BooleanDelay follows `in` after `onDelay` (rising) or `offDelay` (falling); an input that changes back before the delay elapses cancels the pending change. | DOCUMENTED | kitControl Guide, BooleanDelay |
+| S-DELAY-2 | At station start an input already true is delayed like any rising edge; there is no pass-through. | DOCUMENTED (inference) | Lowering matrix row `boolean_delay`; the CDL `delayOnInit=false` case is lowered to `bactalkG36:TrueDelay` instead |
+| S-MV-1 | MultiVibrator toggles `out` on a free-running clock: true for `dutyCycle` percent of `period`, false for the rest. | DOCUMENTED | kitControl Guide, MultiVibrator |
+| S-MV-2 | The clock runs from station start and `out` starts true. | ASSUMED (policy `multivibrator_initial`) | Not stated; the phase relative to the CDL sampler is a documented band (lowering matrix) |
+| S-MV-3 | With `enabled` false or a non-positive period, `out` stays false. | DOCUMENTED | kitControl Guide, MultiVibrator |
+| S-TSTAT-1 | Tstat (direct) switches on when cv ≥ sp + diff/2 and off when cv ≤ sp − diff/2; reverse action inverts the thresholds; between them it holds. | DOCUMENTED | kitControl Guide, Tstat; lowering matrix row `hysteresis` |
+| S-TSTAT-2 | A null cv or sp gives null. | ASSUMED (calibration) | Not stated |
+| S-TSTAT-3 | `out` starts at the file's value, else false. | ASSUMED (calibration) | Not stated |
+| S-RESET-1 | Reset maps inA linearly from [inputLowLimit, inputHighLimit] to [outputLowLimit, outputHighLimit], clamped. | DOCUMENTED | kitControl Guide, Reset |
+| S-RESET-2 | Equal input limits give outputLowLimit with the fault bit; any null input gives null. | ASSUMED (calibration) | Not stated |
+| S-LOOP-1 | LoopPoint computes out = bias + Kp·e + I + D with Ki in repeats per minute (I += Kp·Ki·e·dt/60) and Kd in minutes, clamped to [minimumOutput, maximumOutput]. | DOCUMENTED (form) / ASSUMED (exact discretisation) | kitControl Guide, LoopPoint: constants and units |
+| S-LOOP-2 | LoopPoint executes only on its `executeTime` clock; input changes are read at the next execution. Without `executeTime` in the file the policy value applies (default 0.5 s). | ASSUMED (policy `loop_execute_seconds`) | kitControl Guide names `executeTime`; the default is not recorded here |
+| S-LOOP-3 | Direct action: e = cv − sp; reverse: e = sp − cv. | DOCUMENTED | kitControl Guide, LoopPoint `loopAction` |
+| S-LOOP-4 | The integral does not accumulate while the output is clamped in the direction of the error (anti-windup). | ASSUMED (calibration) | Not stated |
+| S-LOOP-5 | With `loopEnable` false the integral clears and the output holds (policy: hold, minimum or bias). | ASSUMED (policy `loop_disabled`) | Not stated; the IR returns `disabled_output`, a documented band |
+| S-LOOP-6 | A null loopEnable, cv or sp gives null. | ASSUMED (calibration) | Not stated |
+| S-CONST-1 | NumericConst/BooleanConst hold the file's `out` value with ok status. | DOCUMENTED | kitControl Guide, Constant objects |
+
+## Writable points
+
+| Id | Rule | Status | Source |
+|---|---|---|---|
+| S-WRITABLE-1 | NumericWritable/BooleanWritable choose the lowest-numbered non-null level among in1..in16; when all are null the `fallback` value applies. | DOCUMENTED | Station Guide, "About the priority array" |
+| S-WRITABLE-2 | Level 1 is the emergency override and level 8 the operator override; when either is active `out` carries the overridden bit. | DOCUMENTED | Station Guide, point actions (`emergencyOverride`, `override`, `auto`) |
+| S-WRITABLE-3 | An override with a duration clears itself when the duration elapses. | DOCUMENTED | Station Guide, override duration |
+| S-WRITABLE-4 | BooleanWritable holds each output state for at least `minActiveTime` / `minInactiveTime` before it can change again. | DOCUMENTED | Station Guide, BooleanWritable `minActiveTime`, `minInactiveTime` |
+| S-WRITABLE-5 | `out` carries the active level's status bits (null removed). | ASSUMED (calibration) | Not stated precisely |
+| S-WRITABLE-6 | With every level null and a null fallback, `out` is null. | DOCUMENTED (inference) | Station Guide, fallback |
+
+## Links, clock and propagation
+
+| Id | Rule | Status | Source |
+|---|---|---|---|
+| S-LINK-1 | A link pushes the source slot to the target slot when the source changes; the target executes when one of its inputs receives a different value. | DOCUMENTED | Developer Guide, links and `changed` callbacks |
+| S-LINK-2 | At station start every component starts, every link pushes its current source value, then every component executes once in start order and the changes propagate. | ASSUMED (policy `start_order`: topological, document, reverse, shuffle) | Developer Guide, link activation; the order Niagara uses is not specified |
+| S-LINK-3 | A link loop is fine while values converge; a component that executes more than `loop_limit` times inside one propagation is an unstable loop and an error. | ASSUMED | Not stated; protects the runtime |
+| S-LINK-4 | Propagation is synchronous: a changed output fires its links at once (depth-first by default, breadth as a policy), so intermediate values are visible to downstream components inside one event. | ASSUMED (policy `propagation`, `link_order`) | Developer Guide, synchronous `changed`; ordering among links is not specified |
+| S-CLOCK-1 | Time is a simulated clock in seconds; timers fire in due order, ties in policy order (`tick_order`), and each timer's effects propagate before the next fires. | ASSUMED (policy `tick_order`, `inputs_before_timers`) | `Clock.schedule` gives no ordering guarantee between tickets due together |
+
+## `bactalkG36` module components (OWN)
+
+The components are `TrueDelay`, `Timer`, `TimerWithReset`, `TimerAccumulating`,
+`TrueFalseHold`, `Pre`, `UnitDelay`, `FirstOrderHold`, `MovingAverage`,
+`PIDWithReset`, `TrimAndRespond`, `BooleanInitialization` and `NumericChange`
+(`bactalk.niagara.module`). A `WsTextBlock` note carries no behaviour.
+
+| Id | Rule | Status | Source |
+|---|---|---|---|
+| S-MODULE-1 | A component steps its kernel every `executionPeriod` (default 1 s) and on each input change. | OWN | `BKernelComponent.changed`, `schedule` |
+| S-MODULE-2 | `Pre` and `NumericChange` step only on the period tick, never on an input change, so "the previous execution" is the previous host tick. | OWN | `BKernelComponent.stepsOnInputChange`, `BPre`, `BNumericChange` |
+| S-MODULE-3 | When any used input is not valid (S-STATUS-2) the outputs are marked null and the kernel is not stepped. | OWN | `BKernelComponent.doExecute`, each wrapper's `inputsValid` |
+| S-MODULE-4 | The kernel's time base is seconds since the component started. | OWN | `BKernelComponent.doExecute` |
+| S-MODULE-5 | The Java kernels are the truth; the Python ports must produce identical outputs on identical rows, and a drift fails the build. | OWN | docs/decisions/007; `python -m bactalk.niagara.shadow check` |
+
+## Schedules, histories, faults and samples
+
+| Id | Rule | Status | Source |
+|---|---|---|---|
+| S-SCHED-1 | BooleanSchedule/NumericSchedule output the `effectiveValue` of the weekly period covering the current day and time (start inclusive, finish exclusive). | DOCUMENTED | Station Guide, weekly schedules |
+| S-SCHED-2 | Outside every period the `defaultOutput` applies. | DOCUMENTED | Station Guide, `defaultOutput` |
+| S-SCHED-3 | Simulated time 0 is Monday 00:00; special events are not modelled. | ASSUMED | Runtime convention; special-event lowering is not qualified (compiler) |
+| S-HIST-1 | An interval history extension (`NumericIntervalHistoryExt`, `BooleanIntervalHistoryExt`, reading `interval` from its `HistoryConfig`) records its parent point's `out` (value and status) at station start and every `interval`. | DOCUMENTED | Station Guide, interval history extensions |
+| S-FAULT-1 | Acceptance faults act on the input values exactly as the IR simulator applies them; status bits are added only when `inject_fault_status` is set. | OWN | `bactalk.simulator.FaultInjector`; `ShadowRunOptions` |
+| S-SAMPLE-1 | A scan applies the scenario inputs, advances the clock by the phase step, then samples every output; the sample carries `step`, `time_seconds`, phase fields, inputs, fault evidence and every slot, with sparse `<key>.status` bits when a status is not ok. | OWN | `bactalk.niagara.shadow.driver` |
+
+## Uncertainty as a robustness requirement
+
+`ExecutionPolicy` exposes every ASSUMED ordering or timing rule: `link_order`,
+`tick_order`, `propagation`, `start_order`, `inputs_before_timers`,
+`module_period_seconds`, `one_shot_pulse_seconds`, `loop_execute_seconds`,
+`loop_disabled`, `multivibrator_initial`, `propagate_flags`. `PLAUSIBLE_POLICIES`
+is the set the robustness suite runs (`run_under_policies`); its report names
+every scenario whose verdict, and every output whose final value, depends on
+the policy. Such a dependence is a finding about the exported design, not a
+tolerance to widen.
+
+## Findings from the Tier 1 exports (N6)
+
+Running both retained LBNL controllers through the runtime surfaced these
+points, recorded here so N7 can act on them:
+
+1. **Event-driven hazards.** In the VAV reheat controller's time-suppression
+   logic, a `MultiVibrator`-clocked latch and a `bactalkG36:UnitDelay` update in
+   separate events at the same instant. Between them, `|swi − uniDel|` briefly
+   exceeds its threshold, a `OneShot` fires, and a set/reset latch stays set.
+   The synchronous IR never sees this state. Any comparison feeding an
+   edge-sensitive block from two signals that change in the same event is
+   hazardous under S-LINK-4, and the lowering of `one_shot`, `boolean_set_reset`
+   and the sampler composites must remove the hazard (N7).
+2. **Time discretisation of module PIDs.** `bactalkG36:PIDWithReset` steps every
+   second while the IR steps once per scan; both are explicit Euler, so the
+   integral differs by up to one scan's contribution. The `coarse-module-tick`
+   policy reproduces the IR; the difference is a band, not a bug.
+3. **Kernel corrections made in N6** (both implementations, checked equal):
+   `MovingAverage` kept a fixed 64-entry ring that truncated windows longer
+   than 64 execution periods; `UnitDelay`, `FirstOrderHold` and the sampler
+   inside `TrimAndRespond` sampled the first value seen at a sample instant
+   instead of the last, which under event-driven execution was the stale one.
+4. **Start-up order matters.** Latches and delays capture whatever their inputs
+   hold when they first execute; the default `topological` start order gives the
+   CDL initialisation, the `document-start` policy shows what a less favourable
+   order does. Gate G-WB's calibration kit must cover S-LINK-2.

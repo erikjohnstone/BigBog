@@ -39,6 +39,21 @@ class FaultInjector:
                 self.defaults[block.id] = bool(block.config.get("default", False))
         self.state: dict[str, dict[str, Any]] = {}
 
+    @classmethod
+    def from_inputs(
+        cls,
+        input_types: dict[str, DataType],
+        defaults: dict[str, float | bool],
+    ) -> FaultInjector:
+        """An injector over named inputs that come from somewhere other than an IR graph
+        (the Shadow Runtime reads them from the exported ``.bog``)."""
+
+        injector = cls.__new__(cls)
+        injector.input_types = dict(input_types)
+        injector.defaults = dict(defaults)
+        injector.state = {}
+        return injector
+
     def _validate(self, faults: list[FaultInjection]) -> None:
         targets: set[str] = set()
         for fault in faults:

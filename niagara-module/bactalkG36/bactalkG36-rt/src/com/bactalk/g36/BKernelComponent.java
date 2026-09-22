@@ -21,6 +21,9 @@ import javax.baja.sys.Property;
  *
  * <p>Time base: seconds since the component started, from the station clock, so
  * every kernel sees monotonic absolute time regardless of the execution period.
+ *
+ * <p>Execution: every executionPeriod, and on each input change unless the kernel
+ * is tick-semantic (see {@link #stepsOnInputChange()}).
  */
 public abstract class BKernelComponent extends BComponent {
   /** How often the kernel is stepped even when no input changes. */
@@ -60,9 +63,18 @@ public abstract class BKernelComponent extends BComponent {
     if (isParameter(property)) {
       rebuildKernel();
       doExecute();
-    } else if (isInput(property)) {
+    } else if (isInput(property) && stepsOnInputChange()) {
       doExecute();
     }
+  }
+
+  /**
+   * Whether an input change steps the kernel at once. Kernels whose state advances
+   * per execution rather than per unit of time (Pre, NumericChange) step only on the
+   * execution period, so "the previous execution" means the previous host tick.
+   */
+  protected boolean stepsOnInputChange() {
+    return true;
   }
 
   public void doExecute() {
