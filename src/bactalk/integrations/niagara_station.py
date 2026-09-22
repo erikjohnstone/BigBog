@@ -4,6 +4,7 @@ import hashlib
 import io
 import re
 import zipfile
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal
 from xml.etree import ElementTree
@@ -35,6 +36,23 @@ class NiagaraProgramLink:
     target_equipment: str
     target_point: str
     data_type: str
+
+
+@dataclass(frozen=True)
+class PointBinding:
+    """A confirmed link between a station proxy point and a program boundary point.
+
+    ``direction`` is ``proxy_to_program`` (the proxy's ``out`` drives the program
+    input's ``in16``) or ``program_to_proxy`` (the program output's ``out`` drives
+    the proxy's ``in<write_priority>``; priority 1 and an implicit priority are
+    refused, GOAL-NATIVE-BOG.md N5).
+    """
+
+    point: str
+    proxy_ord: str
+    direction: Literal["proxy_to_program", "program_to_proxy"]
+    write_priority: int | None = None
+    data_type: str | None = None
 
 
 def _sha256(content: bytes) -> str:
@@ -203,8 +221,15 @@ def assemble_station_bog(
     graph: ControlGraph,
     *,
     mode: Literal["insert", "replace"],
+    bindings: Sequence[PointBinding] = (),
 ) -> NiagaraStationAssembly:
-    """Insert or replace one generated program in an offline contractor station graph."""
+    """Insert or replace one generated program in an offline contractor station graph.
+
+    ``bindings`` adds proper Niagara links between the station's proxy points and
+    the program's boundary points (N5); every ORD must resolve inside the station,
+    no target slot may already be driven, and command links need an explicit
+    write priority between 2 and 16.
+    """
 
     station_graph, _ = _read_bog(template_bog, "station template")
     generated_graph, _ = _read_bog(program_bog, "generated program")
@@ -248,6 +273,8 @@ def assemble_station_bog(
         parent.append(program)
         action = "inserted"
 
+    point_links = _bind_points(station_root, program, bindings)
+
     ElementTree.indent(station_graph, space="  ")
     xml = ElementTree.tostring(station_graph, encoding="utf-8", xml_declaration=True)
     reparsed = ElementTree.fromstring(xml)
@@ -262,6 +289,8 @@ def assemble_station_bog(
         "schema": "bactalk.niagara-station-assembly/v1",
         "mode": mode,
         "action": action,
+        "point_link_count": len(point_links),
+        "point_links": point_links,
         "target_parent_ord": target_ord.rsplit("/", 1)[0],
         "target_program_ord": target_ord,
         "template_sha256": _sha256(template_bog),
@@ -291,12 +320,155 @@ def assemble_station_bog(
     return NiagaraStationAssembly(content=content, manifest=manifest)
 
 
+def _resolve_slot_ord(station_root: ElementTree.Element, ord_value: str) -> ElementTree.Element:
+    prefix = "station:|slot:/"
+    if not ord_value.startswith(prefix):
+        raise ValueError(f"binding ORD must start with {prefix}: {ord_value}")
+    current = station_root
+    for segment in ord_value[len(prefix) :].split("/"):
+        if not segment:
+            continue
+        child = _named_child(current, segment)
+        if child is None:
+            raise ValueError(f"binding ORD does not resolve in the station: {ord_value}")
+        current = child
+    return current
+
+
+def _find_program_point(program: ElementTree.Element, name: str) -> ElementTree.Element:
+    matches = [
+        element
+        for element in program.iter("p")
+        if element.get("n") == name
+        and (element.get("t") or "").endswith(("Writable", "Point"))
+        and element.get("h") is not None
+    ]
+    if len(matches) != 1:
+        raise ValueError(
+            f"program has {len(matches)} boundary points named {name!r}; expected exactly one"
+        )
+    return matches[0]
+
+
+def _driven_slots(component: ElementTree.Element) -> set[str]:
+    driven: set[str] = set()
+    for child in component:
+        if child.tag != "p" or not (child.get("t") or "").endswith(":Link"):
+            continue
+        for prop in child:
+            if prop.get("n") == "targetSlotName" and prop.get("v"):
+                driven.add(str(prop.get("v")))
+    return driven
+
+
+def _append_link(
+    target: ElementTree.Element,
+    source: ElementTree.Element,
+    source_slot: str,
+    target_slot: str,
+    prefix: str,
+) -> str:
+    source_handle = source.get("h")
+    if source_handle is None or not _HANDLE.fullmatch(source_handle):
+        raise ValueError("link source has no valid Niagara handle")
+    name = prefix
+    suffix = 1
+    while _named_child(target, name) is not None:
+        name = f"{prefix}{suffix}"
+        suffix += 1
+    link = ElementTree.SubElement(target, "p", {"n": name, "t": "b:Link"})
+    for field_name, value in (
+        ("sourceOrd", f"h:{source_handle.lower()}"),
+        ("relationTags", ""),
+        ("relationId", "n:dataLink"),
+        ("sourceSlotName", source_slot),
+        ("targetSlotName", target_slot),
+    ):
+        ElementTree.SubElement(link, "p", {"n": field_name, "v": value})
+    return name
+
+
+def _bind_points(
+    station_root: ElementTree.Element,
+    program: ElementTree.Element,
+    bindings: Sequence[PointBinding],
+) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for binding in sorted(bindings, key=lambda item: (item.point, item.proxy_ord)):
+        proxy = _resolve_slot_ord(station_root, binding.proxy_ord)
+        if proxy.get("h") is None:
+            raise ValueError(f"station point has no handle: {binding.proxy_ord}")
+        point = _find_program_point(program, binding.point)
+        if binding.direction == "proxy_to_program":
+            target, source, source_slot, target_slot = point, proxy, "out", "in16"
+        else:
+            priority = binding.write_priority
+            if priority is None or priority < 2 or priority > 16:
+                raise ValueError(
+                    f"command binding {binding.point}: write priority must be explicit and "
+                    f"between 2 and 16, not {priority!r}"
+                )
+            target, source, source_slot, target_slot = proxy, point, "out", f"in{priority}"
+        if target_slot in _driven_slots(target):
+            raise ValueError(
+                f"binding {binding.point}: target slot {target_slot} of "
+                f"{target.get('n')} is already driven"
+            )
+        link_name = _append_link(target, source, source_slot, target_slot, "BactalkPointLink")
+        rows.append(
+            {
+                "point": binding.point,
+                "direction": binding.direction,
+                "proxy_ord": binding.proxy_ord,
+                "source_slot": source_slot,
+                "target_slot": target_slot,
+                "write_priority": binding.write_priority,
+                "data_type": binding.data_type,
+                "link_component": link_name,
+            }
+        )
+    return rows
+
+
+def point_bindings(job: JobSpec, graph: ControlGraph) -> tuple[PointBinding, ...]:
+    """The confirmed bindings a job carries: every point with a ``niagara_ord``."""
+
+    blocks = {block.id: block for block in graph.blocks}
+    result: list[PointBinding] = []
+    for point in job.points:
+        if point.niagara_ord is None:
+            continue
+        block = blocks.get(point.name)
+        if block is None:
+            raise ValueError(f"point {point.name} declares niagara_ord but has no graph block")
+        if block.kind.value.endswith("_input"):
+            direction: Literal["proxy_to_program", "program_to_proxy"] = "proxy_to_program"
+        elif block.kind.value.endswith("_output"):
+            direction = "program_to_proxy"
+        else:
+            raise ValueError(
+                f"point {point.name} maps to internal block kind {block.kind.value}; "
+                "bindings need an input or output boundary block"
+            )
+        result.append(
+            PointBinding(
+                point=point.name,
+                proxy_ord=point.niagara_ord,
+                direction=direction,
+                write_priority=point.niagara_write_priority,
+                data_type=point.data_type.value,
+            )
+        )
+    return tuple(result)
+
+
 def assemble_project_station_bog(
     template_bog: bytes,
     programs: list[tuple[bytes, JobSpec, ControlGraph]],
     *,
     mode: Literal["insert", "replace"],
     program_links: list[NiagaraProgramLink] | None = None,
+    bindings_by_equipment: Mapping[str, Sequence[PointBinding]] | None = None,
 ) -> NiagaraProjectStationAssembly:
     """Atomically assemble multiple independently compiled programs into one station BOG."""
 
@@ -316,6 +488,7 @@ def assemble_project_station_bog(
             job,
             graph,
             mode=mode,
+            bindings=(bindings_by_equipment or {}).get(job.equipment_name, ()),
         )
         current = assembly.content
         steps.append(
@@ -327,6 +500,7 @@ def assemble_project_station_bog(
                 "handle_rebase_count": assembly.manifest["handle_rebase_count"],
                 "program_fragment_sha256": assembly.manifest["program_fragment_sha256"],
                 "result_sha256": assembly.manifest["assembled_bog_sha256"],
+                "point_link_count": assembly.manifest["point_link_count"],
             }
         )
 

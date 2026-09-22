@@ -217,6 +217,46 @@ const reportSchema = z.object({
   }).passthrough()),
 }).passthrough();
 
+const bindingSuggestionSchema = z.object({
+  point: z.string(),
+  ord: z.string(),
+  device: z.string(),
+  score: z.number(),
+  reasons: z.array(z.string()),
+  data_type: z.string().nullable(),
+  bacnet_object: z.string().nullable(),
+  writable: z.boolean(),
+  write_priority: z.number().nullable(),
+});
+
+const stationBindingSuggestionsSchema = z.object({
+  schema: z.string(),
+  inventory: z.object({
+    device_count: z.number(),
+    point_count: z.number(),
+    networks: z.array(z.string()),
+    warnings: z.array(z.string()),
+    devices: z.array(z.object({
+      name: z.string(),
+      ord: z.string(),
+      device_instance: z.number().nullable(),
+      points: z.array(z.object({
+        name: z.string(),
+        ord: z.string(),
+        data_type: z.string().nullable(),
+        bacnet_object: z.string().nullable(),
+        units: z.string().nullable(),
+        writable: z.boolean(),
+      }).passthrough()),
+    }).passthrough()),
+  }).passthrough(),
+  points: z.array(pointSchema),
+  suggestions: z.record(z.string(), z.array(bindingSuggestionSchema)),
+  policy: z.object({ human_confirmation_required: z.boolean(), write_priority: z.string() }),
+});
+export type StationBindingSuggestions = z.infer<typeof stationBindingSuggestionsSchema>;
+export type BindingSuggestion = z.infer<typeof bindingSuggestionSchema>;
+
 const intakeInspectionSchema = z.object({
   schema: z.string(),
   point_count: z.number(),
@@ -1605,6 +1645,10 @@ export const api = {
   },
   async inspectIntake(body: FormData) {
     return intakeInspectionSchema.parse(await postForm('/api/intake/inspect', body));
+  },
+  /** Parse a station .bog as data and get ranked proxy-point suggestions per job point. */
+  async stationBindings(body: FormData) {
+    return stationBindingSuggestionsSchema.parse(await postForm('/api/intake/station-bindings', body));
   },
   async importRun(body: FormData) {
     return runDetailSchema.parse(await postForm('/api/runs/import', body));

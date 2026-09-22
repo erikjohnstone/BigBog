@@ -59,7 +59,7 @@ from bactalk.integrations.fmi import inspect_fmu_archive
 from bactalk.integrations.funnel import FunnelScorer
 from bactalk.integrations.nhaystack import build_readonly_nhaystack_export
 from bactalk.integrations.niagara_program_codegen import NiagaraProgramPackageBuilder
-from bactalk.integrations.niagara_station import assemble_station_bog
+from bactalk.integrations.niagara_station import assemble_station_bog, point_bindings
 from bactalk.integrations.niagara_template import NiagaraTemplateAnalyzer
 from bactalk.integrations.plant_controls_library import PlantControlsLibrary
 from bactalk.integrations.volttron import build_readonly_volttron_export
@@ -490,6 +490,7 @@ class WorkbenchService:
                     job,
                     graph,
                     mode=assembly_mode,
+                    bindings=point_bindings(job, graph),
                 )
                 assembled_bog_path = run_dir / "assembled-station.bog"
                 assembled_bog_path.write_bytes(assembly.content)

@@ -48,6 +48,12 @@ export interface IntakeDraft {
   notes: string;
 }
 
+/** A binding the engineer confirmed in the Normalize step; nothing links without one. */
+export interface ConfirmedBinding {
+  niagara_ord: string;
+  write_priority: number | null;
+}
+
 export interface IntakeFiles {
   points: File | null;
   sequence: File | null;
@@ -76,9 +82,11 @@ interface IntakeState {
   draft: IntakeDraft;
   files: IntakeFiles;
   inspection: IntakeInspection | null;
+  bindings: Record<string, ConfirmedBinding>;
   update: (patch: Partial<IntakeDraft>) => void;
   setFile: (key: keyof IntakeFiles, file: File | null) => void;
   setInspection: (inspection: IntakeInspection | null) => void;
+  confirmBinding: (point: string, binding: ConfirmedBinding | null) => void;
   reset: () => void;
 }
 
@@ -105,19 +113,31 @@ export const useIntake = create<IntakeState>((set, get) => ({
   draft: readDraft(),
   files: emptyFiles,
   inspection: null,
+  bindings: {},
   update(patch) {
     const draft = { ...get().draft, ...patch };
     set({ draft });
     persist(draft);
   },
   setFile(key, file) {
-    set({ files: { ...get().files, [key]: file }, inspection: key === 'points' || key === 'sequence' ? null : get().inspection });
+    set({
+      files: { ...get().files, [key]: file },
+      inspection: key === 'points' || key === 'sequence' ? null : get().inspection,
+      // Bindings point into a specific station: a new station or points list voids them.
+      bindings: key === 'template' || key === 'points' ? {} : get().bindings,
+    });
   },
   setInspection(inspection) {
     set({ inspection });
   },
+  confirmBinding(point, binding) {
+    const next = { ...get().bindings };
+    if (binding) next[point] = binding;
+    else delete next[point];
+    set({ bindings: next });
+  },
   reset() {
-    set({ draft: emptyDraft, files: emptyFiles, inspection: null });
+    set({ draft: emptyDraft, files: emptyFiles, inspection: null, bindings: {} });
     try {
       localStorage.removeItem(KEY);
     } catch {

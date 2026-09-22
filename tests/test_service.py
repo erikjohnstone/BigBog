@@ -36,7 +36,9 @@ def test_run_creates_valid_bog_and_requires_approval(tmp_path: Path) -> None:
     assert Path(record.report_path).is_file()
     assert record.deliverable_manifest_path is not None
     assert Path(record.deliverable_manifest_path).is_file()
-    assert len(record.deliverable_artifact_paths) == 15
+    # 14 since N5: the generated Java point binder left the default path
+    # (docs/decisions/006); the JSON binding plan remains.
+    assert len(record.deliverable_artifact_paths) == 14
     assert record.volttron_manifest_path is not None
     assert Path(record.volttron_manifest_path).is_file()
     assert len(record.volttron_artifact_paths) == 3
@@ -70,7 +72,10 @@ def test_run_creates_valid_bog_and_requires_approval(tmp_path: Path) -> None:
         assert "deliverables/point-map.csv" in names
         assert "deliverables/niagara-alarm-plan.json" in names
         assert "deliverables/BactalkAlarmInstaller_VAV_12.java" in names
-        assert "deliverables/BactalkPointBinder_VAV_12.java" in names
+        # N5: the Java point binder is emitted only for expert-lane jobs; the
+        # JSON binding plan is always present.
+        assert "deliverables/BactalkPointBinder_VAV_12.java" not in names
+        assert "deliverables/niagara-point-bindings.json" in names
         assert "deliverables/niagara-point-bindings.json" in names
         assert "nhaystack/expected-readback.zinc" in names
         assert "nhaystack/verification.json" in names

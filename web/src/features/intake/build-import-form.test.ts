@@ -68,3 +68,19 @@ describe('intake form helpers', () => {
     expect(plain.has('notes')).toBe(false);
   });
 });
+
+describe('buildImportForm point bindings', () => {
+  it('sends only confirmed bindings, as JSON, and nothing when none are confirmed', () => {
+    const draft = { ...emptyDraft, name: 'a', site: 'b', equipmentName: 'c', sequenceFamily: 'G36_VAV_REHEAT' };
+    const files = { points: null, sequence: null, bacnet: null, template: null, environment: null };
+    expect(buildImportForm(draft, files).get('point_bindings')).toBeNull();
+    const bound = buildImportForm(draft, files, {
+      TZon: { niagara_ord: 'station:|slot:/Drivers/BacnetNetwork/VAV_1/points/ZN_T', write_priority: null },
+      yDam: { niagara_ord: 'station:|slot:/Drivers/BacnetNetwork/VAV_1/points/DMPR', write_priority: 8 },
+    });
+    expect(JSON.parse(String(bound.get('point_bindings')))).toEqual({
+      TZon: { niagara_ord: 'station:|slot:/Drivers/BacnetNetwork/VAV_1/points/ZN_T', write_priority: null },
+      yDam: { niagara_ord: 'station:|slot:/Drivers/BacnetNetwork/VAV_1/points/DMPR', write_priority: 8 },
+    });
+  });
+});

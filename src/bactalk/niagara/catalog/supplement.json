@@ -3,7 +3,7 @@
  "note": "Hand-written slots that no held .bog serializes with a value type. Every entry is marked doc-only and cites the Tridium guide it comes from; the validator trusts these for slot existence and data kind only. Slots that are actions or topics carry slot_kind instead of a value type and are exempt from kind matching.",
  "types": {
   "control:NumericWritable": {
-   "source": "Tridium Niagara 4 Control Module Guide, NumericWritable: sixteen priority inputs in1..in16 of StatusNumeric; out is StatusNumeric.",
+   "source": "Tridium Niagara 4 Control Module Guide, NumericWritable: sixteen priority inputs in1..in16 of StatusNumeric; out is StatusNumeric. Every control point carries proxyExt and facets.",
    "slot_ranges": [
     {
      "prefix": "in",
@@ -13,10 +13,15 @@
      "direction": "input"
     }
    ],
-   "slots": {}
+   "slots": {
+    "proxyExt": {},
+    "facets": {
+     "value_type": "baja:Facets"
+    }
+   }
   },
   "control:BooleanWritable": {
-   "source": "Tridium Niagara 4 Control Module Guide, BooleanWritable: sixteen priority inputs in1..in16 of StatusBoolean; out is StatusBoolean.",
+   "source": "Tridium Niagara 4 Control Module Guide, BooleanWritable: sixteen priority inputs in1..in16 of StatusBoolean; out is StatusBoolean. Every control point carries proxyExt and facets.",
    "slot_ranges": [
     {
      "prefix": "in",
@@ -26,10 +31,15 @@
      "direction": "input"
     }
    ],
-   "slots": {}
+   "slots": {
+    "proxyExt": {},
+    "facets": {
+     "value_type": "baja:Facets"
+    }
+   }
   },
   "control:EnumWritable": {
-   "source": "Tridium Niagara 4 Control Module Guide, EnumWritable: sixteen priority inputs in1..in16 of StatusEnum; out is StatusEnum.",
+   "source": "Tridium Niagara 4 Control Module Guide, EnumWritable: sixteen priority inputs in1..in16 of StatusEnum; out is StatusEnum. Every control point carries proxyExt and facets.",
    "slot_ranges": [
     {
      "prefix": "in",
@@ -43,11 +53,15 @@
     "out": {
      "value_type": "baja:StatusEnum",
      "direction": "output"
+    },
+    "proxyExt": {},
+    "facets": {
+     "value_type": "baja:Facets"
     }
    }
   },
   "control:StringWritable": {
-   "source": "Tridium Niagara 4 Control Module Guide, StringWritable: sixteen priority inputs in1..in16 of StatusString; out is StatusString.",
+   "source": "Tridium Niagara 4 Control Module Guide, StringWritable: sixteen priority inputs in1..in16 of StatusString; out is StatusString. Every control point carries proxyExt and facets.",
    "slot_ranges": [
     {
      "prefix": "in",
@@ -61,6 +75,10 @@
     "out": {
      "value_type": "baja:StatusString",
      "direction": "output"
+    },
+    "proxyExt": {},
+    "facets": {
+     "value_type": "baja:Facets"
     }
    }
   },
@@ -350,6 +368,122 @@
     },
     "fullPolicy": {
      "value_type": "history:FullPolicy"
+    }
+   }
+  },
+  "bacnet:BacnetNetwork": {
+   "source": "Tridium Niagara 4 BACnet Driver Guide: network, device, point device extension and proxy extensions as serialised by the bacnet module. doc-only until Gate G-WB confirms a real station.",
+   "dynamic_slots": true,
+   "slots": {}
+  },
+  "bacnet:BacnetDevice": {
+   "source": "Tridium Niagara 4 BACnet Driver Guide: network, device, point device extension and proxy extensions as serialised by the bacnet module. doc-only until Gate G-WB confirms a real station.",
+   "dynamic_slots": true,
+   "slots": {
+    "address": {
+     "value_type": "bacnet:BacnetAddress"
+    },
+    "config": {
+     "value_type": "bacnet:BacnetDeviceConfig"
+    },
+    "points": {
+     "value_type": "bacnet:BacnetPointDeviceExt"
+    }
+   }
+  },
+  "bacnet:BacnetDeviceConfig": {
+   "source": "Tridium Niagara 4 BACnet Driver Guide: network, device, point device extension and proxy extensions as serialised by the bacnet module. doc-only until Gate G-WB confirms a real station.",
+   "dynamic_slots": true,
+   "slots": {
+    "objectId": {
+     "value_type": "bacnet:BacnetObjectIdentifier"
+    }
+   }
+  },
+  "bacnet:BacnetPointDeviceExt": {
+   "source": "Tridium Niagara 4 BACnet Driver Guide: network, device, point device extension and proxy extensions as serialised by the bacnet module. doc-only until Gate G-WB confirms a real station.",
+   "dynamic_slots": true,
+   "slots": {}
+  },
+  "bacnet:BacnetAddress": {
+   "source": "Tridium Niagara 4 BACnet Driver Guide: network, device, point device extension and proxy extensions as serialised by the bacnet module. doc-only until Gate G-WB confirms a real station.",
+   "slots": {}
+  },
+  "bacnet:BacnetObjectIdentifier": {
+   "source": "Tridium Niagara 4 BACnet Driver Guide: network, device, point device extension and proxy extensions as serialised by the bacnet module. doc-only until Gate G-WB confirms a real station.",
+   "slots": {}
+  },
+  "bacnet:BacnetPropertyIdentifier": {
+   "source": "Tridium Niagara 4 BACnet Driver Guide: network, device, point device extension and proxy extensions as serialised by the bacnet module. doc-only until Gate G-WB confirms a real station.",
+   "slots": {}
+  },
+  "bacnet:BacnetNumericProxyExt": {
+   "source": "Tridium Niagara 4 BACnet Driver Guide: network, device, point device extension and proxy extensions as serialised by the bacnet module. doc-only until Gate G-WB confirms a real station.",
+   "slots": {
+    "objectId": {
+     "value_type": "bacnet:BacnetObjectIdentifier"
+    },
+    "propertyId": {
+     "value_type": "bacnet:BacnetPropertyIdentifier"
+    }
+   }
+  },
+  "bacnet:BacnetBooleanProxyExt": {
+   "source": "Tridium Niagara 4 BACnet Driver Guide: network, device, point device extension and proxy extensions as serialised by the bacnet module. doc-only until Gate G-WB confirms a real station.",
+   "slots": {
+    "objectId": {
+     "value_type": "bacnet:BacnetObjectIdentifier"
+    },
+    "propertyId": {
+     "value_type": "bacnet:BacnetPropertyIdentifier"
+    }
+   }
+  },
+  "bacnet:BacnetEnumProxyExt": {
+   "source": "Tridium Niagara 4 BACnet Driver Guide: network, device, point device extension and proxy extensions as serialised by the bacnet module. doc-only until Gate G-WB confirms a real station.",
+   "slots": {
+    "objectId": {
+     "value_type": "bacnet:BacnetObjectIdentifier"
+    },
+    "propertyId": {
+     "value_type": "bacnet:BacnetPropertyIdentifier"
+    }
+   }
+  },
+  "bacnet:BacnetStringProxyExt": {
+   "source": "Tridium Niagara 4 BACnet Driver Guide: network, device, point device extension and proxy extensions as serialised by the bacnet module. doc-only until Gate G-WB confirms a real station.",
+   "slots": {
+    "objectId": {
+     "value_type": "bacnet:BacnetObjectIdentifier"
+    },
+    "propertyId": {
+     "value_type": "bacnet:BacnetPropertyIdentifier"
+    }
+   }
+  },
+  "control:NumericPoint": {
+   "source": "Tridium Niagara 4 Control Module Guide, NumericPoint: read-only point with out (StatusNumeric) and facets. Every control point carries proxyExt and facets.",
+   "slots": {
+    "out": {
+     "value_type": "baja:StatusNumeric",
+     "direction": "output"
+    },
+    "proxyExt": {},
+    "facets": {
+     "value_type": "baja:Facets"
+    }
+   }
+  },
+  "control:BooleanPoint": {
+   "source": "Tridium Niagara 4 Control Module Guide, BooleanPoint: read-only point with out (StatusBoolean). Every control point carries proxyExt and facets.",
+   "slots": {
+    "out": {
+     "value_type": "baja:StatusBoolean",
+     "direction": "output"
+    },
+    "proxyExt": {},
+    "facets": {
+     "value_type": "baja:Facets"
     }
    }
   }

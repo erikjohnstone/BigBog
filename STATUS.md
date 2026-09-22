@@ -25,7 +25,7 @@ stack is present on the development box and the LBNL translation lane runs
 | N2 Lowering matrix | **done** | `make test-native-bog` (matrix `--check` + 14 lowering tests; 61 native_bog tests total) | rows provisional until N7 (docs/decisions/003) |
 | N3 bactalkG36 kernels | **done (CI part)** | `make kernels-check`; `tests/test_native_bog_kernels.py` in `make test-native-bog` | building and signing the real module is Gate G-SDK (WAITING_ON_HUMAN) |
 | N4 Native emitter | **done** | `make test-native-bog` (`tests/test_native_bog_emit.py`); both retained Tier 1 controllers export one validated `.bog` | descriptions and writable parameters wait on N5 (docs/decisions/005) |
-| N5 Point linking | not started | | |
+| N5 Point linking | **done** | `tests/test_native_bog_points.py` in `make test-native-bog`: one AHU + 25 VAVs linked in one station, validator clean | station structure is doc-only until Gate G-WB (docs/decisions/006) |
 | N6 Shadow Runtime | not started | | |
 | N7 Prove it | not started | | Gate G-WB written |
 | N8–N11 Library tiers | not started | | |
@@ -181,6 +181,34 @@ stack is present on the development box and the LBNL translation lane runs
   `Parameters` (the CDL parameters are folded into composite-level constants
   by the importer) are N5 work; multi-equipment output (AHU + N VAVs in one
   `.bog`) is deferred to N5 with point linking.
+
+## N5 results
+
+- **Station as data.** `bactalk.niagara.station_points` parses a contractor
+  station's BACnet network, devices and proxy points (ORD, handle, object,
+  data type, units, writability) without executing anything. The `bacnet:*`
+  driver types are doc-only catalog entries; the fixture station validates
+  with zero warnings.
+- **Suggestions, human confirmation.** `bactalk.niagara.pointmap` ranks proxy
+  points per job point from expanded name tokens (abbreviation dictionary),
+  BACnet object type, units and device grouping; nothing without a shared name
+  token is suggested. `POST /api/intake/station-bindings` returns the
+  inventory and suggestions; the Normalize step shows them and records only
+  confirmed rows (`point_bindings` on `/api/runs/import`). For the fixture VAV
+  box, the first suggestion is the right proxy for all ten mappable points.
+- **Links in the station.** Station assembly (single and project) adds proper
+  `b:Link` elements for confirmed bindings: proxy `out` → program `in16`, or
+  program `out` → proxy `in<priority>`; already-driven slots, unresolved ORDs,
+  priority 1 and implicit priorities are refused.
+- **Exit met.** `tests/fixtures/native-bog/station-ahu-25vav.bog` (one AHU,
+  25 VAVs, 270 technician-named points) plus the retained AHU and 25 retained
+  VAV programs assemble into one station with 250 point links; the validator
+  reports zero errors and zero warnings; no generated Java is involved.
+- **Java binder retired from the default path.** `BactalkPointBinder_*.java`
+  is emitted only for expert-lane jobs; the JSON binding plan stays.
+- **Not claimed.** The station structure comes from documentation and a
+  generated fixture, not a real export; Gate G-WB will surface differences.
+  Writable `Parameters` and interface descriptions on points remain open.
 
 ## Gates
 

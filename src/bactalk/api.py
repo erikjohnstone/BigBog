@@ -55,6 +55,7 @@ from bactalk.intake import (
     parse_bacnet_scan_json,
     parse_points_file,
     parse_sequence_document,
+    validate_template_bog,
 )
 from bactalk.integrations.aixocat import AixocatError, AixocatLibrary
 from bactalk.integrations.alfalfa import AlfalfaClientLike
@@ -90,6 +91,8 @@ from bactalk.integrations.reference_stack import ReferenceStackCatalog
 from bactalk.integrations.rumoca import RumocaCompiler, RumocaError
 from bactalk.integrations.use_audit import IntegrationUseAudit
 from bactalk.library_demo import lbnl_multizone_ahu_demo_job, lbnl_vav_reheat_demo_job
+from bactalk.niagara.pointmap import apply_bindings, suggest_bindings
+from bactalk.niagara.station_points import parse_station_inventory
 from bactalk.optional_dependencies import (
     ALFALFA_CLIENT,
     CEREBRAS,
@@ -2086,6 +2089,45 @@ def create_app(
         except ArtifactChangedError as exc:
             raise HTTPException(status_code=412, detail=str(exc)) from exc
 
+    @app.post("/api/intake/station-bindings")
+    async def suggest_station_bindings(
+        station_bog: Annotated[UploadFile, File()],
+        points_file: Annotated[UploadFile, File()],
+        sequence_family: Annotated[
+            str,
+            Form(pattern=r"^(AUTO|[A-Za-z][A-Za-z0-9_.-]*)$", max_length=120),
+        ] = "AUTO",
+    ) -> dict:
+        """Parse a contractor station as data and suggest proxy points for each job point.
+
+        Suggestions only: a human confirms them in the intake UI and the confirmed
+        bindings travel with the import as ``point_bindings``.
+        """
+
+        station = await station_bog.read()
+        try:
+            validate_template_bog(station)
+            inventory = parse_station_inventory(station)
+            points_content = await points_file.read()
+            points = parse_points_file(points_content, points_file.filename or "points.csv")
+            if sequence_family != "AUTO":
+                points = list(canonicalize_points(points, sequence_family).points)
+        except (IntakeError, ValueError) as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        suggestions = suggest_bindings(points, inventory.points)
+        return {
+            "schema": "bactalk.station-binding-suggestions/v1",
+            "inventory": inventory.to_dict(),
+            "points": [point.model_dump(mode="json") for point in points],
+            "suggestions": {
+                name: [item.to_dict() for item in items] for name, items in suggestions.items()
+            },
+            "policy": {
+                "human_confirmation_required": True,
+                "write_priority": "explicit, 2-16; priority 1 and implicit priorities are refused",
+            },
+        }
+
     @app.post("/api/intake/inspect")
     async def inspect_contractor_intake(
         points_file: Annotated[UploadFile, File()],
@@ -2170,6 +2212,7 @@ def create_app(
             Form(),
         ] = "modelica_exact",
         expert_program_objects: Annotated[bool, Form()] = False,
+        point_bindings: Annotated[str, Form(max_length=200_000)] = "{}",
         deliverable_requirements: Annotated[str, Form(max_length=100_000)] = "{}",
         acceptance_tests: Annotated[str, Form(max_length=200_000)] = "[]",
         notes: Annotated[str | None, Form(max_length=5_000)] = None,
@@ -2233,6 +2276,12 @@ def create_app(
                 )
             mapping = canonicalize_points(points, sequence_family)
             points = list(mapping.points)
+            confirmed_bindings = _form_json_object(point_bindings, "point bindings")
+            if confirmed_bindings:
+                try:
+                    points = apply_bindings(points, confirmed_bindings)
+                except ValueError as exc:
+                    raise IntakeError(str(exc)) from exc
             deliverables = canonicalize_deliverable_requirements(deliverables, points)
             scan_content = await bacnet_scan.read() if bacnet_scan else None
             scan = parse_bacnet_scan_json(scan_content) if scan_content is not None else None

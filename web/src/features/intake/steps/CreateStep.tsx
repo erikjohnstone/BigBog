@@ -12,13 +12,14 @@ import { familyById } from '../families';
 export function CreateStep({ errors }: { errors: Record<string, string> }) {
   const draft = useIntake((state) => state.draft);
   const files = useIntake((state) => state.files);
+  const bindings = useIntake((state) => state.bindings);
   const inspection = useIntake((state) => state.inspection);
   const reset = useIntake((state) => state.reset);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const family = familyById(draft.sequenceFamily);
   const create = useMutation({
-    mutationFn: () => api.importRun(buildImportForm(draft, files)),
+    mutationFn: () => api.importRun(buildImportForm(draft, files, bindings)),
     onSuccess: async (run) => {
       await queryClient.invalidateQueries({ queryKey: keys.runs });
       reset();

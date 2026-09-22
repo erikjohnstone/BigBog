@@ -72,7 +72,7 @@ def test_review_api_flow(tmp_path: Path) -> None:
     deliverables = client.get(f"/api/runs/{run_id}/deliverables")
     assert deliverables.status_code == 200
     assert deliverables.json()["deployment_ready"] is False
-    assert len(deliverables.json()["artifacts"]) == 15
+    assert len(deliverables.json()["artifacts"]) == 14  # N5: no Java point binder by default
     alarm_plan = client.get(f"/api/runs/{run_id}/niagara-alarm-plan")
     assert alarm_plan.status_code == 200
     assert alarm_plan.json()["extensions"][0]["point"] == "HighZoneTempAlarm"
@@ -90,7 +90,7 @@ def test_review_api_flow(tmp_path: Path) -> None:
     assert release.json()["behavior"]["passed"] is True
     assert release.json()["behavior"]["scenario_count"] == 5
     assert release.json()["deliverables"]["available"] is True
-    assert len(release.json()["deliverables"]["artifacts"]) == 15
+    assert len(release.json()["deliverables"]["artifacts"]) == 14
     assert release.json()["downloads"]["available"] is False
     assert release.json()["safety"]["live_writes_enabled"] is False
 

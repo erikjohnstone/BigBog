@@ -58,6 +58,9 @@ export function SignalRail({
     return out;
   }, [trace, query, onIds, outputsOf]);
 
+  // TanStack Virtual returns functions the React Compiler cannot memoize; the
+  // compiler skips this component, which is the documented behaviour.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const virtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => scroller.current,

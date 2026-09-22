@@ -381,6 +381,10 @@ def build_deliverable_package(
         *(
             DeliverableArtifact(item.relative_path, item.content.encode("utf-8"))
             for item in binding_export.artifacts
+            # GOAL-NATIVE-BOG.md N5: the generated Java binder leaves the default
+            # path; the JSON binding plan stays. The Java is emitted only for
+            # jobs that opted into the expert ProgramObject lane.
+            if job.sequence.expert_program_objects or not item.relative_path.endswith(".java")
         ),
         DeliverableArtifact("schedules.json", _json_bytes(schedule_manifest)),
         DeliverableArtifact("histories.json", _json_bytes(history_manifest)),

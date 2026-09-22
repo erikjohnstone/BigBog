@@ -231,7 +231,7 @@ def build_catalog(
             module=base.module if base else module,
             name=base.name if base else name,
             origin=base.origin if base else DOC_ONLY_ORIGIN,
-            dynamic_slots=base.dynamic_slots if base else False,
+            dynamic_slots=bool(entry.get("dynamic_slots", base.dynamic_slots if base else False)),
             slots=MappingProxyType(slots),
             sources=base.sources if base else (),
             component_count=base.component_count if base else 0,

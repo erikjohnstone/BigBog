@@ -1,12 +1,14 @@
-import { useMutation } from '@tanstack/react-query';
-import { RefreshCw } from 'lucide-react';
-import { useEffect } from 'react';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { Link2, RefreshCw } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { api } from '../../../api/client';
-import { Button, StatusPill } from '../../../design-system/primitives';
+import type { BindingSuggestion, StationBindingSuggestions } from '../../../api/client';
+import { Button, Input, NativeSelect, StatusPill } from '../../../design-system/primitives';
 import { ErrorState, LoadingState } from '../../../design-system/states';
 import { useIntake } from '../../../stores/intake';
-import { buildInspectForm } from '../build-import-form';
+import type { ConfirmedBinding } from '../../../stores/intake';
+import { buildInspectForm, buildStationBindingsForm } from '../build-import-form';
 
 /** Runs the server's point normalization and shows exactly what it mapped. */
 export function NormalizeStep() {
@@ -86,6 +88,8 @@ export function NormalizeStep() {
         )}
       </div>
 
+      <StationBindings />
+
       <div className="panel overflow-x-auto">
         <table className="w-full text-sm whitespace-nowrap">
           <thead className="text-left">
@@ -128,5 +132,133 @@ function Metric({ label, value, tone }: { label: string; value: number; tone?: '
       <span className={`block text-2xl font-semibold num ${tone === 'fail' ? 'text-fail' : tone === 'ok' ? 'text-ok' : ''}`}>{value}</span>
       <span className="block text-xs text-fg-1">{label}</span>
     </div>
+  );
+}
+
+/**
+ * Station point binding: parses the attached station .bog as data, shows ranked
+ * proxy-point suggestions per job point, and records only what the engineer
+ * confirms. Nothing links without a confirmation; command points need an
+ * explicit write priority between 2 and 16.
+ */
+function StationBindings() {
+  const draft = useIntake((state) => state.draft);
+  const files = useIntake((state) => state.files);
+  const bindings = useIntake((state) => state.bindings);
+  const confirmBinding = useIntake((state) => state.confirmBinding);
+  // Keyed on the attached files, so a new station or points list re-reads
+  // without effects or local state.
+  const fileKey = (file: File | null) => (file ? `${file.name}:${file.size}:${file.lastModified}` : null);
+  const suggest = useQuery({
+    queryKey: ['station-bindings', fileKey(files.template), fileKey(files.points), draft.sequenceFamily],
+    queryFn: () => api.stationBindings(buildStationBindingsForm(draft, files)),
+    enabled: Boolean(files.template && files.points),
+    staleTime: Infinity,
+  });
+  const result: StationBindingSuggestions | null = suggest.data ?? null;
+  const mutate = () => void suggest.refetch();
+
+  if (!files.template) {
+    return (
+      <div className="panel p-4 text-sm text-fg-1" role="region" aria-label="Station bindings">
+        <span className="font-medium text-fg-0">Station points.</span> Attach a Niagara station template in Sources to link the program to its BACnet proxy points. Without one, the export carries writable Inputs and Outputs ready to link in Workbench.
+      </div>
+    );
+  }
+  if (suggest.isPending && !result) return <LoadingState label="Reading station points" />;
+  if (suggest.isError && !result) return <ErrorState title="The station could not be read as data" error={suggest.error} onRetry={() => mutate()} />;
+  if (!result) return null;
+
+  const confirmedCount = Object.keys(bindings).length;
+  return (
+    <div className="panel flex flex-col gap-3 p-4" role="region" aria-label="Station bindings">
+      <div className="flex items-center gap-2 flex-wrap">
+        <Link2 size={14} />
+        <span className="text-sm font-medium">Station points</span>
+        <StatusPill tone="sim">{result.inventory.device_count} devices · {result.inventory.point_count} proxy points</StatusPill>
+        <StatusPill tone={confirmedCount ? 'ok' : 'warn'}>{confirmedCount} confirmed</StatusPill>
+        <span className="text-xs text-fg-2">Suggestions are ranked from names, BACnet object types, units and device grouping. Only confirmed rows link.</span>
+      </div>
+      <table className="w-full text-sm">
+        <thead className="text-left">
+          <tr className="hairline-b">
+            <th className="eyebrow px-2 h-8 font-semibold">Job point</th>
+            <th className="eyebrow px-2 h-8 font-semibold">Suggested proxy</th>
+            <th className="eyebrow px-2 h-8 font-semibold">Why</th>
+            <th className="eyebrow px-2 h-8 font-semibold">Priority</th>
+            <th className="eyebrow px-2 h-8 font-semibold">Confirm</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-line-1">
+          {result.points.map((point) => (
+            <BindingRow
+              key={point.name}
+              point={point.name}
+              role={point.role}
+              suggestions={result.suggestions[point.name] ?? []}
+              confirmed={bindings[point.name] ?? null}
+              onConfirm={(binding) => confirmBinding(point.name, binding)}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function BindingRow({
+  point,
+  role,
+  suggestions,
+  confirmed,
+  onConfirm,
+}: {
+  point: string;
+  role: string;
+  suggestions: BindingSuggestion[];
+  confirmed: ConfirmedBinding | null;
+  onConfirm: (binding: ConfirmedBinding | null) => void;
+}) {
+  const [choice, setChoice] = useState<string>(suggestions[0]?.ord ?? '');
+  const isCommand = role === 'command' || role === 'setpoint';
+  const [priority, setPriority] = useState<number>(suggestions[0]?.write_priority ?? 16);
+  const selected = suggestions.find((item) => item.ord === choice) ?? null;
+  const shortOrd = (ord: string) => ord.split('/').slice(-3).join('/');
+  return (
+    <tr>
+      <td className="px-2 h-9 font-mono text-xs">{point}</td>
+      <td className="px-2">
+        {suggestions.length === 0 ? (
+          <span className="text-xs text-fg-2">no candidate shares a name token</span>
+        ) : (
+          <NativeSelect aria-label={`Proxy for ${point}`} size="sm" value={choice} onChange={(event) => setChoice(event.target.value)} disabled={Boolean(confirmed)}>
+            {suggestions.map((item) => (
+              <option key={item.ord} value={item.ord}>
+                {shortOrd(item.ord)} · {(item.score * 100).toFixed(0)}%
+              </option>
+            ))}
+          </NativeSelect>
+        )}
+      </td>
+      <td className="px-2 text-2xs text-fg-2">{selected?.reasons.join('; ') ?? '—'}</td>
+      <td className="px-2">
+        {isCommand ? (
+          <Input aria-label={`Write priority for ${point}`} type="number" min={2} max={16} className="w-16" mono value={priority} onChange={(event) => setPriority(Number(event.target.value))} disabled={Boolean(confirmed)} />
+        ) : (
+          <span className="text-xs text-fg-2">read</span>
+        )}
+      </td>
+      <td className="px-2">
+        {confirmed ? (
+          <Button variant="outline" size="sm" onClick={() => onConfirm(null)}>
+            Unbind
+          </Button>
+        ) : (
+          <Button size="sm" disabled={!selected || (isCommand && (priority < 2 || priority > 16))} onClick={() => selected && onConfirm({ niagara_ord: selected.ord, write_priority: isCommand ? priority : null })}>
+            Confirm
+          </Button>
+        )}
+      </td>
+    </tr>
   );
 }

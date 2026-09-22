@@ -163,6 +163,29 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/intake/station-bindings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Suggest Station Bindings
+         * @description Parse a contractor station as data and suggest proxy points for each job point.
+         *
+         *     Suggestions only: a human confirms them in the intake UI and the confirmed
+         *     bindings travel with the import as ``point_bindings``.
+         */
+        post: operations["suggest_station_bindings_api_intake_station_bindings_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/integrations/alfalfa/inspect-fmu": {
         parameters: {
             query?: never;
@@ -2039,6 +2062,11 @@ export interface components {
             name: string;
             /** Notes */
             notes?: string | null;
+            /**
+             * Point Bindings
+             * @default {}
+             */
+            point_bindings: string;
             /** Points Csv */
             points_csv?: string | null;
             /** Points File */
@@ -2113,6 +2141,18 @@ export interface components {
             model_file: string;
             /** Qualification */
             qualification: string;
+        };
+        /** Body_suggest_station_bindings_api_intake_station_bindings_post */
+        Body_suggest_station_bindings_api_intake_station_bindings_post: {
+            /** Points File */
+            points_file: string;
+            /**
+             * Sequence Family
+             * @default AUTO
+             */
+            sequence_family: string;
+            /** Station Bog */
+            station_bog: string;
         };
         /** BoptestActuatorBinding */
         BoptestActuatorBinding: {
@@ -3339,6 +3379,41 @@ export interface operations {
         requestBody: {
             content: {
                 "multipart/form-data": components["schemas"]["Body_inspect_contractor_intake_api_intake_inspect_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    suggest_station_bindings_api_intake_station_bindings_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_suggest_station_bindings_api_intake_station_bindings_post"];
             };
         };
         responses: {

@@ -3,7 +3,7 @@
  * form: validation per step and the FormData the server expects.
  */
 
-import type { IntakeDraft, IntakeFiles, IntakeStep } from '../../stores/intake';
+import type { ConfirmedBinding, IntakeDraft, IntakeFiles, IntakeStep } from '../../stores/intake';
 import { familyById } from './families';
 
 export const EQUIPMENT_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/;
@@ -66,7 +66,7 @@ export function validateStep(step: IntakeStep, draft: IntakeDraft, files: Intake
   return errors;
 }
 
-export function buildImportForm(draft: IntakeDraft, files: IntakeFiles): FormData {
+export function buildImportForm(draft: IntakeDraft, files: IntakeFiles, bindings: Record<string, ConfirmedBinding> = {}): FormData {
   const body = new FormData();
   const family = familyById(draft.sequenceFamily);
   body.append('name', draft.name.trim());
@@ -88,6 +88,17 @@ export function buildImportForm(draft: IntakeDraft, files: IntakeFiles): FormDat
   if (files.bacnet) body.append('bacnet_scan', files.bacnet);
   if (files.template) body.append('template_bog', files.template);
   if (files.environment) body.append('environment_pack', files.environment);
+  // Only bindings the engineer confirmed travel with the job; the server
+  // refuses priority 1 and implicit priorities on command points.
+  if (Object.keys(bindings).length > 0) body.append('point_bindings', JSON.stringify(bindings));
+  return body;
+}
+
+export function buildStationBindingsForm(draft: IntakeDraft, files: IntakeFiles): FormData {
+  const body = new FormData();
+  if (files.template) body.append('station_bog', files.template);
+  if (files.points) body.append('points_file', files.points);
+  body.append('sequence_family', draft.sequenceFamily);
   return body;
 }
 
