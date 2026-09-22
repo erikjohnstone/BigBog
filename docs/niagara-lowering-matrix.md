@@ -13,7 +13,7 @@ claim of runtime qualification.
 |---|---|
 | `STOCK_EXACT` | 28 |
 | `STOCK_WITHIN_BANDS` | 3 |
-| `MODULE` | 23 |
+| `MODULE` | 26 |
 | `UNSUPPORTED` | 6 |
 
 ## Matrix
@@ -51,6 +51,9 @@ claim of runtime qualification.
 | `one_shot` | `MODULE` | `bactalkG36:RisingEdge` | — | One execution true per rising edge, judged between execution periods; kitControl:OneShot fires on transient values inside one link propagation (N7, D3). |
 | `boolean_falling_edge` | `MODULE` | `bactalkG36:FallingEdge` | — | One execution true per falling edge, judged between execution periods. |
 | `numeric_round` | `MODULE` | `bactalkG36:Round` | — | Round half away from zero (CDL RealToInteger); kitControl has no rounding block. |
+| `numeric_integrator_with_reset` | `MODULE` | `bactalkG36:IntegratorWithReset` | — | CDL IntegratorWithReset as the reference engine discretises it (forward Euler over the tick, reset on a rising trigger, output one tick behind); a module kernel so those tick semantics are exact rather than a stock approximation. |
+| `numeric_on_counter` | `MODULE` | `bactalkG36:OnCounter` | — | CDL OnCounter (count rising triggers, rising reset returns to start, output one tick behind as the reference engine emits it); a module kernel so the edge and reset semantics are exact rather than a stock approximation. |
+| `wet_bulb_temperature` | `MODULE` | `bactalkG36:WetBulb` | — | CDL WetBulb_TDryBulPhi (Stull's closed form, fdlibm atan as the reference engine evaluates it). |
 | `numeric_limit_slew_rate` | `MODULE` | `bactalkG36:LimitSlewRate` | — | CDL LimitSlewRate as the reference engine discretises it (implicit lag, clamped per-tick change); kitControl:Ramp is a signal generator, not a rate limiter. |
 | `boolean_delay` | `STOCK_WITHIN_BANDS` | `kitControl:BooleanDelay` | in→in, out→out | — |
 | `boolean_true_false_hold` | `MODULE` | `bactalkG36:TrueFalseHold` | — | No stock block holds both states for a minimum time. |
@@ -126,9 +129,11 @@ Bounding scenarios:
 - `bactalkG36:FallingEdge`: `boolean_falling_edge`
 - `bactalkG36:FirstOrderHold`: `numeric_first_order_hold`
 - `bactalkG36:Hysteresis`: `hysteresis`
+- `bactalkG36:IntegratorWithReset`: `numeric_integrator_with_reset`
 - `bactalkG36:LimitSlewRate`: `numeric_limit_slew_rate`
 - `bactalkG36:MovingAverage`: `moving_average`
 - `bactalkG36:NumericChange`: `numeric_changed`, `numeric_increased`, `numeric_decreased`
+- `bactalkG36:OnCounter`: `numeric_on_counter`
 - `bactalkG36:PIDWithReset`: `pid_with_reset`
 - `bactalkG36:Pre`: `boolean_pre_host_tick`
 - `bactalkG36:RisingEdge`: `one_shot`
@@ -142,4 +147,5 @@ Bounding scenarios:
 - `bactalkG36:TrimAndRespond`: `trim_and_respond`, `trim_and_respond_hold`
 - `bactalkG36:TrueFalseHold`: `boolean_true_false_hold`
 - `bactalkG36:UnitDelay`: `numeric_unit_delay`
+- `bactalkG36:WetBulb`: `wet_bulb_temperature`
 - `bactalkG36:TrueDelay`: `boolean_delay` (delay_on_init false)

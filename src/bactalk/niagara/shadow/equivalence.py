@@ -100,6 +100,11 @@ KERNEL_CASES: tuple[tuple[str, dict[str, object], tuple[str, ...]], ...] = (
     ("NumericChange", {"mode": "decreased", "initial": 0.0}, ("n",)),
     ("RisingEdge", {"initial": False}, ("b",)),
     ("Round", {}, ("n",)),
+    ("IntegratorWithReset", {"gain": 0.8, "initial": 0.25}, ("n", "n", "b")),
+    ("IntegratorWithReset", {"gain": -2.0, "initial": 0.0}, ("n", "n", "b")),
+    ("OnCounter", {"initial": 0.0}, ("b", "b")),
+    ("OnCounter", {"initial": 3.0}, ("b", "b")),
+    ("WetBulb", {}, ("n", "n")),
     (
         "LimitSlewRate",
         {"raisingSlewRate": 1.0 / 600.0, "fallingSlewRate": -1.0 / 600.0, "tdSeconds": 60.0},

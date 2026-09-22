@@ -1,0 +1,1686 @@
+{
+ "configuration_id": "tpl-pumps-generic-staging-headered-deltap",
+ "controller_id": "Pumps.Generic.StagingHeaderedDeltaP",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP",
+  "inputs": [
+   {
+    "description": "Flow rate",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.V_flow",
+    "label": "V_flow",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Loop differential pressure setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.dpSet__1",
+    "label": "dpSet__1",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Loop differential pressure",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.dp__1",
+    "label": "dp__1",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Pump status",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.u1_actual__1",
+    "label": "u1_actual__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Pump status",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.u1_actual__2",
+    "label": "u1_actual__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Pump status",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.u1_actual__3",
+    "label": "u1_actual__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Pump status",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.u1_actual__4",
+    "label": "u1_actual__4",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Pump speed command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.y",
+    "label": "y",
+    "type": "S231:RealInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Stage down command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.y1Dow",
+    "label": "y1Dow",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Stage up command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.y1Up",
+    "label": "y1Up",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 10
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "V_flow_nominal": 0.1,
+  "nPum": 4,
+  "nSenDp": 1
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "V_flow",
+   "name": "V_flow",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.V_flow",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dpSet__1",
+   "name": "dpSet__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.dpSet__1",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dp__1",
+   "name": "dp__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.dp__1",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1_actual__1",
+   "name": "u1_actual__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.u1_actual__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1_actual__2",
+   "name": "u1_actual__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.u1_actual__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1_actual__3",
+   "name": "u1_actual__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.u1_actual__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1_actual__4",
+   "name": "u1_actual__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.u1_actual__4",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "y",
+   "name": "y",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.y",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1Dow",
+   "name": "y1Dow",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.y1Dow",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1Up",
+   "name": "y1Up",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP.y1Up",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Pumps/Generic/StagingHeaderedDeltaP.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "1fc1f12190c76ea7a65fe2a2affa17a77ce0636fc6939a65ef6399532301d1f5",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "e3efa9122951201fe7c422939aa018a9600c25f83265888ccd76ba0505b75673",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "dp__1",
+    "kind": "numeric_input",
+    "label": "dp__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "dpSet__1",
+    "kind": "numeric_input",
+    "label": "dpSet__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1_actual__1",
+    "kind": "boolean_input",
+    "label": "u1_actual__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1_actual__2",
+    "kind": "boolean_input",
+    "label": "u1_actual__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1_actual__3",
+    "kind": "boolean_input",
+    "label": "u1_actual__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1_actual__4",
+    "kind": "boolean_input",
+    "label": "u1_actual__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "V_flow",
+    "kind": "numeric_input",
+    "label": "V_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "y",
+    "kind": "numeric_input",
+    "label": "y",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1Dow",
+    "kind": "boolean_output",
+    "label": "y1Dow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1Up",
+    "kind": "boolean_output",
+    "label": "y1Up",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "anyCha_fold_2",
+    "kind": "or",
+    "label": "anyCha fold 2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "anyCha_fold_3",
+    "kind": "or",
+    "label": "anyCha fold 3",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "anyCha_fold_4",
+    "kind": "or",
+    "label": "anyCha fold 4",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea__1_true",
+    "kind": "numeric_const",
+    "label": "booToRea__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea__1_false",
+    "kind": "numeric_const",
+    "label": "booToRea__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea__1",
+    "kind": "numeric_switch",
+    "label": "booToRea__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea__2_true",
+    "kind": "numeric_const",
+    "label": "booToRea__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea__2_false",
+    "kind": "numeric_const",
+    "label": "booToRea__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea__2",
+    "kind": "numeric_switch",
+    "label": "booToRea__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea__3_true",
+    "kind": "numeric_const",
+    "label": "booToRea__3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea__3_false",
+    "kind": "numeric_const",
+    "label": "booToRea__3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea__3",
+    "kind": "numeric_switch",
+    "label": "booToRea__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea__4_true",
+    "kind": "numeric_const",
+    "label": "booToRea__4 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea__4_false",
+    "kind": "numeric_const",
+    "label": "booToRea__4 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea__4",
+    "kind": "numeric_switch",
+    "label": "booToRea__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "cha__1_rising",
+    "kind": "one_shot",
+    "label": "cha__1 rising",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cha__1_invert",
+    "kind": "not",
+    "label": "cha__1 invert",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": true
+    },
+    "id": "cha__1_falling",
+    "kind": "one_shot",
+    "label": "cha__1 falling",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cha__1_either",
+    "kind": "or",
+    "label": "cha__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "cha__2_rising",
+    "kind": "one_shot",
+    "label": "cha__2 rising",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cha__2_invert",
+    "kind": "not",
+    "label": "cha__2 invert",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": true
+    },
+    "id": "cha__2_falling",
+    "kind": "one_shot",
+    "label": "cha__2 falling",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cha__2_either",
+    "kind": "or",
+    "label": "cha__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "cha__3_rising",
+    "kind": "one_shot",
+    "label": "cha__3 rising",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cha__3_invert",
+    "kind": "not",
+    "label": "cha__3 invert",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": true
+    },
+    "id": "cha__3_falling",
+    "kind": "one_shot",
+    "label": "cha__3 falling",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cha__3_either",
+    "kind": "or",
+    "label": "cha__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "cha__4_rising",
+    "kind": "one_shot",
+    "label": "cha__4 rising",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cha__4_invert",
+    "kind": "not",
+    "label": "cha__4 invert",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": true
+    },
+    "id": "cha__4_falling",
+    "kind": "one_shot",
+    "label": "cha__4 falling",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cha__4_either",
+    "kind": "or",
+    "label": "cha__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "delDpSet__1",
+    "kind": "subtract",
+    "label": "delDpSet__1",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edgDow",
+    "kind": "one_shot",
+    "label": "edgDow",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edgUp",
+    "kind": "one_shot",
+    "label": "edgUp",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "effOrFailSafDow",
+    "kind": "or",
+    "label": "effOrFailSafDow",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "effOrFailSafUp",
+    "kind": "or",
+    "label": "effOrFailSafUp",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": -10000.0
+    },
+    "id": "higDp__1_threshold",
+    "kind": "numeric_const",
+    "label": "higDp__1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "higDp__1",
+    "kind": "greater_than",
+    "label": "higDp__1",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "higV",
+    "kind": "greater_than",
+    "label": "higV",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.99
+    },
+    "id": "higY_threshold",
+    "kind": "numeric_const",
+    "label": "higY threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "higY",
+    "kind": "greater_than",
+    "label": "higY",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "higYAndLowDp",
+    "kind": "and",
+    "label": "higYAndLowDp",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lckEff",
+    "kind": "boolean_set_reset",
+    "label": "lckEff",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lckFaiSaf",
+    "kind": "boolean_set_reset",
+    "label": "lckFaiSaf",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": -10000.0
+    },
+    "id": "lowDp__1_threshold",
+    "kind": "numeric_const",
+    "label": "lowDp__1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lowDp__1",
+    "kind": "less_than",
+    "label": "lowDp__1",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "lowV",
+    "kind": "less_than",
+    "label": "lowV",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.4
+    },
+    "id": "lowY_threshold",
+    "kind": "numeric_const",
+    "label": "lowY threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lowY",
+    "kind": "less_than",
+    "label": "lowY",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "nOpe_fold_2",
+    "kind": "add",
+    "label": "nOpe fold 2",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "nOpe_fold_3",
+    "kind": "add",
+    "label": "nOpe fold 3",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "nOpe_fold_4",
+    "kind": "add",
+    "label": "nOpe fold 4",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.25
+    },
+    "id": "norN_parameter",
+    "kind": "numeric_const",
+    "label": "norN parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "norN",
+    "kind": "multiply",
+    "label": "norN",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 10.0
+    },
+    "id": "norV_parameter",
+    "kind": "numeric_const",
+    "label": "norV parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "norV",
+    "kind": "multiply",
+    "label": "norV",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": -0.28
+    },
+    "id": "poiDow_parameter",
+    "kind": "numeric_const",
+    "label": "poiDow parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "poiDow",
+    "kind": "add",
+    "label": "poiDow",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": -0.03
+    },
+    "id": "poiUp_parameter",
+    "kind": "numeric_const",
+    "label": "poiUp parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "poiUp",
+    "kind": "add",
+    "label": "poiUp",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preEff",
+    "kind": "boolean_pre_host_tick",
+    "label": "preEff",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preFaiSaf",
+    "kind": "boolean_pre_host_tick",
+    "label": "preFaiSaf",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "staDowAndPreEff",
+    "kind": "and",
+    "label": "staDowAndPreEff",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "staDowAndPreFaiSaf_fold_2",
+    "kind": "and",
+    "label": "staDowAndPreFaiSaf fold 2",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "staDowAndPreFaiSaf_fold_3",
+    "kind": "and",
+    "label": "staDowAndPreFaiSaf fold 3",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+     "threshold_seconds": 300.0
+    },
+    "id": "timHigDp__1",
+    "kind": "timer_with_reset",
+    "label": "timHigDp__1",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+     "threshold_seconds": 600.0
+    },
+    "id": "timHigV",
+    "kind": "timer_with_reset",
+    "label": "timHigV",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+     "threshold_seconds": 300.0
+    },
+    "id": "timHigY",
+    "kind": "timer_with_reset",
+    "label": "timHigY",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+     "threshold_seconds": 300.0
+    },
+    "id": "timLowDp__1",
+    "kind": "timer_with_reset",
+    "label": "timLowDp__1",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+     "threshold_seconds": 600.0
+    },
+    "id": "timLowV",
+    "kind": "timer_with_reset",
+    "label": "timLowV",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+     "threshold_seconds": 600.0
+    },
+    "id": "timLowY",
+    "kind": "timer_with_reset",
+    "label": "timLowY",
+    "x": 0,
+    "y": 840
+   }
+  ],
+  "links": [
+   {
+    "source": "booToRea__1_true",
+    "source_slot": "out",
+    "target": "booToRea__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea__1_false",
+    "source_slot": "out",
+    "target": "booToRea__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea__2_true",
+    "source_slot": "out",
+    "target": "booToRea__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea__2_false",
+    "source_slot": "out",
+    "target": "booToRea__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea__3_true",
+    "source_slot": "out",
+    "target": "booToRea__3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea__3_false",
+    "source_slot": "out",
+    "target": "booToRea__3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea__4_true",
+    "source_slot": "out",
+    "target": "booToRea__4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea__4_false",
+    "source_slot": "out",
+    "target": "booToRea__4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "cha__1_invert",
+    "source_slot": "out",
+    "target": "cha__1_falling",
+    "target_slot": "in"
+   },
+   {
+    "source": "cha__1_rising",
+    "source_slot": "out",
+    "target": "cha__1_either",
+    "target_slot": "a"
+   },
+   {
+    "source": "cha__1_falling",
+    "source_slot": "out",
+    "target": "cha__1_either",
+    "target_slot": "b"
+   },
+   {
+    "source": "cha__2_invert",
+    "source_slot": "out",
+    "target": "cha__2_falling",
+    "target_slot": "in"
+   },
+   {
+    "source": "cha__2_rising",
+    "source_slot": "out",
+    "target": "cha__2_either",
+    "target_slot": "a"
+   },
+   {
+    "source": "cha__2_falling",
+    "source_slot": "out",
+    "target": "cha__2_either",
+    "target_slot": "b"
+   },
+   {
+    "source": "cha__3_invert",
+    "source_slot": "out",
+    "target": "cha__3_falling",
+    "target_slot": "in"
+   },
+   {
+    "source": "cha__3_rising",
+    "source_slot": "out",
+    "target": "cha__3_either",
+    "target_slot": "a"
+   },
+   {
+    "source": "cha__3_falling",
+    "source_slot": "out",
+    "target": "cha__3_either",
+    "target_slot": "b"
+   },
+   {
+    "source": "cha__4_invert",
+    "source_slot": "out",
+    "target": "cha__4_falling",
+    "target_slot": "in"
+   },
+   {
+    "source": "cha__4_rising",
+    "source_slot": "out",
+    "target": "cha__4_either",
+    "target_slot": "a"
+   },
+   {
+    "source": "cha__4_falling",
+    "source_slot": "out",
+    "target": "cha__4_either",
+    "target_slot": "b"
+   },
+   {
+    "source": "higDp__1_threshold",
+    "source_slot": "out",
+    "target": "higDp__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "higY_threshold",
+    "source_slot": "out",
+    "target": "higY",
+    "target_slot": "b"
+   },
+   {
+    "source": "lowDp__1_threshold",
+    "source_slot": "out",
+    "target": "lowDp__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "lowY_threshold",
+    "source_slot": "out",
+    "target": "lowY",
+    "target_slot": "b"
+   },
+   {
+    "source": "norN_parameter",
+    "source_slot": "out",
+    "target": "norN",
+    "target_slot": "b"
+   },
+   {
+    "source": "norV_parameter",
+    "source_slot": "out",
+    "target": "norV",
+    "target_slot": "b"
+   },
+   {
+    "source": "poiDow_parameter",
+    "source_slot": "out",
+    "target": "poiDow",
+    "target_slot": "b"
+   },
+   {
+    "source": "poiUp_parameter",
+    "source_slot": "out",
+    "target": "poiUp",
+    "target_slot": "b"
+   },
+   {
+    "source": "dp__1",
+    "source_slot": "out",
+    "target": "delDpSet__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "dpSet__1",
+    "source_slot": "out",
+    "target": "delDpSet__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1_actual__1",
+    "source_slot": "out",
+    "target": "booToRea__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1_actual__1",
+    "source_slot": "out",
+    "target": "cha__1_rising",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1_actual__1",
+    "source_slot": "out",
+    "target": "cha__1_invert",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1_actual__2",
+    "source_slot": "out",
+    "target": "booToRea__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1_actual__2",
+    "source_slot": "out",
+    "target": "cha__2_rising",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1_actual__2",
+    "source_slot": "out",
+    "target": "cha__2_invert",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1_actual__3",
+    "source_slot": "out",
+    "target": "booToRea__3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1_actual__3",
+    "source_slot": "out",
+    "target": "cha__3_rising",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1_actual__3",
+    "source_slot": "out",
+    "target": "cha__3_invert",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1_actual__4",
+    "source_slot": "out",
+    "target": "booToRea__4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1_actual__4",
+    "source_slot": "out",
+    "target": "cha__4_rising",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1_actual__4",
+    "source_slot": "out",
+    "target": "cha__4_invert",
+    "target_slot": "in"
+   },
+   {
+    "source": "V_flow",
+    "source_slot": "out",
+    "target": "norV",
+    "target_slot": "a"
+   },
+   {
+    "source": "y",
+    "source_slot": "out",
+    "target": "higY",
+    "target_slot": "a"
+   },
+   {
+    "source": "y",
+    "source_slot": "out",
+    "target": "lowY",
+    "target_slot": "a"
+   },
+   {
+    "source": "anyCha_fold_2",
+    "source_slot": "out",
+    "target": "anyCha_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "anyCha_fold_3",
+    "source_slot": "out",
+    "target": "anyCha_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "anyCha_fold_4",
+    "source_slot": "out",
+    "target": "timHigDp__1",
+    "target_slot": "reset"
+   },
+   {
+    "source": "anyCha_fold_4",
+    "source_slot": "out",
+    "target": "timHigV",
+    "target_slot": "reset"
+   },
+   {
+    "source": "anyCha_fold_4",
+    "source_slot": "out",
+    "target": "timHigY",
+    "target_slot": "reset"
+   },
+   {
+    "source": "anyCha_fold_4",
+    "source_slot": "out",
+    "target": "timLowDp__1",
+    "target_slot": "reset"
+   },
+   {
+    "source": "anyCha_fold_4",
+    "source_slot": "out",
+    "target": "timLowV",
+    "target_slot": "reset"
+   },
+   {
+    "source": "anyCha_fold_4",
+    "source_slot": "out",
+    "target": "timLowY",
+    "target_slot": "reset"
+   },
+   {
+    "source": "booToRea__1",
+    "source_slot": "out",
+    "target": "nOpe_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToRea__2",
+    "source_slot": "out",
+    "target": "nOpe_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea__3",
+    "source_slot": "out",
+    "target": "nOpe_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea__4",
+    "source_slot": "out",
+    "target": "nOpe_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "cha__1_either",
+    "source_slot": "out",
+    "target": "anyCha_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "cha__2_either",
+    "source_slot": "out",
+    "target": "anyCha_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "cha__3_either",
+    "source_slot": "out",
+    "target": "anyCha_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "cha__4_either",
+    "source_slot": "out",
+    "target": "anyCha_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "delDpSet__1",
+    "source_slot": "out",
+    "target": "higDp__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "delDpSet__1",
+    "source_slot": "out",
+    "target": "lowDp__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "edgDow",
+    "source_slot": "out",
+    "target": "y1Dow",
+    "target_slot": "in"
+   },
+   {
+    "source": "edgUp",
+    "source_slot": "out",
+    "target": "y1Up",
+    "target_slot": "in"
+   },
+   {
+    "source": "effOrFailSafDow",
+    "source_slot": "out",
+    "target": "edgDow",
+    "target_slot": "in"
+   },
+   {
+    "source": "effOrFailSafUp",
+    "source_slot": "out",
+    "target": "edgUp",
+    "target_slot": "in"
+   },
+   {
+    "source": "higDp__1",
+    "source_slot": "out",
+    "target": "timHigDp__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "higV",
+    "source_slot": "out",
+    "target": "timHigV",
+    "target_slot": "in"
+   },
+   {
+    "source": "higY",
+    "source_slot": "out",
+    "target": "timHigY",
+    "target_slot": "in"
+   },
+   {
+    "source": "higYAndLowDp",
+    "source_slot": "out",
+    "target": "effOrFailSafUp",
+    "target_slot": "b"
+   },
+   {
+    "source": "higYAndLowDp",
+    "source_slot": "out",
+    "target": "lckEff",
+    "target_slot": "clear"
+   },
+   {
+    "source": "higYAndLowDp",
+    "source_slot": "out",
+    "target": "lckFaiSaf",
+    "target_slot": "set"
+   },
+   {
+    "source": "lckEff",
+    "source_slot": "out",
+    "target": "preEff",
+    "target_slot": "in"
+   },
+   {
+    "source": "lckFaiSaf",
+    "source_slot": "out",
+    "target": "preFaiSaf",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowDp__1",
+    "source_slot": "out",
+    "target": "timLowDp__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowV",
+    "source_slot": "out",
+    "target": "timLowV",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowY",
+    "source_slot": "out",
+    "target": "timLowY",
+    "target_slot": "in"
+   },
+   {
+    "source": "nOpe_fold_2",
+    "source_slot": "out",
+    "target": "nOpe_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "nOpe_fold_3",
+    "source_slot": "out",
+    "target": "nOpe_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "nOpe_fold_4",
+    "source_slot": "out",
+    "target": "norN",
+    "target_slot": "a"
+   },
+   {
+    "source": "norN",
+    "source_slot": "out",
+    "target": "poiDow",
+    "target_slot": "a"
+   },
+   {
+    "source": "norN",
+    "source_slot": "out",
+    "target": "poiUp",
+    "target_slot": "a"
+   },
+   {
+    "source": "norV",
+    "source_slot": "out",
+    "target": "higV",
+    "target_slot": "a"
+   },
+   {
+    "source": "norV",
+    "source_slot": "out",
+    "target": "lowV",
+    "target_slot": "a"
+   },
+   {
+    "source": "poiDow",
+    "source_slot": "out",
+    "target": "lowV",
+    "target_slot": "b"
+   },
+   {
+    "source": "poiUp",
+    "source_slot": "out",
+    "target": "higV",
+    "target_slot": "b"
+   },
+   {
+    "source": "preEff",
+    "source_slot": "out",
+    "target": "staDowAndPreEff",
+    "target_slot": "b"
+   },
+   {
+    "source": "preFaiSaf",
+    "source_slot": "out",
+    "target": "staDowAndPreFaiSaf_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "staDowAndPreEff",
+    "source_slot": "out",
+    "target": "effOrFailSafDow",
+    "target_slot": "a"
+   },
+   {
+    "source": "staDowAndPreFaiSaf_fold_2",
+    "source_slot": "out",
+    "target": "staDowAndPreFaiSaf_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "staDowAndPreFaiSaf_fold_3",
+    "source_slot": "out",
+    "target": "effOrFailSafDow",
+    "target_slot": "b"
+   },
+   {
+    "source": "timHigDp__1",
+    "source_slot": "passed",
+    "target": "staDowAndPreFaiSaf_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "timHigV",
+    "source_slot": "passed",
+    "target": "effOrFailSafUp",
+    "target_slot": "a"
+   },
+   {
+    "source": "timHigV",
+    "source_slot": "passed",
+    "target": "lckEff",
+    "target_slot": "set"
+   },
+   {
+    "source": "timHigV",
+    "source_slot": "passed",
+    "target": "lckFaiSaf",
+    "target_slot": "clear"
+   },
+   {
+    "source": "timHigY",
+    "source_slot": "passed",
+    "target": "higYAndLowDp",
+    "target_slot": "a"
+   },
+   {
+    "source": "timLowDp__1",
+    "source_slot": "passed",
+    "target": "higYAndLowDp",
+    "target_slot": "b"
+   },
+   {
+    "source": "timLowV",
+    "source_slot": "passed",
+    "target": "staDowAndPreEff",
+    "target_slot": "a"
+   },
+   {
+    "source": "timLowY",
+    "source_slot": "passed",
+    "target": "staDowAndPreFaiSaf_fold_2",
+    "target_slot": "a"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "anyCha_fold_2": "anyCha__fold_2",
+    "anyCha_fold_3": "anyCha__fold_3",
+    "anyCha_fold_4": "anyCha__fold_4",
+    "booToRea__1": "booToRea__1",
+    "booToRea__1_false": "booToRea__1",
+    "booToRea__1_true": "booToRea__1",
+    "booToRea__2": "booToRea__2",
+    "booToRea__2_false": "booToRea__2",
+    "booToRea__2_true": "booToRea__2",
+    "booToRea__3": "booToRea__3",
+    "booToRea__3_false": "booToRea__3",
+    "booToRea__3_true": "booToRea__3",
+    "booToRea__4": "booToRea__4",
+    "booToRea__4_false": "booToRea__4",
+    "booToRea__4_true": "booToRea__4",
+    "cha__1": "cha__1",
+    "cha__1_either": "cha__1",
+    "cha__1_falling": "cha__1",
+    "cha__1_invert": "cha__1",
+    "cha__1_rising": "cha__1",
+    "cha__2": "cha__2",
+    "cha__2_either": "cha__2",
+    "cha__2_falling": "cha__2",
+    "cha__2_invert": "cha__2",
+    "cha__2_rising": "cha__2",
+    "cha__3": "cha__3",
+    "cha__3_either": "cha__3",
+    "cha__3_falling": "cha__3",
+    "cha__3_invert": "cha__3",
+    "cha__3_rising": "cha__3",
+    "cha__4": "cha__4",
+    "cha__4_either": "cha__4",
+    "cha__4_falling": "cha__4",
+    "cha__4_invert": "cha__4",
+    "cha__4_rising": "cha__4",
+    "delDpSet__1": "delDpSet__1",
+    "edgDow": "edgDow",
+    "edgUp": "edgUp",
+    "effOrFailSafDow": "effOrFailSafDow",
+    "effOrFailSafUp": "effOrFailSafUp",
+    "higDp__1": "higDp__1",
+    "higDp__1_threshold": "higDp__1",
+    "higV": "higV",
+    "higY": "higY",
+    "higYAndLowDp": "higYAndLowDp",
+    "higY_threshold": "higY",
+    "lckEff": "lckEff",
+    "lckFaiSaf": "lckFaiSaf",
+    "lowDp__1": "lowDp__1",
+    "lowDp__1_threshold": "lowDp__1",
+    "lowV": "lowV",
+    "lowY": "lowY",
+    "lowY_threshold": "lowY",
+    "nOpe_fold_2": "nOpe__fold_2",
+    "nOpe_fold_3": "nOpe__fold_3",
+    "nOpe_fold_4": "nOpe__fold_4",
+    "norN": "norN",
+    "norN_parameter": "norN",
+    "norV": "norV",
+    "norV_parameter": "norV",
+    "poiDow": "poiDow",
+    "poiDow_parameter": "poiDow",
+    "poiUp": "poiUp",
+    "poiUp_parameter": "poiUp",
+    "preEff": "preEff",
+    "preFaiSaf": "preFaiSaf",
+    "staDowAndPreEff": "staDowAndPreEff",
+    "staDowAndPreFaiSaf_fold_2": "staDowAndPreFaiSaf__fold_2",
+    "staDowAndPreFaiSaf_fold_3": "staDowAndPreFaiSaf__fold_3",
+    "timHigDp__1": "timHigDp__1",
+    "timHigV": "timHigV",
+    "timHigY": "timHigY",
+    "timLowDp__1": "timLowDp__1",
+    "timLowV": "timLowV",
+    "timLowY": "timLowY"
+   },
+   "coverage": {
+    "boundary_inputs": 8,
+    "boundary_outputs": 2,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal": 4,
+     "Buildings.Controls.OBC.CDL.Logical.And": 4,
+     "Buildings.Controls.OBC.CDL.Logical.Change": 4,
+     "Buildings.Controls.OBC.CDL.Logical.Edge": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 5,
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 3,
+     "Buildings.Controls.OBC.CDL.Reals.AddParameter": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Greater": 1,
+     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Less": 1,
+     "Buildings.Controls.OBC.CDL.Reals.LessThreshold": 2,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 1,
+     "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset": 2,
+     "Utilities.TimerWithReset": 4
+    },
+    "component_count": 43,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Pre",
+     "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+     "Utilities.TimerWithReset"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP",
+    "root_label": "StagingHeaderedDeltaP",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "e3efa9122951201fe7c422939aa018a9600c25f83265888ccd76ba0505b75673",
+    "supported_class_count": 43,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "e3efa9122951201fe7c422939aa018a9600c25f83265888ccd76ba0505b75673"
+  },
+  "name": "StagingHeaderedDeltaP"
+ }
+}

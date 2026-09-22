@@ -102,7 +102,7 @@
  "library": "g36",
  "niagara_target": {
   "complete": true,
-  "generated_program_count": 13
+  "generated_program_count": 19
  },
  "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
  "parameters": {
@@ -2289,6 +2289,7 @@
     "niagara_exactness_blockers": [],
     "niagara_translatable": false,
     "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
      "Buildings.Controls.OBC.CDL.Logical.Latch",
      "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold",
      "Buildings.Controls.OBC.CDL.Reals.Hysteresis",

@@ -9682,3 +9682,62 @@ class PlantControlsLibrary(G36Library):
             "niagara_lowering_complete": translation["niagara_lowering_complete"],
             "library": "LBNL Modelica Buildings Templates.Plants.Controls",
         }
+
+
+class PlantControlsCdlLibrary(PlantControlsLibrary):
+    """LBNL ``Templates.Plants.Controls`` through the plain CDL lane (Tier 2b).
+
+    :class:`PlantControlsLibrary` keeps some utilities opaque and replaces several
+    controllers with hand-written graphs, because its source-package lane has exact
+    adapters for them. The native lane's Tier 2b rows need the other thing: LBNL's
+    complete CDL translated like every Tier 2 controller, and the Open Control Engine
+    executing that same CDL as the reference. This adapter keeps every class document
+    and always takes the CXF path.
+    """
+
+    def _source_bundle(
+        self,
+        controller_id: str,
+    ) -> tuple[dict[str, Any], dict[str, Any], dict[str, dict[str, Any]]]:
+        return G36Library._source_bundle(self, controller_id)
+
+    def parameter_schema(self, controller_id: str) -> dict[str, Any]:
+        result = G36Library.parameter_schema(self, controller_id)
+        result["library"] = "LBNL Modelica Buildings Templates.Plants.Controls"
+        return result
+
+    def translate(
+        self,
+        controller_id: str,
+        *,
+        execution_profile: ExecutionProfile = "modelica_exact",
+        parameters: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        result = G36Library.translate(
+            self,
+            controller_id,
+            execution_profile=execution_profile,
+            parameters=parameters,
+        )
+        result["library"] = "LBNL Modelica Buildings Templates.Plants.Controls"
+        return result
+
+    def execute(
+        self,
+        controller_id: str,
+        *,
+        samples: list[dict[str, Any]],
+        collect: list[str] | None = None,
+        parameters: dict[str, Any] | None = None,
+        absent_inputs: list[str] | None = None,
+    ) -> dict[str, Any]:
+        result = G36Library.execute(
+            self,
+            controller_id,
+            samples=samples,
+            collect=collect,
+            parameters=parameters,
+            absent_inputs=absent_inputs,
+        )
+        result["library"] = "LBNL Modelica Buildings Templates.Plants.Controls"
+        return result

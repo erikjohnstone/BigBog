@@ -8,7 +8,7 @@ so it can never drift from the interpreter.
 
 from __future__ import annotations
 
-from bactalk.domain import BLOCK_SLOTS, BlockKind
+from bactalk.domain import BLOCK_SLOTS, FEEDBACK_KINDS, BlockKind
 
 SCHEMA = "bactalk.block-catalog/v1"
 
@@ -44,6 +44,9 @@ _FAMILY: dict[BlockKind, str] = {
     BlockKind.RESET: "math",
     BlockKind.NUMERIC_ROUND: "math",
     BlockKind.NUMERIC_LIMIT_SLEW_RATE: "filter",
+    BlockKind.NUMERIC_INTEGRATOR_WITH_RESET: "state",
+    BlockKind.NUMERIC_ON_COUNTER: "state",
+    BlockKind.WET_BULB_TEMPERATURE: "math",
     BlockKind.GREATER_THAN: "compare",
     BlockKind.GREATER_THAN_OR_EQUAL: "compare",
     BlockKind.LESS_THAN: "compare",
@@ -124,14 +127,14 @@ _STATEFUL: frozenset[BlockKind] = frozenset(
         BlockKind.PLANT_HRC_MODE_CONTROL,
         BlockKind.PLANT_STAGE_COMPLETION,
         BlockKind.PLANT_STAGE_INDEX,
+        BlockKind.NUMERIC_INTEGRATOR_WITH_RESET,
+        BlockKind.NUMERIC_ON_COUNTER,
     }
 )
 
 # Feedback kinds break a wiresheet cycle by reading the previous scan; the
 # UI draws their incoming wire dashed so a loop reads as a loop.
-_FEEDBACK: frozenset[BlockKind] = frozenset(
-    {BlockKind.NUMERIC_UNIT_DELAY, BlockKind.BOOLEAN_PRE_HOST_TICK}
-)
+_FEEDBACK: frozenset[BlockKind] = FEEDBACK_KINDS
 
 
 def family_of(kind: BlockKind) -> str:

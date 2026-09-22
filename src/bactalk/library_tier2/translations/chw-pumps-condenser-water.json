@@ -1,0 +1,2188 @@
+{
+ "configuration_id": "chw-pumps-condenser-water",
+ "controller_id": "Plants.Chillers.Pumps.CondenserWater.Controller",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller",
+  "inputs": [
+   {
+    "description": "Chiller condenser water isolation valve status",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uChiConIsoVal__1",
+    "label": "uChiConIsoVal__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Chiller condenser water isolation valve status",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uChiConIsoVal__2",
+    "label": "uChiConIsoVal__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Current chiller stage that does not include WSE",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uChiSta",
+    "label": "uChiSta",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "True: plant is just enabled",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uEnaPla",
+    "label": "uEnaPla",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Lead chiller enabling status: true=lead chiller is enabled",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uLeaChiEna",
+    "label": "uLeaChiEna",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Lead chiller status: true=lead chiller proven on",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uLeaChiSta",
+    "label": "uLeaChiSta",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Status indicating if chiller is requesting condenser water",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uLeaConWatReq",
+    "label": "uLeaConWatReq",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Water side economizer status: true = ON, false = OFF",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uWSE",
+    "label": "uWSE",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Number of operating condenser water pumps",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.yConWatPumNum",
+    "label": "yConWatPumNum",
+    "type": "S231:IntegerOutput"
+   },
+   {
+    "description": "Condenser water pump design speed at current stage",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.yDesConWatPumSpe",
+    "label": "yDesConWatPumSpe",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Lead pump status setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.yLeaPum",
+    "label": "yLeaPum",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 0
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {},
+ "points": [
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uChiConIsoVal__1",
+   "name": "uChiConIsoVal__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uChiConIsoVal__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uChiConIsoVal__2",
+   "name": "uChiConIsoVal__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uChiConIsoVal__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uChiSta",
+   "name": "uChiSta",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uChiSta",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uEnaPla",
+   "name": "uEnaPla",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uEnaPla",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uLeaChiEna",
+   "name": "uLeaChiEna",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uLeaChiEna",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uLeaChiSta",
+   "name": "uLeaChiSta",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uLeaChiSta",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uLeaConWatReq",
+   "name": "uLeaConWatReq",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uLeaConWatReq",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uWSE",
+   "name": "uWSE",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.uWSE",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yConWatPumNum",
+   "name": "yConWatPumNum",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.yConWatPumNum",
+   "source_interface_type": "S231:IntegerOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yDesConWatPumSpe",
+   "name": "yDesConWatPumSpe",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.yDesConWatPumSpe",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "yLeaPum",
+   "name": "yLeaPum",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller.yLeaPum",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Plants/Chillers/Pumps/CondenserWater/Controller.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "a3cfdde4e2fa1605f351875c2199b6aafaee7fe0",
+  "source_sha256": "475f218a4fde4d6e4837ba132c2257419476d15054ade08efc82c2308582ef85",
+  "tag": "master after v13.0.0 (2026-09-16)"
+ },
+ "translator": {
+  "cxf_source_sha256": "19b343f1e505d6d44581ae5fcdd0624d0760cb4b28eecedd0952a049e52ee069",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uChiConIsoVal__1",
+    "kind": "boolean_input",
+    "label": "uChiConIsoVal__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uChiConIsoVal__2",
+    "kind": "boolean_input",
+    "label": "uChiConIsoVal__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uChiSta",
+    "kind": "numeric_input",
+    "label": "uChiSta",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uEnaPla",
+    "kind": "boolean_input",
+    "label": "uEnaPla",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uLeaChiEna",
+    "kind": "boolean_input",
+    "label": "uLeaChiEna",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uLeaChiSta",
+    "kind": "boolean_input",
+    "label": "uLeaChiSta",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uLeaConWatReq",
+    "kind": "boolean_input",
+    "label": "uLeaConWatReq",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uWSE",
+    "kind": "boolean_input",
+    "label": "uWSE",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yConWatPumNum",
+    "kind": "numeric_output",
+    "label": "yConWatPumNum",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yDesConWatPumSpe",
+    "kind": "numeric_output",
+    "label": "yDesConWatPumSpe",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yLeaPum",
+    "kind": "boolean_output",
+    "label": "yLeaPum",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "con",
+    "kind": "boolean_const",
+    "label": "con",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "con1",
+    "kind": "boolean_const",
+    "label": "con1",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "leaPumSta",
+    "kind": "boolean_switch",
+    "label": "leaPumSta",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "mulOr_fold_2",
+    "kind": "or",
+    "label": "mulOr fold 2",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "or1",
+    "kind": "or",
+    "label": "or1",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "or2",
+    "kind": "or",
+    "label": "or2",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intSwi",
+    "kind": "numeric_switch",
+    "label": "intSwi",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "add2",
+    "kind": "add",
+    "label": "add2",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__1_true",
+    "kind": "numeric_const",
+    "label": "booToInt__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__1_false",
+    "kind": "numeric_const",
+    "label": "booToInt__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__1",
+    "kind": "numeric_switch",
+    "label": "booToInt__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__2_true",
+    "kind": "numeric_const",
+    "label": "booToInt__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__2_false",
+    "kind": "numeric_const",
+    "label": "booToInt__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__2",
+    "kind": "numeric_switch",
+    "label": "booToInt__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__3_true",
+    "kind": "numeric_const",
+    "label": "booToInt__3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__3_false",
+    "kind": "numeric_const",
+    "label": "booToInt__3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__3",
+    "kind": "numeric_switch",
+    "label": "booToInt__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__4_true",
+    "kind": "numeric_const",
+    "label": "booToInt__4 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__4_false",
+    "kind": "numeric_const",
+    "label": "booToInt__4 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__4",
+    "kind": "numeric_switch",
+    "label": "booToInt__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__5_true",
+    "kind": "numeric_const",
+    "label": "booToInt__5 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__5_false",
+    "kind": "numeric_const",
+    "label": "booToInt__5 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__5",
+    "kind": "numeric_switch",
+    "label": "booToInt__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__6_true",
+    "kind": "numeric_const",
+    "label": "booToInt__6 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__6_false",
+    "kind": "numeric_const",
+    "label": "booToInt__6 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__6",
+    "kind": "numeric_switch",
+    "label": "booToInt__6",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "booToRea_true",
+    "kind": "numeric_const",
+    "label": "booToRea true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea_false",
+    "kind": "numeric_const",
+    "label": "booToRea false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea",
+    "kind": "numeric_switch",
+    "label": "booToRea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "con1__1",
+    "kind": "numeric_const",
+    "label": "con1__1",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "con1__2",
+    "kind": "numeric_const",
+    "label": "con1__2",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.75
+    },
+    "id": "con1__3",
+    "kind": "numeric_const",
+    "label": "con1__3",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.6
+    },
+    "id": "con1__4",
+    "kind": "numeric_const",
+    "label": "con1__4",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.75
+    },
+    "id": "con1__5",
+    "kind": "numeric_const",
+    "label": "con1__5",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.9
+    },
+    "id": "con1__6",
+    "kind": "numeric_const",
+    "label": "con1__6",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "con3__1",
+    "kind": "numeric_const",
+    "label": "con3__1",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "con3__2",
+    "kind": "numeric_const",
+    "label": "con3__2",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "con3__3",
+    "kind": "numeric_const",
+    "label": "con3__3",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.5
+    },
+    "id": "con3__4",
+    "kind": "numeric_const",
+    "label": "con3__4",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "con3__5",
+    "kind": "numeric_const",
+    "label": "con3__5",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 2.5
+    },
+    "id": "con3__6",
+    "kind": "numeric_const",
+    "label": "con3__6",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "conInt1__1",
+    "kind": "numeric_const",
+    "label": "conInt1__1",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conInt1__2",
+    "kind": "numeric_const",
+    "label": "conInt1__2",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conInt1__3",
+    "kind": "numeric_const",
+    "label": "conInt1__3",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "conInt1__4",
+    "kind": "numeric_const",
+    "label": "conInt1__4",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "conInt1__5",
+    "kind": "numeric_const",
+    "label": "conInt1__5",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "conInt1__6",
+    "kind": "numeric_const",
+    "label": "conInt1__6",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 6.0
+    },
+    "id": "conWatPumOn_index____5_threshold",
+    "kind": "numeric_const",
+    "label": "conWatPumOn index <= 5 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumOn_index____5",
+    "kind": "less_than",
+    "label": "conWatPumOn index <= 5",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "conWatPumOn_element_5",
+    "kind": "numeric_switch",
+    "label": "conWatPumOn element 5",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "conWatPumOn_index____4_threshold",
+    "kind": "numeric_const",
+    "label": "conWatPumOn index <= 4 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumOn_index____4",
+    "kind": "less_than",
+    "label": "conWatPumOn index <= 4",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "conWatPumOn_element_4",
+    "kind": "numeric_switch",
+    "label": "conWatPumOn element 4",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "conWatPumOn_index____3_threshold",
+    "kind": "numeric_const",
+    "label": "conWatPumOn index <= 3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumOn_index____3",
+    "kind": "less_than",
+    "label": "conWatPumOn index <= 3",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "conWatPumOn_element_3",
+    "kind": "numeric_switch",
+    "label": "conWatPumOn element 3",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "conWatPumOn_index____2_threshold",
+    "kind": "numeric_const",
+    "label": "conWatPumOn index <= 2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumOn_index____2",
+    "kind": "less_than",
+    "label": "conWatPumOn index <= 2",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "conWatPumOn_element_2",
+    "kind": "numeric_switch",
+    "label": "conWatPumOn element 2",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "conWatPumOn_index____1_threshold",
+    "kind": "numeric_const",
+    "label": "conWatPumOn index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumOn_index____1",
+    "kind": "less_than",
+    "label": "conWatPumOn index <= 1",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "conWatPumOn_element_1",
+    "kind": "numeric_switch",
+    "label": "conWatPumOn element 1",
+    "x": 0,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 6.0
+    },
+    "id": "conWatPumSpe_index____5_threshold",
+    "kind": "numeric_const",
+    "label": "conWatPumSpe index <= 5 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_index____5",
+    "kind": "less_than",
+    "label": "conWatPumSpe index <= 5",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_element_5",
+    "kind": "numeric_switch",
+    "label": "conWatPumSpe element 5",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "conWatPumSpe_index____4_threshold",
+    "kind": "numeric_const",
+    "label": "conWatPumSpe index <= 4 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_index____4",
+    "kind": "less_than",
+    "label": "conWatPumSpe index <= 4",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_element_4",
+    "kind": "numeric_switch",
+    "label": "conWatPumSpe element 4",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "conWatPumSpe_index____3_threshold",
+    "kind": "numeric_const",
+    "label": "conWatPumSpe index <= 3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_index____3",
+    "kind": "less_than",
+    "label": "conWatPumSpe index <= 3",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_element_3",
+    "kind": "numeric_switch",
+    "label": "conWatPumSpe element 3",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "conWatPumSpe_index____2_threshold",
+    "kind": "numeric_const",
+    "label": "conWatPumSpe index <= 2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_index____2",
+    "kind": "less_than",
+    "label": "conWatPumSpe index <= 2",
+    "x": 180,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_element_2",
+    "kind": "numeric_switch",
+    "label": "conWatPumSpe element 2",
+    "x": 360,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "conWatPumSpe_index____1_threshold",
+    "kind": "numeric_const",
+    "label": "conWatPumSpe index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_index____1",
+    "kind": "less_than",
+    "label": "conWatPumSpe index <= 1",
+    "x": 540,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_element_1",
+    "kind": "numeric_switch",
+    "label": "conWatPumSpe element 1",
+    "x": 720,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": -0.1
+    },
+    "id": "greEquThr__1_threshold",
+    "kind": "numeric_const",
+    "label": "greEquThr__1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greEquThr__1",
+    "kind": "greater_than",
+    "label": "greEquThr__1",
+    "x": 900,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": -0.1
+    },
+    "id": "greEquThr__2_threshold",
+    "kind": "numeric_const",
+    "label": "greEquThr__2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greEquThr__2",
+    "kind": "greater_than",
+    "label": "greEquThr__2",
+    "x": 0,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": -0.1
+    },
+    "id": "greEquThr__3_threshold",
+    "kind": "numeric_const",
+    "label": "greEquThr__3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greEquThr__3",
+    "kind": "greater_than",
+    "label": "greEquThr__3",
+    "x": 180,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": -0.1
+    },
+    "id": "greEquThr__4_threshold",
+    "kind": "numeric_const",
+    "label": "greEquThr__4 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greEquThr__4",
+    "kind": "greater_than",
+    "label": "greEquThr__4",
+    "x": 360,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": -0.1
+    },
+    "id": "greEquThr__5_threshold",
+    "kind": "numeric_const",
+    "label": "greEquThr__5 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greEquThr__5",
+    "kind": "greater_than",
+    "label": "greEquThr__5",
+    "x": 540,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": -0.1
+    },
+    "id": "greEquThr__6_threshold",
+    "kind": "numeric_const",
+    "label": "greEquThr__6 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greEquThr__6",
+    "kind": "greater_than",
+    "label": "greEquThr__6",
+    "x": 720,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intToRea_zero",
+    "kind": "numeric_const",
+    "label": "intToRea zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intToRea",
+    "kind": "add",
+    "label": "intToRea",
+    "x": 900,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "mulSumInt_fold_2",
+    "kind": "add",
+    "label": "mulSumInt fold 2",
+    "x": 0,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "mulSumInt_fold_3",
+    "kind": "add",
+    "label": "mulSumInt fold 3",
+    "x": 180,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "mulSumInt_fold_4",
+    "kind": "add",
+    "label": "mulSumInt fold 4",
+    "x": 360,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "mulSumInt_fold_5",
+    "kind": "add",
+    "label": "mulSumInt fold 5",
+    "x": 540,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "mulSumInt_fold_6",
+    "kind": "add",
+    "label": "mulSumInt fold 6",
+    "x": 720,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "sub1__1",
+    "kind": "subtract",
+    "label": "sub1__1",
+    "x": 900,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "sub1__2",
+    "kind": "subtract",
+    "label": "sub1__2",
+    "x": 0,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "sub1__3",
+    "kind": "subtract",
+    "label": "sub1__3",
+    "x": 180,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "sub1__4",
+    "kind": "subtract",
+    "label": "sub1__4",
+    "x": 360,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "sub1__5",
+    "kind": "subtract",
+    "label": "sub1__5",
+    "x": 540,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "sub1__6",
+    "kind": "subtract",
+    "label": "sub1__6",
+    "x": 720,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "numeric_switch",
+    "label": "swi",
+    "x": 900,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 0,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer1",
+    "kind": "numeric_const",
+    "label": "zer1",
+    "x": 180,
+    "y": 1440
+   }
+  ],
+  "links": [
+   {
+    "source": "booToInt__1_true",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__1_false",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__2_true",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__2_false",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__3_true",
+    "source_slot": "out",
+    "target": "booToInt__3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__3_false",
+    "source_slot": "out",
+    "target": "booToInt__3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__4_true",
+    "source_slot": "out",
+    "target": "booToInt__4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__4_false",
+    "source_slot": "out",
+    "target": "booToInt__4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__5_true",
+    "source_slot": "out",
+    "target": "booToInt__5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__5_false",
+    "source_slot": "out",
+    "target": "booToInt__5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__6_true",
+    "source_slot": "out",
+    "target": "booToInt__6",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__6_false",
+    "source_slot": "out",
+    "target": "booToInt__6",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea_true",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea_false",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conWatPumOn_index____5_threshold",
+    "source_slot": "out",
+    "target": "conWatPumOn_index____5",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumOn_index____4_threshold",
+    "source_slot": "out",
+    "target": "conWatPumOn_index____4",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumOn_index____3_threshold",
+    "source_slot": "out",
+    "target": "conWatPumOn_index____3",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumOn_index____2_threshold",
+    "source_slot": "out",
+    "target": "conWatPumOn_index____2",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumOn_index____1_threshold",
+    "source_slot": "out",
+    "target": "conWatPumOn_index____1",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumSpe_index____5_threshold",
+    "source_slot": "out",
+    "target": "conWatPumSpe_index____5",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumSpe_index____4_threshold",
+    "source_slot": "out",
+    "target": "conWatPumSpe_index____4",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumSpe_index____3_threshold",
+    "source_slot": "out",
+    "target": "conWatPumSpe_index____3",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumSpe_index____2_threshold",
+    "source_slot": "out",
+    "target": "conWatPumSpe_index____2",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumSpe_index____1_threshold",
+    "source_slot": "out",
+    "target": "conWatPumSpe_index____1",
+    "target_slot": "b"
+   },
+   {
+    "source": "greEquThr__1_threshold",
+    "source_slot": "out",
+    "target": "greEquThr__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "greEquThr__2_threshold",
+    "source_slot": "out",
+    "target": "greEquThr__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "greEquThr__3_threshold",
+    "source_slot": "out",
+    "target": "greEquThr__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "greEquThr__4_threshold",
+    "source_slot": "out",
+    "target": "greEquThr__4",
+    "target_slot": "b"
+   },
+   {
+    "source": "greEquThr__5_threshold",
+    "source_slot": "out",
+    "target": "greEquThr__5",
+    "target_slot": "b"
+   },
+   {
+    "source": "greEquThr__6_threshold",
+    "source_slot": "out",
+    "target": "greEquThr__6",
+    "target_slot": "b"
+   },
+   {
+    "source": "intToRea_zero",
+    "source_slot": "out",
+    "target": "intToRea",
+    "target_slot": "b"
+   },
+   {
+    "source": "uChiConIsoVal__1",
+    "source_slot": "out",
+    "target": "mulOr_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "uChiConIsoVal__2",
+    "source_slot": "out",
+    "target": "mulOr_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "uChiSta",
+    "source_slot": "out",
+    "target": "intToRea",
+    "target_slot": "a"
+   },
+   {
+    "source": "uEnaPla",
+    "source_slot": "out",
+    "target": "or1",
+    "target_slot": "b"
+   },
+   {
+    "source": "uWSE",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "b"
+   },
+   {
+    "source": "uWSE",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "selector"
+   },
+   {
+    "source": "con",
+    "source_slot": "out",
+    "target": "leaPumSta",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "con1",
+    "source_slot": "out",
+    "target": "leaPumSta",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "leaPumSta",
+    "source_slot": "out",
+    "target": "intSwi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "leaPumSta",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "leaPumSta",
+    "source_slot": "out",
+    "target": "yLeaPum",
+    "target_slot": "in"
+   },
+   {
+    "source": "mulOr_fold_2",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "a"
+   },
+   {
+    "source": "or1",
+    "source_slot": "out",
+    "target": "leaPumSta",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or2",
+    "source_slot": "out",
+    "target": "or1",
+    "target_slot": "a"
+   },
+   {
+    "source": "intSwi",
+    "source_slot": "out",
+    "target": "yConWatPumNum",
+    "target_slot": "in"
+   },
+   {
+    "source": "add2",
+    "source_slot": "out",
+    "target": "sub1__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "add2",
+    "source_slot": "out",
+    "target": "sub1__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "add2",
+    "source_slot": "out",
+    "target": "sub1__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "add2",
+    "source_slot": "out",
+    "target": "sub1__4",
+    "target_slot": "a"
+   },
+   {
+    "source": "add2",
+    "source_slot": "out",
+    "target": "sub1__5",
+    "target_slot": "a"
+   },
+   {
+    "source": "add2",
+    "source_slot": "out",
+    "target": "sub1__6",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt__1",
+    "source_slot": "out",
+    "target": "mulSumInt_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt__2",
+    "source_slot": "out",
+    "target": "mulSumInt_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__3",
+    "source_slot": "out",
+    "target": "mulSumInt_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__4",
+    "source_slot": "out",
+    "target": "mulSumInt_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__5",
+    "source_slot": "out",
+    "target": "mulSumInt_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__6",
+    "source_slot": "out",
+    "target": "mulSumInt_fold_6",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea",
+    "source_slot": "out",
+    "target": "add2",
+    "target_slot": "b"
+   },
+   {
+    "source": "con1__1",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "con1__2",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "con1__3",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "con1__4",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "con1__5",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "con1__6",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "con3__1",
+    "source_slot": "out",
+    "target": "sub1__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "con3__2",
+    "source_slot": "out",
+    "target": "sub1__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "con3__3",
+    "source_slot": "out",
+    "target": "sub1__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "con3__4",
+    "source_slot": "out",
+    "target": "sub1__4",
+    "target_slot": "b"
+   },
+   {
+    "source": "con3__5",
+    "source_slot": "out",
+    "target": "sub1__5",
+    "target_slot": "b"
+   },
+   {
+    "source": "con3__6",
+    "source_slot": "out",
+    "target": "sub1__6",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt1__1",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "conInt1__2",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "conInt1__3",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "conInt1__4",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "conInt1__5",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "conInt1__6",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conWatPumOn_index____5",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conWatPumOn_element_5",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conWatPumOn_index____4",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conWatPumOn_element_4",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conWatPumOn_index____3",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conWatPumOn_element_3",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conWatPumOn_index____2",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conWatPumOn_element_2",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conWatPumOn_index____1",
+    "source_slot": "out",
+    "target": "conWatPumOn_element_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conWatPumOn_element_1",
+    "source_slot": "out",
+    "target": "intSwi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "conWatPumSpe_index____5",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conWatPumSpe_element_5",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conWatPumSpe_index____4",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conWatPumSpe_element_4",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conWatPumSpe_index____3",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conWatPumSpe_element_3",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conWatPumSpe_index____2",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conWatPumSpe_element_2",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conWatPumSpe_index____1",
+    "source_slot": "out",
+    "target": "conWatPumSpe_element_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conWatPumSpe_element_1",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "greEquThr__1",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "greEquThr__2",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "greEquThr__3",
+    "source_slot": "out",
+    "target": "booToInt__3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "greEquThr__4",
+    "source_slot": "out",
+    "target": "booToInt__4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "greEquThr__5",
+    "source_slot": "out",
+    "target": "booToInt__5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "greEquThr__6",
+    "source_slot": "out",
+    "target": "booToInt__6",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intToRea",
+    "source_slot": "out",
+    "target": "add2",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_2",
+    "source_slot": "out",
+    "target": "mulSumInt_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_3",
+    "source_slot": "out",
+    "target": "mulSumInt_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_4",
+    "source_slot": "out",
+    "target": "mulSumInt_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_5",
+    "source_slot": "out",
+    "target": "mulSumInt_fold_6",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_6",
+    "source_slot": "out",
+    "target": "conWatPumOn_index____1",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_6",
+    "source_slot": "out",
+    "target": "conWatPumOn_index____2",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_6",
+    "source_slot": "out",
+    "target": "conWatPumOn_index____3",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_6",
+    "source_slot": "out",
+    "target": "conWatPumOn_index____4",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_6",
+    "source_slot": "out",
+    "target": "conWatPumOn_index____5",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_6",
+    "source_slot": "out",
+    "target": "conWatPumSpe_index____1",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_6",
+    "source_slot": "out",
+    "target": "conWatPumSpe_index____2",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_6",
+    "source_slot": "out",
+    "target": "conWatPumSpe_index____3",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_6",
+    "source_slot": "out",
+    "target": "conWatPumSpe_index____4",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_6",
+    "source_slot": "out",
+    "target": "conWatPumSpe_index____5",
+    "target_slot": "a"
+   },
+   {
+    "source": "sub1__1",
+    "source_slot": "out",
+    "target": "greEquThr__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "sub1__2",
+    "source_slot": "out",
+    "target": "greEquThr__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "sub1__3",
+    "source_slot": "out",
+    "target": "greEquThr__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "sub1__4",
+    "source_slot": "out",
+    "target": "greEquThr__4",
+    "target_slot": "a"
+   },
+   {
+    "source": "sub1__5",
+    "source_slot": "out",
+    "target": "greEquThr__5",
+    "target_slot": "a"
+   },
+   {
+    "source": "sub1__6",
+    "source_slot": "out",
+    "target": "greEquThr__6",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "yDesConWatPumSpe",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zer1",
+    "source_slot": "out",
+    "target": "intSwi",
+    "target_slot": "when_false"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "add2": "pumSpe.add2",
+    "booToInt__1": "pumSpe.booToInt__1",
+    "booToInt__1_false": "pumSpe.booToInt__1",
+    "booToInt__1_true": "pumSpe.booToInt__1",
+    "booToInt__2": "pumSpe.booToInt__2",
+    "booToInt__2_false": "pumSpe.booToInt__2",
+    "booToInt__2_true": "pumSpe.booToInt__2",
+    "booToInt__3": "pumSpe.booToInt__3",
+    "booToInt__3_false": "pumSpe.booToInt__3",
+    "booToInt__3_true": "pumSpe.booToInt__3",
+    "booToInt__4": "pumSpe.booToInt__4",
+    "booToInt__4_false": "pumSpe.booToInt__4",
+    "booToInt__4_true": "pumSpe.booToInt__4",
+    "booToInt__5": "pumSpe.booToInt__5",
+    "booToInt__5_false": "pumSpe.booToInt__5",
+    "booToInt__5_true": "pumSpe.booToInt__5",
+    "booToInt__6": "pumSpe.booToInt__6",
+    "booToInt__6_false": "pumSpe.booToInt__6",
+    "booToInt__6_true": "pumSpe.booToInt__6",
+    "booToRea": "pumSpe.booToRea",
+    "booToRea_false": "pumSpe.booToRea",
+    "booToRea_true": "pumSpe.booToRea",
+    "con": "enaLeaHeaPum.con",
+    "con1": "enaLeaHeaPum.con1",
+    "con1__1": "pumSpe.con1__1",
+    "con1__2": "pumSpe.con1__2",
+    "con1__3": "pumSpe.con1__3",
+    "con1__4": "pumSpe.con1__4",
+    "con1__5": "pumSpe.con1__5",
+    "con1__6": "pumSpe.con1__6",
+    "con3__1": "pumSpe.con3__1",
+    "con3__2": "pumSpe.con3__2",
+    "con3__3": "pumSpe.con3__3",
+    "con3__4": "pumSpe.con3__4",
+    "con3__5": "pumSpe.con3__5",
+    "con3__6": "pumSpe.con3__6",
+    "conInt1__1": "pumSpe.conInt1__1",
+    "conInt1__2": "pumSpe.conInt1__2",
+    "conInt1__3": "pumSpe.conInt1__3",
+    "conInt1__4": "pumSpe.conInt1__4",
+    "conInt1__5": "pumSpe.conInt1__5",
+    "conInt1__6": "pumSpe.conInt1__6",
+    "conWatPumOn_element_1": "pumSpe.conWatPumOn__select_1",
+    "conWatPumOn_element_2": "pumSpe.conWatPumOn__select_2",
+    "conWatPumOn_element_3": "pumSpe.conWatPumOn__select_3",
+    "conWatPumOn_element_4": "pumSpe.conWatPumOn__select_4",
+    "conWatPumOn_element_5": "pumSpe.conWatPumOn__select_5",
+    "conWatPumOn_index____1": "pumSpe.conWatPumOn__atMost_1",
+    "conWatPumOn_index____1_threshold": "pumSpe.conWatPumOn__atMost_1",
+    "conWatPumOn_index____2": "pumSpe.conWatPumOn__atMost_2",
+    "conWatPumOn_index____2_threshold": "pumSpe.conWatPumOn__atMost_2",
+    "conWatPumOn_index____3": "pumSpe.conWatPumOn__atMost_3",
+    "conWatPumOn_index____3_threshold": "pumSpe.conWatPumOn__atMost_3",
+    "conWatPumOn_index____4": "pumSpe.conWatPumOn__atMost_4",
+    "conWatPumOn_index____4_threshold": "pumSpe.conWatPumOn__atMost_4",
+    "conWatPumOn_index____5": "pumSpe.conWatPumOn__atMost_5",
+    "conWatPumOn_index____5_threshold": "pumSpe.conWatPumOn__atMost_5",
+    "conWatPumSpe_element_1": "pumSpe.conWatPumSpe__select_1",
+    "conWatPumSpe_element_2": "pumSpe.conWatPumSpe__select_2",
+    "conWatPumSpe_element_3": "pumSpe.conWatPumSpe__select_3",
+    "conWatPumSpe_element_4": "pumSpe.conWatPumSpe__select_4",
+    "conWatPumSpe_element_5": "pumSpe.conWatPumSpe__select_5",
+    "conWatPumSpe_index____1": "pumSpe.conWatPumSpe__atMost_1",
+    "conWatPumSpe_index____1_threshold": "pumSpe.conWatPumSpe__atMost_1",
+    "conWatPumSpe_index____2": "pumSpe.conWatPumSpe__atMost_2",
+    "conWatPumSpe_index____2_threshold": "pumSpe.conWatPumSpe__atMost_2",
+    "conWatPumSpe_index____3": "pumSpe.conWatPumSpe__atMost_3",
+    "conWatPumSpe_index____3_threshold": "pumSpe.conWatPumSpe__atMost_3",
+    "conWatPumSpe_index____4": "pumSpe.conWatPumSpe__atMost_4",
+    "conWatPumSpe_index____4_threshold": "pumSpe.conWatPumSpe__atMost_4",
+    "conWatPumSpe_index____5": "pumSpe.conWatPumSpe__atMost_5",
+    "conWatPumSpe_index____5_threshold": "pumSpe.conWatPumSpe__atMost_5",
+    "greEquThr__1": "pumSpe.greEquThr__1",
+    "greEquThr__1_threshold": "pumSpe.greEquThr__1",
+    "greEquThr__2": "pumSpe.greEquThr__2",
+    "greEquThr__2_threshold": "pumSpe.greEquThr__2",
+    "greEquThr__3": "pumSpe.greEquThr__3",
+    "greEquThr__3_threshold": "pumSpe.greEquThr__3",
+    "greEquThr__4": "pumSpe.greEquThr__4",
+    "greEquThr__4_threshold": "pumSpe.greEquThr__4",
+    "greEquThr__5": "pumSpe.greEquThr__5",
+    "greEquThr__5_threshold": "pumSpe.greEquThr__5",
+    "greEquThr__6": "pumSpe.greEquThr__6",
+    "greEquThr__6_threshold": "pumSpe.greEquThr__6",
+    "intSwi": "intSwi",
+    "intToRea": "pumSpe.intToRea",
+    "intToRea_zero": "pumSpe.intToRea",
+    "leaPumSta": "enaLeaHeaPum.leaPumSta",
+    "mulOr_fold_2": "enaLeaHeaPum.mulOr__fold_2",
+    "mulSumInt_fold_2": "pumSpe.mulSumInt__fold_2",
+    "mulSumInt_fold_3": "pumSpe.mulSumInt__fold_3",
+    "mulSumInt_fold_4": "pumSpe.mulSumInt__fold_4",
+    "mulSumInt_fold_5": "pumSpe.mulSumInt__fold_5",
+    "mulSumInt_fold_6": "pumSpe.mulSumInt__fold_6",
+    "or1": "enaLeaHeaPum.or1",
+    "or2": "enaLeaHeaPum.or2",
+    "sub1__1": "pumSpe.sub1__1",
+    "sub1__2": "pumSpe.sub1__2",
+    "sub1__3": "pumSpe.sub1__3",
+    "sub1__4": "pumSpe.sub1__4",
+    "sub1__5": "pumSpe.sub1__5",
+    "sub1__6": "pumSpe.sub1__6",
+    "swi": "swi",
+    "zer": "zer",
+    "zer1": "zer1"
+   },
+   "coverage": {
+    "boundary_inputs": 8,
+    "boundary_outputs": 3,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger": 6,
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal": 1,
+     "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal": 1,
+     "Buildings.Controls.OBC.CDL.Integers.Add": 5,
+     "Buildings.Controls.OBC.CDL.Integers.LessThreshold": 10,
+     "Buildings.Controls.OBC.CDL.Integers.Sources.Constant": 7,
+     "Buildings.Controls.OBC.CDL.Integers.Switch": 6,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Switch": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 1,
+     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 6,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 13,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 6,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 6
+    },
+    "component_count": 74,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": true,
+    "niagara_unsupported_classes": [],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.CondenserWater.Controller",
+    "root_label": "Controller",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "19b343f1e505d6d44581ae5fcdd0624d0760cb4b28eecedd0952a049e52ee069",
+    "supported_class_count": 74,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "19b343f1e505d6d44581ae5fcdd0624d0760cb4b28eecedd0952a049e52ee069"
+  },
+  "name": "Controller"
+ }
+}

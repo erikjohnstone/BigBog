@@ -1,0 +1,2803 @@
+{
+ "configuration_id": "tpl-staging-rotation-sort-runtime",
+ "controller_id": "StagingRotation.SortRuntime",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime",
+  "inputs": [
+   {
+    "description": "Equipment available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.u1Ava__1",
+    "label": "u1Ava__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Equipment available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.u1Ava__2",
+    "label": "u1Ava__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Equipment available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.u1Ava__3",
+    "label": "u1Ava__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Boolean signal used to assess equipment runtime",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.u1Run__1",
+    "label": "u1Run__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Boolean signal used to assess equipment runtime",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.u1Run__2",
+    "label": "u1Run__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Boolean signal used to assess equipment runtime",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.u1Run__3",
+    "label": "u1Run__3",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Indices of equipment sorted by increasing staging runtime",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yIdx__1",
+    "label": "yIdx__1",
+    "type": "S231:IntegerOutput"
+   },
+   {
+    "description": "Indices of equipment sorted by increasing staging runtime",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yIdx__2",
+    "label": "yIdx__2",
+    "type": "S231:IntegerOutput"
+   },
+   {
+    "description": "Indices of equipment sorted by increasing staging runtime",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yIdx__3",
+    "label": "yIdx__3",
+    "type": "S231:IntegerOutput"
+   },
+   {
+    "description": "Lifetime runtime",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yRunTimLif__1",
+    "label": "yRunTimLif__1",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Lifetime runtime",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yRunTimLif__2",
+    "label": "yRunTimLif__2",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Lifetime runtime",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yRunTimLif__3",
+    "label": "yRunTimLif__3",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Staging runtime",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yRunTimSta__1",
+    "label": "yRunTimSta__1",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Staging runtime",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yRunTimSta__2",
+    "label": "yRunTimSta__2",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Staging runtime",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yRunTimSta__3",
+    "label": "yRunTimSta__3",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 9
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "nin": 3
+ },
+ "points": [
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Ava__1",
+   "name": "u1Ava__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.u1Ava__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Ava__2",
+   "name": "u1Ava__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.u1Ava__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Ava__3",
+   "name": "u1Ava__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.u1Ava__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Run__1",
+   "name": "u1Run__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.u1Run__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Run__2",
+   "name": "u1Run__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.u1Run__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Run__3",
+   "name": "u1Run__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.u1Run__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yIdx__1",
+   "name": "yIdx__1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yIdx__1",
+   "source_interface_type": "S231:IntegerOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yIdx__2",
+   "name": "yIdx__2",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yIdx__2",
+   "source_interface_type": "S231:IntegerOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yIdx__3",
+   "name": "yIdx__3",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yIdx__3",
+   "source_interface_type": "S231:IntegerOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yRunTimLif__1",
+   "name": "yRunTimLif__1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yRunTimLif__1",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yRunTimLif__2",
+   "name": "yRunTimLif__2",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yRunTimLif__2",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yRunTimLif__3",
+   "name": "yRunTimLif__3",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yRunTimLif__3",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yRunTimSta__1",
+   "name": "yRunTimSta__1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yRunTimSta__1",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yRunTimSta__2",
+   "name": "yRunTimSta__2",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yRunTimSta__2",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yRunTimSta__3",
+   "name": "yRunTimSta__3",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime.yRunTimSta__3",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "StagingRotation/SortRuntime.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "392cd8b064248ea88b2fc36a7dc1d7e900d7110d7a58bb90995f52cfdefe0bde",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "b7743cb369449da0c419a6a4b77a3e6e56bfd47b788fd78a336c93080de4a78c",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Ava__1",
+    "kind": "boolean_input",
+    "label": "u1Ava__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Ava__2",
+    "kind": "boolean_input",
+    "label": "u1Ava__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Ava__3",
+    "kind": "boolean_input",
+    "label": "u1Ava__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Run__1",
+    "kind": "boolean_input",
+    "label": "u1Run__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Run__2",
+    "kind": "boolean_input",
+    "label": "u1Run__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Run__3",
+    "kind": "boolean_input",
+    "label": "u1Run__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yIdx__1",
+    "kind": "numeric_output",
+    "label": "yIdx__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yIdx__2",
+    "kind": "numeric_output",
+    "label": "yIdx__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yIdx__3",
+    "kind": "numeric_output",
+    "label": "yIdx__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yRunTimLif__1",
+    "kind": "numeric_output",
+    "label": "yRunTimLif__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yRunTimLif__2",
+    "kind": "numeric_output",
+    "label": "yRunTimLif__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yRunTimLif__3",
+    "kind": "numeric_output",
+    "label": "yRunTimLif__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yRunTimSta__1",
+    "kind": "numeric_output",
+    "label": "yRunTimSta__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yRunTimSta__2",
+    "kind": "numeric_output",
+    "label": "yRunTimSta__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yRunTimSta__3",
+    "kind": "numeric_output",
+    "label": "yRunTimSta__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1e+20
+    },
+    "id": "addWei__1_parameter",
+    "kind": "numeric_const",
+    "label": "addWei__1 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addWei__1",
+    "kind": "add",
+    "label": "addWei__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1e+20
+    },
+    "id": "addWei__2_parameter",
+    "kind": "numeric_const",
+    "label": "addWei__2 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addWei__2",
+    "kind": "add",
+    "label": "addWei__2",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1e+20
+    },
+    "id": "addWei__3_parameter",
+    "kind": "numeric_const",
+    "label": "addWei__3 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addWei__3",
+    "kind": "add",
+    "label": "addWei__3",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addWeiUna__1",
+    "kind": "add",
+    "label": "addWeiUna__1",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addWeiUna__2",
+    "kind": "add",
+    "label": "addWeiUna__2",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addWeiUna__3",
+    "kind": "add",
+    "label": "addWeiUna__3",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "appWeiOffAva__1",
+    "kind": "multiply",
+    "label": "appWeiOffAva__1",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "appWeiOffAva__2",
+    "kind": "multiply",
+    "label": "appWeiOffAva__2",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "appWeiOffAva__3",
+    "kind": "multiply",
+    "label": "appWeiOffAva__3",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal__1",
+    "kind": "boolean_const",
+    "label": "fal__1",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal__2",
+    "kind": "boolean_const",
+    "label": "fal__2",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal__3",
+    "kind": "boolean_const",
+    "label": "fal__3",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "idxEquAltMat__1_1",
+    "kind": "numeric_const",
+    "label": "idxEquAltMat__1_1",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "idxEquAltMat__1_2",
+    "kind": "numeric_const",
+    "label": "idxEquAltMat__1_2",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "idxEquAltMat__1_3",
+    "kind": "numeric_const",
+    "label": "idxEquAltMat__1_3",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "idxEquAltMat__2_1",
+    "kind": "numeric_const",
+    "label": "idxEquAltMat__2_1",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "idxEquAltMat__2_2",
+    "kind": "numeric_const",
+    "label": "idxEquAltMat__2_2",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "idxEquAltMat__2_3",
+    "kind": "numeric_const",
+    "label": "idxEquAltMat__2_3",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "idxEquAltMat__3_1",
+    "kind": "numeric_const",
+    "label": "idxEquAltMat__3_1",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "idxEquAltMat__3_2",
+    "kind": "numeric_const",
+    "label": "idxEquAltMat__3_2",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "idxEquAltMat__3_3",
+    "kind": "numeric_const",
+    "label": "idxEquAltMat__3_3",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "iniRunTim__1",
+    "kind": "maximum",
+    "label": "iniRunTim__1",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "iniRunTim__2",
+    "kind": "maximum",
+    "label": "iniRunTim__2",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "iniRunTim__3",
+    "kind": "maximum",
+    "label": "iniRunTim__3",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "off__1",
+    "kind": "not",
+    "label": "off__1",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "off__2",
+    "kind": "not",
+    "label": "off__2",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "off__3",
+    "kind": "not",
+    "label": "off__3",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "offAva__1",
+    "kind": "and",
+    "label": "offAva__1",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "offAva__2",
+    "kind": "and",
+    "label": "offAva__2",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "offAva__3",
+    "kind": "and",
+    "label": "offAva__3",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": -1.0
+    },
+    "id": "opp__1_parameter",
+    "kind": "numeric_const",
+    "label": "opp__1 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "opp__1",
+    "kind": "multiply",
+    "label": "opp__1",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": -1.0
+    },
+    "id": "opp__2_parameter",
+    "kind": "numeric_const",
+    "label": "opp__2 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "opp__2",
+    "kind": "multiply",
+    "label": "opp__2",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": -1.0
+    },
+    "id": "opp__3_parameter",
+    "kind": "numeric_const",
+    "label": "opp__3 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "opp__3",
+    "kind": "multiply",
+    "label": "opp__3",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "resIdxInp_nEquAlt__index____2_threshold",
+    "kind": "numeric_const",
+    "label": "resIdxInp[nEquAlt] index <= 2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resIdxInp_nEquAlt__index____2",
+    "kind": "less_than",
+    "label": "resIdxInp[nEquAlt] index <= 2",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "resIdxInp_nEquAlt__element_2",
+    "kind": "numeric_switch",
+    "label": "resIdxInp[nEquAlt] element 2",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "resIdxInp_nEquAlt__index____1_threshold",
+    "kind": "numeric_const",
+    "label": "resIdxInp[nEquAlt] index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resIdxInp_nEquAlt__index____1",
+    "kind": "less_than",
+    "label": "resIdxInp[nEquAlt] index <= 1",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "resIdxInp_nEquAlt__element_1",
+    "kind": "numeric_switch",
+    "label": "resIdxInp[nEquAlt] element 1",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "resIdxInp_nEquAlt__index____2_2_threshold",
+    "kind": "numeric_const",
+    "label": "resIdxInp[nEquAlt] index <= 2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resIdxInp_nEquAlt__index____2_2",
+    "kind": "less_than",
+    "label": "resIdxInp[nEquAlt] index <= 2",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "resIdxInp_nEquAlt__element_2_2",
+    "kind": "numeric_switch",
+    "label": "resIdxInp[nEquAlt] element 2",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "resIdxInp_nEquAlt__index____1_2_threshold",
+    "kind": "numeric_const",
+    "label": "resIdxInp[nEquAlt] index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resIdxInp_nEquAlt__index____1_2",
+    "kind": "less_than",
+    "label": "resIdxInp[nEquAlt] index <= 1",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "resIdxInp_nEquAlt__element_1_2",
+    "kind": "numeric_switch",
+    "label": "resIdxInp[nEquAlt] element 1",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "resIdxInp_nEquAlt__index____2_3_threshold",
+    "kind": "numeric_const",
+    "label": "resIdxInp[nEquAlt] index <= 2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resIdxInp_nEquAlt__index____2_3",
+    "kind": "less_than",
+    "label": "resIdxInp[nEquAlt] index <= 2",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "resIdxInp_nEquAlt__element_2_3",
+    "kind": "numeric_switch",
+    "label": "resIdxInp[nEquAlt] element 2",
+    "x": 0,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "resIdxInp_nEquAlt__index____1_3_threshold",
+    "kind": "numeric_const",
+    "label": "resIdxInp[nEquAlt] index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resIdxInp_nEquAlt__index____1_3",
+    "kind": "less_than",
+    "label": "resIdxInp[nEquAlt] index <= 1",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "resIdxInp_nEquAlt__element_1_3",
+    "kind": "numeric_switch",
+    "label": "resIdxInp[nEquAlt] element 1",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 61.0
+    },
+    "id": "runTimSta__1",
+    "kind": "numeric_const",
+    "label": "runTimSta__1",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 62.0
+    },
+    "id": "runTimSta__2",
+    "kind": "numeric_const",
+    "label": "runTimSta__2",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 63.0
+    },
+    "id": "runTimSta__3",
+    "kind": "numeric_const",
+    "label": "runTimSta__3",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "sor_index_1",
+    "kind": "numeric_const",
+    "label": "sor index 1",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "sor_index_2",
+    "kind": "numeric_const",
+    "label": "sor index 2",
+    "x": 180,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "sor_index_3",
+    "kind": "numeric_const",
+    "label": "sor index 3",
+    "x": 360,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "sor_compare_1",
+    "kind": "greater_than",
+    "label": "sor compare 1",
+    "x": 540,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "sor_low_1",
+    "kind": "numeric_switch",
+    "label": "sor low 1",
+    "x": 720,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "sor_high_1",
+    "kind": "numeric_switch",
+    "label": "sor high 1",
+    "x": 900,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "sor_lowIdx_1",
+    "kind": "numeric_switch",
+    "label": "sor lowIdx 1",
+    "x": 0,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "sor_highIdx_1",
+    "kind": "numeric_switch",
+    "label": "sor highIdx 1",
+    "x": 180,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "sor_compare_2",
+    "kind": "greater_than",
+    "label": "sor compare 2",
+    "x": 360,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "sor_low_2",
+    "kind": "numeric_switch",
+    "label": "sor low 2",
+    "x": 540,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "sor_high_2",
+    "kind": "numeric_switch",
+    "label": "sor high 2",
+    "x": 720,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "sor_lowIdx_2",
+    "kind": "numeric_switch",
+    "label": "sor lowIdx 2",
+    "x": 900,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "sor_highIdx_2",
+    "kind": "numeric_switch",
+    "label": "sor highIdx 2",
+    "x": 0,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "sor_compare_3",
+    "kind": "greater_than",
+    "label": "sor compare 3",
+    "x": 180,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "sor_low_3",
+    "kind": "numeric_switch",
+    "label": "sor low 3",
+    "x": 360,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "sor_high_3",
+    "kind": "numeric_switch",
+    "label": "sor high 3",
+    "x": 540,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "sor_lowIdx_3",
+    "kind": "numeric_switch",
+    "label": "sor lowIdx 3",
+    "x": 720,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "sor_highIdx_3",
+    "kind": "numeric_switch",
+    "label": "sor highIdx 3",
+    "x": 900,
+    "y": 1200
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRun__1",
+    "kind": "timer_accumulating",
+    "label": "timRun__1",
+    "x": 0,
+    "y": 1320
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRun__2",
+    "kind": "timer_accumulating",
+    "label": "timRun__2",
+    "x": 180,
+    "y": 1320
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRun__3",
+    "kind": "timer_accumulating",
+    "label": "timRun__3",
+    "x": 360,
+    "y": 1320
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRunLif__1",
+    "kind": "timer_accumulating",
+    "label": "timRunLif__1",
+    "x": 540,
+    "y": 1320
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRunLif__2",
+    "kind": "timer_accumulating",
+    "label": "timRunLif__2",
+    "x": 720,
+    "y": 1320
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRunLif__3",
+    "kind": "timer_accumulating",
+    "label": "timRunLif__3",
+    "x": 900,
+    "y": 1320
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 0.0
+    },
+    "id": "timUna__1",
+    "kind": "timer",
+    "label": "timUna__1",
+    "x": 0,
+    "y": 1440
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 0.0
+    },
+    "id": "timUna__2",
+    "kind": "timer",
+    "label": "timUna__2",
+    "x": 180,
+    "y": 1440
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 0.0
+    },
+    "id": "timUna__3",
+    "kind": "timer",
+    "label": "timUna__3",
+    "x": 360,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "u1Res__1",
+    "kind": "boolean_const",
+    "label": "u1Res__1",
+    "x": 540,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "u1Res__2",
+    "kind": "boolean_const",
+    "label": "u1Res__2",
+    "x": 720,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "u1Res__3",
+    "kind": "boolean_const",
+    "label": "u1Res__3",
+    "x": 900,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "una__1",
+    "kind": "not",
+    "label": "una__1",
+    "x": 0,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "una__2",
+    "kind": "not",
+    "label": "una__2",
+    "x": 180,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "una__3",
+    "kind": "not",
+    "label": "una__3",
+    "x": 360,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "voiRunUna__1",
+    "kind": "multiply",
+    "label": "voiRunUna__1",
+    "x": 540,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "voiRunUna__2",
+    "kind": "multiply",
+    "label": "voiRunUna__2",
+    "x": 720,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "voiRunUna__3",
+    "kind": "multiply",
+    "label": "voiRunUna__3",
+    "x": 900,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "voiWeiAva__1",
+    "kind": "multiply",
+    "label": "voiWeiAva__1",
+    "x": 0,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "voiWeiAva__2",
+    "kind": "multiply",
+    "label": "voiWeiAva__2",
+    "x": 180,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "voiWeiAva__3",
+    "kind": "multiply",
+    "label": "voiWeiAva__3",
+    "x": 360,
+    "y": 1680
+   },
+   {
+    "config": {
+     "value": 10000000000.0
+    },
+    "id": "weiOffAva__1_true",
+    "kind": "numeric_const",
+    "label": "weiOffAva__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "weiOffAva__1_false",
+    "kind": "numeric_const",
+    "label": "weiOffAva__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "weiOffAva__1",
+    "kind": "numeric_switch",
+    "label": "weiOffAva__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 10000000000.0
+    },
+    "id": "weiOffAva__2_true",
+    "kind": "numeric_const",
+    "label": "weiOffAva__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "weiOffAva__2_false",
+    "kind": "numeric_const",
+    "label": "weiOffAva__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "weiOffAva__2",
+    "kind": "numeric_switch",
+    "label": "weiOffAva__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 10000000000.0
+    },
+    "id": "weiOffAva__3_true",
+    "kind": "numeric_const",
+    "label": "weiOffAva__3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "weiOffAva__3_false",
+    "kind": "numeric_const",
+    "label": "weiOffAva__3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "weiOffAva__3",
+    "kind": "numeric_switch",
+    "label": "weiOffAva__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zerAva__1_true",
+    "kind": "numeric_const",
+    "label": "zerAva__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "zerAva__1_false",
+    "kind": "numeric_const",
+    "label": "zerAva__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "zerAva__1",
+    "kind": "numeric_switch",
+    "label": "zerAva__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zerAva__2_true",
+    "kind": "numeric_const",
+    "label": "zerAva__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "zerAva__2_false",
+    "kind": "numeric_const",
+    "label": "zerAva__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "zerAva__2",
+    "kind": "numeric_switch",
+    "label": "zerAva__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zerAva__3_true",
+    "kind": "numeric_const",
+    "label": "zerAva__3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "zerAva__3_false",
+    "kind": "numeric_const",
+    "label": "zerAva__3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "zerAva__3",
+    "kind": "numeric_switch",
+    "label": "zerAva__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zerUna__1_true",
+    "kind": "numeric_const",
+    "label": "zerUna__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "zerUna__1_false",
+    "kind": "numeric_const",
+    "label": "zerUna__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "zerUna__1",
+    "kind": "numeric_switch",
+    "label": "zerUna__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zerUna__2_true",
+    "kind": "numeric_const",
+    "label": "zerUna__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "zerUna__2_false",
+    "kind": "numeric_const",
+    "label": "zerUna__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "zerUna__2",
+    "kind": "numeric_switch",
+    "label": "zerUna__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zerUna__3_true",
+    "kind": "numeric_const",
+    "label": "zerUna__3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "zerUna__3_false",
+    "kind": "numeric_const",
+    "label": "zerUna__3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "zerUna__3",
+    "kind": "numeric_switch",
+    "label": "zerUna__3",
+    "x": 0,
+    "y": 0
+   }
+  ],
+  "links": [
+   {
+    "source": "addWei__1_parameter",
+    "source_slot": "out",
+    "target": "addWei__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "addWei__2_parameter",
+    "source_slot": "out",
+    "target": "addWei__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "addWei__3_parameter",
+    "source_slot": "out",
+    "target": "addWei__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "opp__1_parameter",
+    "source_slot": "out",
+    "target": "opp__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "opp__2_parameter",
+    "source_slot": "out",
+    "target": "opp__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "opp__3_parameter",
+    "source_slot": "out",
+    "target": "opp__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__index____2_threshold",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__index____2",
+    "target_slot": "b"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__index____1_threshold",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__index____1",
+    "target_slot": "b"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__index____2_2_threshold",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__index____2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__index____1_2_threshold",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__index____1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__index____2_3_threshold",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__index____2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__index____1_3_threshold",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__index____1_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "weiOffAva__1_true",
+    "source_slot": "out",
+    "target": "weiOffAva__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "weiOffAva__1_false",
+    "source_slot": "out",
+    "target": "weiOffAva__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "weiOffAva__2_true",
+    "source_slot": "out",
+    "target": "weiOffAva__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "weiOffAva__2_false",
+    "source_slot": "out",
+    "target": "weiOffAva__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "weiOffAva__3_true",
+    "source_slot": "out",
+    "target": "weiOffAva__3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "weiOffAva__3_false",
+    "source_slot": "out",
+    "target": "weiOffAva__3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zerAva__1_true",
+    "source_slot": "out",
+    "target": "zerAva__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zerAva__1_false",
+    "source_slot": "out",
+    "target": "zerAva__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zerAva__2_true",
+    "source_slot": "out",
+    "target": "zerAva__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zerAva__2_false",
+    "source_slot": "out",
+    "target": "zerAva__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zerAva__3_true",
+    "source_slot": "out",
+    "target": "zerAva__3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zerAva__3_false",
+    "source_slot": "out",
+    "target": "zerAva__3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zerUna__1_true",
+    "source_slot": "out",
+    "target": "zerUna__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zerUna__1_false",
+    "source_slot": "out",
+    "target": "zerUna__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zerUna__2_true",
+    "source_slot": "out",
+    "target": "zerUna__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zerUna__2_false",
+    "source_slot": "out",
+    "target": "zerUna__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zerUna__3_true",
+    "source_slot": "out",
+    "target": "zerUna__3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zerUna__3_false",
+    "source_slot": "out",
+    "target": "zerUna__3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "u1Ava__1",
+    "source_slot": "out",
+    "target": "offAva__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__1",
+    "source_slot": "out",
+    "target": "una__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Ava__1",
+    "source_slot": "out",
+    "target": "zerAva__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1Ava__2",
+    "source_slot": "out",
+    "target": "offAva__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__2",
+    "source_slot": "out",
+    "target": "una__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Ava__2",
+    "source_slot": "out",
+    "target": "zerAva__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1Ava__3",
+    "source_slot": "out",
+    "target": "offAva__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__3",
+    "source_slot": "out",
+    "target": "una__3",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Ava__3",
+    "source_slot": "out",
+    "target": "zerAva__3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1Run__1",
+    "source_slot": "out",
+    "target": "off__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Run__1",
+    "source_slot": "out",
+    "target": "timRunLif__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Run__1",
+    "source_slot": "out",
+    "target": "timRun__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Run__2",
+    "source_slot": "out",
+    "target": "off__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Run__2",
+    "source_slot": "out",
+    "target": "timRunLif__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Run__2",
+    "source_slot": "out",
+    "target": "timRun__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Run__3",
+    "source_slot": "out",
+    "target": "off__3",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Run__3",
+    "source_slot": "out",
+    "target": "timRunLif__3",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Run__3",
+    "source_slot": "out",
+    "target": "timRun__3",
+    "target_slot": "in"
+   },
+   {
+    "source": "addWei__1",
+    "source_slot": "out",
+    "target": "voiWeiAva__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "addWei__2",
+    "source_slot": "out",
+    "target": "voiWeiAva__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "addWei__3",
+    "source_slot": "out",
+    "target": "voiWeiAva__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "addWeiUna__1",
+    "source_slot": "out",
+    "target": "sor_compare_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "addWeiUna__1",
+    "source_slot": "out",
+    "target": "sor_high_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "addWeiUna__1",
+    "source_slot": "out",
+    "target": "sor_low_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "addWeiUna__2",
+    "source_slot": "out",
+    "target": "sor_compare_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "addWeiUna__2",
+    "source_slot": "out",
+    "target": "sor_high_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "addWeiUna__2",
+    "source_slot": "out",
+    "target": "sor_low_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "addWeiUna__3",
+    "source_slot": "out",
+    "target": "sor_compare_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "addWeiUna__3",
+    "source_slot": "out",
+    "target": "sor_high_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "addWeiUna__3",
+    "source_slot": "out",
+    "target": "sor_low_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "appWeiOffAva__1",
+    "source_slot": "out",
+    "target": "voiRunUna__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "appWeiOffAva__2",
+    "source_slot": "out",
+    "target": "voiRunUna__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "appWeiOffAva__3",
+    "source_slot": "out",
+    "target": "voiRunUna__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "fal__1",
+    "source_slot": "out",
+    "target": "timRunLif__1",
+    "target_slot": "reset"
+   },
+   {
+    "source": "fal__2",
+    "source_slot": "out",
+    "target": "timRunLif__2",
+    "target_slot": "reset"
+   },
+   {
+    "source": "fal__3",
+    "source_slot": "out",
+    "target": "timRunLif__3",
+    "target_slot": "reset"
+   },
+   {
+    "source": "idxEquAltMat__1_1",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "idxEquAltMat__1_2",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "idxEquAltMat__1_3",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "idxEquAltMat__2_1",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_1_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "idxEquAltMat__2_2",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_2_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "idxEquAltMat__2_3",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_2_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "idxEquAltMat__3_1",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_1_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "idxEquAltMat__3_2",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_2_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "idxEquAltMat__3_3",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_2_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "iniRunTim__1",
+    "source_slot": "out",
+    "target": "appWeiOffAva__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "iniRunTim__2",
+    "source_slot": "out",
+    "target": "appWeiOffAva__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "iniRunTim__3",
+    "source_slot": "out",
+    "target": "appWeiOffAva__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "off__1",
+    "source_slot": "out",
+    "target": "offAva__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "off__2",
+    "source_slot": "out",
+    "target": "offAva__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "off__3",
+    "source_slot": "out",
+    "target": "offAva__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "offAva__1",
+    "source_slot": "out",
+    "target": "weiOffAva__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "offAva__2",
+    "source_slot": "out",
+    "target": "weiOffAva__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "offAva__3",
+    "source_slot": "out",
+    "target": "weiOffAva__3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "opp__1",
+    "source_slot": "out",
+    "target": "addWei__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "opp__2",
+    "source_slot": "out",
+    "target": "addWei__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "opp__3",
+    "source_slot": "out",
+    "target": "addWei__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__index____2",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__element_2",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__index____1",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__element_1",
+    "source_slot": "out",
+    "target": "yIdx__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__index____2_2",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_2_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__element_2_2",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_1_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__index____1_2",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_1_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__element_1_2",
+    "source_slot": "out",
+    "target": "yIdx__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__index____2_3",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_2_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__element_2_3",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_1_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__index____1_3",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__element_1_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "resIdxInp_nEquAlt__element_1_3",
+    "source_slot": "out",
+    "target": "yIdx__3",
+    "target_slot": "in"
+   },
+   {
+    "source": "runTimSta__1",
+    "source_slot": "out",
+    "target": "iniRunTim__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "runTimSta__2",
+    "source_slot": "out",
+    "target": "iniRunTim__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "runTimSta__3",
+    "source_slot": "out",
+    "target": "iniRunTim__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "sor_index_1",
+    "source_slot": "out",
+    "target": "sor_highIdx_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "sor_index_1",
+    "source_slot": "out",
+    "target": "sor_lowIdx_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "sor_index_2",
+    "source_slot": "out",
+    "target": "sor_highIdx_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "sor_index_2",
+    "source_slot": "out",
+    "target": "sor_lowIdx_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "sor_index_3",
+    "source_slot": "out",
+    "target": "sor_highIdx_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "sor_index_3",
+    "source_slot": "out",
+    "target": "sor_lowIdx_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "sor_compare_1",
+    "source_slot": "out",
+    "target": "sor_highIdx_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "sor_compare_1",
+    "source_slot": "out",
+    "target": "sor_high_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "sor_compare_1",
+    "source_slot": "out",
+    "target": "sor_lowIdx_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "sor_compare_1",
+    "source_slot": "out",
+    "target": "sor_low_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "sor_low_1",
+    "source_slot": "out",
+    "target": "sor_compare_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "sor_low_1",
+    "source_slot": "out",
+    "target": "sor_high_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "sor_low_1",
+    "source_slot": "out",
+    "target": "sor_low_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "sor_high_1",
+    "source_slot": "out",
+    "target": "sor_compare_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "sor_high_1",
+    "source_slot": "out",
+    "target": "sor_high_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "sor_high_1",
+    "source_slot": "out",
+    "target": "sor_low_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "sor_lowIdx_1",
+    "source_slot": "out",
+    "target": "sor_highIdx_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "sor_lowIdx_1",
+    "source_slot": "out",
+    "target": "sor_lowIdx_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "sor_highIdx_1",
+    "source_slot": "out",
+    "target": "sor_highIdx_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "sor_highIdx_1",
+    "source_slot": "out",
+    "target": "sor_lowIdx_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "sor_compare_2",
+    "source_slot": "out",
+    "target": "sor_highIdx_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "sor_compare_2",
+    "source_slot": "out",
+    "target": "sor_high_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "sor_compare_2",
+    "source_slot": "out",
+    "target": "sor_lowIdx_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "sor_compare_2",
+    "source_slot": "out",
+    "target": "sor_low_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "sor_low_2",
+    "source_slot": "out",
+    "target": "sor_compare_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "sor_low_2",
+    "source_slot": "out",
+    "target": "sor_high_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "sor_low_2",
+    "source_slot": "out",
+    "target": "sor_low_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "sor_lowIdx_2",
+    "source_slot": "out",
+    "target": "sor_highIdx_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "sor_lowIdx_2",
+    "source_slot": "out",
+    "target": "sor_lowIdx_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "sor_highIdx_2",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__index____1_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "sor_highIdx_2",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__index____2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "sor_compare_3",
+    "source_slot": "out",
+    "target": "sor_highIdx_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "sor_compare_3",
+    "source_slot": "out",
+    "target": "sor_high_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "sor_compare_3",
+    "source_slot": "out",
+    "target": "sor_lowIdx_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "sor_compare_3",
+    "source_slot": "out",
+    "target": "sor_low_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "sor_lowIdx_3",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__index____1",
+    "target_slot": "a"
+   },
+   {
+    "source": "sor_lowIdx_3",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__index____2",
+    "target_slot": "a"
+   },
+   {
+    "source": "sor_highIdx_3",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__index____1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "sor_highIdx_3",
+    "source_slot": "out",
+    "target": "resIdxInp_nEquAlt__index____2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "timRun__1",
+    "source_slot": "elapsed",
+    "target": "iniRunTim__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "timRun__1",
+    "source_slot": "elapsed",
+    "target": "yRunTimSta__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "timRun__2",
+    "source_slot": "elapsed",
+    "target": "iniRunTim__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "timRun__2",
+    "source_slot": "elapsed",
+    "target": "yRunTimSta__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "timRun__3",
+    "source_slot": "elapsed",
+    "target": "iniRunTim__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "timRun__3",
+    "source_slot": "elapsed",
+    "target": "yRunTimSta__3",
+    "target_slot": "in"
+   },
+   {
+    "source": "timRunLif__1",
+    "source_slot": "elapsed",
+    "target": "yRunTimLif__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "timRunLif__2",
+    "source_slot": "elapsed",
+    "target": "yRunTimLif__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "timRunLif__3",
+    "source_slot": "elapsed",
+    "target": "yRunTimLif__3",
+    "target_slot": "in"
+   },
+   {
+    "source": "timUna__1",
+    "source_slot": "elapsed",
+    "target": "opp__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "timUna__2",
+    "source_slot": "elapsed",
+    "target": "opp__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "timUna__3",
+    "source_slot": "elapsed",
+    "target": "opp__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1Res__1",
+    "source_slot": "out",
+    "target": "timRun__1",
+    "target_slot": "reset"
+   },
+   {
+    "source": "u1Res__2",
+    "source_slot": "out",
+    "target": "timRun__2",
+    "target_slot": "reset"
+   },
+   {
+    "source": "u1Res__3",
+    "source_slot": "out",
+    "target": "timRun__3",
+    "target_slot": "reset"
+   },
+   {
+    "source": "una__1",
+    "source_slot": "out",
+    "target": "timUna__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "una__1",
+    "source_slot": "out",
+    "target": "zerUna__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "una__2",
+    "source_slot": "out",
+    "target": "timUna__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "una__2",
+    "source_slot": "out",
+    "target": "zerUna__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "una__3",
+    "source_slot": "out",
+    "target": "timUna__3",
+    "target_slot": "in"
+   },
+   {
+    "source": "una__3",
+    "source_slot": "out",
+    "target": "zerUna__3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "voiRunUna__1",
+    "source_slot": "out",
+    "target": "addWeiUna__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "voiRunUna__2",
+    "source_slot": "out",
+    "target": "addWeiUna__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "voiRunUna__3",
+    "source_slot": "out",
+    "target": "addWeiUna__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "voiWeiAva__1",
+    "source_slot": "out",
+    "target": "addWeiUna__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "voiWeiAva__2",
+    "source_slot": "out",
+    "target": "addWeiUna__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "voiWeiAva__3",
+    "source_slot": "out",
+    "target": "addWeiUna__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "weiOffAva__1",
+    "source_slot": "out",
+    "target": "appWeiOffAva__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "weiOffAva__2",
+    "source_slot": "out",
+    "target": "appWeiOffAva__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "weiOffAva__3",
+    "source_slot": "out",
+    "target": "appWeiOffAva__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "zerAva__1",
+    "source_slot": "out",
+    "target": "voiWeiAva__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "zerAva__2",
+    "source_slot": "out",
+    "target": "voiWeiAva__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "zerAva__3",
+    "source_slot": "out",
+    "target": "voiWeiAva__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "zerUna__1",
+    "source_slot": "out",
+    "target": "voiRunUna__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "zerUna__2",
+    "source_slot": "out",
+    "target": "voiRunUna__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "zerUna__3",
+    "source_slot": "out",
+    "target": "voiRunUna__3",
+    "target_slot": "b"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "addWeiUna__1": "addWeiUna__1",
+    "addWeiUna__2": "addWeiUna__2",
+    "addWeiUna__3": "addWeiUna__3",
+    "addWei__1": "addWei__1",
+    "addWei__1_parameter": "addWei__1",
+    "addWei__2": "addWei__2",
+    "addWei__2_parameter": "addWei__2",
+    "addWei__3": "addWei__3",
+    "addWei__3_parameter": "addWei__3",
+    "appWeiOffAva__1": "appWeiOffAva__1",
+    "appWeiOffAva__2": "appWeiOffAva__2",
+    "appWeiOffAva__3": "appWeiOffAva__3",
+    "fal__1": "fal__1",
+    "fal__2": "fal__2",
+    "fal__3": "fal__3",
+    "idxEquAltMat__1_1": "idxEquAltMat__1_1",
+    "idxEquAltMat__1_2": "idxEquAltMat__1_2",
+    "idxEquAltMat__1_3": "idxEquAltMat__1_3",
+    "idxEquAltMat__2_1": "idxEquAltMat__2_1",
+    "idxEquAltMat__2_2": "idxEquAltMat__2_2",
+    "idxEquAltMat__2_3": "idxEquAltMat__2_3",
+    "idxEquAltMat__3_1": "idxEquAltMat__3_1",
+    "idxEquAltMat__3_2": "idxEquAltMat__3_2",
+    "idxEquAltMat__3_3": "idxEquAltMat__3_3",
+    "iniRunTim__1": "iniRunTim__1",
+    "iniRunTim__2": "iniRunTim__2",
+    "iniRunTim__3": "iniRunTim__3",
+    "offAva__1": "offAva__1",
+    "offAva__2": "offAva__2",
+    "offAva__3": "offAva__3",
+    "off__1": "off__1",
+    "off__2": "off__2",
+    "off__3": "off__3",
+    "opp__1": "opp__1",
+    "opp__1_parameter": "opp__1",
+    "opp__2": "opp__2",
+    "opp__2_parameter": "opp__2",
+    "opp__3": "opp__3",
+    "opp__3_parameter": "opp__3",
+    "resIdxInp_nEquAlt__element_1": "resIdxInp__1__select_1",
+    "resIdxInp_nEquAlt__element_1_2": "resIdxInp__2__select_1",
+    "resIdxInp_nEquAlt__element_1_3": "resIdxInp__3__select_1",
+    "resIdxInp_nEquAlt__element_2": "resIdxInp__1__select_2",
+    "resIdxInp_nEquAlt__element_2_2": "resIdxInp__2__select_2",
+    "resIdxInp_nEquAlt__element_2_3": "resIdxInp__3__select_2",
+    "resIdxInp_nEquAlt__index____1": "resIdxInp__1__atMost_1",
+    "resIdxInp_nEquAlt__index____1_2": "resIdxInp__2__atMost_1",
+    "resIdxInp_nEquAlt__index____1_2_threshold": "resIdxInp__2__atMost_1",
+    "resIdxInp_nEquAlt__index____1_3": "resIdxInp__3__atMost_1",
+    "resIdxInp_nEquAlt__index____1_3_threshold": "resIdxInp__3__atMost_1",
+    "resIdxInp_nEquAlt__index____1_threshold": "resIdxInp__1__atMost_1",
+    "resIdxInp_nEquAlt__index____2": "resIdxInp__1__atMost_2",
+    "resIdxInp_nEquAlt__index____2_2": "resIdxInp__2__atMost_2",
+    "resIdxInp_nEquAlt__index____2_2_threshold": "resIdxInp__2__atMost_2",
+    "resIdxInp_nEquAlt__index____2_3": "resIdxInp__3__atMost_2",
+    "resIdxInp_nEquAlt__index____2_3_threshold": "resIdxInp__3__atMost_2",
+    "resIdxInp_nEquAlt__index____2_threshold": "resIdxInp__1__atMost_2",
+    "runTimSta__1": "runTimSta__1",
+    "runTimSta__2": "runTimSta__2",
+    "runTimSta__3": "runTimSta__3",
+    "sor_compare_1": "sor__cmp_1",
+    "sor_compare_2": "sor__cmp_2",
+    "sor_compare_3": "sor__cmp_3",
+    "sor_highIdx_1": "sor__highIdx_1",
+    "sor_highIdx_2": "sor__highIdx_2",
+    "sor_highIdx_3": "sor__highIdx_3",
+    "sor_high_1": "sor__high_1",
+    "sor_high_2": "sor__high_2",
+    "sor_high_3": "sor__high_3",
+    "sor_index_1": "sor__index_1",
+    "sor_index_2": "sor__index_2",
+    "sor_index_3": "sor__index_3",
+    "sor_lowIdx_1": "sor__lowIdx_1",
+    "sor_lowIdx_2": "sor__lowIdx_2",
+    "sor_lowIdx_3": "sor__lowIdx_3",
+    "sor_low_1": "sor__low_1",
+    "sor_low_2": "sor__low_2",
+    "sor_low_3": "sor__low_3",
+    "timRunLif__1": "timRunLif__1",
+    "timRunLif__2": "timRunLif__2",
+    "timRunLif__3": "timRunLif__3",
+    "timRun__1": "timRun__1",
+    "timRun__2": "timRun__2",
+    "timRun__3": "timRun__3",
+    "timUna__1": "timUna__1",
+    "timUna__2": "timUna__2",
+    "timUna__3": "timUna__3",
+    "u1Res__1": "u1Res__1",
+    "u1Res__2": "u1Res__2",
+    "u1Res__3": "u1Res__3",
+    "una__1": "una__1",
+    "una__2": "una__2",
+    "una__3": "una__3",
+    "voiRunUna__1": "voiRunUna__1",
+    "voiRunUna__2": "voiRunUna__2",
+    "voiRunUna__3": "voiRunUna__3",
+    "voiWeiAva__1": "voiWeiAva__1",
+    "voiWeiAva__2": "voiWeiAva__2",
+    "voiWeiAva__3": "voiWeiAva__3",
+    "weiOffAva__1": "weiOffAva__1",
+    "weiOffAva__1_false": "weiOffAva__1",
+    "weiOffAva__1_true": "weiOffAva__1",
+    "weiOffAva__2": "weiOffAva__2",
+    "weiOffAva__2_false": "weiOffAva__2",
+    "weiOffAva__2_true": "weiOffAva__2",
+    "weiOffAva__3": "weiOffAva__3",
+    "weiOffAva__3_false": "weiOffAva__3",
+    "weiOffAva__3_true": "weiOffAva__3",
+    "zerAva__1": "zerAva__1",
+    "zerAva__1_false": "zerAva__1",
+    "zerAva__1_true": "zerAva__1",
+    "zerAva__2": "zerAva__2",
+    "zerAva__2_false": "zerAva__2",
+    "zerAva__2_true": "zerAva__2",
+    "zerAva__3": "zerAva__3",
+    "zerAva__3_false": "zerAva__3",
+    "zerAva__3_true": "zerAva__3",
+    "zerUna__1": "zerUna__1",
+    "zerUna__1_false": "zerUna__1",
+    "zerUna__1_true": "zerUna__1",
+    "zerUna__2": "zerUna__2",
+    "zerUna__2_false": "zerUna__2",
+    "zerUna__2_true": "zerUna__2",
+    "zerUna__3": "zerUna__3",
+    "zerUna__3_false": "zerUna__3",
+    "zerUna__3_true": "zerUna__3"
+   },
+   "coverage": {
+    "boundary_inputs": 6,
+    "boundary_outputs": 9,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal": 9,
+     "Buildings.Controls.OBC.CDL.Integers.LessThreshold": 6,
+     "Buildings.Controls.OBC.CDL.Integers.Sources.Constant": 12,
+     "Buildings.Controls.OBC.CDL.Integers.Switch": 12,
+     "Buildings.Controls.OBC.CDL.Logical.And": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 6,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 6,
+     "Buildings.Controls.OBC.CDL.Logical.Timer": 3,
+     "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating": 6,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 3,
+     "Buildings.Controls.OBC.CDL.Reals.AddParameter": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Greater": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Max": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Multiply": 9,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 6
+    },
+    "component_count": 96,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.Timer",
+     "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.StagingRotation.SortRuntime",
+    "root_label": "SortRuntime",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "b7743cb369449da0c419a6a4b77a3e6e56bfd47b788fd78a336c93080de4a78c",
+    "supported_class_count": 96,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "b7743cb369449da0c419a6a4b77a3e6e56bfd47b788fd78a336c93080de4a78c"
+  },
+  "name": "SortRuntime"
+ }
+}

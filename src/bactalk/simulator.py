@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from bactalk.domain import (
+    FEEDBACK_KINDS,
     AcceptanceCase,
     AssertionResult,
     Block,
@@ -22,6 +23,7 @@ from bactalk.domain import (
     ScenarioResult,
     TestReport,
 )
+from bactalk.psychrometrics import wet_bulb
 
 
 class FaultInjector:
@@ -172,16 +174,16 @@ class GraphInterpreter:
         values: dict[str, float | bool] = {}
         deferred_unit_delays: list[Block] = []
         deferred_pre_blocks: list[Block] = []
+        deferred_state_blocks: list[Block] = []
         for block in self.graph.topological_order():
-            if block.kind in {
-                BlockKind.NUMERIC_UNIT_DELAY,
-                BlockKind.BOOLEAN_PRE_HOST_TICK,
-            }:
+            if block.kind in FEEDBACK_KINDS:
                 args = {}
                 if block.kind == BlockKind.NUMERIC_UNIT_DELAY:
                     deferred_unit_delays.append(block)
-                else:
+                elif block.kind == BlockKind.BOOLEAN_PRE_HOST_TICK:
                     deferred_pre_blocks.append(block)
+                else:
+                    deferred_state_blocks.append(block)
             else:
                 args = {
                     slot: values[f"{source}.{source_slot}"]
@@ -208,7 +210,59 @@ class GraphInterpreter:
                 block.id,
                 {"out": bool(block.config.get("initial", False))},
             )["out"] = bool(values[f"{source}.{source_slot}"])
+        for block in deferred_state_blocks:
+            self._update_state_block(
+                block,
+                {
+                    slot: values[f"{source}.{source_slot}"]
+                    for slot, (source, source_slot) in self.incoming.get(block.id, {}).items()
+                },
+            )
         return values
+
+    def _update_state_block(self, block: Block, args: dict[str, float | bool]) -> None:
+        """Advance a block that emits the state the previous tick left, after the tick.
+
+        Both follow the Open Control Engine's discretisation: the integrator takes a
+        forward-Euler step over the time since its previous update (none on the first)
+        or jumps to ``reset_value`` on a rising trigger; the counter ignores its first
+        tick, then counts rising triggers and returns to its start on a rising reset.
+        """
+
+        if block.kind == BlockKind.NUMERIC_INTEGRATOR_WITH_RESET:
+            state = self.state.setdefault(
+                block.id,
+                {
+                    "x": float(block.config.get("initial", 0.0)),
+                    "time": None,
+                    "trigger": False,
+                },
+            )
+            trigger = bool(args["trigger"])
+            dt = 0.0 if state["time"] is None else self.time - float(state["time"])
+            if trigger and not state["trigger"]:
+                state["x"] = self._number(args["reset_value"])
+            else:
+                gain = float(block.config.get("gain", 1.0))
+                state["x"] = float(state["x"]) + gain * self._number(args["in"]) * dt
+            state["time"] = self.time
+            state["trigger"] = trigger
+            return
+        if block.kind == BlockKind.NUMERIC_ON_COUNTER:
+            initial = float(block.config.get("initial", 0))
+            state = self.state.setdefault(
+                block.id,
+                {"count": initial, "trigger": False, "reset": False, "history": False},
+            )
+            trigger = bool(args["trigger"])
+            reset = bool(args["reset"])
+            if state["history"] and (
+                (trigger and not state["trigger"]) or (reset and not state["reset"])
+            ):
+                state["count"] = initial if reset else float(state["count"]) + 1.0
+            state.update(trigger=trigger, reset=reset, history=True)
+            return
+        raise ValueError(f"no deferred update for {block.kind.value}")
 
     @staticmethod
     def _number(value: Any) -> float:
@@ -462,6 +516,14 @@ class GraphInterpreter:
             if fired:
                 state["last_index"] = index
             return fired
+        if kind == BlockKind.NUMERIC_INTEGRATOR_WITH_RESET:
+            state = self.state.get(block.id)
+            return float(block.config.get("initial", 0.0)) if state is None else float(state["x"])
+        if kind == BlockKind.NUMERIC_ON_COUNTER:
+            state = self.state.get(block.id)
+            return float(block.config.get("initial", 0)) if state is None else float(state["count"])
+        if kind == BlockKind.WET_BULB_TEMPERATURE:
+            return wet_bulb(self._number(args["dry_bulb"]), self._number(args["relative_humidity"]))
         if kind == BlockKind.NUMERIC_UNIT_DELAY:
             initial = float(block.config.get("initial", 0.0))
             state = self.state.get(block.id)

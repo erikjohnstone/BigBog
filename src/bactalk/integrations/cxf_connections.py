@@ -8,7 +8,11 @@ import re
 from collections import defaultdict
 from typing import Any, Literal
 
-from bactalk.integrations.cxf_arrays import scalarize_fixed_arrays
+from bactalk.integrations.cxf_arrays import (
+    ChildPortOracle,
+    ground_array_derived_parameters,
+    scalarize_fixed_arrays,
+)
 from bactalk.integrations.cxf_importer import INSTANCE_SCHEMAS
 
 PortDirection = Literal["source", "sink"]
@@ -35,6 +39,11 @@ def _class_name(value: Any) -> str | None:
         if name in INSTANCE_SCHEMAS:
             return name
     return None
+
+
+_ENUM_LITERAL = re.compile(
+    r"(?:[A-Za-z_][A-Za-z0-9_]*\.)+Types\.[A-Za-z_][A-Za-z0-9_]*\.[A-Za-z_][A-Za-z0-9_]*"
+)
 
 
 def _parameter_values(graph: list[dict[str, Any]]) -> dict[str, bool | int | float | str]:
@@ -81,9 +90,7 @@ def _resolve_boolean_guard(
     scopes = identifier.split(".")[:-1]
 
     def resolve_parameter(name: str) -> bool | int | float | str | None:
-        candidates = [
-            ".".join([*scopes[:length], name]) for length in range(len(scopes), 0, -1)
-        ]
+        candidates = [".".join([*scopes[:length], name]) for length in range(len(scopes), 0, -1)]
         candidates.append(name)
         return next(
             (parameters[candidate] for candidate in candidates if candidate in parameters),
@@ -112,6 +119,32 @@ def _resolve_boolean_guard(
         parts.append(current.id)
         return ".".join(reversed(parts))
 
+    expanding: set[str] = set()
+
+    def derived(name: str, value: bool | int | float | str) -> bool | int | float | str:
+        # A derived parameter (``final parameter Boolean need_heaPreCon = not chiHeaPreCon
+        # == ...NotRequired``) holds an expression, not a value: evaluate it in turn.
+        # Enumeration literals and plain identifiers stay as they are; a cycle fails.
+        if not isinstance(value, str) or _ENUM_LITERAL.fullmatch(value):
+            return value
+        if value.isidentifier():
+            # an alias (``final have_pumHeaWatPri=have_heaWat``) reads the named
+            # parameter; any other identifier stays as it is
+            aliased = resolve_parameter(value) if value != name else None
+            if aliased is None:
+                return value
+        if name in expanding or len(expanding) > 16:
+            raise ValueError("cyclic derived parameter")
+        try:
+            tree = ast.parse(value, mode="eval")
+        except SyntaxError:
+            return value
+        expanding.add(name)
+        try:
+            return evaluate(tree)
+        finally:
+            expanding.discard(name)
+
     def evaluate(node: ast.AST) -> bool | int | float | str:
         if isinstance(node, ast.Expression):
             return evaluate(node.body)
@@ -123,13 +156,13 @@ def _resolve_boolean_guard(
             resolved = resolve_parameter(node.id)
             if resolved is None:
                 raise ValueError(node.id)
-            return resolved
+            return derived(node.id, resolved)
         if isinstance(node, ast.Attribute):
             name = qualified_name(node)
             if name is None:
                 raise ValueError("attribute")
             resolved = resolve_parameter(name)
-            return name if resolved is None else resolved
+            return name if resolved is None else derived(name, resolved)
         if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
             value = evaluate(node.operand)
             if not isinstance(value, bool):
@@ -381,8 +414,7 @@ def _quote_assert_message_literals(graph: list[dict[str, Any]]) -> dict[str, Any
         raw_types = component.get("@type", [])
         types = raw_types if isinstance(raw_types, list) else [raw_types]
         if not any(
-            isinstance(item, str)
-            and item.rsplit("#", 1)[-1].removeprefix("ex:") == assert_class
+            isinstance(item, str) and item.rsplit("#", 1)[-1].removeprefix("ex:") == assert_class
             for item in types
         ):
             continue
@@ -496,6 +528,8 @@ def _port_directions(
 
 def normalize_connection_sets(
     document: dict[str, Any],
+    *,
+    child_ports: ChildPortOracle | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     """Canonicalize exact Modelica connector sets into directed CXF links.
 
@@ -512,6 +546,7 @@ def normalize_connection_sets(
     if not isinstance(prepared_graph, list):
         raise ValueError("CXF document is missing its JSON-LD graph")
     prepared_nodes = [node for node in prepared_graph if isinstance(node, dict)]
+    derived_grounding = ground_array_derived_parameters(prepared_nodes)
     conditional_pruning = _prune_proven_inactive_connections(prepared_nodes)
     conditional_pruning.update(
         _drop_proven_inactive_structure(
@@ -519,7 +554,7 @@ def normalize_connection_sets(
             conditional_pruning["inactive_components"],
         )
     )
-    normalized, array_scalarization = scalarize_fixed_arrays(prepared)
+    normalized, array_scalarization = scalarize_fixed_arrays(prepared, child_ports=child_ports)
     raw_graph = normalized.get("@graph")
     if not isinstance(raw_graph, list):
         raise ValueError("CXF document is missing its JSON-LD graph")
@@ -613,6 +648,7 @@ def normalize_connection_sets(
         "assert_message_normalization": assert_message_normalization,
         "root_parameter_bound_grounding": bound_grounding,
         "conditional_pruning": conditional_pruning,
+        "array_derived_parameter_grounding": derived_grounding,
         "examined_connection_set_count": examined,
         "rewritten_connection_set_count": len(rewrites),
         "rewrites": rewrites,

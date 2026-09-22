@@ -1,0 +1,231 @@
+{
+ "configuration_id": "tpl-utilities-hold-real",
+ "controller_id": "Utilities.HoldReal",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.HoldReal",
+  "inputs": [
+   {
+    "description": "Input signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.HoldReal.u",
+    "label": "u",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Boolean signal that triggers fixed output value",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.HoldReal.u1",
+    "label": "u1",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Output signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.HoldReal.y",
+    "label": "y",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 2
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "dtHol": 0
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "u",
+   "name": "u",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.HoldReal.u",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1",
+   "name": "u1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.HoldReal.u1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "y",
+   "name": "y",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.HoldReal.y",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Utilities/HoldReal.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "0548e05956fb0bde6ff8a99a190b905c736cb0b2920488799f1a6f1c34a71f05",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "3008e49a1f8b3761e955306384db44abc0700207e84f31d36103f23214612566",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "u",
+    "kind": "numeric_input",
+    "label": "u",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1",
+    "kind": "boolean_input",
+    "label": "u1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y",
+    "kind": "numeric_output",
+    "label": "y",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "numeric_switch",
+    "label": "swi",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": 0.0,
+     "semantic_contract": "CDL.Discrete.TriggeredSampler"
+    },
+    "id": "triSam",
+    "kind": "numeric_latch",
+    "label": "triSam",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "false_hold_seconds": 0.0,
+     "true_hold_seconds": 0.0
+    },
+    "id": "truHol",
+    "kind": "boolean_true_false_hold",
+    "label": "truHol",
+    "x": 360,
+    "y": 0
+   }
+  ],
+  "links": [
+   {
+    "source": "u",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "u",
+    "source_slot": "out",
+    "target": "triSam",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1",
+    "source_slot": "out",
+    "target": "triSam",
+    "target_slot": "clock"
+   },
+   {
+    "source": "u1",
+    "source_slot": "out",
+    "target": "truHol",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "y",
+    "target_slot": "in"
+   },
+   {
+    "source": "triSam",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "truHol",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "swi": "swi",
+    "triSam": "triSam",
+    "truHol": "truHol"
+   },
+   "coverage": {
+    "boundary_inputs": 2,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler": 1,
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 1
+    },
+    "component_count": 3,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler",
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Utilities.HoldReal",
+    "root_label": "HoldReal",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "3008e49a1f8b3761e955306384db44abc0700207e84f31d36103f23214612566",
+    "supported_class_count": 3,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "3008e49a1f8b3761e955306384db44abc0700207e84f31d36103f23214612566"
+  },
+  "name": "HoldReal"
+ }
+}

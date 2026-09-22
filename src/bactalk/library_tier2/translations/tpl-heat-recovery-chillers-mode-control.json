@@ -1,0 +1,401 @@
+{
+ "configuration_id": "tpl-heat-recovery-chillers-mode-control",
+ "controller_id": "HeatRecoveryChillers.ModeControl",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl",
+  "inputs": [
+   {
+    "description": "CHW load",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.QChiWatReq_flow",
+    "label": "QChiWatReq_flow",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "HW load",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.QHeaWatReq_flow",
+    "label": "QHeaWatReq_flow",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Active CHW supply temperature setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.TChiWatSupSet",
+    "label": "TChiWatSupSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Active HW supply temperature setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.THeaWatSupSet",
+    "label": "THeaWatSupSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Enable mode setting",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.u1SetMod",
+    "label": "u1SetMod",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Active supply temperature setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.TSupSet",
+    "label": "TSupSet",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Mode command: true for cooling, false for heating",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.y1Coo",
+    "label": "y1Coo",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 1
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "COPHea_nominal": 2.8
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "QChiWatReq_flow",
+   "name": "QChiWatReq_flow",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.QChiWatReq_flow",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "QHeaWatReq_flow",
+   "name": "QHeaWatReq_flow",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.QHeaWatReq_flow",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TChiWatSupSet",
+   "name": "TChiWatSupSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.TChiWatSupSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "THeaWatSupSet",
+   "name": "THeaWatSupSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.THeaWatSupSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1SetMod",
+   "name": "u1SetMod",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.u1SetMod",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TSupSet",
+   "name": "TSupSet",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.TSupSet",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1Coo",
+   "name": "y1Coo",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl.y1Coo",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "HeatRecoveryChillers/ModeControl.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "4dd13fdeb0999cfb834021eaf75b43c040fef87e7bdeb17f7e8dfa5ff57a85b2",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "c1cfd202e3b51f216a4ba8daeb2b6f22b6260554da3d260a4a0c064a6f2f0dcd",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "QChiWatReq_flow",
+    "kind": "numeric_input",
+    "label": "QChiWatReq_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "QHeaWatReq_flow",
+    "kind": "numeric_input",
+    "label": "QHeaWatReq_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TChiWatSupSet",
+    "kind": "numeric_input",
+    "label": "TChiWatSupSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "THeaWatSupSet",
+    "kind": "numeric_input",
+    "label": "THeaWatSupSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1SetMod",
+    "kind": "boolean_input",
+    "label": "u1SetMod",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "TSupSet",
+    "kind": "numeric_output",
+    "label": "TSupSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1Coo",
+    "kind": "boolean_output",
+    "label": "y1Coo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "les",
+    "kind": "less_than",
+    "label": "les",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preMod",
+    "kind": "boolean_pre_host_tick",
+    "label": "preMod",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.6428571428571428
+    },
+    "id": "QEvaHea_flow_parameter",
+    "kind": "numeric_const",
+    "label": "QEvaHea_flow parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "QEvaHea_flow",
+    "kind": "multiply",
+    "label": "QEvaHea_flow",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "selTSupSet",
+    "kind": "numeric_switch",
+    "label": "selTSupSet",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "setMod",
+    "kind": "boolean_switch",
+    "label": "setMod",
+    "x": 720,
+    "y": 0
+   }
+  ],
+  "links": [
+   {
+    "source": "QEvaHea_flow_parameter",
+    "source_slot": "out",
+    "target": "QEvaHea_flow",
+    "target_slot": "b"
+   },
+   {
+    "source": "QChiWatReq_flow",
+    "source_slot": "out",
+    "target": "les",
+    "target_slot": "a"
+   },
+   {
+    "source": "QHeaWatReq_flow",
+    "source_slot": "out",
+    "target": "QEvaHea_flow",
+    "target_slot": "a"
+   },
+   {
+    "source": "TChiWatSupSet",
+    "source_slot": "out",
+    "target": "selTSupSet",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "THeaWatSupSet",
+    "source_slot": "out",
+    "target": "selTSupSet",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "u1SetMod",
+    "source_slot": "out",
+    "target": "setMod",
+    "target_slot": "selector"
+   },
+   {
+    "source": "les",
+    "source_slot": "out",
+    "target": "setMod",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "preMod",
+    "source_slot": "out",
+    "target": "setMod",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "QEvaHea_flow",
+    "source_slot": "out",
+    "target": "les",
+    "target_slot": "b"
+   },
+   {
+    "source": "selTSupSet",
+    "source_slot": "out",
+    "target": "TSupSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "setMod",
+    "source_slot": "out",
+    "target": "preMod",
+    "target_slot": "in"
+   },
+   {
+    "source": "setMod",
+    "source_slot": "out",
+    "target": "selTSupSet",
+    "target_slot": "selector"
+   },
+   {
+    "source": "setMod",
+    "source_slot": "out",
+    "target": "y1Coo",
+    "target_slot": "in"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "QEvaHea_flow": "QEvaHea_flow",
+    "QEvaHea_flow_parameter": "QEvaHea_flow",
+    "les": "les",
+    "preMod": "preMod",
+    "selTSupSet": "selTSupSet",
+    "setMod": "setMod"
+   },
+   "coverage": {
+    "boundary_inputs": 5,
+    "boundary_outputs": 2,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Switch": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Less": 1,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 1
+    },
+    "component_count": 5,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.Pre"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl",
+    "root_label": "ModeControl",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "c1cfd202e3b51f216a4ba8daeb2b6f22b6260554da3d260a4a0c064a6f2f0dcd",
+    "supported_class_count": 5,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "c1cfd202e3b51f216a4ba8daeb2b6f22b6260554da3d260a4a0c064a6f2f0dcd"
+  },
+  "name": "ModeControl"
+ }
+}

@@ -17,6 +17,7 @@ from bactalk.domain import BlockKind, ControlGraph
 from bactalk.integrations.cdl import CdlTranslator
 from bactalk.integrations.cxf_composites import (
     assemble_cxf_composites,
+    child_port_oracle,
     flatten_cxf_topology,
 )
 from bactalk.integrations.cxf_connections import normalize_connection_sets
@@ -39,6 +40,13 @@ _PARAMETER_DECLARATION = re.compile(
     r"(?m)^\s*(?:(?:final|replaceable|each)\s+)*parameter\s+"
     r"(?P<data_type>[A-Za-z_][A-Za-z0-9_.]*)\s+"
     r"(?P<name>[A-Za-z_][A-Za-z0-9_]*)\b"
+)
+_REAL_UNIT_TYPES = ("Modelica.Units.SI.", "Modelica.Units.NonSI.", "Modelica.SIunits.")
+_ENUM_ARRAY_DECLARATION = re.compile(
+    r"(?m)^\s*(?:(?:replaceable|each)\s+)*parameter\s+"
+    r"(?P<data_type>[A-Za-z_][A-Za-z0-9_.]*)\s+"
+    r"(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\[(?P<dimension>[A-Za-z0-9_]+)\]\s*"
+    r"(?:=\s*\{(?P<values>[A-Za-z0-9_.,\s]+)\}|(?=[\"(;]|annotation))"
 )
 _OCE_DIAGNOSTIC = re.compile(r"(?m)^(?P<severity>error|warning)\|(?P<code>[^|]+)\|")
 _OCE_MISSING_CLASS = re.compile(r"no registered block class for `(?P<class>[^`]+)`")
@@ -71,6 +79,11 @@ _REVIEWED_COMPOSITE_DIAGNOSTICS = frozenset(
 )
 _PROGRAM_GENERATOR_CLASSES = frozenset(
     {
+        "Buildings.Controls.OBC.CDL.Reals.LimitSlewRate",
+        "Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
+        "Buildings.Controls.OBC.CDL.Reals.IntegratorWithReset",
+        "Buildings.Controls.OBC.CDL.Integers.OnCounter",
+        "Buildings.Controls.OBC.CDL.Psychrometrics.WetBulb_TDryBulPhi",
         "Buildings.Controls.OBC.CDL.Reals.PID",
         "Buildings.Controls.OBC.CDL.Reals.PIDWithReset",
         "Buildings.Controls.OBC.Utilities.PIDWithEnable",
@@ -136,6 +149,8 @@ _STATEFUL_KINDS = frozenset(
         BlockKind.TIMER,
         BlockKind.TIMER_WITH_RESET,
         BlockKind.TIMER_ACCUMULATING,
+        BlockKind.NUMERIC_INTEGRATOR_WITH_RESET,
+        BlockKind.NUMERIC_ON_COUNTER,
         BlockKind.TRIM_AND_RESPOND,
         BlockKind.TRIM_AND_RESPOND_HOLD,
         BlockKind.PI_LOOP,
@@ -904,6 +919,17 @@ class G36Library:
         applied: list[dict[str, Any]] = []
 
         def scalar_literal(name: str, data_type_name: str, value: Any) -> str:
+            if "." in data_type_name and ".Types." in f".{data_type_name}":
+                # one member of an enumeration array (``chiTyp``)
+                if (
+                    not isinstance(value, str)
+                    or len(value) > 500
+                    or not re.fullmatch(
+                        re.escape(data_type_name) + r"\.[A-Za-z_][A-Za-z0-9_]*", value
+                    )
+                ):
+                    raise ValueError(f"G36 parameter {name} requires members of {data_type_name}")
+                return value
             if data_type_name == "Boolean":
                 if not isinstance(value, bool):
                     raise ValueError(f"G36 parameter {name} requires Boolean array values")
@@ -947,15 +973,29 @@ class G36Library:
                 raise ValueError(f"G36 array parameter {name} exceeds 4096 scalar values")
             return "{" + ",".join(child[0] for child in children) + "}", shape, count
 
-        def declared_shape(name: str, node: dict[str, Any]) -> tuple[int, ...]:
+        def declared_shape(
+            name: str, node: dict[str, Any], supplied: tuple[int, ...] = ()
+        ) -> tuple[int, ...]:
             raw = node.get("S231:sizeOfDimensions")
             if raw is None:
                 number_dimensions = node.get("S231:numberDimensions")
                 if number_dimensions not in {1, "1"}:
-                    raise ValueError(
-                        f"G36 array parameter {name} has an unsupported unsized "
-                        "multi-dimensional declaration"
+                    # ``parameter Integer staMat[:, :]``: Modelica sizes an unsized
+                    # multi-dimensional parameter from its binding, so the supplied
+                    # value's shape is the declared shape when its rank matches.
+                    try:
+                        rank = int(str(number_dimensions))
+                    except ValueError:
+                        rank = 0
+                    if rank < 2 or len(supplied) != rank:
+                        raise ValueError(
+                            f"G36 array parameter {name} has an unsupported unsized "
+                            "multi-dimensional declaration"
+                        )
+                    node["S231:sizeOfDimensions"] = (
+                        "(" + ", ".join(str(item) for item in supplied) + ")"
                     )
+                    return supplied
                 # Modelica's connector-sizing idiom declares plant design arrays as ``[:]``
                 # and binds the surrounding component arrays with ``nEqu``. The CXF therefore
                 # has no sizeOfDimensions on the parameter itself. Admit only that explicit,
@@ -1000,6 +1040,21 @@ class G36Library:
                         f"G36 array parameter {name} dimension {token} must be 1 through 512"
                     )
                 dimensions.append(dimension)
+            try:
+                rank = int(str(node.get("S231:numberDimensions", len(dimensions))))
+            except ValueError:
+                rank = len(dimensions)
+            if (
+                rank > len(dimensions)
+                and len(supplied) == rank
+                and tuple(supplied[rank - len(dimensions) :]) == tuple(dimensions)
+            ):
+                # ``parameter Real staEqu[:, nHp]``: modelica-json keeps only the sized
+                # dimension; the ``:`` ones take the binding's size, as in Modelica.
+                node["S231:sizeOfDimensions"] = (
+                    "(" + ", ".join(str(item) for item in supplied) + ")"
+                )
+                return tuple(supplied)
             return tuple(dimensions)
 
         ordered_names = sorted(
@@ -1014,13 +1069,16 @@ class G36Library:
             type_ref = node.get("S231:isOfDataType")
             data_type = type_ref.get("@id") if isinstance(type_ref, dict) else type_ref
             data_type_name = str(data_type).rsplit("#", 1)[-1].rsplit(":", 1)[-1]
+            if data_type_name.startswith(_REAL_UNIT_TYPES):
+                # ``parameter Modelica.Units.SI.Time Ti``: a Real with a unit
+                data_type_name = "Real"
             is_array = node.get("S231:isArray") is True
             cxf_value: Any = value
             if is_array:
                 if not isinstance(value, list):
                     raise ValueError(f"G36 parameter {name} requires a JSON array value")
                 cxf_value, actual_shape, _ = array_literal(name, data_type_name, value)
-                expected_shape = declared_shape(name, node)
+                expected_shape = declared_shape(name, node, actual_shape)
                 if actual_shape != expected_shape:
                     raise ValueError(
                         f"G36 array parameter {name} shape {actual_shape} does not match "
@@ -1421,6 +1479,8 @@ class G36Library:
                 continue
             label = node.get("S231:label")
             name = label if isinstance(label, str) else identifier.rsplit(".", 1)[-1]
+            # an array parameter's label carries its dimensions (``chiTyp[nChi]``)
+            name = re.sub(r"\s*\[[^]]*\]\s*$", "", name)
             declared_type = declarations.get(name)
             data_type = qualify_type(declared_type) if declared_type is not None else None
             if data_type is None:
@@ -1428,6 +1488,49 @@ class G36Library:
             node["@type"] = "S231:Parameter"
             node["S231:isOfDataType"] = {"@id": primitive_types.get(data_type, f"ex:{data_type}")}
             node["_bactalk_recovered_parameter_type"] = data_type
+
+        # modelica-json drops an enumeration-typed array parameter altogether
+        # (``parameter ...Types.ChillersAndStages chiTyp[nChi]={...PositiveDisplacement,
+        # ...}``), yet the class's own modifications are written over it. Recover exactly
+        # that shape: a one-dimensional declaration whose default lists members of its
+        # own enumeration. Nothing else is invented, and nothing is evaluated.
+        root = roots[0]
+        root_id = root.get("@id")
+        if not isinstance(root_id, str):
+            return
+        declared = set(nodes)
+        recovered: list[dict[str, Any]] = []
+        for match in _ENUM_ARRAY_DECLARATION.finditer(source_text):
+            data_type = qualify_type(match.group("data_type"))
+            identifier = f"{root_id}.{match.group('name')}"
+            if ".Types." not in f".{data_type}" or identifier in declared:
+                continue
+            node: dict[str, Any] = {
+                "@id": identifier,
+                "@type": "S231:Parameter",
+                "S231:isOfDataType": {"@id": f"ex:{data_type}"},
+                "S231:isArray": True,
+                "S231:numberDimensions": 1,
+                "S231:sizeOfDimensions": f"({match.group('dimension').strip()})",
+                "S231:label": f"{match.group('name')}[{match.group('dimension').strip()}]",
+                "_bactalk_recovered_parameter_type": data_type,
+            }
+            if match.group("values") is not None:
+                members = [item.strip() for item in match.group("values").split(",")]
+                if not members or not all(
+                    re.fullmatch(re.escape(data_type) + r"\.[A-Za-z_][A-Za-z0-9_]*", item)
+                    for item in members
+                ):
+                    continue
+                node["S231:value"] = "{" + ",".join(members) + "}"
+            # without a default it is a required job parameter, asked for like any other
+            recovered.append(node)
+        if recovered:
+            graph.extend(recovered)
+            root["S231:hasParameter"] = [
+                *references,
+                *({"@id": node["@id"]} for node in recovered),
+            ]
 
     def _translate(
         self,
@@ -1449,7 +1552,10 @@ class G36Library:
         )
         if parameterization["remaining_required_parameters"]:
             raise G36RequiredParametersError(controller_id, parameterization)
-        document, normalization = normalize_connection_sets(parameterized)
+        document, normalization = normalize_connection_sets(
+            parameterized,
+            child_ports=child_port_oracle(class_documents) if class_documents else None,
+        )
         parameter_grounding = self._ground_compile_time_enum_parameters(document)
         normalization["compile_time_enum_grounding"] = parameter_grounding
         if class_documents:
@@ -1496,11 +1602,23 @@ class G36Library:
         try:
             engine_report = self.engine.inspect_document(document)
         except RuntimeError as exc:
-            engine_report = self._reviewed_composite_report(
-                document,
-                exc,
-                execution_profile=execution_profile,
-            )
+            try:
+                engine_report = self._reviewed_composite_report(
+                    document,
+                    exc,
+                    execution_profile=execution_profile,
+                )
+            except RuntimeError as rejected:
+                unexpanded = normalization.get("composite_assembly", {}).get("missing_classes")
+                if not unexpanded or rejected is not exc:
+                    raise
+                # The engine's diagnostics name the children left unexpanded; the
+                # cause is the class the assembly could not expand inside them.
+                raise RuntimeError(
+                    "CXF composite assembly cannot expand "
+                    + ", ".join(sorted(unexpanded))
+                    + f", so the parent reaches the engine unassembled: {rejected}"
+                ) from rejected
         return controller, document, engine_report, normalization, parameterization
 
     def _reviewed_composite_report(

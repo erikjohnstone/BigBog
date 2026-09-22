@@ -240,7 +240,7 @@
  "library": "g36",
  "niagara_target": {
   "complete": true,
-  "generated_program_count": 60
+  "generated_program_count": 68
  },
  "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
  "parameters": {
@@ -15387,6 +15387,7 @@
     ],
     "niagara_translatable": false,
     "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
      "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler",
      "Buildings.Controls.OBC.CDL.Logical.FallingEdge",
      "Buildings.Controls.OBC.CDL.Logical.Latch",
@@ -15394,6 +15395,7 @@
      "Buildings.Controls.OBC.CDL.Logical.Timer",
      "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold",
      "Buildings.Controls.OBC.CDL.Reals.Hysteresis",
+     "Buildings.Controls.OBC.CDL.Reals.LimitSlewRate",
      "Buildings.Controls.OBC.CDL.Reals.PID",
      "Buildings.Controls.OBC.CDL.Reals.PIDWithReset",
      "Buildings.Controls.OBC.CDL.Utilities.Assert"

@@ -238,6 +238,19 @@ public final class KernelHarness {
             bool(params, "enable", true));
         return row -> Double.toString(k.step(row[0], row[1]));
       }
+      case "IntegratorWithReset": {
+        IntegratorWithReset k =
+            new IntegratorWithReset(num(params, "gain", 1.0), num(params, "initial", 0.0));
+        return row -> Double.toString(k.step(row[0], row[1], row[2], b(row[3])));
+      }
+      case "OnCounter": {
+        OnCounter k = new OnCounter(num(params, "initial", 0.0));
+        return row -> Double.toString(k.step(row[0], b(row[1]), b(row[2])));
+      }
+      case "WetBulb": {
+        WetBulb k = new WetBulb();
+        return row -> Double.toString(k.step(row[0], row[1], row[2]));
+      }
       case "RisingEdge": {
         RisingEdge k = new RisingEdge(bool(params, "initial", false));
         return row -> Boolean.toString(k.step(b(row[1])));

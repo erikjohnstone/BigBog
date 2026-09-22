@@ -1,0 +1,115 @@
+{
+ "configuration_id": "tpl-utilities-placeholder-logical",
+ "controller_id": "Utilities.PlaceholderLogical",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.PlaceholderLogical",
+  "inputs": [],
+  "outputs": [
+   {
+    "description": "Output",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.PlaceholderLogical.y",
+    "label": "y",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 0
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "have_inp": false,
+  "have_inpPh": false,
+  "u_internal": false
+ },
+ "points": [
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y",
+   "name": "y",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.PlaceholderLogical.y",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Utilities/PlaceholderLogical.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "7231318d8fd77bdbbb2b78dfbc91be2181dca955c9d2777ad82daf5d80365127",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "5fb639601116bd7105c3a74160f3c7ac014885fb5e91e316f62e9d530c3d61e7",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {},
+    "id": "y",
+    "kind": "boolean_output",
+    "label": "y",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "ph",
+    "kind": "boolean_const",
+    "label": "ph",
+    "x": 0,
+    "y": 0
+   }
+  ],
+  "links": [
+   {
+    "source": "ph",
+    "source_slot": "out",
+    "target": "y",
+    "target_slot": "in"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "ph": "ph"
+   },
+   "coverage": {
+    "boundary_inputs": 0,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 1
+    },
+    "component_count": 1,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": true,
+    "niagara_unsupported_classes": [],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Utilities.PlaceholderLogical",
+    "root_label": "PlaceholderLogical",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "5fb639601116bd7105c3a74160f3c7ac014885fb5e91e316f62e9d530c3d61e7",
+    "supported_class_count": 1,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "5fb639601116bd7105c3a74160f3c7ac014885fb5e91e316f62e9d530c3d61e7"
+  },
+  "name": "PlaceholderLogical"
+ }
+}

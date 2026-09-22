@@ -25,7 +25,9 @@ import traceback
 from pathlib import Path
 from typing import Any
 
+from bactalk.integrations.cxf_arrays import _REDUCTIONS
 from bactalk.integrations.g36_library import G36Library, G36RequiredParametersError
+from bactalk.integrations.plant_controls_library import PlantControlsCdlLibrary
 from bactalk.library_tier2 import (
     CONFIGURATIONS,
     CONFIGURATIONS_BY_ID,
@@ -60,10 +62,15 @@ def _lock_component(name: str) -> dict[str, Any]:
     }
 
 
-LOCK_COMPONENT = {"release": "modelica-buildings", "plants": "modelica-buildings-plants"}
+LOCK_COMPONENT = {
+    "release": "modelica-buildings",
+    "plants": "modelica-buildings-plants",
+    "templates": "modelica-buildings",
+}
 MODELICA_ROOT = {
     "release": ROOT / ".vendor" / "modelica-buildings",
     "plants": ROOT / ".vendor" / "modelica-buildings-plants",
+    "templates": ROOT / ".vendor" / "modelica-buildings",
 }
 
 
@@ -99,7 +106,7 @@ def translation_envelope(library: G36Library, config_id: str) -> dict[str, Any]:
         "controller_id": config.controller_id,
         "execution_profile": config.execution_profile,
         "interface": fresh["interface"],
-        "library": "g36",
+        "library": "plant_controls" if config.source == "templates" else "g36",
         "niagara_target": {
             "complete": bool(assessment["complete"]),
             "generated_program_count": assessment.get("generated_program_count"),
@@ -131,10 +138,41 @@ def _case_samples(case: Any, integer_inputs: set[str]) -> list[dict[str, Any]]:
             for name, value in inputs.items()
         }
 
+    if case.timeline:
+        # A step scenario: t = 0 takes the first phase's inputs, then each phase's
+        # inputs for its scans, on the same grid the single-phase cases use.
+        samples = [{"time": 0.0, "inputs": cast(case.timeline[0].inputs)}]
+        clock = 0.0
+        for phase in case.timeline:
+            for _ in range(phase.repeat):
+                clock += phase.step_seconds
+                samples.append({"time": clock, "inputs": cast(phase.inputs)})
+        return samples
     return [
         {"time": scan * case.step_seconds, "inputs": cast(case.inputs)}
         for scan in range(case.repeat + 1)
     ]
+
+
+def _without(case: Any, absent: list[str]) -> Any:
+    """The case with the absent inputs dropped (from every phase of a step scenario)."""
+
+    if case.timeline:
+        return case.model_copy(
+            update={
+                "timeline": [
+                    phase.model_copy(
+                        update={
+                            "inputs": {k: v for k, v in phase.inputs.items() if k not in absent}
+                        }
+                    )
+                    for phase in case.timeline
+                ]
+            }
+        )
+    return case.model_copy(
+        update={"inputs": {k: v for k, v in case.inputs.items() if k not in absent}}
+    )
 
 
 def reference_envelope(library: G36Library, config_id: str) -> dict[str, Any]:
@@ -155,8 +193,7 @@ def reference_envelope(library: G36Library, config_id: str) -> dict[str, Any]:
         # absent from the engine's instance for this parameter set; the engine names
         # it, the scenario drops it and the reference records the omission.
         while True:
-            inputs = {k: v for k, v in case.inputs.items() if k not in absent}
-            probe = case.model_copy(update={"inputs": inputs})
+            probe = _without(case, absent)
             try:
                 result = library.execute(
                     config.controller_id,
@@ -172,6 +209,17 @@ def reference_envelope(library: G36Library, config_id: str) -> dict[str, Any]:
                 absent.append(match.group(1))
         runtime = result["runtime"]
         profile = result["execution_profile"]
+        if runtime != "Open Control Engine":
+            # A reviewed composite (a Modelica-equation utility the engine cannot
+            # ingest) falls back to BACTalk's own interpreter; that is not an
+            # independent reference, so the row is a blocker, not a retained row.
+            missing = result["engine_report"].get("oce_missing_classes", [])
+            raise RuntimeError(
+                "the Open Control Engine cannot load "
+                + ", ".join(missing)
+                + " inside this controller, so only BACTalk's own interpreter runs it, "
+                "which is not an independent reference"
+            )
         labels = {port["id"]: port["label"] for port in result["interface"]["outputs"]}
         rows = result["trace"]["trace"]
         outputs: dict[str, list[Any]] = {label: [] for label in labels.values()}
@@ -209,6 +257,131 @@ def reference_envelope(library: G36Library, config_id: str) -> dict[str, Any]:
     }
 
 
+TEMPLATES_PACKAGE = ("Buildings", "Templates", "Plants", "Controls")
+ARRAY_REDUCTIONS = frozenset(_REDUCTIONS)
+
+
+def _equation_statements(text: str) -> list[str]:
+    """The statements of a class's equation sections other than ``connect``."""
+
+    body = re.sub(r"annotation\s*\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\)", "", text)
+    statements: list[str] = []
+    for section in re.findall(r"(?ms)^\s*equation\b(.*?)(?=^\s*end\s+\w+\s*;|\Z)", body):
+        for statement in section.split(";"):
+            # structural ``if have_inp then connect(u, y); else ...; end if``
+            statement = re.sub(
+                r"(?s)^(?:(?:end\s+if|else|(?:else)?if\b.*?\bthen)\s*)+", "", statement.strip()
+            ).strip()
+            if statement and not statement.startswith(("connect(", "annotation")):
+                statements.append(statement)
+    return statements
+
+
+def non_cdl_classes(config: Any) -> list[str]:
+    """Classes in a template controller that are not CDL block diagrams.
+
+    Read from the source: a class whose equation section holds anything but
+    ``connect`` (``y = if initial() then ...``, a ``when`` clause), one with an
+    ``algorithm`` section, or one built on ``Modelica.StateGraph``. The engine
+    executes CDL block diagrams only, so any of these, at any depth, is the blocker.
+    """
+
+    if config.source != "templates":
+        return []
+    root = MODELICA_ROOT[config.source].joinpath(*TEMPLATES_PACKAGE)
+    found: set[str] = set()
+    seen: set[str] = set()
+    queue = [config.controller_id]
+    while queue:
+        name = queue.pop()
+        if name in seen:
+            continue
+        seen.add(name)
+        path = root.joinpath(*name.split(".")).with_suffix(".mo")
+        if not path.is_file():
+            continue
+        text = path.read_text(encoding="utf-8")
+        if "Modelica.StateGraph" in text:
+            found.add(f"{name} (Modelica.StateGraph)")
+        elif re.search(r"(?m)^\s*algorithm\b", text):
+            found.add(f"{name} (an algorithm section)")
+        elif _equation_statements(text) and (
+            name == config.controller_id
+            or f"Utilities.{name.rsplit('.', 1)[-1]}" not in ARRAY_REDUCTIONS
+        ):
+            # (inside a composite MultiMaxInteger's ``y = max(u)`` is rewritten to
+            # CDL folds, so it runs; on its own it is an equation, not a diagram)
+            found.add(f"{name} (Modelica equations)")
+        package = name.rsplit(".", 1)[0] if "." in name else ""
+        for reference in re.findall(
+            r"(?m)^\s*(?:final\s+)?([A-Z][A-Za-z0-9_.]*)\s+\w+\s*[\[(\n]", text
+        ):
+            if reference.startswith(("Buildings.", "Modelica.")):
+                reference = reference.removeprefix("Buildings.Templates.Plants.Controls.")
+                if reference.startswith(("Buildings.", "Modelica.")):
+                    continue
+            # Modelica name lookup: the enclosing package first, then its parents
+            candidates = [f"{package}.{reference}" if package else reference, reference]
+            parts = package.split(".") if package else []
+            candidates += [".".join([*parts[:depth], reference]) for depth in range(len(parts))]
+            for candidate in candidates:
+                if root.joinpath(*candidate.split(".")).with_suffix(".mo").is_file():
+                    queue.append(candidate)
+                    break
+    return sorted(found)
+
+
+_DIAGNOSTIC = re.compile(r"(?m)^(error)\|([^|]+)\|([^|]*)\|(.*)$")
+
+
+def _exact_reason(exc: BaseException) -> str:
+    """The blocker in one line: an engine rejection is summarised by what it names (the
+    block classes it has no definition for, the constructs outside its subset), not
+    truncated mid-diagnostic."""
+
+    # a scratch directory name would make the recorded reason differ on every run
+    text = re.sub(r"/\S*?/bactalk-g36-[^/\s]+/cxf/", "", str(exc))
+    diagnostics = _DIAGNOSTIC.findall(text)
+    if not diagnostics:
+        return f"{type(exc).__name__}: {' '.join(text.split())[:600]}"
+    head = text.split("\n", 1)[0]
+    head = head.split(": CXF validation failed", 1)[0] if "CXF validation" in head else head
+    findings: list[str] = []
+    missing = sorted(
+        {
+            match
+            for _, code, _, message in diagnostics
+            if code == "class-not-found"
+            for match in re.findall(r"`([^`]+)`", message)
+        }
+    )
+    if missing:
+        findings.append("no block class for " + ", ".join(missing))
+    constructs = sorted(
+        {
+            message.split(";", 1)[0].strip()
+            for _, code, _, message in diagnostics
+            if code == "non-subset-construct"
+        }
+    )
+    findings.extend(constructs[:4])
+    others = sorted(
+        {
+            f"{code}: {message.strip()} ({subject.rsplit('.', 2)[-2]}.{subject.rsplit('.', 1)[-1]})"
+            for _, code, subject, message in diagnostics
+            if code not in {"class-not-found", "non-subset-construct", "unresolved-reference"}
+            and "." in subject
+        }
+    )
+    if not findings:
+        findings.extend(others[:3])
+    return (
+        f"{type(exc).__name__}: {head.strip()}; "
+        + "; ".join(findings)
+        + f" ({len(diagnostics)} engine errors)"
+    )
+
+
 def _render(document: dict[str, Any]) -> str:
     return json.dumps(document, indent=1, sort_keys=True) + "\n"
 
@@ -233,7 +406,9 @@ def main(argv: list[str] | None = None) -> int:
 
     def library_for(config: Any) -> G36Library:
         if config.source not in libraries:
-            libraries[config.source] = G36Library(modelica_root=MODELICA_ROOT[config.source])
+            # Tier 2b: Templates.Plants.Controls through the plain CDL lane
+            factory = PlantControlsCdlLibrary if config.source == "templates" else G36Library
+            libraries[config.source] = factory(modelica_root=MODELICA_ROOT[config.source])
         return libraries[config.source]
 
     blockers: dict[str, Any] = (
@@ -284,11 +459,18 @@ def main(argv: list[str] | None = None) -> int:
             blockers[config.id] = {"stage": "parameters", "reason": str(exc)}
             print(f"BLOCKED {config.id}: {exc}", flush=True)
         except Exception as exc:  # noqa: BLE001 - every blocker is recorded, not hidden
+            reason = _exact_reason(exc)
+            outside = non_cdl_classes(config)
+            if outside:
+                reason = (
+                    "not a CDL block diagram, so the Open Control Engine cannot execute it: "
+                    "contains " + ", ".join(outside) + ". First failure: " + reason
+                )
             blockers[config.id] = {
                 "stage": "translation"
                 if not (TRANSLATIONS / config.translation_file).is_file()
                 else "reference",
-                "reason": f"{type(exc).__name__}: {str(exc)[:600]}",
+                "reason": reason,
             }
             print(f"BLOCKED {config.id}: {type(exc).__name__}: {str(exc)[:300]}", flush=True)
             traceback.print_exc(limit=2)

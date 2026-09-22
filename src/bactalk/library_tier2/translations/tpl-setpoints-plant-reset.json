@@ -1,0 +1,1979 @@
+{
+ "configuration_id": "tpl-setpoints-plant-reset",
+ "controller_id": "Setpoints.PlantReset",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset",
+  "inputs": [
+   {
+    "description": "Sum of reset requests of all loads served",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset.nReqRes",
+    "label": "nReqRes",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "Plant enable",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset.u1Ena",
+    "label": "u1Ena",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Staging process in progress",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset.u1StaPro",
+    "label": "u1StaPro",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Supply temperature setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset.TSupSet",
+    "label": "TSupSet",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Differential pressure setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset.dpSet__1",
+    "label": "dpSet__1",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Differential pressure setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset.dpSet__2",
+    "label": "dpSet__2",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 8
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "TSupSetLim": 298.15,
+  "TSup_nominal": 323.15,
+  "dpSet_max": [
+   50000.0,
+   80000.0
+  ],
+  "nSenDpRem": 2,
+  "resDp_max": 0.75,
+  "resTSup_min": 0.25
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "nReqRes",
+   "name": "nReqRes",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset.nReqRes",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Ena",
+   "name": "u1Ena",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset.u1Ena",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1StaPro",
+   "name": "u1StaPro",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset.u1StaPro",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TSupSet",
+   "name": "TSupSet",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset.TSupSet",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dpSet__1",
+   "name": "dpSet__1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset.dpSet__1",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dpSet__2",
+   "name": "dpSet__2",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Setpoints.PlantReset.dpSet__2",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Setpoints/PlantReset.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "110f00c5bd12431f9a2bce6094bdba0ee7ab84a596b3a5080d5fa567eb853d6a",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "c3bd0df91ac40438d96cbea614f8fe4b5d3ea92a6260746521dedd6d8ddf0976",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "nReqRes",
+    "kind": "numeric_input",
+    "label": "nReqRes",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Ena",
+    "kind": "boolean_input",
+    "label": "u1Ena",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1StaPro",
+    "kind": "boolean_input",
+    "label": "u1StaPro",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "dpSet__1",
+    "kind": "numeric_output",
+    "label": "dpSet__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "dpSet__2",
+    "kind": "numeric_output",
+    "label": "dpSet__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "TSupSet",
+    "kind": "numeric_output",
+    "label": "TSupSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 50000.0
+    },
+    "id": "dpSetMax__1",
+    "kind": "numeric_const",
+    "label": "dpSetMax__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 80000.0
+    },
+    "id": "dpSetMax__2",
+    "kind": "numeric_const",
+    "label": "dpSetMax__2",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 34470.0
+    },
+    "id": "dpSetMin",
+    "kind": "numeric_const",
+    "label": "dpSetMin",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "one",
+    "kind": "numeric_const",
+    "label": "one",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__1_delta_f",
+    "kind": "subtract",
+    "label": "resDp__1 \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__1_delta_x",
+    "kind": "subtract",
+    "label": "resDp__1 \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__1_slope",
+    "kind": "divide",
+    "label": "resDp__1 slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__1_slope_x2",
+    "kind": "multiply",
+    "label": "resDp__1 slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__1_intercept",
+    "kind": "subtract",
+    "label": "resDp__1 intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__1_scaled",
+    "kind": "multiply",
+    "label": "resDp__1 b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__1_result",
+    "kind": "add",
+    "label": "resDp__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__1_lower_limit",
+    "kind": "maximum",
+    "label": "resDp__1 lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__1_upper_limit",
+    "kind": "minimum",
+    "label": "resDp__1 upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__2_delta_f",
+    "kind": "subtract",
+    "label": "resDp__2 \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__2_delta_x",
+    "kind": "subtract",
+    "label": "resDp__2 \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__2_slope",
+    "kind": "divide",
+    "label": "resDp__2 slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__2_slope_x2",
+    "kind": "multiply",
+    "label": "resDp__2 slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__2_intercept",
+    "kind": "subtract",
+    "label": "resDp__2 intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__2_scaled",
+    "kind": "multiply",
+    "label": "resDp__2 b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__2_result",
+    "kind": "add",
+    "label": "resDp__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__2_lower_limit",
+    "kind": "maximum",
+    "label": "resDp__2 lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resDp__2_upper_limit",
+    "kind": "minimum",
+    "label": "resDp__2 upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.75
+    },
+    "id": "resDpMax",
+    "kind": "numeric_const",
+    "label": "resDpMax",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "resTSup_delta_f",
+    "kind": "subtract",
+    "label": "resTSup \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resTSup_delta_x",
+    "kind": "subtract",
+    "label": "resTSup \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resTSup_slope",
+    "kind": "divide",
+    "label": "resTSup slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resTSup_slope_x2",
+    "kind": "multiply",
+    "label": "resTSup slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resTSup_intercept",
+    "kind": "subtract",
+    "label": "resTSup intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resTSup_scaled",
+    "kind": "multiply",
+    "label": "resTSup b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resTSup_result",
+    "kind": "add",
+    "label": "resTSup",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resTSup_lower_limit",
+    "kind": "maximum",
+    "label": "resTSup lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "resTSup_upper_limit",
+    "kind": "minimum",
+    "label": "resTSup upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.25
+    },
+    "id": "resTSupMin",
+    "kind": "numeric_const",
+    "label": "resTSupMin",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "abs_zero",
+    "kind": "numeric_const",
+    "label": "abs zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "abs_nonnegative",
+    "kind": "greater_than_or_equal",
+    "label": "abs nonnegative",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "abs_negate",
+    "kind": "subtract",
+    "label": "abs negate",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "abs_select",
+    "kind": "numeric_switch",
+    "label": "abs",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "abs1_zero",
+    "kind": "numeric_const",
+    "label": "abs1 zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "abs1_nonnegative",
+    "kind": "greater_than_or_equal",
+    "label": "abs1 nonnegative",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "abs1_negate",
+    "kind": "subtract",
+    "label": "abs1 negate",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "abs1_select",
+    "kind": "numeric_switch",
+    "label": "abs1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "add1",
+    "kind": "add",
+    "label": "add1",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "add2",
+    "kind": "add",
+    "label": "add2",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "and2",
+    "kind": "and",
+    "label": "and2",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {
+     "message": "Trim amount triAmo and respond amount resAmo must have opposite signs.",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "assMes",
+    "kind": "boolean_assert_warning",
+    "label": "assMes",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {
+     "message": "Respond amount resAmo and maximum respond amount maxRes must have same sign.",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "assMes2",
+    "kind": "boolean_assert_warning",
+    "label": "assMes2",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "difReqIgnReq",
+    "kind": "subtract",
+    "label": "difReqIgnReq",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": -1.0
+    },
+    "id": "gai_parameter",
+    "kind": "numeric_const",
+    "label": "gai parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "gai",
+    "kind": "multiply",
+    "label": "gai",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "greThr_threshold",
+    "kind": "numeric_const",
+    "label": "greThr threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greThr",
+    "kind": "greater_than",
+    "label": "greThr",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "greThr1_threshold",
+    "kind": "numeric_const",
+    "label": "greThr1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greThr1",
+    "kind": "greater_than",
+    "label": "greThr1",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "greThr2_threshold",
+    "kind": "numeric_const",
+    "label": "greThr2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greThr2",
+    "kind": "greater_than",
+    "label": "greThr2",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "iniSetCon",
+    "kind": "numeric_const",
+    "label": "iniSetCon",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intToRea_zero",
+    "kind": "numeric_const",
+    "label": "intToRea zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intToRea",
+    "kind": "add",
+    "label": "intToRea",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat",
+    "kind": "boolean_set_reset",
+    "label": "lat",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "lesThr1_threshold",
+    "kind": "numeric_const",
+    "label": "lesThr1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lesThr1",
+    "kind": "less_than",
+    "label": "lesThr1",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "maxInp",
+    "kind": "maximum",
+    "label": "maxInp",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.07
+    },
+    "id": "maxResCon",
+    "kind": "numeric_const",
+    "label": "maxResCon",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "maxSetCon",
+    "kind": "numeric_const",
+    "label": "maxSetCon",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "min1",
+    "kind": "minimum",
+    "label": "min1",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "minInp",
+    "kind": "minimum",
+    "label": "minInp",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "minSetCon",
+    "kind": "numeric_const",
+    "label": "minSetCon",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "netRes",
+    "kind": "numeric_switch",
+    "label": "netRes",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "not1",
+    "kind": "not",
+    "label": "not1",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "notHol",
+    "kind": "not",
+    "label": "notHol",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "notHolAndTic",
+    "kind": "and",
+    "label": "notHolAndTic",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "numIgnReqCon",
+    "kind": "numeric_const",
+    "label": "numIgnReqCon",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "pro",
+    "kind": "multiply",
+    "label": "pro",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "pro1",
+    "kind": "multiply",
+    "label": "pro1",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "pro2",
+    "kind": "multiply",
+    "label": "pro2",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 0.03
+    },
+    "id": "resAmoCon",
+    "kind": "numeric_const",
+    "label": "resAmoCon",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {
+     "sample_period_seconds": 300.0,
+     "semantic_contract": "CDL.Discrete.Sampler"
+    },
+    "id": "sampler",
+    "kind": "numeric_sampler",
+    "label": "sampler",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {
+     "period_seconds": 300.0,
+     "semantic_contract": "CDL.Logical.Sources.SampleTrigger",
+     "shift_seconds": 0.0
+    },
+    "id": "samTri",
+    "kind": "boolean_sample_trigger",
+    "label": "samTri",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "numeric_switch",
+    "label": "swi",
+    "x": 0,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "swi1",
+    "kind": "numeric_switch",
+    "label": "swi1",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "swi2",
+    "kind": "numeric_switch",
+    "label": "swi2",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "swi3",
+    "kind": "numeric_switch",
+    "label": "swi3",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "swiHol",
+    "kind": "numeric_switch",
+    "label": "swiHol",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {
+     "delay_on_init": true,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 1200.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "tim",
+    "kind": "boolean_delay",
+    "label": "tim",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": -0.02
+    },
+    "id": "triAmoCon",
+    "kind": "numeric_const",
+    "label": "triAmoCon",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {
+     "false_hold_seconds": 0.0,
+     "true_hold_seconds": 900.0
+    },
+    "id": "truHol",
+    "kind": "boolean_true_false_hold",
+    "label": "truHol",
+    "x": 180,
+    "y": 960
+   },
+   {
+    "config": {
+     "initial": 1.0,
+     "sample_period_seconds": 300.0,
+     "semantic_contract": "CDL.Discrete.UnitDelay"
+    },
+    "id": "uniDel",
+    "kind": "numeric_unit_delay",
+    "label": "uniDel",
+    "x": 360,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 540,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zerTri",
+    "kind": "numeric_const",
+    "label": "zerTri",
+    "x": 720,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 298.15
+    },
+    "id": "TSupSetMinMax",
+    "kind": "numeric_const",
+    "label": "TSupSetMinMax",
+    "x": 900,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 323.15
+    },
+    "id": "TSupSetNom",
+    "kind": "numeric_const",
+    "label": "TSupSetNom",
+    "x": 0,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer_2",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 180,
+    "y": 1080
+   }
+  ],
+  "links": [
+   {
+    "source": "resDp__1_delta_f",
+    "source_slot": "out",
+    "target": "resDp__1_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "resDp__1_delta_x",
+    "source_slot": "out",
+    "target": "resDp__1_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "resDp__1_slope",
+    "source_slot": "out",
+    "target": "resDp__1_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "resDp__1_slope",
+    "source_slot": "out",
+    "target": "resDp__1_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "resDp__1_slope_x2",
+    "source_slot": "out",
+    "target": "resDp__1_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "resDp__1_intercept",
+    "source_slot": "out",
+    "target": "resDp__1_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "resDp__1_scaled",
+    "source_slot": "out",
+    "target": "resDp__1_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "resDp__1_lower_limit",
+    "source_slot": "out",
+    "target": "resDp__1_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "resDp__1_upper_limit",
+    "source_slot": "out",
+    "target": "resDp__1_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "resDp__2_delta_f",
+    "source_slot": "out",
+    "target": "resDp__2_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "resDp__2_delta_x",
+    "source_slot": "out",
+    "target": "resDp__2_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "resDp__2_slope",
+    "source_slot": "out",
+    "target": "resDp__2_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "resDp__2_slope",
+    "source_slot": "out",
+    "target": "resDp__2_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "resDp__2_slope_x2",
+    "source_slot": "out",
+    "target": "resDp__2_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "resDp__2_intercept",
+    "source_slot": "out",
+    "target": "resDp__2_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "resDp__2_scaled",
+    "source_slot": "out",
+    "target": "resDp__2_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "resDp__2_lower_limit",
+    "source_slot": "out",
+    "target": "resDp__2_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "resDp__2_upper_limit",
+    "source_slot": "out",
+    "target": "resDp__2_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "resTSup_delta_f",
+    "source_slot": "out",
+    "target": "resTSup_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "resTSup_delta_x",
+    "source_slot": "out",
+    "target": "resTSup_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "resTSup_slope",
+    "source_slot": "out",
+    "target": "resTSup_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "resTSup_slope",
+    "source_slot": "out",
+    "target": "resTSup_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "resTSup_slope_x2",
+    "source_slot": "out",
+    "target": "resTSup_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "resTSup_intercept",
+    "source_slot": "out",
+    "target": "resTSup_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "resTSup_scaled",
+    "source_slot": "out",
+    "target": "resTSup_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "resTSup_lower_limit",
+    "source_slot": "out",
+    "target": "resTSup_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "resTSup_upper_limit",
+    "source_slot": "out",
+    "target": "resTSup_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "abs_zero",
+    "source_slot": "out",
+    "target": "abs_nonnegative",
+    "target_slot": "b"
+   },
+   {
+    "source": "abs_zero",
+    "source_slot": "out",
+    "target": "abs_negate",
+    "target_slot": "a"
+   },
+   {
+    "source": "abs_nonnegative",
+    "source_slot": "out",
+    "target": "abs_select",
+    "target_slot": "selector"
+   },
+   {
+    "source": "abs_negate",
+    "source_slot": "out",
+    "target": "abs_select",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "abs1_zero",
+    "source_slot": "out",
+    "target": "abs1_nonnegative",
+    "target_slot": "b"
+   },
+   {
+    "source": "abs1_zero",
+    "source_slot": "out",
+    "target": "abs1_negate",
+    "target_slot": "a"
+   },
+   {
+    "source": "abs1_nonnegative",
+    "source_slot": "out",
+    "target": "abs1_select",
+    "target_slot": "selector"
+   },
+   {
+    "source": "abs1_negate",
+    "source_slot": "out",
+    "target": "abs1_select",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "gai_parameter",
+    "source_slot": "out",
+    "target": "gai",
+    "target_slot": "b"
+   },
+   {
+    "source": "greThr_threshold",
+    "source_slot": "out",
+    "target": "greThr",
+    "target_slot": "b"
+   },
+   {
+    "source": "greThr1_threshold",
+    "source_slot": "out",
+    "target": "greThr1",
+    "target_slot": "b"
+   },
+   {
+    "source": "greThr2_threshold",
+    "source_slot": "out",
+    "target": "greThr2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intToRea_zero",
+    "source_slot": "out",
+    "target": "intToRea",
+    "target_slot": "b"
+   },
+   {
+    "source": "lesThr1_threshold",
+    "source_slot": "out",
+    "target": "lesThr1",
+    "target_slot": "b"
+   },
+   {
+    "source": "nReqRes",
+    "source_slot": "out",
+    "target": "intToRea",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1Ena",
+    "source_slot": "out",
+    "target": "not1",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Ena",
+    "source_slot": "out",
+    "target": "tim",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1StaPro",
+    "source_slot": "out",
+    "target": "truHol",
+    "target_slot": "in"
+   },
+   {
+    "source": "dpSetMax__1",
+    "source_slot": "out",
+    "target": "resDp__1_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "dpSetMax__1",
+    "source_slot": "out",
+    "target": "resDp__1_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "dpSetMax__2",
+    "source_slot": "out",
+    "target": "resDp__2_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "dpSetMax__2",
+    "source_slot": "out",
+    "target": "resDp__2_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "dpSetMin",
+    "source_slot": "out",
+    "target": "resDp__1_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "dpSetMin",
+    "source_slot": "out",
+    "target": "resDp__2_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "resTSup_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "resTSup_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "resTSup_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "resDp__1_result",
+    "source_slot": "out",
+    "target": "dpSet__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "resDp__2_result",
+    "source_slot": "out",
+    "target": "dpSet__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "resDpMax",
+    "source_slot": "out",
+    "target": "resDp__1_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "resDpMax",
+    "source_slot": "out",
+    "target": "resDp__1_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "resDpMax",
+    "source_slot": "out",
+    "target": "resDp__1_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "resDpMax",
+    "source_slot": "out",
+    "target": "resDp__2_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "resDpMax",
+    "source_slot": "out",
+    "target": "resDp__2_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "resDpMax",
+    "source_slot": "out",
+    "target": "resDp__2_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "resTSup_result",
+    "source_slot": "out",
+    "target": "TSupSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "resTSupMin",
+    "source_slot": "out",
+    "target": "resTSup_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "resTSupMin",
+    "source_slot": "out",
+    "target": "resTSup_lower_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "abs_select",
+    "source_slot": "out",
+    "target": "pro",
+    "target_slot": "b"
+   },
+   {
+    "source": "abs1_select",
+    "source_slot": "out",
+    "target": "minInp",
+    "target_slot": "b"
+   },
+   {
+    "source": "add1",
+    "source_slot": "out",
+    "target": "min1",
+    "target_slot": "a"
+   },
+   {
+    "source": "add2",
+    "source_slot": "out",
+    "target": "netRes",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "and2",
+    "source_slot": "out",
+    "target": "netRes",
+    "target_slot": "selector"
+   },
+   {
+    "source": "difReqIgnReq",
+    "source_slot": "out",
+    "target": "greThr",
+    "target_slot": "a"
+   },
+   {
+    "source": "difReqIgnReq",
+    "source_slot": "out",
+    "target": "pro",
+    "target_slot": "a"
+   },
+   {
+    "source": "gai",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "greThr",
+    "source_slot": "out",
+    "target": "and2",
+    "target_slot": "b"
+   },
+   {
+    "source": "greThr1",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "greThr2",
+    "source_slot": "out",
+    "target": "assMes2",
+    "target_slot": "condition"
+   },
+   {
+    "source": "iniSetCon",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "iniSetCon",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "intToRea",
+    "source_slot": "out",
+    "target": "sampler",
+    "target_slot": "in"
+   },
+   {
+    "source": "lat",
+    "source_slot": "out",
+    "target": "swiHol",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lesThr1",
+    "source_slot": "out",
+    "target": "assMes",
+    "target_slot": "condition"
+   },
+   {
+    "source": "maxInp",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "maxResCon",
+    "source_slot": "out",
+    "target": "abs1_nonnegative",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxResCon",
+    "source_slot": "out",
+    "target": "abs1_negate",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxResCon",
+    "source_slot": "out",
+    "target": "abs1_select",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "maxResCon",
+    "source_slot": "out",
+    "target": "pro2",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxSetCon",
+    "source_slot": "out",
+    "target": "min1",
+    "target_slot": "b"
+   },
+   {
+    "source": "min1",
+    "source_slot": "out",
+    "target": "maxInp",
+    "target_slot": "a"
+   },
+   {
+    "source": "minInp",
+    "source_slot": "out",
+    "target": "gai",
+    "target_slot": "a"
+   },
+   {
+    "source": "minInp",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "minSetCon",
+    "source_slot": "out",
+    "target": "maxInp",
+    "target_slot": "b"
+   },
+   {
+    "source": "netRes",
+    "source_slot": "out",
+    "target": "swiHol",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "not1",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "notHol",
+    "source_slot": "out",
+    "target": "notHolAndTic",
+    "target_slot": "a"
+   },
+   {
+    "source": "notHolAndTic",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "clear"
+   },
+   {
+    "source": "numIgnReqCon",
+    "source_slot": "out",
+    "target": "difReqIgnReq",
+    "target_slot": "b"
+   },
+   {
+    "source": "pro",
+    "source_slot": "out",
+    "target": "minInp",
+    "target_slot": "a"
+   },
+   {
+    "source": "pro1",
+    "source_slot": "out",
+    "target": "lesThr1",
+    "target_slot": "a"
+   },
+   {
+    "source": "pro2",
+    "source_slot": "out",
+    "target": "greThr2",
+    "target_slot": "a"
+   },
+   {
+    "source": "resAmoCon",
+    "source_slot": "out",
+    "target": "abs_nonnegative",
+    "target_slot": "a"
+   },
+   {
+    "source": "resAmoCon",
+    "source_slot": "out",
+    "target": "abs_negate",
+    "target_slot": "b"
+   },
+   {
+    "source": "resAmoCon",
+    "source_slot": "out",
+    "target": "abs_select",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "resAmoCon",
+    "source_slot": "out",
+    "target": "greThr1",
+    "target_slot": "a"
+   },
+   {
+    "source": "resAmoCon",
+    "source_slot": "out",
+    "target": "pro1",
+    "target_slot": "b"
+   },
+   {
+    "source": "resAmoCon",
+    "source_slot": "out",
+    "target": "pro2",
+    "target_slot": "a"
+   },
+   {
+    "source": "sampler",
+    "source_slot": "out",
+    "target": "difReqIgnReq",
+    "target_slot": "a"
+   },
+   {
+    "source": "samTri",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "set"
+   },
+   {
+    "source": "samTri",
+    "source_slot": "out",
+    "target": "notHolAndTic",
+    "target_slot": "b"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "resDp__1_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "resDp__2_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "resTSup_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "swi1",
+    "source_slot": "out",
+    "target": "netRes",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi2",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi2",
+    "source_slot": "out",
+    "target": "uniDel",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi3",
+    "source_slot": "out",
+    "target": "add2",
+    "target_slot": "b"
+   },
+   {
+    "source": "swiHol",
+    "source_slot": "out",
+    "target": "add1",
+    "target_slot": "b"
+   },
+   {
+    "source": "tim",
+    "source_slot": "out",
+    "target": "and2",
+    "target_slot": "a"
+   },
+   {
+    "source": "tim",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tim",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "triAmoCon",
+    "source_slot": "out",
+    "target": "add2",
+    "target_slot": "a"
+   },
+   {
+    "source": "triAmoCon",
+    "source_slot": "out",
+    "target": "pro1",
+    "target_slot": "a"
+   },
+   {
+    "source": "triAmoCon",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "truHol",
+    "source_slot": "out",
+    "target": "notHol",
+    "target_slot": "in"
+   },
+   {
+    "source": "uniDel",
+    "source_slot": "out",
+    "target": "add1",
+    "target_slot": "a"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "swiHol",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zerTri",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "TSupSetMinMax",
+    "source_slot": "out",
+    "target": "resTSup_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "TSupSetNom",
+    "source_slot": "out",
+    "target": "resTSup_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "TSupSetNom",
+    "source_slot": "out",
+    "target": "resTSup_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "zer_2",
+    "source_slot": "out",
+    "target": "resDp__1_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "zer_2",
+    "source_slot": "out",
+    "target": "resDp__1_lower_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "zer_2",
+    "source_slot": "out",
+    "target": "resDp__2_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "zer_2",
+    "source_slot": "out",
+    "target": "resDp__2_lower_limit",
+    "target_slot": "a"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "TSupSetMinMax": "TSupSetMinMax",
+    "TSupSetNom": "TSupSetNom",
+    "abs": "triRes.abs",
+    "abs1": "triRes.abs1",
+    "abs1_negate": "triRes.abs1",
+    "abs1_nonnegative": "triRes.abs1",
+    "abs1_select": "triRes.abs1",
+    "abs1_zero": "triRes.abs1",
+    "abs_negate": "triRes.abs",
+    "abs_nonnegative": "triRes.abs",
+    "abs_select": "triRes.abs",
+    "abs_zero": "triRes.abs",
+    "add1": "triRes.add1",
+    "add2": "triRes.add2",
+    "and2": "triRes.and2",
+    "assMes": "triRes.assMes",
+    "assMes2": "triRes.assMes2",
+    "difReqIgnReq": "triRes.difReqIgnReq",
+    "dpSetMax__1": "dpSetMax__1",
+    "dpSetMax__2": "dpSetMax__2",
+    "dpSetMin": "dpSetMin",
+    "gai": "triRes.gai",
+    "gai_parameter": "triRes.gai",
+    "greThr": "triRes.greThr",
+    "greThr1": "triRes.greThr1",
+    "greThr1_threshold": "triRes.greThr1",
+    "greThr2": "triRes.greThr2",
+    "greThr2_threshold": "triRes.greThr2",
+    "greThr_threshold": "triRes.greThr",
+    "iniSetCon": "triRes.iniSetCon",
+    "intToRea": "triRes.intToRea",
+    "intToRea_zero": "triRes.intToRea",
+    "lat": "triRes.lat",
+    "lesThr1": "triRes.lesThr1",
+    "lesThr1_threshold": "triRes.lesThr1",
+    "maxInp": "triRes.maxInp",
+    "maxResCon": "triRes.maxResCon",
+    "maxSetCon": "triRes.maxSetCon",
+    "min1": "triRes.min1",
+    "minInp": "triRes.minInp",
+    "minSetCon": "triRes.minSetCon",
+    "netRes": "triRes.netRes",
+    "not1": "triRes.not1",
+    "notHol": "triRes.notHol",
+    "notHolAndTic": "triRes.notHolAndTic",
+    "numIgnReqCon": "triRes.numIgnReqCon",
+    "one": "one",
+    "pro": "triRes.pro",
+    "pro1": "triRes.pro1",
+    "pro2": "triRes.pro2",
+    "resAmoCon": "triRes.resAmoCon",
+    "resDpMax": "resDpMax",
+    "resDp__1": "resDp__1",
+    "resDp__1_delta_f": "resDp__1",
+    "resDp__1_delta_x": "resDp__1",
+    "resDp__1_intercept": "resDp__1",
+    "resDp__1_lower_limit": "resDp__1",
+    "resDp__1_result": "resDp__1",
+    "resDp__1_scaled": "resDp__1",
+    "resDp__1_slope": "resDp__1",
+    "resDp__1_slope_x2": "resDp__1",
+    "resDp__1_upper_limit": "resDp__1",
+    "resDp__2": "resDp__2",
+    "resDp__2_delta_f": "resDp__2",
+    "resDp__2_delta_x": "resDp__2",
+    "resDp__2_intercept": "resDp__2",
+    "resDp__2_lower_limit": "resDp__2",
+    "resDp__2_result": "resDp__2",
+    "resDp__2_scaled": "resDp__2",
+    "resDp__2_slope": "resDp__2",
+    "resDp__2_slope_x2": "resDp__2",
+    "resDp__2_upper_limit": "resDp__2",
+    "resTSup": "resTSup",
+    "resTSupMin": "resTSupMin",
+    "resTSup_delta_f": "resTSup",
+    "resTSup_delta_x": "resTSup",
+    "resTSup_intercept": "resTSup",
+    "resTSup_lower_limit": "resTSup",
+    "resTSup_result": "resTSup",
+    "resTSup_scaled": "resTSup",
+    "resTSup_slope": "resTSup",
+    "resTSup_slope_x2": "resTSup",
+    "resTSup_upper_limit": "resTSup",
+    "samTri": "triRes.samTri",
+    "sampler": "triRes.sampler",
+    "swi": "triRes.swi",
+    "swi1": "triRes.swi1",
+    "swi2": "triRes.swi2",
+    "swi3": "triRes.swi3",
+    "swiHol": "triRes.swiHol",
+    "tim": "triRes.tim",
+    "triAmoCon": "triRes.triAmoCon",
+    "truHol": "triRes.truHol",
+    "uniDel": "triRes.uniDel",
+    "zer": "triRes.zer",
+    "zerTri": "triRes.zerTri",
+    "zer_2": "zer"
+   },
+   "coverage": {
+    "boundary_inputs": 3,
+    "boundary_outputs": 3,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal": 1,
+     "Buildings.Controls.OBC.CDL.Discrete.Sampler": 1,
+     "Buildings.Controls.OBC.CDL.Discrete.UnitDelay": 1,
+     "Buildings.Controls.OBC.CDL.Logical.And": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.SampleTrigger": 1,
+     "Buildings.Controls.OBC.CDL.Logical.TrueDelay": 1,
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Abs": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 2,
+     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 3,
+     "Buildings.Controls.OBC.CDL.Reals.LessThreshold": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Line": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Max": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Min": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Multiply": 3,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 18,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 6,
+     "Buildings.Controls.OBC.CDL.Utilities.Assert": 2
+    },
+    "component_count": 56,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Discrete.Sampler",
+     "Buildings.Controls.OBC.CDL.Discrete.UnitDelay",
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Sources.SampleTrigger",
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold",
+     "Buildings.Controls.OBC.CDL.Utilities.Assert"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Setpoints.PlantReset",
+    "root_label": "PlantReset",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "c3bd0df91ac40438d96cbea614f8fe4b5d3ea92a6260746521dedd6d8ddf0976",
+    "supported_class_count": 56,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "c3bd0df91ac40438d96cbea614f8fe4b5d3ea92a6260746521dedd6d8ddf0976"
+  },
+  "name": "PlantReset"
+ }
+}

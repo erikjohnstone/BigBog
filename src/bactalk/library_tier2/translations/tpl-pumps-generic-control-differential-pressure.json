@@ -1,0 +1,527 @@
+{
+ "configuration_id": "tpl-pumps-generic-control-differential-pressure",
+ "controller_id": "Pumps.Generic.ControlDifferentialPressure",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure",
+  "inputs": [
+   {
+    "description": "Remote differential pressure setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.dpRemSet__1",
+    "label": "dpRemSet__1",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Remote differential pressure setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.dpRemSet__2",
+    "label": "dpRemSet__2",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Remote loop differential pressure",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.dpRem__1",
+    "label": "dpRem__1",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Remote loop differential pressure",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.dpRem__2",
+    "label": "dpRem__2",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Pump status",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.y1_actual__1",
+    "label": "y1_actual__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Pump status",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.y1_actual__2",
+    "label": "y1_actual__2",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Pump speed command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.y",
+    "label": "y",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 2
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "have_senDpRemWir": true,
+  "nPum": 2,
+  "nSenDpRem": 2
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dpRemSet__1",
+   "name": "dpRemSet__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.dpRemSet__1",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dpRemSet__2",
+   "name": "dpRemSet__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.dpRemSet__2",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dpRem__1",
+   "name": "dpRem__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.dpRem__1",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dpRem__2",
+   "name": "dpRem__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.dpRem__2",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1_actual__1",
+   "name": "y1_actual__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.y1_actual__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1_actual__2",
+   "name": "y1_actual__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.y1_actual__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "y",
+   "name": "y",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure.y",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Pumps/Generic/ControlDifferentialPressure.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "f5d0ad8e60f73e402399c43b3ceb063e843b8ea7e90763247c0b31c3b7c1ca28",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "d1b19bd7819aa8594b3b89f83aa709cb4953808317cee78e81997b2a65adde34",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "dpRem__1",
+    "kind": "numeric_input",
+    "label": "dpRem__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "dpRem__2",
+    "kind": "numeric_input",
+    "label": "dpRem__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "dpRemSet__1",
+    "kind": "numeric_input",
+    "label": "dpRemSet__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "dpRemSet__2",
+    "kind": "numeric_input",
+    "label": "dpRemSet__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "y1_actual__1",
+    "kind": "boolean_input",
+    "label": "y1_actual__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "y1_actual__2",
+    "kind": "boolean_input",
+    "label": "y1_actual__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y",
+    "kind": "numeric_output",
+    "label": "y",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "anyOn_fold_2",
+    "kind": "or",
+    "label": "anyOn fold 2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 1.0,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 10000.0,
+     "reverse_acting": true,
+     "td": 0.1,
+     "ti": 60.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.1,
+     "y_reset": 0.1,
+     "yd_start": 0.0
+    },
+    "id": "conPID",
+    "kind": "pid_with_reset",
+    "label": "conPID",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "swiInp",
+    "kind": "numeric_switch",
+    "label": "swiInp",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "swiOut",
+    "kind": "numeric_switch",
+    "label": "swiOut",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "valDis",
+    "kind": "numeric_const",
+    "label": "valDis",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 1.0,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 10000.0,
+     "reverse_acting": true,
+     "td": 0.1,
+     "ti": 60.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.1,
+     "y_reset": 0.1,
+     "yd_start": 0.0
+    },
+    "id": "conPID_2",
+    "kind": "pid_with_reset",
+    "label": "conPID",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "swiInp_2",
+    "kind": "numeric_switch",
+    "label": "swiInp",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "swiOut_2",
+    "kind": "numeric_switch",
+    "label": "swiOut",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "valDis_2",
+    "kind": "numeric_const",
+    "label": "valDis",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "maxY_fold_2",
+    "kind": "maximum",
+    "label": "maxY fold 2",
+    "x": 540,
+    "y": 120
+   }
+  ],
+  "links": [
+   {
+    "source": "dpRem__1",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "dpRem__1",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "dpRem__2",
+    "source_slot": "out",
+    "target": "conPID_2",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "dpRem__2",
+    "source_slot": "out",
+    "target": "swiInp_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "dpRemSet__1",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "dpRemSet__2",
+    "source_slot": "out",
+    "target": "swiInp_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "y1_actual__1",
+    "source_slot": "out",
+    "target": "anyOn_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "y1_actual__2",
+    "source_slot": "out",
+    "target": "anyOn_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "anyOn_fold_2",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "anyOn_fold_2",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "selector"
+   },
+   {
+    "source": "anyOn_fold_2",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "selector"
+   },
+   {
+    "source": "anyOn_fold_2",
+    "source_slot": "out",
+    "target": "conPID_2",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "anyOn_fold_2",
+    "source_slot": "out",
+    "target": "swiInp_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "anyOn_fold_2",
+    "source_slot": "out",
+    "target": "swiOut_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conPID",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swiInp",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "swiOut",
+    "source_slot": "out",
+    "target": "maxY_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "valDis",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conPID_2",
+    "source_slot": "out",
+    "target": "swiOut_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swiInp_2",
+    "source_slot": "out",
+    "target": "conPID_2",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "swiOut_2",
+    "source_slot": "out",
+    "target": "maxY_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "valDis_2",
+    "source_slot": "out",
+    "target": "swiOut_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "maxY_fold_2",
+    "source_slot": "out",
+    "target": "y",
+    "target_slot": "in"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "anyOn_fold_2": "anyOn__fold_2",
+    "conPID": "ctlDpRem__1.conPID",
+    "conPID_2": "ctlDpRem__2.conPID",
+    "maxY_fold_2": "maxY__fold_2",
+    "swiInp": "ctlDpRem__1.swiInp",
+    "swiInp_2": "ctlDpRem__2.swiInp",
+    "swiOut": "ctlDpRem__1.swiOut",
+    "swiOut_2": "ctlDpRem__2.swiOut",
+    "valDis": "ctlDpRem__1.valDis",
+    "valDis_2": "ctlDpRem__2.valDis"
+   },
+   "coverage": {
+    "boundary_inputs": 6,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Logical.Or": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Max": 1,
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 4
+    },
+    "component_count": 10,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Pumps.Generic.ControlDifferentialPressure",
+    "root_label": "ControlDifferentialPressure",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "d1b19bd7819aa8594b3b89f83aa709cb4953808317cee78e81997b2a65adde34",
+    "supported_class_count": 10,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "d1b19bd7819aa8594b3b89f83aa709cb4953808317cee78e81997b2a65adde34"
+  },
+  "name": "ControlDifferentialPressure"
+ }
+}

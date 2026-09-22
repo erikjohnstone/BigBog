@@ -1,0 +1,622 @@
+{
+ "configuration_id": "tpl-staging-rotation-failsafe-condition",
+ "controller_id": "StagingRotation.FailsafeCondition",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.FailsafeCondition",
+  "inputs": [
+   {
+    "description": "Primary supply temperature",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.FailsafeCondition.TPriSup",
+    "label": "TPriSup",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Secondary supply temperature",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.FailsafeCondition.TSecSup",
+    "label": "TSecSup",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Supply temperature setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.FailsafeCondition.TSupSet",
+    "label": "TSupSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Reset timers to zero at completion of stage change",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.FailsafeCondition.reset",
+    "label": "reset",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Failsafe stage up condition met",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.FailsafeCondition.y1",
+    "label": "y1",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 3
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "dT": 2.5,
+  "have_pumSec": true,
+  "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating"
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TPriSup",
+   "name": "TPriSup",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.FailsafeCondition.TPriSup",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TSecSup",
+   "name": "TSecSup",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.FailsafeCondition.TSecSup",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TSupSet",
+   "name": "TSupSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.FailsafeCondition.TSupSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "reset",
+   "name": "reset",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.FailsafeCondition.reset",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1",
+   "name": "y1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.FailsafeCondition.y1",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "StagingRotation/FailsafeCondition.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "6edc959fa28d4b73cce08738f77772eb93d01af9682ae225378e651aa2f5fb8a",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "6a740f44f2f14d536cf8c4eadf3a66cf43240dc085d6292ecab24b099af68339",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "reset",
+    "kind": "boolean_input",
+    "label": "reset",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TPriSup",
+    "kind": "numeric_input",
+    "label": "TPriSup",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TSecSup",
+    "kind": "numeric_input",
+    "label": "TSecSup",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TSupSet",
+    "kind": "numeric_input",
+    "label": "TSupSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1",
+    "kind": "boolean_output",
+    "label": "y1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "allSec",
+    "kind": "and",
+    "label": "allSec",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "any",
+    "kind": "or",
+    "label": "any",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "dTPriSet",
+    "kind": "subtract",
+    "label": "dTPriSet",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "dTSecPri",
+    "kind": "subtract",
+    "label": "dTSecPri",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "dTSecSet",
+    "kind": "subtract",
+    "label": "dTSecSet",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": -2.5
+    },
+    "id": "lesPriSet_threshold",
+    "kind": "numeric_const",
+    "label": "lesPriSet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lesPriSet",
+    "kind": "less_than",
+    "label": "lesPriSet",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": -2.5
+    },
+    "id": "lesSecPri_threshold",
+    "kind": "numeric_const",
+    "label": "lesSecPri threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lesSecPri",
+    "kind": "less_than",
+    "label": "lesSecPri",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": -2.5
+    },
+    "id": "lesSecSet_threshold",
+    "kind": "numeric_const",
+    "label": "lesSecSet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lesSecSet",
+    "kind": "less_than",
+    "label": "lesSecSet",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "ph",
+    "kind": "or",
+    "label": "ph",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "ph_identity",
+    "kind": "boolean_const",
+    "label": "ph identity",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "polHeaCoo_parameter",
+    "kind": "numeric_const",
+    "label": "polHeaCoo parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "polHeaCoo",
+    "kind": "multiply",
+    "label": "polHeaCoo",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "polHeaCoo1_parameter",
+    "kind": "numeric_const",
+    "label": "polHeaCoo1 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "polHeaCoo1",
+    "kind": "multiply",
+    "label": "polHeaCoo1",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "polHeaCoo2_parameter",
+    "kind": "numeric_const",
+    "label": "polHeaCoo2 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "polHeaCoo2",
+    "kind": "multiply",
+    "label": "polHeaCoo2",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+     "threshold_seconds": 900.0
+    },
+    "id": "timPriSet",
+    "kind": "timer_with_reset",
+    "label": "timPriSet",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+     "threshold_seconds": 600.0
+    },
+    "id": "timSecPri",
+    "kind": "timer_with_reset",
+    "label": "timSecPri",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+     "threshold_seconds": 600.0
+    },
+    "id": "timSecSet",
+    "kind": "timer_with_reset",
+    "label": "timSecSet",
+    "x": 360,
+    "y": 240
+   }
+  ],
+  "links": [
+   {
+    "source": "lesPriSet_threshold",
+    "source_slot": "out",
+    "target": "lesPriSet",
+    "target_slot": "b"
+   },
+   {
+    "source": "lesSecPri_threshold",
+    "source_slot": "out",
+    "target": "lesSecPri",
+    "target_slot": "b"
+   },
+   {
+    "source": "lesSecSet_threshold",
+    "source_slot": "out",
+    "target": "lesSecSet",
+    "target_slot": "b"
+   },
+   {
+    "source": "ph_identity",
+    "source_slot": "out",
+    "target": "ph",
+    "target_slot": "b"
+   },
+   {
+    "source": "polHeaCoo_parameter",
+    "source_slot": "out",
+    "target": "polHeaCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "polHeaCoo1_parameter",
+    "source_slot": "out",
+    "target": "polHeaCoo1",
+    "target_slot": "b"
+   },
+   {
+    "source": "polHeaCoo2_parameter",
+    "source_slot": "out",
+    "target": "polHeaCoo2",
+    "target_slot": "b"
+   },
+   {
+    "source": "reset",
+    "source_slot": "out",
+    "target": "timPriSet",
+    "target_slot": "reset"
+   },
+   {
+    "source": "reset",
+    "source_slot": "out",
+    "target": "timSecPri",
+    "target_slot": "reset"
+   },
+   {
+    "source": "reset",
+    "source_slot": "out",
+    "target": "timSecSet",
+    "target_slot": "reset"
+   },
+   {
+    "source": "TPriSup",
+    "source_slot": "out",
+    "target": "dTPriSet",
+    "target_slot": "a"
+   },
+   {
+    "source": "TPriSup",
+    "source_slot": "out",
+    "target": "dTSecPri",
+    "target_slot": "b"
+   },
+   {
+    "source": "TSecSup",
+    "source_slot": "out",
+    "target": "dTSecPri",
+    "target_slot": "a"
+   },
+   {
+    "source": "TSecSup",
+    "source_slot": "out",
+    "target": "dTSecSet",
+    "target_slot": "a"
+   },
+   {
+    "source": "TSupSet",
+    "source_slot": "out",
+    "target": "dTPriSet",
+    "target_slot": "b"
+   },
+   {
+    "source": "TSupSet",
+    "source_slot": "out",
+    "target": "dTSecSet",
+    "target_slot": "b"
+   },
+   {
+    "source": "allSec",
+    "source_slot": "out",
+    "target": "ph",
+    "target_slot": "a"
+   },
+   {
+    "source": "any",
+    "source_slot": "out",
+    "target": "y1",
+    "target_slot": "in"
+   },
+   {
+    "source": "dTPriSet",
+    "source_slot": "out",
+    "target": "polHeaCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "dTSecPri",
+    "source_slot": "out",
+    "target": "polHeaCoo1",
+    "target_slot": "a"
+   },
+   {
+    "source": "dTSecSet",
+    "source_slot": "out",
+    "target": "polHeaCoo2",
+    "target_slot": "a"
+   },
+   {
+    "source": "lesPriSet",
+    "source_slot": "out",
+    "target": "timPriSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "lesSecPri",
+    "source_slot": "out",
+    "target": "timSecPri",
+    "target_slot": "in"
+   },
+   {
+    "source": "lesSecSet",
+    "source_slot": "out",
+    "target": "timSecSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "ph",
+    "source_slot": "out",
+    "target": "any",
+    "target_slot": "b"
+   },
+   {
+    "source": "polHeaCoo",
+    "source_slot": "out",
+    "target": "lesPriSet",
+    "target_slot": "a"
+   },
+   {
+    "source": "polHeaCoo1",
+    "source_slot": "out",
+    "target": "lesSecPri",
+    "target_slot": "a"
+   },
+   {
+    "source": "polHeaCoo2",
+    "source_slot": "out",
+    "target": "lesSecSet",
+    "target_slot": "a"
+   },
+   {
+    "source": "timPriSet",
+    "source_slot": "passed",
+    "target": "any",
+    "target_slot": "a"
+   },
+   {
+    "source": "timSecPri",
+    "source_slot": "passed",
+    "target": "allSec",
+    "target_slot": "b"
+   },
+   {
+    "source": "timSecSet",
+    "source_slot": "passed",
+    "target": "allSec",
+    "target_slot": "a"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "allSec": "allSec",
+    "any": "any",
+    "dTPriSet": "dTPriSet",
+    "dTSecPri": "dTSecPri",
+    "dTSecSet": "dTSecSet",
+    "lesPriSet": "lesPriSet",
+    "lesPriSet_threshold": "lesPriSet",
+    "lesSecPri": "lesSecPri",
+    "lesSecPri_threshold": "lesSecPri",
+    "lesSecSet": "lesSecSet",
+    "lesSecSet_threshold": "lesSecSet",
+    "ph": "ph",
+    "ph_identity": "ph",
+    "polHeaCoo": "polHeaCoo",
+    "polHeaCoo1": "polHeaCoo1",
+    "polHeaCoo1_parameter": "polHeaCoo1",
+    "polHeaCoo2": "polHeaCoo2",
+    "polHeaCoo2_parameter": "polHeaCoo2",
+    "polHeaCoo_parameter": "polHeaCoo",
+    "timPriSet": "timPriSet",
+    "timSecPri": "timSecPri",
+    "timSecSet": "timSecSet"
+   },
+   "coverage": {
+    "boundary_inputs": 4,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Logical.And": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 1,
+     "Buildings.Controls.OBC.CDL.Reals.LessThreshold": 3,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 3,
+     "Utilities.PlaceholderLogical": 1,
+     "Utilities.TimerWithReset": 3
+    },
+    "component_count": 15,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Utilities.TimerWithReset"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.StagingRotation.FailsafeCondition",
+    "root_label": "FailsafeCondition",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "6a740f44f2f14d536cf8c4eadf3a66cf43240dc085d6292ecab24b099af68339",
+    "supported_class_count": 15,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "6a740f44f2f14d536cf8c4eadf3a66cf43240dc085d6292ecab24b099af68339"
+  },
+  "name": "FailsafeCondition"
+ }
+}

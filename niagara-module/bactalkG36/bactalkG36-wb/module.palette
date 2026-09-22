@@ -15,6 +15,9 @@
   <p n="RisingEdge" t="bactalkG36:RisingEdge"/>
   <p n="Round" t="bactalkG36:Round"/>
   <p n="LimitSlewRate" t="bactalkG36:LimitSlewRate"/>
+  <p n="IntegratorWithReset" t="bactalkG36:IntegratorWithReset"/>
+  <p n="OnCounter" t="bactalkG36:OnCounter"/>
+  <p n="WetBulb" t="bactalkG36:WetBulb"/>
   <p n="FallingEdge" t="bactalkG36:FallingEdge"/>
   <p n="SetReset" t="bactalkG36:SetReset"/>
  </p>

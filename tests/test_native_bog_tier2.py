@@ -59,9 +59,19 @@ def test_configuration_ids_and_parameters_are_unique_and_complete() -> None:
     assert len({item.id for item in CONFIGURATIONS}) == len(CONFIGURATIONS)
     for config in CONFIGURATIONS:
         assert config.execution_profile == "host_tick_v1"
-        assert config.tier == "2"
+        assert config.tier in {"2", "2b"}
+        # Tier 2b is exactly the Templates.Plants.Controls rows (GOAL-NATIVE-BOG.md N8)
+        assert (config.tier == "2b") == (config.source == "templates")
     families = {item.family for item in CONFIGURATIONS}
-    assert {"AHUs", "TerminalUnits", "FanCoilUnits", "ThermalZones", "ZoneGroups"} <= families
+    assert {
+        "AHUs",
+        "TerminalUnits",
+        "FanCoilUnits",
+        "ThermalZones",
+        "ZoneGroups",
+        "Plants.Chillers",
+        "Plants.Templates",
+    } <= families
 
 
 def test_nominal_inputs_are_typed_and_the_scenarios_cover_every_input() -> None:
@@ -79,7 +89,9 @@ def test_nominal_inputs_are_typed_and_the_scenarios_cover_every_input() -> None:
         ]
         scenarios = scenarios_for(config.id)
         assert scenarios[0].name == "nominal"
-        perturbed = {s.name.split(" ")[0] for s in scenarios[1:]}
+        events = {event[0] for event in config.events}
+        assert events <= {s.name for s in scenarios}, config.id
+        perturbed = {s.name.split(" ")[0] for s in scenarios[1:] if s.name not in events}
         assert perturbed == set(inputs), config.id
         names = [s.name for s in scenarios]
         assert len(names) == len(set(names))

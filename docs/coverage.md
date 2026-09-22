@@ -13,9 +13,10 @@ interval while module kernels tick every second), D4 a seeded sample of
 40 mutants is caught at ≥ 95 %, judged on the D3 leg the
 unmutated file passed (a row graded on the coarse leg says `coarse` beside its
 rate). A configuration that fails or cannot be built is listed with its exact
-blocker.
+blocker. A row marked **pre-release** comes from an unreleased Modelica Buildings
+commit (the G36 chiller plant is on LBNL master, not yet in a tagged release).
 
-Summary: 41 configurations, 0 pass all four; D1 41, D2 41, D3 39, D4 0, blocked 0.
+Summary: 87 configurations, 1 pass all four; D1 70, D2 70, D3 67, D4 1, blocked 17.
 
 | Id | Controller | Variant | Tier | Scenarios | D1 | D2 | D3 | D4 |
 |---|---|---|---|---|---|---|---|---|
@@ -43,11 +44,57 @@ Summary: 41 configurations, 0 pass all four; D1 41, D2 41, D3 39, D4 0, blocked 
 | `vent-title24-setpoints` | VentilationZones.Title24.Setpoints | Title24 | 2 | 1 | pass | pass | pass | 50.0 % (target 95 %) |
 | `zone-group-status` | ZoneGroups.GroupStatus | default | 2 | 91 | pass | pass | pass | 55.0 % (target 95 %) |
 | `zone-group-operation-mode` | ZoneGroups.OperationMode | one zone | 2 | 17 | pass | pass | pass | 42.5 % (target 95 %) |
-| `chw-plant-enable` | Plants.Chillers.Generic.PlantEnable.Enable | default | 2 | 6 | pass | pass | pass | 75.0 % (target 95 %) |
-| `chw-plant-reset` | Plants.Chillers.SetPoints.ChilledWaterPlantReset | default | 2 | 6 | pass | pass | pass | 65.0 % (target 95 %) |
-| `chw-supply-setpoints` | Plants.Chillers.SetPoints.ChilledWaterSupply | one remote dp sensor | 2 | 2 | pass | pass | pass | 75.0 % (target 95 %) |
-| `chw-head-pressure` | Plants.Chillers.HeadPressure.Controller | Ti 120 s | 2 | 9 | pass | pass | pass | 82.5 % (target 95 %) |
-| `chw-minimum-flow-bypass` | Plants.Chillers.MinimumFlowBypass.Controller | two chillers | 2 | 6 | pass | pass | pass | 67.5 % (target 95 %) |
+| `chw-plant-enable` | Plants.Chillers.Generic.PlantEnable.Enable | default · **pre-release** | 2 | 6 | pass | pass | pass | 75.0 % (target 95 %) |
+| `chw-plant-reset` | Plants.Chillers.SetPoints.ChilledWaterPlantReset | default · **pre-release** | 2 | 6 | pass | pass | pass | 65.0 % (target 95 %) |
+| `chw-supply-setpoints` | Plants.Chillers.SetPoints.ChilledWaterSupply | one remote dp sensor · **pre-release** | 2 | 2 | pass | pass | pass | 75.0 % (target 95 %) |
+| `chw-head-pressure` | Plants.Chillers.HeadPressure.Controller | Ti 120 s · **pre-release** | 2 | 9 | pass | pass | pass | 82.5 % (target 95 %) |
+| `chw-minimum-flow-bypass` | Plants.Chillers.MinimumFlowBypass.Controller | two chillers · **pre-release** | 2 | 6 | pass | pass | pass | 67.5 % (target 95 %) |
+| `chw-economizer` | Plants.Chillers.Economizers.Controller | two chillers · **pre-release** | 2 | 18 | pass | pass | pass | blocked: baseline: default: the unmutated .bog is already caught by the suite oracle (TChiWatRetDow hot: y: observed False, expected eq True ± 0.0); the catch rate woul… |
+| `chw-pumps-chilled-water` | Plants.Chillers.Pumps.ChilledWater.Controller | two chillers · **pre-release** | 2 | 18 | pass | pass | pass | 62.5 % (target 95 %) |
+| `chw-pumps-condenser-water` | Plants.Chillers.Pumps.CondenserWater.Controller | two chillers · **pre-release** | 2 | 6 | pass | pass | pass | 72.5 % (target 95 %) |
+| `chw-towers` | Plants.Chillers.Towers.Controller | two chillers · **pre-release** | 2 | 28 | pass | pass | pass | 55.0 % (target 95 %) |
+| `chw-staging-setpoints` | Plants.Chillers.Staging.SetPoints.SetpointController | two chillers · **pre-release** | 2 | 23 | pass | pass | pass | 57.5 % (target 95 %) |
+| `chw-staging-up` | Plants.Chillers.Staging.Processes.Up | two chillers · **pre-release** | 2 | 22 | pass | pass | fail: stage up to 2 | blocked: D3: the unmutated .bog leaves the bands on stage up to 2; a catch rate would count that, not defects |
+| `chw-plant-controller` | Plants.Chillers.Controller | two chillers · **pre-release** | 2 | — | blocked: translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: model build/schedule error: algebraic loop detected: 68 connector(s) fo… | blocked: translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: model build/schedule error: algebraic loop detected: 68 connector(s) fo… | blocked: translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: model build/schedule error: algebraic loop detected: 68 connector(s) fo… | blocked: translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: model build/schedule error: algebraic loop detected: 68 connector(s) fo… |
+| `chw-staging-down` | Plants.Chillers.Staging.Processes.Down | two chillers · **pre-release** | 2 | 21 | pass | pass | pass | 55.0 % (target 95 %) |
+| `tpl-heat-recovery-chillers-controller` | HeatRecoveryChillers.Controller | EnableAndModeControl (composed) | 2b | — | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: Runt… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: Runt… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: Runt… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: Runt… |
+| `tpl-enabling-enable` | Enabling.Enable | Enable · enaHea | 2b | — | blocked: translation: RuntimeError: Open Control Engine rejected request; composite/array-parameter: array-valued composite parameters are not supported by this CXF low… | blocked: translation: RuntimeError: Open Control Engine rejected request; composite/array-parameter: array-valued composite parameters are not supported by this CXF low… | blocked: translation: RuntimeError: Open Control Engine rejected request; composite/array-parameter: array-valued composite parameters are not supported by this CXF low… | blocked: translation: RuntimeError: Open Control Engine rejected request; composite/array-parameter: array-valued composite parameters are not supported by this CXF low… |
+| `tpl-heat-recovery-chillers-mode-control` | HeatRecoveryChillers.ModeControl | EnableAndModeControl · setMod | 2b | 8 | pass | pass | pass | 56.8 % (target 95 %) |
+| `tpl-heat-recovery-chillers-enable` | HeatRecoveryChillers.Enable | EnableAndModeControl · ena | 2b | 13 | pass | pass | pass | 45.0 % (target 95 %) |
+| `tpl-utilities-hold-real` | Utilities.HoldReal | HoldReal · hol | 2b | 3 | pass | pass | pass | 57.1 % (target 95 %) |
+| `tpl-minimum-flow-setpoint` | MinimumFlow.Setpoint | Setpoint · setFloMin | 2b | 3 | pass | pass | pass | 77.5 % (target 95 %) |
+| `tpl-minimum-flow-controller` | MinimumFlow.Controller | Controller · ctlFloMinPum | 2b | 7 | pass | pass | pass | 75.0 % (target 95 %) |
+| `tpl-minimum-flow-controller-dual-mode` | MinimumFlow.ControllerDualMode | ControllerDualMode · ctlFloMinPumHeaCoo | 2b | 11 | pass | pass | pass | 72.5 % (target 95 %) |
+| `tpl-setpoints-plant-reset` | Setpoints.PlantReset | PlantReset · res | 2b | 4 | pass | pass | pass | 65.0 % (target 95 %) |
+| `tpl-pumps-generic-reset-local-differential-pressure` | Pumps.Generic.ResetLocalDifferentialPressure | ResetLocalDifferentialPressure · resDpLoc | 2b | 5 | pass | pass | pass | 75.0 % (target 95 %) (scan leg) |
+| `tpl-pumps-generic-control-differential-pressure` | Pumps.Generic.ControlDifferentialPressure | ControlDifferentialPressure · ctlDpRem | 2b | 11 | pass | pass | pass | 37.5 % (target 95 %) |
+| `tpl-utilities-count-true` | Utilities.CountTrue | CountTrue · couTru | 2b | 7 | pass | pass | pass | 70.0 % (target 95 %) |
+| `tpl-pumps-primary-disable-dedicated` | Pumps.Primary.DisableDedicated | DisableDedicated · enaDed | 2b | — | blocked: reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: Runtim… | blocked: reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: Runtim… | blocked: reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: Runtim… | blocked: reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: Runtim… |
+| `tpl-staging-rotation-failsafe-condition` | StagingRotation.FailsafeCondition | FailsafeCondition · faiSafHea | 2b | — | blocked: reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Runtim… | blocked: reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Runtim… | blocked: reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Runtim… | blocked: reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Runtim… |
+| `tpl-staging-rotation-stage-completion` | StagingRotation.StageCompletion | StageCompletion · comSta | 2b | 6 | pass | pass | pass | 35.0 % (target 95 %) |
+| `tpl-staging-rotation-sort-runtime` | StagingRotation.SortRuntime | SortRuntime · sorRunTim | 2b | 7 | pass | pass | pass | 67.5 % (target 95 %) |
+| `tpl-pumps-generic-staging-headered-deltap` | Pumps.Generic.StagingHeaderedDeltaP | StagingHeaderedDeltaP · staPum | 2b | — | blocked: reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Runtim… | blocked: reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Runtim… | blocked: reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Runtim… | blocked: reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Runtim… |
+| `tpl-staging-rotation-stage-change-command` | StagingRotation.StageChangeCommand | StageChangeCommand · chaSta | 2b | — | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Valu… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Valu… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Valu… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Valu… |
+| `tpl-pumps-generic-staging-headered` | Pumps.Generic.StagingHeadered | StagingHeadered · staPumPriDp | 2b | — | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.StageIndex (Modelica.StateGraph), Utilities.TimerWithRes… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.StageIndex (Modelica.StateGraph), Utilities.TimerWithRes… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.StageIndex (Modelica.StateGraph), Utilities.TimerWithRes… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.StageIndex (Modelica.StateGraph), Utilities.TimerWithRes… |
+| `tpl-pumps-primary-variable-speed` | Pumps.Primary.VariableSpeed | VariableSpeed · ctlPumPriDedSepDp | 2b | 21 | pass | pass | pass | 75.0 % (target 95 %) |
+| `tpl-heat-pumps-air-to-water` | HeatPumps.AirToWater | AirToWater · ctl | 2b | — | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains StagingRotation.EquipmentAvailability (Modelica.StateGraph), Utili… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains StagingRotation.EquipmentAvailability (Modelica.StateGraph), Utili… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains StagingRotation.EquipmentAvailability (Modelica.StateGraph), Utili… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains StagingRotation.EquipmentAvailability (Modelica.StateGraph), Utili… |
+| `tpl-staging-rotation-equipment-enable` | StagingRotation.EquipmentEnable | EquipmentEnable · equEnaOneTwo | 2b | — | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failu… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failu… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failu… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failu… |
+| `tpl-utilities-first-true-index` | Utilities.FirstTrueIndex | FirstTrueIndex · idxFirTru | 2b | 7 | pass | pass | pass | 55.0 % (target 95 %) |
+| `tpl-utilities-last-true-index` | Utilities.LastTrueIndex | LastTrueIndex · idxLasTru | 2b | 7 | pass | pass | pass | 37.5 % (target 95 %) |
+| `tpl-utilities-true-array-conditional` | Utilities.TrueArrayConditional | TrueArrayConditional · truArrConSam | 2b | — | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failu… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failu… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failu… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failu… |
+| `tpl-staging-rotation-load-average` | StagingRotation.LoadAverage | LoadAverage · loaHea | 2b | 7 | pass | pass | pass | 61.1 % (target 95 %) |
+| `tpl-pumps-primary-enable-lead-headered` | Pumps.Primary.EnableLeadHeadered | EnableLeadHeadered · enaSerTwo | 2b | 3 | pass | pass | pass | pass |
+| `tpl-staging-rotation-stage-availability` | StagingRotation.StageAvailability | StageAvailability · avaStaEqu | 2b | 4 | pass | pass | pass | 50.0 % (target 95 %) |
+| `tpl-staging-rotation-equipment-availability` | StagingRotation.EquipmentAvailability | EquipmentAvailability · avaHeaCoo | 2b | — | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains StagingRotation.EquipmentAvailability (Modelica.StateGraph). First… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains StagingRotation.EquipmentAvailability (Modelica.StateGraph). First… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains StagingRotation.EquipmentAvailability (Modelica.StateGraph). First… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains StagingRotation.EquipmentAvailability (Modelica.StateGraph). First… |
+| `tpl-staging-rotation-event-sequencing` | StagingRotation.EventSequencing | EventSequencing · seqEveHeaCoo | 2b | 4 | pass | pass | pass | 57.5 % (target 95 %) |
+| `tpl-utilities-placeholder-logical` | Utilities.PlaceholderLogical | PlaceholderLogical · phPar | 2b | 1 | pass | pass | pass | 0.0 % (target 95 %) |
+| `tpl-utilities-placeholder-real` | Utilities.PlaceholderReal | PlaceholderReal · phPar | 2b | 1 | pass | pass | pass | 33.3 % (target 95 %) |
+| `tpl-utilities-placeholder-integer` | Utilities.PlaceholderInteger | PlaceholderInteger · phPar | 2b | 1 | pass | pass | pass | 33.3 % (target 95 %) |
+| `tpl-utilities-initialization` | Utilities.Initialization | default | 2b | — | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: Runt… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: Runt… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: Runt… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: Runt… |
+| `tpl-utilities-multi-max-integer` | Utilities.MultiMaxInteger | nin = 3 | 2b | — | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMaxInteger (Modelica equations). First failure: Run… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMaxInteger (Modelica equations). First failure: Run… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMaxInteger (Modelica equations). First failure: Run… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMaxInteger (Modelica equations). First failure: Run… |
+| `tpl-utilities-multi-min-integer` | Utilities.MultiMinInteger | nin = 3 | 2b | — | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMinInteger (Modelica equations). First failure: Run… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMinInteger (Modelica equations). First failure: Run… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMinInteger (Modelica equations). First failure: Run… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMinInteger (Modelica equations). First failure: Run… |
+| `tpl-utilities-stage-index` | Utilities.StageIndex | nSta = 3 | 2b | — | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.StageIndex (Modelica.StateGraph), Utilities.TrueArrayCon… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.StageIndex (Modelica.StateGraph), Utilities.TrueArrayCon… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.StageIndex (Modelica.StateGraph), Utilities.TrueArrayCon… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.StageIndex (Modelica.StateGraph), Utilities.TrueArrayCon… |
+| `tpl-utilities-timer-with-reset` | Utilities.TimerWithReset | t = 60 s | 2b | — | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Runt… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Runt… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Runt… | blocked: translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: Runt… |
 | `hw-plant-boiler` | Hot water plant: two boilers, two primary pumps, minimum flow bypass | default · 20 requirements · Gate G-ENG unapproved | 3 | 165 | pass | pass | pass | 82.5 % (target 95 %) (scan leg) |
 | `doas` | Dedicated outdoor air system (BACTalk standard sequence) | no recovery · 6 requirements · Gate G-ENG unapproved | 4 | 38 | pass | pass | pass | 72.5 % (target 95 %) (scan leg) |
 | `doas-erv` | Dedicated outdoor air system with energy recovery (BACTalk standard sequence) | energy recovery · 9 requirements · Gate G-ENG unapproved | 4 | 61 | pass | pass | pass | 77.7 % (target 95 %) (scan leg) |
@@ -488,6 +535,428 @@ Summary: 41 configurations, 0 pass all four; D1 41, D2 41, D3 39, D4 0, blocked 
 - Survivor: drop_facets `/Controller/Parameters/minFlo__1`
 - Survivor: delete_link `/Controller/ValPos/swiInp/Link2`
 - Survivor: delete_link `/Controller/ValPos/swiOut/Link2`
+
+### `chw-economizer`
+
+
+### `chw-pumps-chilled-water`
+
+- Survivor: alter_constant `/Controller/Inputs/dpChiWat_remote__2`
+- Survivor: delete_link `/Controller/EnaLagChiPum/sub1/Link`
+- Survivor: drop_facets `/Controller/Inputs/dpChiWatSet_remote__1`
+- Survivor: drop_facets `/Controller/Parameters/booToInt1__2_true`
+- Survivor: delete_link `/Controller/EnaLagChiPum/cha_increased/Link`
+- Survivor: alter_constant `/Controller/Parameters/booToInt3_true`
+- Survivor: drop_facets `/Controller/Parameters/pumIndCon__1`
+- Survivor: change_block_type `/Controller/EnaLagChiPum/edg_2`
+- Survivor: delete_link `/Controller/Controller/nexLagPum_index____1/Link`
+- Survivor: drop_facets `/Controller/Parameters/booToInt2_true`
+- Survivor: delete_link `/Controller/Controller/addPum__1/Link`
+- Survivor: alter_constant `/Controller/Inputs/dpChiWat_remote__1`
+
+### `chw-pumps-condenser-water`
+
+- Survivor: delete_link `/Controller/PumSpe_1/booToInt__5/Link`
+- Survivor: alter_constant `/Controller/PumSpe_1/conInt1__5`
+- Survivor: alter_constant `/Controller/PumSpe_2/greEquThr__6_threshold`
+- Survivor: change_block_type `/Controller/PumSpe_2/sub1__2`
+- Survivor: drop_facets `/Controller/Parameters/zer1`
+- Survivor: delete_link `/Controller/PumSpe_2/sub1__1/Link1`
+- Survivor: delete_link `/Controller/PumSpe_1/booToInt__5/Link1`
+- Survivor: alter_constant `/Controller/PumSpe_1/booToInt__6_true`
+- Survivor: alter_constant `/Controller/PumSpe_1/booToInt__4_true`
+- Survivor: delete_link `/Controller/EnaLeaHeaPum/or2/Link`
+- Survivor: delete_link `/Controller/PumSpe_1/conWatPumOn_element_5/Link2`
+
+### `chw-towers`
+
+- Survivor: change_priority_level `/Controller/Outputs/yMakUp/Link`
+- Survivor: delete_link `/Controller/TowFanSpe_3/and3/Link`
+- Survivor: change_block_type `/Controller/TowFanSpe_1/addPar_2`
+- Survivor: delete_link `/Controller/TowFanSpe_2/mulOr_fold_2/Link`
+- Survivor: change_block_type `/Controller/TowFanSpe_5/onlWse`
+- Survivor: delete_link `/Controller/TowFanSpe_4/fanCycOff/Link1`
+- Survivor: delete_link `/Controller/TowSta_1/greEquThr__5/Link1`
+- Survivor: delete_link `/Controller/TowFanSpe_3/plrTowMaxSpe_lower_limit/Link1`
+- Survivor: alter_constant `/Controller/Inputs/watLev`
+- Survivor: delete_link `/Controller/TowFanSpe_4/dTChiSup/Link1`
+- Survivor: alter_constant `/Controller/TowSta_3/enaCelSta__2_true`
+- Survivor: delete_link `/Controller/TowFanSpe_3/swiOut/Link2`
+
+### `chw-staging-setpoints`
+
+- Survivor: delete_link `/SetpointController/ChiInd_1/proInt__1_2/Link`
+- Survivor: delete_link `/SetpointController/Conf_2/sort_highIdx_2/Link2`
+- Survivor: alter_constant `/SetpointController/ChiInd_2/staIndMatr__3_1`
+- Survivor: change_priority_level `/SetpointController/Outputs/yCapReq/Link`
+- Survivor: delete_link `/SetpointController/PLRs_1/intSwi1__2/Link`
+- Survivor: change_block_type `/SetpointController/Conf_3/matrix_row_3_sum_2`
+- Survivor: change_block_type `/SetpointController/Conf_1/intEqu__3`
+- Survivor: delete_link `/SetpointController/StaUp/sub/Link1`
+- Survivor: delete_link `/SetpointController/Cap_1/intGreEquThr__3/Link1`
+- Survivor: alter_constant `/SetpointController/Conf_1/booToRea__2_true`
+- Survivor: delete_link `/SetpointController/Cha/and4/Link1`
+- Survivor: alter_constant `/SetpointController/Cap_1/booToRea__2_true`
+
+### `chw-staging-up`
+
+- First divergence: `{"band": 0.02, "block": "truDel_3", "first_violation_time": 900.0, "interpreter": true, "kind": "boolean_delay", "scan": 15, "shadow": false, "shadow_key": "MinBypSet/truDel.out", "signals": ["yChiWatIsoVal__2"], "slot": "out", "time_seconds": 900.0}`
+
+### `chw-plant-controller`
+
+- Blocked at translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: model build/schedule error: algebraic loop detected: 68 connector(s) form a cycle not broken by a state-holding block. CDL §7.16 forbids algebraic loops. Remedy: insert a delay block (CDL.Logical.Pre, CDL.Discrete.UnitDelay) or an integrator into the loop, since their outputs do not depend directly on the current input. Cycle members: ["CDL.Logical.Or#b9.out#c18", "CDL.Logical.Not#b274.in#c543", "CDL.Logical.Not#b274.out#c544", "CDL.Logical.And#b233.in#c443", "CDL.Logical.And#b233.out#c444", "CDL.Logical.Switch#b260.in…
+
+### `chw-staging-down`
+
+- Survivor: delete_link `/Down/Down/and4/Link1`
+- Survivor: delete_link `/Down/DisNexCWP/and2/Link1`
+- Survivor: alter_constant `/Down/DowSta_5/nexChiRat_index____1_threshold`
+- Survivor: delete_link `/Down/Down/lat2/Link1`
+- Survivor: delete_link `/Down/DowSta_1/logSwi4__1/Link`
+- Survivor: delete_link `/Down/DowSta_6/or4/Link1`
+- Survivor: delete_link `/Down/DowSta_5/nexChiMaxFlo_index____1/Link1`
+- Survivor: delete_link `/Down/DowSta_2/abs1__2_nonnegative/Link1`
+- Survivor: delete_link `/Down/DowSta_4/swi1__1/Link`
+- Survivor: delete_link `/Down/Down/staEnd/Link1`
+- Survivor: alter_constant `/Down/MinChiWatFlo_1/intGreEquThr_threshold`
+- Survivor: alter_constant `/Down/Inputs/VChiWat_flow`
+
+### `tpl-heat-recovery-chillers-controller`
+
+- Blocked at translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: CXF composite assembly cannot expand ex:Utilities.Initialization, so the parent reaches the engine unassembled: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable, Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl, Pumps.Primary.DisableDedicated, StagingRotation.LoadAverage (40 engine errors)
+
+### `tpl-enabling-enable`
+
+- Blocked at translation: RuntimeError: Open Control Engine rejected request; composite/array-parameter: array-valued composite parameters are not supported by this CXF lowering subset; composite/vector-port-instance: instance of class `CDL.Logical.MultiAnd` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.MultiOr` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.Sources.TimeTable` derives its port count from a parameter (17 engine errors)
+
+### `tpl-heat-recovery-chillers-mode-control`
+
+- Survivor: change_block_type `/ModeControl/ModeControl/QEvaHea_flow`
+- Survivor: drop_facets `/ModeControl/Inputs/THeaWatSupSet`
+- Survivor: change_priority_level `/ModeControl/Outputs/y1Coo/Link`
+- Survivor: alter_constant `/ModeControl/Parameters/QEvaHea_flow_parameter`
+- Survivor: alter_constant `/ModeControl/Inputs/THeaWatSupSet`
+- Survivor: drop_facets `/ModeControl/Inputs/QHeaWatReq_flow`
+- Survivor: change_priority_level `/ModeControl/Outputs/TSupSet/Link`
+- Survivor: drop_facets `/ModeControl/Inputs/QChiWatReq_flow`
+- Survivor: delete_link `/ModeControl/ModeControl/QEvaHea_flow/Link`
+- Survivor: drop_facets `/ModeControl/Parameters/QEvaHea_flow_parameter`
+- Survivor: drop_facets `/ModeControl/Outputs/TSupSet`
+- Survivor: alter_constant `/ModeControl/Inputs/QHeaWatReq_flow`
+
+### `tpl-heat-recovery-chillers-enable`
+
+- Survivor: delete_link `/Enable/Enable/timLoaHea/Link`
+- Survivor: delete_link `/Enable/Enable/anyLowLoa/Link`
+- Survivor: alter_constant `/Enable/Parameters/higLoaCoo_threshold`
+- Survivor: delete_link `/Enable/Enable/timHeaEna/Link`
+- Survivor: delete_link `/Enable/Enable/higLoaHea/Link`
+- Survivor: delete_link `/Enable/Enable/disCoo/Link`
+- Survivor: drop_facets `/Enable/Inputs/TChiWatHrcLvg`
+- Survivor: change_block_type `/Enable/Enable/timTHeaWatLvg2`
+- Survivor: drop_facets `/Enable/Parameters/higLoaHea_threshold`
+- Survivor: invert_parameter `/Enable/Enable/timTHeaWatLvg2`
+- Survivor: delete_link `/Enable/Enable/timCooEna/Link`
+- Survivor: delete_link `/Enable/Enable/anyDis_fold_5/Link1`
+
+### `tpl-utilities-hold-real`
+
+- Survivor: drop_facets `/HoldReal/Inputs/u`
+- Survivor: change_priority_level `/HoldReal/Outputs/y/Link`
+- Survivor: alter_constant `/HoldReal/Inputs/u`
+- Survivor: drop_facets `/HoldReal/Outputs/y`
+- Survivor: alter_constant `/HoldReal/Outputs/y`
+- Survivor: delete_link `/HoldReal/HoldReal/swi/Link`
+
+### `tpl-minimum-flow-setpoint`
+
+- Survivor: delete_link `/Setpoint/Setpoint/booToRea__2/Link`
+- Survivor: drop_facets `/Setpoint/Parameters/floDes__1`
+- Survivor: drop_facets `/Setpoint/Parameters/floMin__1`
+- Survivor: delete_link `/Setpoint/Setpoint/booToRea__1/Link`
+- Survivor: change_priority_level `/Setpoint/Outputs/VPriSet_flow/Link`
+- Survivor: drop_facets `/Setpoint/Outputs/VPriSet_flow`
+- Survivor: drop_facets `/Setpoint/Parameters/floMin__2`
+- Survivor: drop_facets `/Setpoint/Parameters/floDes__2`
+- Survivor: alter_constant `/Setpoint/Outputs/VPriSet_flow`
+
+### `tpl-minimum-flow-controller`
+
+- Survivor: alter_constant `/Controller/Ctl/valDis`
+- Survivor: delete_link `/Controller/Ctl/swiOut/Link2`
+- Survivor: delete_link `/Controller/SetFloMin/floMinEna__1/Link`
+- Survivor: alter_constant `/Controller/Inputs/VPri_flow`
+- Survivor: alter_constant `/Controller/Outputs/VPriSet_flow`
+- Survivor: drop_facets `/Controller/Inputs/VPri_flow`
+- Survivor: delete_link `/Controller/SetFloMin/booToRea__1/Link`
+- Survivor: delete_link `/Controller/Controller/any_fold_3/Link`
+- Survivor: drop_facets `/Controller/Outputs/y`
+- Survivor: change_priority_level `/Controller/Outputs/y/Link`
+
+### `tpl-minimum-flow-controller-dual-mode`
+
+- Survivor: alter_constant `/ControllerDualMode/Inputs/VChiWatPri_flow`
+- Survivor: change_block_type `/ControllerDualMode/ControllerDualMode/pumOnAndHea__1`
+- Survivor: change_block_type `/ControllerDualMode/CtlFloMinChiWat/any_fold_2`
+- Survivor: alter_constant `/ControllerDualMode/Inputs/VHeaWatPri_flow`
+- Survivor: delete_link `/ControllerDualMode/CtlFloMinHeaWat/floMinEna__1/Link`
+- Survivor: delete_link `/ControllerDualMode/ControllerDualMode/onAndCoo__2/Link`
+- Survivor: alter_constant `/ControllerDualMode/CtlFloMinChiWat/floDes__2`
+- Survivor: drop_facets `/ControllerDualMode/Inputs/VHeaWatPri_flow`
+- Survivor: delete_link `/ControllerDualMode/CtlFloMinChiWat/any_fold_2/Link`
+- Survivor: alter_constant `/ControllerDualMode/Outputs/yValChiWatMinByp`
+- Survivor: delete_link `/ControllerDualMode/CtlFloMinHeaWat/any_fold_2/Link1`
+
+### `tpl-setpoints-plant-reset`
+
+- Survivor: delete_link `/PlantReset/TriRes/abs1/Link`
+- Survivor: delete_link `/PlantReset/TriRes/abs1/Link1`
+- Survivor: change_block_type `/PlantReset/PlantReset/resDp__1__x`
+- Survivor: delete_link `/PlantReset/TriRes/abs/Link2`
+- Survivor: delete_link `/PlantReset/TriRes/abs1/Link2`
+- Survivor: alter_constant `/PlantReset/Parameters/dpSetMin`
+- Survivor: delete_link `/PlantReset/TriRes/and2/Link1`
+- Survivor: drop_facets `/PlantReset/Parameters/resDpMax`
+- Survivor: change_block_type `/PlantReset/PlantReset/resDp__2__f`
+- Survivor: delete_link `/PlantReset/PlantReset/resTSup_slope_x2/Link1`
+- Survivor: change_block_type `/PlantReset/PlantReset/resTSup_slope_x2`
+- Survivor: delete_link `/PlantReset/PlantReset/resDp__1_upper_limit/Link`
+
+### `tpl-pumps-generic-reset-local-differential-pressure`
+
+- Survivor: change_block_type `/ResetLocalDifferentialPressure/ResetLocalDifferentialPressure/dpLocRes_slope_x2`
+- Survivor: change_priority_level `/ResetLocalDifferentialPressure/Outputs/dpLocSet/Link`
+- Survivor: delete_link `/ResetLocalDifferentialPressure/ResetLocalDifferentialPressure/dpLocRes_slope_x2/Link1`
+- Survivor: drop_facets `/ResetLocalDifferentialPressure/Parameters/dpLocSetMax`
+- Survivor: delete_link `/ResetLocalDifferentialPressure/ResetLocalDifferentialPressure/dpLocRes__x/Link`
+- Survivor: drop_facets `/ResetLocalDifferentialPressure/Inputs/dpRem`
+- Survivor: drop_facets `/ResetLocalDifferentialPressure/Inputs/dpRemSet`
+- Survivor: drop_facets `/ResetLocalDifferentialPressure/Outputs/dpLocSet`
+- Survivor: change_block_type `/ResetLocalDifferentialPressure/ResetLocalDifferentialPressure/dpLocRes__x`
+- Survivor: delete_link `/ResetLocalDifferentialPressure/ResetLocalDifferentialPressure/dpLocRes_slope/Link1`
+
+### `tpl-pumps-generic-control-differential-pressure`
+
+- Survivor: alter_constant `/ControlDifferentialPressure/Inputs/dpRem__2`
+- Survivor: delete_link `/ControlDifferentialPressure/CtlDpRem__2/swiOut/Link2`
+- Survivor: flip_loop_action `/ControlDifferentialPressure/CtlDpRem__2/conPID`
+- Survivor: delete_link `/ControlDifferentialPressure/CtlDpRem__2/swiInp/Link2`
+- Survivor: delete_link `/ControlDifferentialPressure/CtlDpRem__1/swiOut/Link1`
+- Survivor: delete_link `/ControlDifferentialPressure/CtlDpRem__1/swiInp/Link2`
+- Survivor: delete_link `/ControlDifferentialPressure/CtlDpRem__1/swiOut/Link`
+- Survivor: invert_parameter `/ControlDifferentialPressure/CtlDpRem__2/conPID`
+- Survivor: drop_facets `/ControlDifferentialPressure/Inputs/dpRemSet__1`
+- Survivor: delete_link `/ControlDifferentialPressure/ControlDifferentialPressure/maxY_fold_2/Link1`
+- Survivor: delete_link `/ControlDifferentialPressure/CtlDpRem__2/swiOut/Link1`
+- Survivor: delete_link `/ControlDifferentialPressure/CtlDpRem__1/swiInp/Link`
+
+### `tpl-utilities-count-true`
+
+- Survivor: delete_link `/CountTrue/CountTrue/booToInt__2/Link1`
+- Survivor: delete_link `/CountTrue/CountTrue/booToInt__1/Link1`
+- Survivor: drop_facets `/CountTrue/Parameters/booToInt__4_false`
+- Survivor: drop_facets `/CountTrue/Parameters/booToInt__2_false`
+- Survivor: change_priority_level `/CountTrue/Outputs/y/Link`
+- Survivor: delete_link `/CountTrue/CountTrue/booToInt__6/Link1`
+- Survivor: drop_facets `/CountTrue/Parameters/booToInt__6_true`
+- Survivor: drop_facets `/CountTrue/Parameters/booToInt__1_true`
+- Survivor: drop_facets `/CountTrue/Parameters/booToInt__4_true`
+- Survivor: drop_facets `/CountTrue/Parameters/booToInt__6_false`
+- Survivor: drop_facets `/CountTrue/Parameters/booToInt__2_true`
+- Survivor: drop_facets `/CountTrue/Outputs/y`
+
+### `tpl-pumps-primary-disable-dedicated`
+
+- Blocked at reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.Initialization inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference
+
+### `tpl-staging-rotation-failsafe-condition`
+
+- Blocked at reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.PlaceholderLogical, Utilities.TimerWithReset inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference
+
+### `tpl-staging-rotation-stage-completion`
+
+- Survivor: change_block_type `/StageCompletion/StageCompletion/cha__2`
+- Survivor: change_block_type `/StageCompletion/StageCompletion/enaAndOn__1`
+- Survivor: change_priority_level `/StageCompletion/Outputs/y1End/Link`
+- Survivor: change_block_type `/StageCompletion/StageCompletion/endStaPro`
+- Survivor: change_block_type `/StageCompletion/StageCompletion/enaAndOn__2`
+- Survivor: delete_link `/StageCompletion/StageCompletion/chaSta_increased/Link`
+- Survivor: delete_link `/StageCompletion/StageCompletion/enaAndOn__1/Link`
+- Survivor: change_block_type `/StageCompletion/StageCompletion/anyCha_fold_2`
+- Survivor: delete_link `/StageCompletion/StageCompletion/lckAnyCha/Link1`
+- Survivor: change_block_type `/StageCompletion/StageCompletion/cha__1`
+- Survivor: delete_link `/StageCompletion/StageCompletion/cha__1/Link1`
+- Survivor: delete_link `/StageCompletion/StageCompletion/cha__2/Link`
+
+### `tpl-staging-rotation-sort-runtime`
+
+- Survivor: alter_constant `/SortRuntime/Parameters/addWei__1_parameter`
+- Survivor: alter_constant `/SortRuntime/Parameters/opp__2_parameter`
+- Survivor: drop_facets `/SortRuntime/Parameters/zerUna__2_true`
+- Survivor: drop_facets `/SortRuntime/Outputs/yRunTimLif__3`
+- Survivor: drop_facets `/SortRuntime/Parameters/sor_index_3`
+- Survivor: drop_facets `/SortRuntime/Parameters/idxEquAltMat__2_3`
+- Survivor: change_priority_level `/SortRuntime/Outputs/yRunTimSta__1/Link`
+- Survivor: change_priority_level `/SortRuntime/Outputs/yRunTimLif__3/Link`
+- Survivor: delete_link `/SortRuntime/SortRuntime_1/opp__3/Link1`
+- Survivor: delete_link `/SortRuntime/SortRuntime_1/opp__2/Link`
+- Survivor: alter_constant `/SortRuntime/Parameters/zerAva__3_false`
+- Survivor: drop_facets `/SortRuntime/Parameters/idxEquAltMat__3_1`
+
+### `tpl-pumps-generic-staging-headered-deltap`
+
+- Blocked at reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.Utilities.TimerWithReset, Utilities.TimerWithReset (32 engine errors)
+
+### `tpl-staging-rotation-stage-change-command`
+
+- Blocked at translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: ValueError: compile-time enum grounding left an unresolved dependency in ex:Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.capReq.typ: typ
+
+### `tpl-pumps-generic-staging-headered`
+
+- Blocked at translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.StageIndex (Modelica.StateGraph), Utilities.TimerWithReset (Modelica equations), Utilities.TrueArrayConditional (an algorithm section). First failure: CxfArrayScalarizationError: ex:Buildings.Templates.Plants.Controls.StagingRotation.EquipmentEnable.u1Ava dimension nEqu must resolve to an integer from 1 to 512
+
+### `tpl-pumps-primary-variable-speed`
+
+- Survivor: alter_constant `/VariableSpeed/Inputs/dpHeaWatLocSet__1`
+- Survivor: drop_facets `/VariableSpeed/Outputs/dpChiWatLocSetMax`
+- Survivor: drop_facets `/VariableSpeed/Parameters/zer`
+- Survivor: drop_facets `/VariableSpeed/Inputs/dpChiWatLoc`
+- Survivor: alter_constant `/VariableSpeed/Inputs/dpChiWatLocSet__2`
+- Survivor: alter_constant `/VariableSpeed/Outputs/yPumChiWatPriDed__2`
+- Survivor: alter_constant `/VariableSpeed/CtlDpHeaWat/valDis`
+- Survivor: drop_facets `/VariableSpeed/Inputs/dpHeaWatLoc`
+- Survivor: change_priority_level `/VariableSpeed/Outputs/dpHeaWatLocSetMax/Link`
+- Survivor: drop_facets `/VariableSpeed/Outputs/yPumChiWatPriDed__2`
+
+### `tpl-heat-pumps-air-to-water`
+
+- Blocked at translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains StagingRotation.EquipmentAvailability (Modelica.StateGraph), Utilities.Initialization (Modelica equations), Utilities.StageIndex (Modelica.StateGraph), Utilities.TimerWithReset (Modelica equations), Utilities.TrueArrayConditional (an algorithm section). First failure: CxfArrayScalarizationError: ex:Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.u1Ava dimension nEqu must resolve to an integer from 1 to 512
+
+### `tpl-staging-rotation-equipment-enable`
+
+- Blocked at translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: CxfArrayScalarizationError: ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx dimension nin must resolve to an integer from 1 to 512
+
+### `tpl-utilities-first-true-index`
+
+- Survivor: alter_constant `/FirstTrueIndex/Parameters/zer`
+- Survivor: drop_facets `/FirstTrueIndex/Parameters/booToInt__1_false`
+- Survivor: alter_constant `/FirstTrueIndex/Parameters/booToInt__5_true`
+- Survivor: delete_link `/FirstTrueIndex/FirstTrueIndex/booToInt__5/Link`
+- Survivor: delete_link `/FirstTrueIndex/FirstTrueIndex/mulMin_fold_5/Link`
+- Survivor: delete_link `/FirstTrueIndex/FirstTrueIndex/booToInt__6/Link`
+- Survivor: delete_link `/FirstTrueIndex/FirstTrueIndex/booToInt__3/Link`
+- Survivor: delete_link `/FirstTrueIndex/FirstTrueIndex/booToInt__6/Link2`
+- Survivor: delete_link `/FirstTrueIndex/FirstTrueIndex/booToInt__4/Link1`
+- Survivor: alter_constant `/FirstTrueIndex/Parameters/conInt`
+- Survivor: delete_link `/FirstTrueIndex/FirstTrueIndex/booToInt__1/Link1`
+- Survivor: change_priority_level `/FirstTrueIndex/Outputs/y/Link`
+
+### `tpl-utilities-last-true-index`
+
+- Survivor: delete_link `/LastTrueIndex/LastTrueIndex/mulMax_fold_3/Link1`
+- Survivor: delete_link `/LastTrueIndex/LastTrueIndex/booToInt__1/Link2`
+- Survivor: delete_link `/LastTrueIndex/LastTrueIndex/booToInt__2/Link1`
+- Survivor: delete_link `/LastTrueIndex/LastTrueIndex/booToInt__4/Link2`
+- Survivor: delete_link `/LastTrueIndex/LastTrueIndex/booToInt__1/Link1`
+- Survivor: drop_facets `/LastTrueIndex/Parameters/booToInt__4_false`
+- Survivor: delete_link `/LastTrueIndex/LastTrueIndex/booToInt__2/Link2`
+- Survivor: drop_facets `/LastTrueIndex/Parameters/booToInt__2_false`
+- Survivor: change_priority_level `/LastTrueIndex/Outputs/y/Link`
+- Survivor: delete_link `/LastTrueIndex/LastTrueIndex/booToInt__6/Link1`
+- Survivor: alter_constant `/LastTrueIndex/Parameters/booToInt__3_true`
+- Survivor: change_block_type `/LastTrueIndex/LastTrueIndex/mulMax_fold_2`
+
+### `tpl-utilities-true-array-conditional`
+
+- Blocked at translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: RuntimeError: Open Control Engine rejected request; no block class for Integer; composite/array-connector: array-valued connector nodes are not supported (4 engine errors)
+
+### `tpl-staging-rotation-load-average`
+
+- Survivor: drop_facets `/LoadAverage/Parameters/capFlo_parameter`
+- Survivor: alter_constant `/LoadAverage/Inputs/V_flow`
+- Survivor: drop_facets `/LoadAverage/Inputs/TSupSet`
+- Survivor: alter_constant `/LoadAverage/Outputs/QReq_flow`
+- Survivor: alter_constant `/LoadAverage/Inputs/TSupSet`
+- Survivor: drop_facets `/LoadAverage/Inputs/TRet`
+- Survivor: alter_constant `/LoadAverage/Inputs/TRet`
+- Survivor: change_priority_level `/LoadAverage/Outputs/QReq_flow/Link`
+- Survivor: drop_facets `/LoadAverage/Inputs/V_flow`
+- Survivor: invert_parameter `/LoadAverage/LoadAverage/movAve`
+- Survivor: drop_facets `/LoadAverage/Outputs/QReq_flow`
+- Survivor: delete_link `/LoadAverage/LoadAverage/polHeaCoo/Link`
+
+### `tpl-staging-rotation-stage-availability`
+
+- Survivor: change_block_type `/StageAvailability/StageAvailability_1/all_nSta__fold_3_3`
+- Survivor: change_block_type `/StageAvailability/StageAvailability_1/isReqAva__3_3`
+- Survivor: delete_link `/StageAvailability/StageAvailability_1/isReq__1_1/Link`
+- Survivor: delete_link `/StageAvailability/StageAvailability_1/booToInt__1_1/Link2`
+- Survivor: drop_facets `/StageAvailability/Parameters/booToInt__1_3_false`
+- Survivor: alter_constant `/StageAvailability/Parameters/isNotReqNoAlt__1_2_threshold`
+- Survivor: alter_constant `/StageAvailability/Parameters/isReq__2_1_threshold`
+- Survivor: delete_link `/StageAvailability/StageAvailability_1/isReqAltAva__3_3/Link1`
+- Survivor: delete_link `/StageAvailability/StageAvailability_2/isReqAvaOrNotReq__3_2/Link`
+- Survivor: alter_constant `/StageAvailability/Parameters/booToInt__2_3_true`
+- Survivor: change_block_type `/StageAvailability/StageAvailability_1/isReqAltAva__2_3`
+- Survivor: delete_link `/StageAvailability/StageAvailability_2/isReqPosAlt__2_2/Link`
+
+### `tpl-staging-rotation-equipment-availability`
+
+- Blocked at translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains StagingRotation.EquipmentAvailability (Modelica.StateGraph). First failure: RuntimeError: CXF composite assembly is incomplete; missing classes: ex:Modelica.StateGraph.InitialStepWithSignal, ex:Modelica.StateGraph.StateGraphRoot, ex:Modelica.StateGraph.Step, ex:Modelica.StateGraph.StepWithSignal, ex:Modelica.StateGraph.Transition, ex:Modelica.StateGraph.TransitionWithSignal
+
+### `tpl-staging-rotation-event-sequencing`
+
+- Survivor: change_priority_level `/EventSequencing/Outputs/y1ValHeaWatOutIso/Link`
+- Survivor: change_block_type `/EventSequencing/EventSequencing/cooValPum_fold_3`
+- Survivor: delete_link `/EventSequencing/EventSequencing/cooValPum_fold_2/Link1`
+- Survivor: invert_parameter `/EventSequencing/EventSequencing/timHp`
+- Survivor: delete_link `/EventSequencing/EventSequencing/cooValPum_fold_4/Link`
+- Survivor: change_block_type `/EventSequencing/EventSequencing/timVal`
+- Survivor: delete_link `/EventSequencing/EventSequencing/enaAndCoo/Link1`
+- Survivor: change_block_type `/EventSequencing/EventSequencing/heaValPum_fold_2`
+- Survivor: delete_link `/EventSequencing/EventSequencing/cooValPum_fold_3/Link1`
+- Survivor: delete_link `/EventSequencing/EventSequencing/heaValPum_fold_2/Link1`
+- Survivor: delete_link `/EventSequencing/EventSequencing/timVal/Link`
+- Survivor: delete_link `/EventSequencing/EventSequencing/heaValPum_fold_3/Link`
+
+### `tpl-utilities-placeholder-logical`
+
+- Survivor: delete_link `/PlaceholderLogical/Outputs/y/Link`
+- Survivor: change_priority_level `/PlaceholderLogical/Outputs/y/Link`
+
+### `tpl-utilities-placeholder-real`
+
+- Survivor: drop_facets `/PlaceholderReal/Outputs/y`
+- Survivor: change_priority_level `/PlaceholderReal/Outputs/y/Link`
+- Survivor: drop_facets `/PlaceholderReal/Parameters/ph`
+- Survivor: alter_constant `/PlaceholderReal/Outputs/y`
+
+### `tpl-utilities-placeholder-integer`
+
+- Survivor: drop_facets `/PlaceholderInteger/Outputs/y`
+- Survivor: change_priority_level `/PlaceholderInteger/Outputs/y/Link`
+- Survivor: drop_facets `/PlaceholderInteger/Parameters/ph`
+- Survivor: alter_constant `/PlaceholderInteger/Outputs/y`
+
+### `tpl-utilities-initialization`
+
+- Blocked at translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/Initialization.jsonld
+
+### `tpl-utilities-multi-max-integer`
+
+- Blocked at translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMaxInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMaxInteger.jsonld
+
+### `tpl-utilities-multi-min-integer`
+
+- Blocked at translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMinInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMinInteger.jsonld
+
+### `tpl-utilities-stage-index`
+
+- Blocked at translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.StageIndex (Modelica.StateGraph), Utilities.TrueArrayConditional (an algorithm section). First failure: RuntimeError: CXF composite assembly is incomplete; missing classes: ex:Integer, ex:Modelica.StateGraph.InitialStepWithSignal, ex:Modelica.StateGraph.StateGraphRoot, ex:Modelica.StateGraph.StepWithSignal, ex:Modelica.StateGraph.TransitionWithSignal
+
+### `tpl-utilities-timer-with-reset`
+
+- Blocked at translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/TimerWithReset.jsonld
 
 ### `hw-plant-boiler`
 

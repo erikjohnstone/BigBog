@@ -1,0 +1,2799 @@
+{
+ "configuration_id": "tpl-staging-rotation-stage-availability",
+ "controller_id": "StagingRotation.StageAvailability",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability",
+  "inputs": [
+   {
+    "description": "Equipment available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.u1Ava__1",
+    "label": "u1Ava__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Equipment available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.u1Ava__2",
+    "label": "u1Ava__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Equipment available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.u1Ava__3",
+    "label": "u1Ava__3",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Stage available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.y1__1",
+    "label": "y1__1",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Stage available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.y1__2",
+    "label": "y1__2",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Stage available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.y1__3",
+    "label": "y1__3",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 3
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "staEqu": [
+   [
+    0.333333333333,
+    0.333333333333,
+    0.333333333333
+   ],
+   [
+    0.666666666667,
+    0.666666666667,
+    0.666666666667
+   ],
+   [
+    1,
+    1,
+    1
+   ]
+  ]
+ },
+ "points": [
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Ava__1",
+   "name": "u1Ava__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.u1Ava__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Ava__2",
+   "name": "u1Ava__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.u1Ava__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Ava__3",
+   "name": "u1Ava__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.u1Ava__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1__1",
+   "name": "y1__1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.y1__1",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1__2",
+   "name": "y1__2",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.y1__2",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1__3",
+   "name": "y1__3",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.y1__3",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "StagingRotation/StageAvailability.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "3f8ac991c705d82178303789662d2cac80eb72a6be813f79cee700eadf823c40",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "86eeb73d4dd14f6d1441b3a4320539a576849b6f2e4ebaae87f0527c198d1344",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Ava__1",
+    "kind": "boolean_input",
+    "label": "u1Ava__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Ava__2",
+    "kind": "boolean_input",
+    "label": "u1Ava__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Ava__3",
+    "kind": "boolean_input",
+    "label": "u1Ava__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1__1",
+    "kind": "boolean_output",
+    "label": "y1__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1__2",
+    "kind": "boolean_output",
+    "label": "y1__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1__3",
+    "kind": "boolean_output",
+    "label": "y1__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "all_nSta__fold_2",
+    "kind": "and",
+    "label": "all[nSta] fold 2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "all_nSta__fold_3",
+    "kind": "and",
+    "label": "all[nSta] fold 3",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "all_nSta__fold_2_2",
+    "kind": "and",
+    "label": "all[nSta] fold 2",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "all_nSta__fold_3_2",
+    "kind": "and",
+    "label": "all[nSta] fold 3",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "all_nSta__fold_2_3",
+    "kind": "and",
+    "label": "all[nSta] fold 2",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "all_nSta__fold_3_3",
+    "kind": "and",
+    "label": "all[nSta] fold 3",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__1_1_true",
+    "kind": "numeric_const",
+    "label": "booToInt__1_1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__1_1_false",
+    "kind": "numeric_const",
+    "label": "booToInt__1_1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__1_1",
+    "kind": "numeric_switch",
+    "label": "booToInt__1_1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__1_2_true",
+    "kind": "numeric_const",
+    "label": "booToInt__1_2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__1_2_false",
+    "kind": "numeric_const",
+    "label": "booToInt__1_2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__1_2",
+    "kind": "numeric_switch",
+    "label": "booToInt__1_2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__1_3_true",
+    "kind": "numeric_const",
+    "label": "booToInt__1_3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__1_3_false",
+    "kind": "numeric_const",
+    "label": "booToInt__1_3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__1_3",
+    "kind": "numeric_switch",
+    "label": "booToInt__1_3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__2_1_true",
+    "kind": "numeric_const",
+    "label": "booToInt__2_1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__2_1_false",
+    "kind": "numeric_const",
+    "label": "booToInt__2_1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__2_1",
+    "kind": "numeric_switch",
+    "label": "booToInt__2_1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__2_2_true",
+    "kind": "numeric_const",
+    "label": "booToInt__2_2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__2_2_false",
+    "kind": "numeric_const",
+    "label": "booToInt__2_2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__2_2",
+    "kind": "numeric_switch",
+    "label": "booToInt__2_2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__2_3_true",
+    "kind": "numeric_const",
+    "label": "booToInt__2_3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__2_3_false",
+    "kind": "numeric_const",
+    "label": "booToInt__2_3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__2_3",
+    "kind": "numeric_switch",
+    "label": "booToInt__2_3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__3_1_true",
+    "kind": "numeric_const",
+    "label": "booToInt__3_1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__3_1_false",
+    "kind": "numeric_const",
+    "label": "booToInt__3_1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__3_1",
+    "kind": "numeric_switch",
+    "label": "booToInt__3_1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__3_2_true",
+    "kind": "numeric_const",
+    "label": "booToInt__3_2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__3_2_false",
+    "kind": "numeric_const",
+    "label": "booToInt__3_2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__3_2",
+    "kind": "numeric_switch",
+    "label": "booToInt__3_2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__3_3_true",
+    "kind": "numeric_const",
+    "label": "booToInt__3_3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__3_3_false",
+    "kind": "numeric_const",
+    "label": "booToInt__3_3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__3_3",
+    "kind": "numeric_switch",
+    "label": "booToInt__3_3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isAva__1",
+    "kind": "and",
+    "label": "isAva__1",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "isAva__2",
+    "kind": "and",
+    "label": "isAva__2",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "isAva__3",
+    "kind": "and",
+    "label": "isAva__3",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "isNotReqNoAlt__1_1_threshold",
+    "kind": "numeric_const",
+    "label": "isNotReqNoAlt__1_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isNotReqNoAlt__1_1",
+    "kind": "less_than",
+    "label": "isNotReqNoAlt__1_1",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "isNotReqNoAlt__1_2_threshold",
+    "kind": "numeric_const",
+    "label": "isNotReqNoAlt__1_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isNotReqNoAlt__1_2",
+    "kind": "less_than",
+    "label": "isNotReqNoAlt__1_2",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "isNotReqNoAlt__1_3_threshold",
+    "kind": "numeric_const",
+    "label": "isNotReqNoAlt__1_3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isNotReqNoAlt__1_3",
+    "kind": "less_than",
+    "label": "isNotReqNoAlt__1_3",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "isNotReqNoAlt__2_1_threshold",
+    "kind": "numeric_const",
+    "label": "isNotReqNoAlt__2_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isNotReqNoAlt__2_1",
+    "kind": "less_than",
+    "label": "isNotReqNoAlt__2_1",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "isNotReqNoAlt__2_2_threshold",
+    "kind": "numeric_const",
+    "label": "isNotReqNoAlt__2_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isNotReqNoAlt__2_2",
+    "kind": "less_than",
+    "label": "isNotReqNoAlt__2_2",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "isNotReqNoAlt__2_3_threshold",
+    "kind": "numeric_const",
+    "label": "isNotReqNoAlt__2_3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isNotReqNoAlt__2_3",
+    "kind": "less_than",
+    "label": "isNotReqNoAlt__2_3",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "isNotReqNoAlt__3_1_threshold",
+    "kind": "numeric_const",
+    "label": "isNotReqNoAlt__3_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isNotReqNoAlt__3_1",
+    "kind": "less_than",
+    "label": "isNotReqNoAlt__3_1",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "isNotReqNoAlt__3_2_threshold",
+    "kind": "numeric_const",
+    "label": "isNotReqNoAlt__3_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isNotReqNoAlt__3_2",
+    "kind": "less_than",
+    "label": "isNotReqNoAlt__3_2",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "isNotReqNoAlt__3_3_threshold",
+    "kind": "numeric_const",
+    "label": "isNotReqNoAlt__3_3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isNotReqNoAlt__3_3",
+    "kind": "less_than",
+    "label": "isNotReqNoAlt__3_3",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.99
+    },
+    "id": "isReq__1_1_threshold",
+    "kind": "numeric_const",
+    "label": "isReq__1_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReq__1_1",
+    "kind": "greater_than",
+    "label": "isReq__1_1",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.99
+    },
+    "id": "isReq__1_2_threshold",
+    "kind": "numeric_const",
+    "label": "isReq__1_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReq__1_2",
+    "kind": "greater_than",
+    "label": "isReq__1_2",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.99
+    },
+    "id": "isReq__1_3_threshold",
+    "kind": "numeric_const",
+    "label": "isReq__1_3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReq__1_3",
+    "kind": "greater_than",
+    "label": "isReq__1_3",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.99
+    },
+    "id": "isReq__2_1_threshold",
+    "kind": "numeric_const",
+    "label": "isReq__2_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReq__2_1",
+    "kind": "greater_than",
+    "label": "isReq__2_1",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.99
+    },
+    "id": "isReq__2_2_threshold",
+    "kind": "numeric_const",
+    "label": "isReq__2_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReq__2_2",
+    "kind": "greater_than",
+    "label": "isReq__2_2",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.99
+    },
+    "id": "isReq__2_3_threshold",
+    "kind": "numeric_const",
+    "label": "isReq__2_3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReq__2_3",
+    "kind": "greater_than",
+    "label": "isReq__2_3",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.99
+    },
+    "id": "isReq__3_1_threshold",
+    "kind": "numeric_const",
+    "label": "isReq__3_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReq__3_1",
+    "kind": "greater_than",
+    "label": "isReq__3_1",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.99
+    },
+    "id": "isReq__3_2_threshold",
+    "kind": "numeric_const",
+    "label": "isReq__3_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReq__3_2",
+    "kind": "greater_than",
+    "label": "isReq__3_2",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.99
+    },
+    "id": "isReq__3_3_threshold",
+    "kind": "numeric_const",
+    "label": "isReq__3_3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReq__3_3",
+    "kind": "greater_than",
+    "label": "isReq__3_3",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "isReqAltAva__1_1",
+    "kind": "and",
+    "label": "isReqAltAva__1_1",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "isReqAltAva__1_2",
+    "kind": "and",
+    "label": "isReqAltAva__1_2",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "isReqAltAva__1_3",
+    "kind": "and",
+    "label": "isReqAltAva__1_3",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "isReqAltAva__2_1",
+    "kind": "and",
+    "label": "isReqAltAva__2_1",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "isReqAltAva__2_2",
+    "kind": "and",
+    "label": "isReqAltAva__2_2",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "isReqAltAva__2_3",
+    "kind": "and",
+    "label": "isReqAltAva__2_3",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "isReqAltAva__3_1",
+    "kind": "and",
+    "label": "isReqAltAva__3_1",
+    "x": 0,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "isReqAltAva__3_2",
+    "kind": "and",
+    "label": "isReqAltAva__3_2",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "isReqAltAva__3_3",
+    "kind": "and",
+    "label": "isReqAltAva__3_3",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "isReqAltAvaGreReq__1",
+    "kind": "greater_than_or_equal",
+    "label": "isReqAltAvaGreReq__1",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "isReqAltAvaGreReq__2",
+    "kind": "greater_than_or_equal",
+    "label": "isReqAltAvaGreReq__2",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "isReqAltAvaGreReq__3",
+    "kind": "greater_than_or_equal",
+    "label": "isReqAltAvaGreReq__3",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "isReqAva__1_1",
+    "kind": "and",
+    "label": "isReqAva__1_1",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "isReqAva__1_2",
+    "kind": "and",
+    "label": "isReqAva__1_2",
+    "x": 180,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "isReqAva__1_3",
+    "kind": "and",
+    "label": "isReqAva__1_3",
+    "x": 360,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "isReqAva__2_1",
+    "kind": "and",
+    "label": "isReqAva__2_1",
+    "x": 540,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "isReqAva__2_2",
+    "kind": "and",
+    "label": "isReqAva__2_2",
+    "x": 720,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "isReqAva__2_3",
+    "kind": "and",
+    "label": "isReqAva__2_3",
+    "x": 900,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "isReqAva__3_1",
+    "kind": "and",
+    "label": "isReqAva__3_1",
+    "x": 0,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "isReqAva__3_2",
+    "kind": "and",
+    "label": "isReqAva__3_2",
+    "x": 180,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "isReqAva__3_3",
+    "kind": "and",
+    "label": "isReqAva__3_3",
+    "x": 360,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "isReqAvaOrNotReq__1_1",
+    "kind": "or",
+    "label": "isReqAvaOrNotReq__1_1",
+    "x": 540,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "isReqAvaOrNotReq__1_2",
+    "kind": "or",
+    "label": "isReqAvaOrNotReq__1_2",
+    "x": 720,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "isReqAvaOrNotReq__1_3",
+    "kind": "or",
+    "label": "isReqAvaOrNotReq__1_3",
+    "x": 900,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "isReqAvaOrNotReq__2_1",
+    "kind": "or",
+    "label": "isReqAvaOrNotReq__2_1",
+    "x": 0,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "isReqAvaOrNotReq__2_2",
+    "kind": "or",
+    "label": "isReqAvaOrNotReq__2_2",
+    "x": 180,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "isReqAvaOrNotReq__2_3",
+    "kind": "or",
+    "label": "isReqAvaOrNotReq__2_3",
+    "x": 360,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "isReqAvaOrNotReq__3_1",
+    "kind": "or",
+    "label": "isReqAvaOrNotReq__3_1",
+    "x": 540,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "isReqAvaOrNotReq__3_2",
+    "kind": "or",
+    "label": "isReqAvaOrNotReq__3_2",
+    "x": 720,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "isReqAvaOrNotReq__3_3",
+    "kind": "or",
+    "label": "isReqAvaOrNotReq__3_3",
+    "x": 900,
+    "y": 1200
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "isReqPosAlt__1_1_threshold",
+    "kind": "numeric_const",
+    "label": "isReqPosAlt__1_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReqPosAlt__1_1",
+    "kind": "greater_than",
+    "label": "isReqPosAlt__1_1",
+    "x": 0,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "isReqPosAlt__1_2_threshold",
+    "kind": "numeric_const",
+    "label": "isReqPosAlt__1_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReqPosAlt__1_2",
+    "kind": "greater_than",
+    "label": "isReqPosAlt__1_2",
+    "x": 180,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "isReqPosAlt__1_3_threshold",
+    "kind": "numeric_const",
+    "label": "isReqPosAlt__1_3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReqPosAlt__1_3",
+    "kind": "greater_than",
+    "label": "isReqPosAlt__1_3",
+    "x": 360,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "isReqPosAlt__2_1_threshold",
+    "kind": "numeric_const",
+    "label": "isReqPosAlt__2_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReqPosAlt__2_1",
+    "kind": "greater_than",
+    "label": "isReqPosAlt__2_1",
+    "x": 540,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "isReqPosAlt__2_2_threshold",
+    "kind": "numeric_const",
+    "label": "isReqPosAlt__2_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReqPosAlt__2_2",
+    "kind": "greater_than",
+    "label": "isReqPosAlt__2_2",
+    "x": 720,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "isReqPosAlt__2_3_threshold",
+    "kind": "numeric_const",
+    "label": "isReqPosAlt__2_3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReqPosAlt__2_3",
+    "kind": "greater_than",
+    "label": "isReqPosAlt__2_3",
+    "x": 900,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "isReqPosAlt__3_1_threshold",
+    "kind": "numeric_const",
+    "label": "isReqPosAlt__3_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReqPosAlt__3_1",
+    "kind": "greater_than",
+    "label": "isReqPosAlt__3_1",
+    "x": 0,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "isReqPosAlt__3_2_threshold",
+    "kind": "numeric_const",
+    "label": "isReqPosAlt__3_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReqPosAlt__3_2",
+    "kind": "greater_than",
+    "label": "isReqPosAlt__3_2",
+    "x": 180,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "isReqPosAlt__3_3_threshold",
+    "kind": "numeric_const",
+    "label": "isReqPosAlt__3_3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "isReqPosAlt__3_3",
+    "kind": "greater_than",
+    "label": "isReqPosAlt__3_3",
+    "x": 360,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": 0.333333333333
+    },
+    "id": "matStaEqu__1_1",
+    "kind": "numeric_const",
+    "label": "matStaEqu__1_1",
+    "x": 540,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": 0.333333333333
+    },
+    "id": "matStaEqu__1_2",
+    "kind": "numeric_const",
+    "label": "matStaEqu__1_2",
+    "x": 720,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": 0.333333333333
+    },
+    "id": "matStaEqu__1_3",
+    "kind": "numeric_const",
+    "label": "matStaEqu__1_3",
+    "x": 900,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": 0.666666666667
+    },
+    "id": "matStaEqu__2_1",
+    "kind": "numeric_const",
+    "label": "matStaEqu__2_1",
+    "x": 0,
+    "y": 1560
+   },
+   {
+    "config": {
+     "value": 0.666666666667
+    },
+    "id": "matStaEqu__2_2",
+    "kind": "numeric_const",
+    "label": "matStaEqu__2_2",
+    "x": 180,
+    "y": 1560
+   },
+   {
+    "config": {
+     "value": 0.666666666667
+    },
+    "id": "matStaEqu__2_3",
+    "kind": "numeric_const",
+    "label": "matStaEqu__2_3",
+    "x": 360,
+    "y": 1560
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "matStaEqu__3_1",
+    "kind": "numeric_const",
+    "label": "matStaEqu__3_1",
+    "x": 540,
+    "y": 1560
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "matStaEqu__3_2",
+    "kind": "numeric_const",
+    "label": "matStaEqu__3_2",
+    "x": 720,
+    "y": 1560
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "matStaEqu__3_3",
+    "kind": "numeric_const",
+    "label": "matStaEqu__3_3",
+    "x": 900,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "nEquSta_nSta__fold_2",
+    "kind": "add",
+    "label": "nEquSta[nSta] fold 2",
+    "x": 0,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "nEquSta_nSta__fold_3",
+    "kind": "add",
+    "label": "nEquSta[nSta] fold 3",
+    "x": 180,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "nEquSta_nSta__fold_2_2",
+    "kind": "add",
+    "label": "nEquSta[nSta] fold 2",
+    "x": 360,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "nEquSta_nSta__fold_3_2",
+    "kind": "add",
+    "label": "nEquSta[nSta] fold 3",
+    "x": 540,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "nEquSta_nSta__fold_2_3",
+    "kind": "add",
+    "label": "nEquSta[nSta] fold 2",
+    "x": 720,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "nEquSta_nSta__fold_3_3",
+    "kind": "add",
+    "label": "nEquSta[nSta] fold 3",
+    "x": 900,
+    "y": 1680
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "nEquStaInt__1",
+    "kind": "numeric_round",
+    "label": "nEquStaInt__1",
+    "x": 0,
+    "y": 1800
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "nEquStaInt__2",
+    "kind": "numeric_round",
+    "label": "nEquStaInt__2",
+    "x": 180,
+    "y": 1800
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "nEquStaInt__3",
+    "kind": "numeric_round",
+    "label": "nEquStaInt__3",
+    "x": 360,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "nReqAltAva_nSta__fold_2",
+    "kind": "add",
+    "label": "nReqAltAva[nSta] fold 2",
+    "x": 540,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "nReqAltAva_nSta__fold_3",
+    "kind": "add",
+    "label": "nReqAltAva[nSta] fold 3",
+    "x": 720,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "nReqAltAva_nSta__fold_2_2",
+    "kind": "add",
+    "label": "nReqAltAva[nSta] fold 2",
+    "x": 900,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "nReqAltAva_nSta__fold_3_2",
+    "kind": "add",
+    "label": "nReqAltAva[nSta] fold 3",
+    "x": 0,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "nReqAltAva_nSta__fold_2_3",
+    "kind": "add",
+    "label": "nReqAltAva[nSta] fold 2",
+    "x": 180,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "nReqAltAva_nSta__fold_3_3",
+    "kind": "add",
+    "label": "nReqAltAva[nSta] fold 3",
+    "x": 360,
+    "y": 1920
+   }
+  ],
+  "links": [
+   {
+    "source": "booToInt__1_1_true",
+    "source_slot": "out",
+    "target": "booToInt__1_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__1_1_false",
+    "source_slot": "out",
+    "target": "booToInt__1_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__1_2_true",
+    "source_slot": "out",
+    "target": "booToInt__1_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__1_2_false",
+    "source_slot": "out",
+    "target": "booToInt__1_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__1_3_true",
+    "source_slot": "out",
+    "target": "booToInt__1_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__1_3_false",
+    "source_slot": "out",
+    "target": "booToInt__1_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__2_1_true",
+    "source_slot": "out",
+    "target": "booToInt__2_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__2_1_false",
+    "source_slot": "out",
+    "target": "booToInt__2_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__2_2_true",
+    "source_slot": "out",
+    "target": "booToInt__2_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__2_2_false",
+    "source_slot": "out",
+    "target": "booToInt__2_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__2_3_true",
+    "source_slot": "out",
+    "target": "booToInt__2_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__2_3_false",
+    "source_slot": "out",
+    "target": "booToInt__2_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__3_1_true",
+    "source_slot": "out",
+    "target": "booToInt__3_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__3_1_false",
+    "source_slot": "out",
+    "target": "booToInt__3_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__3_2_true",
+    "source_slot": "out",
+    "target": "booToInt__3_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__3_2_false",
+    "source_slot": "out",
+    "target": "booToInt__3_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__3_3_true",
+    "source_slot": "out",
+    "target": "booToInt__3_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__3_3_false",
+    "source_slot": "out",
+    "target": "booToInt__3_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "isNotReqNoAlt__1_1_threshold",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__1_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isNotReqNoAlt__1_2_threshold",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isNotReqNoAlt__1_3_threshold",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__1_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isNotReqNoAlt__2_1_threshold",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__2_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isNotReqNoAlt__2_2_threshold",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isNotReqNoAlt__2_3_threshold",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isNotReqNoAlt__3_1_threshold",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__3_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isNotReqNoAlt__3_2_threshold",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isNotReqNoAlt__3_3_threshold",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__3_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReq__1_1_threshold",
+    "source_slot": "out",
+    "target": "isReq__1_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReq__1_2_threshold",
+    "source_slot": "out",
+    "target": "isReq__1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReq__1_3_threshold",
+    "source_slot": "out",
+    "target": "isReq__1_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReq__2_1_threshold",
+    "source_slot": "out",
+    "target": "isReq__2_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReq__2_2_threshold",
+    "source_slot": "out",
+    "target": "isReq__2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReq__2_3_threshold",
+    "source_slot": "out",
+    "target": "isReq__2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReq__3_1_threshold",
+    "source_slot": "out",
+    "target": "isReq__3_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReq__3_2_threshold",
+    "source_slot": "out",
+    "target": "isReq__3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReq__3_3_threshold",
+    "source_slot": "out",
+    "target": "isReq__3_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqPosAlt__1_1_threshold",
+    "source_slot": "out",
+    "target": "isReqPosAlt__1_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqPosAlt__1_2_threshold",
+    "source_slot": "out",
+    "target": "isReqPosAlt__1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqPosAlt__1_3_threshold",
+    "source_slot": "out",
+    "target": "isReqPosAlt__1_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqPosAlt__2_1_threshold",
+    "source_slot": "out",
+    "target": "isReqPosAlt__2_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqPosAlt__2_2_threshold",
+    "source_slot": "out",
+    "target": "isReqPosAlt__2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqPosAlt__2_3_threshold",
+    "source_slot": "out",
+    "target": "isReqPosAlt__2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqPosAlt__3_1_threshold",
+    "source_slot": "out",
+    "target": "isReqPosAlt__3_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqPosAlt__3_2_threshold",
+    "source_slot": "out",
+    "target": "isReqPosAlt__3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqPosAlt__3_3_threshold",
+    "source_slot": "out",
+    "target": "isReqPosAlt__3_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__1",
+    "source_slot": "out",
+    "target": "isReqAltAva__1_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__1",
+    "source_slot": "out",
+    "target": "isReqAltAva__2_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__1",
+    "source_slot": "out",
+    "target": "isReqAltAva__3_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__1",
+    "source_slot": "out",
+    "target": "isReqAva__1_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__1",
+    "source_slot": "out",
+    "target": "isReqAva__2_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__1",
+    "source_slot": "out",
+    "target": "isReqAva__3_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__2",
+    "source_slot": "out",
+    "target": "isReqAltAva__1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__2",
+    "source_slot": "out",
+    "target": "isReqAltAva__2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__2",
+    "source_slot": "out",
+    "target": "isReqAltAva__3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__2",
+    "source_slot": "out",
+    "target": "isReqAva__1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__2",
+    "source_slot": "out",
+    "target": "isReqAva__2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__2",
+    "source_slot": "out",
+    "target": "isReqAva__3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__3",
+    "source_slot": "out",
+    "target": "isReqAltAva__1_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__3",
+    "source_slot": "out",
+    "target": "isReqAltAva__2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__3",
+    "source_slot": "out",
+    "target": "isReqAltAva__3_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__3",
+    "source_slot": "out",
+    "target": "isReqAva__1_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__3",
+    "source_slot": "out",
+    "target": "isReqAva__2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Ava__3",
+    "source_slot": "out",
+    "target": "isReqAva__3_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "all_nSta__fold_2",
+    "source_slot": "out",
+    "target": "all_nSta__fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "all_nSta__fold_3",
+    "source_slot": "out",
+    "target": "isAva__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "all_nSta__fold_2_2",
+    "source_slot": "out",
+    "target": "all_nSta__fold_3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "all_nSta__fold_3_2",
+    "source_slot": "out",
+    "target": "isAva__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "all_nSta__fold_2_3",
+    "source_slot": "out",
+    "target": "all_nSta__fold_3_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "all_nSta__fold_3_3",
+    "source_slot": "out",
+    "target": "isAva__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__1_1",
+    "source_slot": "out",
+    "target": "nReqAltAva_nSta__fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt__1_2",
+    "source_slot": "out",
+    "target": "nReqAltAva_nSta__fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__1_3",
+    "source_slot": "out",
+    "target": "nReqAltAva_nSta__fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__2_1",
+    "source_slot": "out",
+    "target": "nReqAltAva_nSta__fold_2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt__2_2",
+    "source_slot": "out",
+    "target": "nReqAltAva_nSta__fold_2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__2_3",
+    "source_slot": "out",
+    "target": "nReqAltAva_nSta__fold_3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__3_1",
+    "source_slot": "out",
+    "target": "nReqAltAva_nSta__fold_2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt__3_2",
+    "source_slot": "out",
+    "target": "nReqAltAva_nSta__fold_2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__3_3",
+    "source_slot": "out",
+    "target": "nReqAltAva_nSta__fold_3_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isAva__1",
+    "source_slot": "out",
+    "target": "y1__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "isAva__2",
+    "source_slot": "out",
+    "target": "y1__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "isAva__3",
+    "source_slot": "out",
+    "target": "y1__3",
+    "target_slot": "in"
+   },
+   {
+    "source": "isNotReqNoAlt__1_1",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__1_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "isNotReqNoAlt__1_2",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "isNotReqNoAlt__1_3",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__1_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "isNotReqNoAlt__2_1",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__2_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "isNotReqNoAlt__2_2",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "isNotReqNoAlt__2_3",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "isNotReqNoAlt__3_1",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__3_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "isNotReqNoAlt__3_2",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "isNotReqNoAlt__3_3",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__3_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReq__1_1",
+    "source_slot": "out",
+    "target": "isReqAva__1_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReq__1_2",
+    "source_slot": "out",
+    "target": "isReqAva__1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReq__1_3",
+    "source_slot": "out",
+    "target": "isReqAva__1_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReq__2_1",
+    "source_slot": "out",
+    "target": "isReqAva__2_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReq__2_2",
+    "source_slot": "out",
+    "target": "isReqAva__2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReq__2_3",
+    "source_slot": "out",
+    "target": "isReqAva__2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReq__3_1",
+    "source_slot": "out",
+    "target": "isReqAva__3_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReq__3_2",
+    "source_slot": "out",
+    "target": "isReqAva__3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReq__3_3",
+    "source_slot": "out",
+    "target": "isReqAva__3_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqAltAva__1_1",
+    "source_slot": "out",
+    "target": "booToInt__1_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isReqAltAva__1_2",
+    "source_slot": "out",
+    "target": "booToInt__1_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isReqAltAva__1_3",
+    "source_slot": "out",
+    "target": "booToInt__1_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isReqAltAva__2_1",
+    "source_slot": "out",
+    "target": "booToInt__2_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isReqAltAva__2_2",
+    "source_slot": "out",
+    "target": "booToInt__2_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isReqAltAva__2_3",
+    "source_slot": "out",
+    "target": "booToInt__2_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isReqAltAva__3_1",
+    "source_slot": "out",
+    "target": "booToInt__3_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isReqAltAva__3_2",
+    "source_slot": "out",
+    "target": "booToInt__3_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isReqAltAva__3_3",
+    "source_slot": "out",
+    "target": "booToInt__3_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isReqAltAvaGreReq__1",
+    "source_slot": "out",
+    "target": "isAva__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqAltAvaGreReq__2",
+    "source_slot": "out",
+    "target": "isAva__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqAltAvaGreReq__3",
+    "source_slot": "out",
+    "target": "isAva__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqAva__1_1",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__1_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAva__1_2",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAva__1_3",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__1_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAva__2_1",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__2_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAva__2_2",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAva__2_3",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAva__3_1",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__3_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAva__3_2",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAva__3_3",
+    "source_slot": "out",
+    "target": "isReqAvaOrNotReq__3_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAvaOrNotReq__1_1",
+    "source_slot": "out",
+    "target": "all_nSta__fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqAvaOrNotReq__1_2",
+    "source_slot": "out",
+    "target": "all_nSta__fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAvaOrNotReq__1_3",
+    "source_slot": "out",
+    "target": "all_nSta__fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAvaOrNotReq__2_1",
+    "source_slot": "out",
+    "target": "all_nSta__fold_2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqAvaOrNotReq__2_2",
+    "source_slot": "out",
+    "target": "all_nSta__fold_2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAvaOrNotReq__2_3",
+    "source_slot": "out",
+    "target": "all_nSta__fold_3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAvaOrNotReq__3_1",
+    "source_slot": "out",
+    "target": "all_nSta__fold_2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqAvaOrNotReq__3_2",
+    "source_slot": "out",
+    "target": "all_nSta__fold_2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqAvaOrNotReq__3_3",
+    "source_slot": "out",
+    "target": "all_nSta__fold_3_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "isReqPosAlt__1_1",
+    "source_slot": "out",
+    "target": "isReqAltAva__1_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqPosAlt__1_2",
+    "source_slot": "out",
+    "target": "isReqAltAva__1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqPosAlt__1_3",
+    "source_slot": "out",
+    "target": "isReqAltAva__1_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqPosAlt__2_1",
+    "source_slot": "out",
+    "target": "isReqAltAva__2_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqPosAlt__2_2",
+    "source_slot": "out",
+    "target": "isReqAltAva__2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqPosAlt__2_3",
+    "source_slot": "out",
+    "target": "isReqAltAva__2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqPosAlt__3_1",
+    "source_slot": "out",
+    "target": "isReqAltAva__3_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqPosAlt__3_2",
+    "source_slot": "out",
+    "target": "isReqAltAva__3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "isReqPosAlt__3_3",
+    "source_slot": "out",
+    "target": "isReqAltAva__3_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__1_1",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__1_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__1_1",
+    "source_slot": "out",
+    "target": "isReqPosAlt__1_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__1_1",
+    "source_slot": "out",
+    "target": "isReq__1_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__1_1",
+    "source_slot": "out",
+    "target": "nEquSta_nSta__fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__1_2",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__1_2",
+    "source_slot": "out",
+    "target": "isReqPosAlt__1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__1_2",
+    "source_slot": "out",
+    "target": "isReq__1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__1_2",
+    "source_slot": "out",
+    "target": "nEquSta_nSta__fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "matStaEqu__1_3",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__1_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__1_3",
+    "source_slot": "out",
+    "target": "isReqPosAlt__1_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__1_3",
+    "source_slot": "out",
+    "target": "isReq__1_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__1_3",
+    "source_slot": "out",
+    "target": "nEquSta_nSta__fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "matStaEqu__2_1",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__2_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__2_1",
+    "source_slot": "out",
+    "target": "isReqPosAlt__2_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__2_1",
+    "source_slot": "out",
+    "target": "isReq__2_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__2_1",
+    "source_slot": "out",
+    "target": "nEquSta_nSta__fold_2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__2_2",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__2_2",
+    "source_slot": "out",
+    "target": "isReqPosAlt__2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__2_2",
+    "source_slot": "out",
+    "target": "isReq__2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__2_2",
+    "source_slot": "out",
+    "target": "nEquSta_nSta__fold_2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "matStaEqu__2_3",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__2_3",
+    "source_slot": "out",
+    "target": "isReqPosAlt__2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__2_3",
+    "source_slot": "out",
+    "target": "isReq__2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__2_3",
+    "source_slot": "out",
+    "target": "nEquSta_nSta__fold_3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "matStaEqu__3_1",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__3_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__3_1",
+    "source_slot": "out",
+    "target": "isReqPosAlt__3_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__3_1",
+    "source_slot": "out",
+    "target": "isReq__3_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__3_1",
+    "source_slot": "out",
+    "target": "nEquSta_nSta__fold_2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__3_2",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__3_2",
+    "source_slot": "out",
+    "target": "isReqPosAlt__3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__3_2",
+    "source_slot": "out",
+    "target": "isReq__3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__3_2",
+    "source_slot": "out",
+    "target": "nEquSta_nSta__fold_2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "matStaEqu__3_3",
+    "source_slot": "out",
+    "target": "isNotReqNoAlt__3_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__3_3",
+    "source_slot": "out",
+    "target": "isReqPosAlt__3_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__3_3",
+    "source_slot": "out",
+    "target": "isReq__3_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "matStaEqu__3_3",
+    "source_slot": "out",
+    "target": "nEquSta_nSta__fold_3_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "nEquSta_nSta__fold_2",
+    "source_slot": "out",
+    "target": "nEquSta_nSta__fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "nEquSta_nSta__fold_3",
+    "source_slot": "out",
+    "target": "nEquStaInt__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "nEquSta_nSta__fold_2_2",
+    "source_slot": "out",
+    "target": "nEquSta_nSta__fold_3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "nEquSta_nSta__fold_3_2",
+    "source_slot": "out",
+    "target": "nEquStaInt__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "nEquSta_nSta__fold_2_3",
+    "source_slot": "out",
+    "target": "nEquSta_nSta__fold_3_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "nEquSta_nSta__fold_3_3",
+    "source_slot": "out",
+    "target": "nEquStaInt__3",
+    "target_slot": "in"
+   },
+   {
+    "source": "nEquStaInt__1",
+    "source_slot": "out",
+    "target": "isReqAltAvaGreReq__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "nEquStaInt__2",
+    "source_slot": "out",
+    "target": "isReqAltAvaGreReq__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "nEquStaInt__3",
+    "source_slot": "out",
+    "target": "isReqAltAvaGreReq__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "nReqAltAva_nSta__fold_2",
+    "source_slot": "out",
+    "target": "nReqAltAva_nSta__fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "nReqAltAva_nSta__fold_3",
+    "source_slot": "out",
+    "target": "isReqAltAvaGreReq__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "nReqAltAva_nSta__fold_2_2",
+    "source_slot": "out",
+    "target": "nReqAltAva_nSta__fold_3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "nReqAltAva_nSta__fold_3_2",
+    "source_slot": "out",
+    "target": "isReqAltAvaGreReq__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "nReqAltAva_nSta__fold_2_3",
+    "source_slot": "out",
+    "target": "nReqAltAva_nSta__fold_3_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "nReqAltAva_nSta__fold_3_3",
+    "source_slot": "out",
+    "target": "isReqAltAvaGreReq__3",
+    "target_slot": "a"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "all_nSta__fold_2": "all__1__fold_2",
+    "all_nSta__fold_2_2": "all__2__fold_2",
+    "all_nSta__fold_2_3": "all__3__fold_2",
+    "all_nSta__fold_3": "all__1__fold_3",
+    "all_nSta__fold_3_2": "all__2__fold_3",
+    "all_nSta__fold_3_3": "all__3__fold_3",
+    "booToInt__1_1": "booToInt__1_1",
+    "booToInt__1_1_false": "booToInt__1_1",
+    "booToInt__1_1_true": "booToInt__1_1",
+    "booToInt__1_2": "booToInt__1_2",
+    "booToInt__1_2_false": "booToInt__1_2",
+    "booToInt__1_2_true": "booToInt__1_2",
+    "booToInt__1_3": "booToInt__1_3",
+    "booToInt__1_3_false": "booToInt__1_3",
+    "booToInt__1_3_true": "booToInt__1_3",
+    "booToInt__2_1": "booToInt__2_1",
+    "booToInt__2_1_false": "booToInt__2_1",
+    "booToInt__2_1_true": "booToInt__2_1",
+    "booToInt__2_2": "booToInt__2_2",
+    "booToInt__2_2_false": "booToInt__2_2",
+    "booToInt__2_2_true": "booToInt__2_2",
+    "booToInt__2_3": "booToInt__2_3",
+    "booToInt__2_3_false": "booToInt__2_3",
+    "booToInt__2_3_true": "booToInt__2_3",
+    "booToInt__3_1": "booToInt__3_1",
+    "booToInt__3_1_false": "booToInt__3_1",
+    "booToInt__3_1_true": "booToInt__3_1",
+    "booToInt__3_2": "booToInt__3_2",
+    "booToInt__3_2_false": "booToInt__3_2",
+    "booToInt__3_2_true": "booToInt__3_2",
+    "booToInt__3_3": "booToInt__3_3",
+    "booToInt__3_3_false": "booToInt__3_3",
+    "booToInt__3_3_true": "booToInt__3_3",
+    "isAva__1": "isAva__1",
+    "isAva__2": "isAva__2",
+    "isAva__3": "isAva__3",
+    "isNotReqNoAlt__1_1": "isNotReqNoAlt__1_1",
+    "isNotReqNoAlt__1_1_threshold": "isNotReqNoAlt__1_1",
+    "isNotReqNoAlt__1_2": "isNotReqNoAlt__1_2",
+    "isNotReqNoAlt__1_2_threshold": "isNotReqNoAlt__1_2",
+    "isNotReqNoAlt__1_3": "isNotReqNoAlt__1_3",
+    "isNotReqNoAlt__1_3_threshold": "isNotReqNoAlt__1_3",
+    "isNotReqNoAlt__2_1": "isNotReqNoAlt__2_1",
+    "isNotReqNoAlt__2_1_threshold": "isNotReqNoAlt__2_1",
+    "isNotReqNoAlt__2_2": "isNotReqNoAlt__2_2",
+    "isNotReqNoAlt__2_2_threshold": "isNotReqNoAlt__2_2",
+    "isNotReqNoAlt__2_3": "isNotReqNoAlt__2_3",
+    "isNotReqNoAlt__2_3_threshold": "isNotReqNoAlt__2_3",
+    "isNotReqNoAlt__3_1": "isNotReqNoAlt__3_1",
+    "isNotReqNoAlt__3_1_threshold": "isNotReqNoAlt__3_1",
+    "isNotReqNoAlt__3_2": "isNotReqNoAlt__3_2",
+    "isNotReqNoAlt__3_2_threshold": "isNotReqNoAlt__3_2",
+    "isNotReqNoAlt__3_3": "isNotReqNoAlt__3_3",
+    "isNotReqNoAlt__3_3_threshold": "isNotReqNoAlt__3_3",
+    "isReqAltAvaGreReq__1": "isReqAltAvaGreReq__1",
+    "isReqAltAvaGreReq__2": "isReqAltAvaGreReq__2",
+    "isReqAltAvaGreReq__3": "isReqAltAvaGreReq__3",
+    "isReqAltAva__1_1": "isReqAltAva__1_1",
+    "isReqAltAva__1_2": "isReqAltAva__1_2",
+    "isReqAltAva__1_3": "isReqAltAva__1_3",
+    "isReqAltAva__2_1": "isReqAltAva__2_1",
+    "isReqAltAva__2_2": "isReqAltAva__2_2",
+    "isReqAltAva__2_3": "isReqAltAva__2_3",
+    "isReqAltAva__3_1": "isReqAltAva__3_1",
+    "isReqAltAva__3_2": "isReqAltAva__3_2",
+    "isReqAltAva__3_3": "isReqAltAva__3_3",
+    "isReqAvaOrNotReq__1_1": "isReqAvaOrNotReq__1_1",
+    "isReqAvaOrNotReq__1_2": "isReqAvaOrNotReq__1_2",
+    "isReqAvaOrNotReq__1_3": "isReqAvaOrNotReq__1_3",
+    "isReqAvaOrNotReq__2_1": "isReqAvaOrNotReq__2_1",
+    "isReqAvaOrNotReq__2_2": "isReqAvaOrNotReq__2_2",
+    "isReqAvaOrNotReq__2_3": "isReqAvaOrNotReq__2_3",
+    "isReqAvaOrNotReq__3_1": "isReqAvaOrNotReq__3_1",
+    "isReqAvaOrNotReq__3_2": "isReqAvaOrNotReq__3_2",
+    "isReqAvaOrNotReq__3_3": "isReqAvaOrNotReq__3_3",
+    "isReqAva__1_1": "isReqAva__1_1",
+    "isReqAva__1_2": "isReqAva__1_2",
+    "isReqAva__1_3": "isReqAva__1_3",
+    "isReqAva__2_1": "isReqAva__2_1",
+    "isReqAva__2_2": "isReqAva__2_2",
+    "isReqAva__2_3": "isReqAva__2_3",
+    "isReqAva__3_1": "isReqAva__3_1",
+    "isReqAva__3_2": "isReqAva__3_2",
+    "isReqAva__3_3": "isReqAva__3_3",
+    "isReqPosAlt__1_1": "isReqPosAlt__1_1",
+    "isReqPosAlt__1_1_threshold": "isReqPosAlt__1_1",
+    "isReqPosAlt__1_2": "isReqPosAlt__1_2",
+    "isReqPosAlt__1_2_threshold": "isReqPosAlt__1_2",
+    "isReqPosAlt__1_3": "isReqPosAlt__1_3",
+    "isReqPosAlt__1_3_threshold": "isReqPosAlt__1_3",
+    "isReqPosAlt__2_1": "isReqPosAlt__2_1",
+    "isReqPosAlt__2_1_threshold": "isReqPosAlt__2_1",
+    "isReqPosAlt__2_2": "isReqPosAlt__2_2",
+    "isReqPosAlt__2_2_threshold": "isReqPosAlt__2_2",
+    "isReqPosAlt__2_3": "isReqPosAlt__2_3",
+    "isReqPosAlt__2_3_threshold": "isReqPosAlt__2_3",
+    "isReqPosAlt__3_1": "isReqPosAlt__3_1",
+    "isReqPosAlt__3_1_threshold": "isReqPosAlt__3_1",
+    "isReqPosAlt__3_2": "isReqPosAlt__3_2",
+    "isReqPosAlt__3_2_threshold": "isReqPosAlt__3_2",
+    "isReqPosAlt__3_3": "isReqPosAlt__3_3",
+    "isReqPosAlt__3_3_threshold": "isReqPosAlt__3_3",
+    "isReq__1_1": "isReq__1_1",
+    "isReq__1_1_threshold": "isReq__1_1",
+    "isReq__1_2": "isReq__1_2",
+    "isReq__1_2_threshold": "isReq__1_2",
+    "isReq__1_3": "isReq__1_3",
+    "isReq__1_3_threshold": "isReq__1_3",
+    "isReq__2_1": "isReq__2_1",
+    "isReq__2_1_threshold": "isReq__2_1",
+    "isReq__2_2": "isReq__2_2",
+    "isReq__2_2_threshold": "isReq__2_2",
+    "isReq__2_3": "isReq__2_3",
+    "isReq__2_3_threshold": "isReq__2_3",
+    "isReq__3_1": "isReq__3_1",
+    "isReq__3_1_threshold": "isReq__3_1",
+    "isReq__3_2": "isReq__3_2",
+    "isReq__3_2_threshold": "isReq__3_2",
+    "isReq__3_3": "isReq__3_3",
+    "isReq__3_3_threshold": "isReq__3_3",
+    "matStaEqu__1_1": "matStaEqu__1_1",
+    "matStaEqu__1_2": "matStaEqu__1_2",
+    "matStaEqu__1_3": "matStaEqu__1_3",
+    "matStaEqu__2_1": "matStaEqu__2_1",
+    "matStaEqu__2_2": "matStaEqu__2_2",
+    "matStaEqu__2_3": "matStaEqu__2_3",
+    "matStaEqu__3_1": "matStaEqu__3_1",
+    "matStaEqu__3_2": "matStaEqu__3_2",
+    "matStaEqu__3_3": "matStaEqu__3_3",
+    "nEquStaInt__1": "nEquStaInt__1",
+    "nEquStaInt__2": "nEquStaInt__2",
+    "nEquStaInt__3": "nEquStaInt__3",
+    "nEquSta_nSta__fold_2": "nEquSta__1__fold_2",
+    "nEquSta_nSta__fold_2_2": "nEquSta__2__fold_2",
+    "nEquSta_nSta__fold_2_3": "nEquSta__3__fold_2",
+    "nEquSta_nSta__fold_3": "nEquSta__1__fold_3",
+    "nEquSta_nSta__fold_3_2": "nEquSta__2__fold_3",
+    "nEquSta_nSta__fold_3_3": "nEquSta__3__fold_3",
+    "nReqAltAva_nSta__fold_2": "nReqAltAva__1__fold_2",
+    "nReqAltAva_nSta__fold_2_2": "nReqAltAva__2__fold_2",
+    "nReqAltAva_nSta__fold_2_3": "nReqAltAva__3__fold_2",
+    "nReqAltAva_nSta__fold_3": "nReqAltAva__1__fold_3",
+    "nReqAltAva_nSta__fold_3_2": "nReqAltAva__2__fold_3",
+    "nReqAltAva_nSta__fold_3_3": "nReqAltAva__3__fold_3"
+   },
+   "coverage": {
+    "boundary_inputs": 3,
+    "boundary_outputs": 3,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger": 9,
+     "Buildings.Controls.OBC.CDL.Conversions.RealToInteger": 3,
+     "Buildings.Controls.OBC.CDL.Integers.Add": 6,
+     "Buildings.Controls.OBC.CDL.Integers.GreaterEqual": 3,
+     "Buildings.Controls.OBC.CDL.Logical.And": 27,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 9,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 6,
+     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 18,
+     "Buildings.Controls.OBC.CDL.Reals.LessThreshold": 9,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 9
+    },
+    "component_count": 99,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Conversions.RealToInteger"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability",
+    "root_label": "StageAvailability",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "86eeb73d4dd14f6d1441b3a4320539a576849b6f2e4ebaae87f0527c198d1344",
+    "supported_class_count": 99,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "86eeb73d4dd14f6d1441b3a4320539a576849b6f2e4ebaae87f0527c198d1344"
+  },
+  "name": "StageAvailability"
+ }
+}

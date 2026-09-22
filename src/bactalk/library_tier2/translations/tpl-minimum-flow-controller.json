@@ -1,0 +1,814 @@
+{
+ "configuration_id": "tpl-minimum-flow-controller",
+ "controller_id": "MinimumFlow.Controller",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller",
+  "inputs": [
+   {
+    "description": "Primary volume flow rate",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.VPri_flow",
+    "label": "VPri_flow",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Equipment enable command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.u1Equ__1",
+    "label": "u1Equ__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Equipment enable command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.u1Equ__2",
+    "label": "u1Equ__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Primary pump status",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.u1PumPri_actual__1",
+    "label": "u1PumPri_actual__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Primary pump status",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.u1PumPri_actual__2",
+    "label": "u1PumPri_actual__2",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Primary flow setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.VPriSet_flow",
+    "label": "VPriSet_flow",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Valve command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.y",
+    "label": "y",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 1
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "Ti": 120.0,
+  "V_flow_min": [
+   0.01,
+   0.03
+  ],
+  "V_flow_nominal": [
+   0.02,
+   0.05
+  ],
+  "have_valInlIso": false,
+  "have_valOutIso": false,
+  "nEna": 2,
+  "nEqu": 2
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VPri_flow",
+   "name": "VPri_flow",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.VPri_flow",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Equ__1",
+   "name": "u1Equ__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.u1Equ__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Equ__2",
+   "name": "u1Equ__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.u1Equ__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1PumPri_actual__1",
+   "name": "u1PumPri_actual__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.u1PumPri_actual__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1PumPri_actual__2",
+   "name": "u1PumPri_actual__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.u1PumPri_actual__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VPriSet_flow",
+   "name": "VPriSet_flow",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.VPriSet_flow",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "y",
+   "name": "y",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Controller.y",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "MinimumFlow/Controller.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "ecf34b36f456f57fef3cff8b2ad75229f7d046cb6ed6c45009a89fcc67d110f7",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "ad18e5ba3ea34c4b6e4c8934d29acf5d53ea17ed4c754848a3de2a2053e17139",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Equ__1",
+    "kind": "boolean_input",
+    "label": "u1Equ__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Equ__2",
+    "kind": "boolean_input",
+    "label": "u1Equ__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1PumPri_actual__1",
+    "kind": "boolean_input",
+    "label": "u1PumPri_actual__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1PumPri_actual__2",
+    "kind": "boolean_input",
+    "label": "u1PumPri_actual__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "VPri_flow",
+    "kind": "numeric_input",
+    "label": "VPri_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "VPriSet_flow",
+    "kind": "numeric_output",
+    "label": "VPriSet_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y",
+    "kind": "numeric_output",
+    "label": "y",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "any_fold_2",
+    "kind": "or",
+    "label": "any fold 2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "any_fold_3",
+    "kind": "or",
+    "label": "any fold 3",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "anyPumPri_fold_2",
+    "kind": "or",
+    "label": "anyPumPri fold 2",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 1.0,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 1.0,
+     "reverse_acting": true,
+     "td": 0.1,
+     "ti": 120.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.0,
+     "y_reset": 1.0,
+     "yd_start": 0.0
+    },
+    "id": "conPID",
+    "kind": "pid_with_reset",
+    "label": "conPID",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "swiInp",
+    "kind": "numeric_switch",
+    "label": "swiInp",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "swiOut",
+    "kind": "numeric_switch",
+    "label": "swiOut",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "valDis",
+    "kind": "numeric_const",
+    "label": "valDis",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "ph",
+    "kind": "boolean_const",
+    "label": "ph",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "ph_2",
+    "kind": "boolean_const",
+    "label": "ph",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea__1_true",
+    "kind": "numeric_const",
+    "label": "booToRea__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea__1_false",
+    "kind": "numeric_const",
+    "label": "booToRea__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea__1",
+    "kind": "numeric_switch",
+    "label": "booToRea__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea__2_true",
+    "kind": "numeric_const",
+    "label": "booToRea__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea__2_false",
+    "kind": "numeric_const",
+    "label": "booToRea__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea__2",
+    "kind": "numeric_switch",
+    "label": "booToRea__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.02
+    },
+    "id": "floDes__1",
+    "kind": "numeric_const",
+    "label": "floDes__1",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.05
+    },
+    "id": "floDes__2",
+    "kind": "numeric_const",
+    "label": "floDes__2",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "floDesEqu__1",
+    "kind": "multiply",
+    "label": "floDesEqu__1",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "floDesEqu__2",
+    "kind": "multiply",
+    "label": "floDesEqu__2",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.01
+    },
+    "id": "floMin__1",
+    "kind": "numeric_const",
+    "label": "floMin__1",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.03
+    },
+    "id": "floMin__2",
+    "kind": "numeric_const",
+    "label": "floMin__2",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "floMinEna__1",
+    "kind": "multiply",
+    "label": "floMinEna__1",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "floMinEna__2",
+    "kind": "multiply",
+    "label": "floMinEna__2",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "floMinSet",
+    "kind": "multiply",
+    "label": "floMinSet",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "maxRatFloMinEna_fold_2",
+    "kind": "maximum",
+    "label": "maxRatFloMinEna fold 2",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "ratFloMinEna__1",
+    "kind": "divide",
+    "label": "ratFloMinEna__1",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "ratFloMinEna__2",
+    "kind": "divide",
+    "label": "ratFloMinEna__2",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "sumFloDesEna_fold_2",
+    "kind": "add",
+    "label": "sumFloDesEna fold 2",
+    "x": 900,
+    "y": 360
+   }
+  ],
+  "links": [
+   {
+    "source": "booToRea__1_true",
+    "source_slot": "out",
+    "target": "booToRea__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea__1_false",
+    "source_slot": "out",
+    "target": "booToRea__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea__2_true",
+    "source_slot": "out",
+    "target": "booToRea__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea__2_false",
+    "source_slot": "out",
+    "target": "booToRea__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "u1Equ__1",
+    "source_slot": "out",
+    "target": "booToRea__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1Equ__2",
+    "source_slot": "out",
+    "target": "booToRea__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1PumPri_actual__1",
+    "source_slot": "out",
+    "target": "anyPumPri_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1PumPri_actual__2",
+    "source_slot": "out",
+    "target": "anyPumPri_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "VPri_flow",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "VPri_flow",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "any_fold_2",
+    "source_slot": "out",
+    "target": "any_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "any_fold_3",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "any_fold_3",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "selector"
+   },
+   {
+    "source": "any_fold_3",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "selector"
+   },
+   {
+    "source": "anyPumPri_fold_2",
+    "source_slot": "out",
+    "target": "any_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "conPID",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swiInp",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "swiOut",
+    "source_slot": "out",
+    "target": "y",
+    "target_slot": "in"
+   },
+   {
+    "source": "valDis",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "ph",
+    "source_slot": "out",
+    "target": "any_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "ph_2",
+    "source_slot": "out",
+    "target": "any_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea__1",
+    "source_slot": "out",
+    "target": "floDesEqu__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToRea__1",
+    "source_slot": "out",
+    "target": "floMinEna__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea__2",
+    "source_slot": "out",
+    "target": "floDesEqu__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToRea__2",
+    "source_slot": "out",
+    "target": "floMinEna__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "floDes__1",
+    "source_slot": "out",
+    "target": "floDesEqu__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "floDes__1",
+    "source_slot": "out",
+    "target": "ratFloMinEna__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "floDes__2",
+    "source_slot": "out",
+    "target": "floDesEqu__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "floDes__2",
+    "source_slot": "out",
+    "target": "ratFloMinEna__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "floDesEqu__1",
+    "source_slot": "out",
+    "target": "sumFloDesEna_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "floDesEqu__2",
+    "source_slot": "out",
+    "target": "sumFloDesEna_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "floMin__1",
+    "source_slot": "out",
+    "target": "floMinEna__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "floMin__2",
+    "source_slot": "out",
+    "target": "floMinEna__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "floMinEna__1",
+    "source_slot": "out",
+    "target": "ratFloMinEna__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "floMinEna__2",
+    "source_slot": "out",
+    "target": "ratFloMinEna__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "floMinSet",
+    "source_slot": "out",
+    "target": "VPriSet_flow",
+    "target_slot": "in"
+   },
+   {
+    "source": "floMinSet",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "maxRatFloMinEna_fold_2",
+    "source_slot": "out",
+    "target": "floMinSet",
+    "target_slot": "a"
+   },
+   {
+    "source": "ratFloMinEna__1",
+    "source_slot": "out",
+    "target": "maxRatFloMinEna_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "ratFloMinEna__2",
+    "source_slot": "out",
+    "target": "maxRatFloMinEna_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "sumFloDesEna_fold_2",
+    "source_slot": "out",
+    "target": "floMinSet",
+    "target_slot": "b"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "anyPumPri_fold_2": "anyPumPri__fold_2",
+    "any_fold_2": "any__fold_2",
+    "any_fold_3": "any__fold_3",
+    "booToRea__1": "setFloMin.booToRea__1",
+    "booToRea__1_false": "setFloMin.booToRea__1",
+    "booToRea__1_true": "setFloMin.booToRea__1",
+    "booToRea__2": "setFloMin.booToRea__2",
+    "booToRea__2_false": "setFloMin.booToRea__2",
+    "booToRea__2_true": "setFloMin.booToRea__2",
+    "conPID": "ctl.conPID",
+    "floDesEqu__1": "setFloMin.floDesEqu__1",
+    "floDesEqu__2": "setFloMin.floDesEqu__2",
+    "floDes__1": "setFloMin.floDes__1",
+    "floDes__2": "setFloMin.floDes__2",
+    "floMinEna__1": "setFloMin.floMinEna__1",
+    "floMinEna__2": "setFloMin.floMinEna__2",
+    "floMinSet": "setFloMin.floMinSet",
+    "floMin__1": "setFloMin.floMin__1",
+    "floMin__2": "setFloMin.floMin__2",
+    "maxRatFloMinEna_fold_2": "setFloMin.maxRatFloMinEna__fold_2",
+    "ph": "phValInlIso.ph",
+    "ph_2": "phValOutIso.ph",
+    "ratFloMinEna__1": "setFloMin.ratFloMinEna__1",
+    "ratFloMinEna__2": "setFloMin.ratFloMinEna__2",
+    "sumFloDesEna_fold_2": "setFloMin.sumFloDesEna__fold_2",
+    "swiInp": "ctl.swiInp",
+    "swiOut": "ctl.swiOut",
+    "valDis": "ctl.valDis"
+   },
+   "coverage": {
+    "boundary_inputs": 5,
+    "boundary_outputs": 2,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Divide": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Max": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Multiply": 5,
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 5,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 2
+    },
+    "component_count": 24,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.MinimumFlow.Controller",
+    "root_label": "Controller",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "ad18e5ba3ea34c4b6e4c8934d29acf5d53ea17ed4c754848a3de2a2053e17139",
+    "supported_class_count": 24,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "ad18e5ba3ea34c4b6e4c8934d29acf5d53ea17ed4c754848a3de2a2053e17139"
+  },
+  "name": "Controller"
+ }
+}

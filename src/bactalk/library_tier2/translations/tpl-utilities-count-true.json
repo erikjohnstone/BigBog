@@ -1,0 +1,665 @@
+{
+ "configuration_id": "tpl-utilities-count-true",
+ "controller_id": "Utilities.CountTrue",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue",
+  "inputs": [
+   {
+    "description": "Array of Boolean signals",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.u1__1",
+    "label": "u1__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Array of Boolean signals",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.u1__2",
+    "label": "u1__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Array of Boolean signals",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.u1__3",
+    "label": "u1__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Array of Boolean signals",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.u1__4",
+    "label": "u1__4",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Array of Boolean signals",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.u1__5",
+    "label": "u1__5",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Array of Boolean signals",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.u1__6",
+    "label": "u1__6",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Index of first element being true",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.y",
+    "label": "y",
+    "type": "S231:IntegerOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 0
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "nin": 6
+ },
+ "points": [
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1__1",
+   "name": "u1__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.u1__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1__2",
+   "name": "u1__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.u1__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1__3",
+   "name": "u1__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.u1__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1__4",
+   "name": "u1__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.u1__4",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1__5",
+   "name": "u1__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.u1__5",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1__6",
+   "name": "u1__6",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.u1__6",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "y",
+   "name": "y",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.CountTrue.y",
+   "source_interface_type": "S231:IntegerOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Utilities/CountTrue.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "df76212aae619e3d25e696a6b3059451fa3d7f78d6af7ac15546056bacfa61d5",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "49586bc95ac41ff61836a306af8c3ee2d7bf1adaa0fd63794dd12fca624882b0",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1__1",
+    "kind": "boolean_input",
+    "label": "u1__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1__2",
+    "kind": "boolean_input",
+    "label": "u1__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1__3",
+    "kind": "boolean_input",
+    "label": "u1__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1__4",
+    "kind": "boolean_input",
+    "label": "u1__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1__5",
+    "kind": "boolean_input",
+    "label": "u1__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1__6",
+    "kind": "boolean_input",
+    "label": "u1__6",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y",
+    "kind": "numeric_output",
+    "label": "y",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__1_true",
+    "kind": "numeric_const",
+    "label": "booToInt__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__1_false",
+    "kind": "numeric_const",
+    "label": "booToInt__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__1",
+    "kind": "numeric_switch",
+    "label": "booToInt__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__2_true",
+    "kind": "numeric_const",
+    "label": "booToInt__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__2_false",
+    "kind": "numeric_const",
+    "label": "booToInt__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__2",
+    "kind": "numeric_switch",
+    "label": "booToInt__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__3_true",
+    "kind": "numeric_const",
+    "label": "booToInt__3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__3_false",
+    "kind": "numeric_const",
+    "label": "booToInt__3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__3",
+    "kind": "numeric_switch",
+    "label": "booToInt__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__4_true",
+    "kind": "numeric_const",
+    "label": "booToInt__4 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__4_false",
+    "kind": "numeric_const",
+    "label": "booToInt__4 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__4",
+    "kind": "numeric_switch",
+    "label": "booToInt__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__5_true",
+    "kind": "numeric_const",
+    "label": "booToInt__5 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__5_false",
+    "kind": "numeric_const",
+    "label": "booToInt__5 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__5",
+    "kind": "numeric_switch",
+    "label": "booToInt__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__6_true",
+    "kind": "numeric_const",
+    "label": "booToInt__6 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__6_false",
+    "kind": "numeric_const",
+    "label": "booToInt__6 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__6",
+    "kind": "numeric_switch",
+    "label": "booToInt__6",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "sumMul_fold_2",
+    "kind": "add",
+    "label": "sumMul fold 2",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "sumMul_fold_3",
+    "kind": "add",
+    "label": "sumMul fold 3",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "sumMul_fold_4",
+    "kind": "add",
+    "label": "sumMul fold 4",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "sumMul_fold_5",
+    "kind": "add",
+    "label": "sumMul fold 5",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "sumMul_fold_6",
+    "kind": "add",
+    "label": "sumMul fold 6",
+    "x": 720,
+    "y": 120
+   }
+  ],
+  "links": [
+   {
+    "source": "booToInt__1_true",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__1_false",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__2_true",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__2_false",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__3_true",
+    "source_slot": "out",
+    "target": "booToInt__3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__3_false",
+    "source_slot": "out",
+    "target": "booToInt__3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__4_true",
+    "source_slot": "out",
+    "target": "booToInt__4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__4_false",
+    "source_slot": "out",
+    "target": "booToInt__4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__5_true",
+    "source_slot": "out",
+    "target": "booToInt__5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__5_false",
+    "source_slot": "out",
+    "target": "booToInt__5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__6_true",
+    "source_slot": "out",
+    "target": "booToInt__6",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__6_false",
+    "source_slot": "out",
+    "target": "booToInt__6",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "u1__1",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1__2",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1__3",
+    "source_slot": "out",
+    "target": "booToInt__3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1__4",
+    "source_slot": "out",
+    "target": "booToInt__4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1__5",
+    "source_slot": "out",
+    "target": "booToInt__5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1__6",
+    "source_slot": "out",
+    "target": "booToInt__6",
+    "target_slot": "selector"
+   },
+   {
+    "source": "booToInt__1",
+    "source_slot": "out",
+    "target": "sumMul_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt__2",
+    "source_slot": "out",
+    "target": "sumMul_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__3",
+    "source_slot": "out",
+    "target": "sumMul_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__4",
+    "source_slot": "out",
+    "target": "sumMul_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__5",
+    "source_slot": "out",
+    "target": "sumMul_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__6",
+    "source_slot": "out",
+    "target": "sumMul_fold_6",
+    "target_slot": "b"
+   },
+   {
+    "source": "sumMul_fold_2",
+    "source_slot": "out",
+    "target": "sumMul_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumMul_fold_3",
+    "source_slot": "out",
+    "target": "sumMul_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumMul_fold_4",
+    "source_slot": "out",
+    "target": "sumMul_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumMul_fold_5",
+    "source_slot": "out",
+    "target": "sumMul_fold_6",
+    "target_slot": "a"
+   },
+   {
+    "source": "sumMul_fold_6",
+    "source_slot": "out",
+    "target": "y",
+    "target_slot": "in"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "booToInt__1": "booToInt__1",
+    "booToInt__1_false": "booToInt__1",
+    "booToInt__1_true": "booToInt__1",
+    "booToInt__2": "booToInt__2",
+    "booToInt__2_false": "booToInt__2",
+    "booToInt__2_true": "booToInt__2",
+    "booToInt__3": "booToInt__3",
+    "booToInt__3_false": "booToInt__3",
+    "booToInt__3_true": "booToInt__3",
+    "booToInt__4": "booToInt__4",
+    "booToInt__4_false": "booToInt__4",
+    "booToInt__4_true": "booToInt__4",
+    "booToInt__5": "booToInt__5",
+    "booToInt__5_false": "booToInt__5",
+    "booToInt__5_true": "booToInt__5",
+    "booToInt__6": "booToInt__6",
+    "booToInt__6_false": "booToInt__6",
+    "booToInt__6_true": "booToInt__6",
+    "sumMul_fold_2": "sumMul__fold_2",
+    "sumMul_fold_3": "sumMul__fold_3",
+    "sumMul_fold_4": "sumMul__fold_4",
+    "sumMul_fold_5": "sumMul__fold_5",
+    "sumMul_fold_6": "sumMul__fold_6"
+   },
+   "coverage": {
+    "boundary_inputs": 6,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger": 6,
+     "Buildings.Controls.OBC.CDL.Integers.Add": 5
+    },
+    "component_count": 11,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": true,
+    "niagara_unsupported_classes": [],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Utilities.CountTrue",
+    "root_label": "CountTrue",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "49586bc95ac41ff61836a306af8c3ee2d7bf1adaa0fd63794dd12fca624882b0",
+    "supported_class_count": 11,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "49586bc95ac41ff61836a306af8c3ee2d7bf1adaa0fd63794dd12fca624882b0"
+  },
+  "name": "CountTrue"
+ }
+}

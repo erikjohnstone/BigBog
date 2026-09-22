@@ -2134,3 +2134,128 @@ def test_g36_api_packages_complete_time_suppression_temporal_stack(
     assert wiring["component_count"] == len(graph["blocks"]) == 35
     assert wiring["link_count"] == len(graph["links"]) == 47
     assert wiring["generated_program_count"] == len(manifest["programs"]) == 9
+
+
+_KERNEL_PROGRAM_CASES = (
+    (
+        BlockKind.NUMERIC_LIMIT_SLEW_RATE,
+        {
+            "raising_slew_rate": 0.5,
+            "falling_slew_rate": -0.25,
+            "td_seconds": 2.0,
+            "enable": True,
+            "semantic_contract": "CDL.Reals.LimitSlewRate",
+        },
+        ("in",),
+        ("n",),
+        "LimitSlewRate",
+        {"raisingSlewRate": 0.5, "fallingSlewRate": -0.25, "tdSeconds": 2.0},
+    ),
+    (BlockKind.NUMERIC_ROUND, {}, ("in",), ("n",), "Round", {}),
+    (
+        BlockKind.NUMERIC_INTEGRATOR_WITH_RESET,
+        {"gain": 0.8, "initial": 0.25, "semantic_contract": "CDL.Reals.IntegratorWithReset"},
+        ("in", "reset_value", "trigger"),
+        ("n", "n", "b"),
+        "IntegratorWithReset",
+        {"gain": 0.8, "initial": 0.25},
+    ),
+    (
+        BlockKind.NUMERIC_ON_COUNTER,
+        {"initial": 2, "semantic_contract": "CDL.Integers.OnCounter"},
+        ("trigger", "reset"),
+        ("b", "b"),
+        "OnCounter",
+        {"initial": 2.0},
+    ),
+    (
+        BlockKind.WET_BULB_TEMPERATURE,
+        {"semantic_contract": "CDL.Psychrometrics.WetBulb_TDryBulPhi"},
+        ("dry_bulb", "relative_humidity"),
+        ("n", "n"),
+        "WetBulb",
+        {},
+    ),
+)
+
+
+@pytest.mark.skipif(shutil.which("javac") is None, reason="javac is not installed")
+@pytest.mark.parametrize(
+    ("kind", "config", "slots", "kinds", "kernel", "params"),
+    _KERNEL_PROGRAM_CASES,
+    ids=[case[4] for case in _KERNEL_PROGRAM_CASES],
+)
+def test_module_kernel_programs_match_the_shadow_kernels(
+    tmp_path: Path,
+    kind: BlockKind,
+    config: dict[str, object],
+    slots: tuple[str, ...],
+    kinds: tuple[str, ...],
+    kernel: str,
+    params: dict[str, object],
+) -> None:
+    """The source-package lane's ProgramObject kernels for the bactalkG36 module kinds
+    reproduce the Shadow Runtime kernels (themselves checked equal to the module's Java)
+    value for value, so neither lane claims a stock block for them."""
+
+    import random
+
+    from bactalk.niagara.shadow.kernels import build_kernel
+
+    blocks = [
+        Block(
+            id=f"In{index}",
+            kind=BlockKind.NUMERIC_INPUT if item == "n" else BlockKind.BOOLEAN_INPUT,
+            label=f"In{index}",
+        )
+        for index, item in enumerate(kinds)
+    ]
+    blocks += [
+        Block(id="Kernel", kind=kind, label="Kernel", config=config),
+        Block(id="Output", kind=BlockKind.NUMERIC_OUTPUT, label="Output"),
+    ]
+    links = [
+        Link(source=f"In{index}", target="Kernel", target_slot=slot)
+        for index, slot in enumerate(slots)
+    ] + [Link(source="Kernel", target="Output", target_slot="in")]
+    content = NiagaraProgramPackageBuilder().build(
+        ControlGraph(name="Kernel_Program", blocks=blocks, links=links)
+    )
+    with zipfile.ZipFile(BytesIO(content)) as archive:
+        manifest = json.loads(archive.read("manifest.json"))
+        (program,) = manifest["programs"]
+        class_name = program["class_name"]
+        source = archive.read(program["paths"]["standalone_kernel"])
+    (tmp_path / f"{class_name}.java").write_bytes(source)
+    subprocess.run(["javac", f"{class_name}.java"], cwd=tmp_path, check=True)
+
+    rng = random.Random(7)
+    rows: list[tuple[float, list[float | bool]]] = []
+    values: list[float | bool] = [
+        rng.uniform(-5.0, 5.0) if item == "n" else rng.random() < 0.5 for item in kinds
+    ]
+    if kind == BlockKind.WET_BULB_TEMPERATURE:
+        values = [300.0, 0.5]
+    for step in range(60):
+        for index, item in enumerate(kinds):
+            if item == "b" and rng.random() < 0.3:
+                values[index] = not values[index]
+            elif item == "n":
+                spread = 0.1 if kind == BlockKind.WET_BULB_TEMPERATURE else 1.0
+                values[index] = round(float(values[index]) + rng.uniform(-spread, spread), 3)
+        rows.append((step * 30.0, list(values)))
+    arguments = [
+        str(float(value)) if not isinstance(value, bool) else ("1" if value else "0")
+        for time_seconds, inputs in rows
+        for value in (time_seconds, *inputs)
+    ]
+    result = subprocess.run(
+        ["java", "-cp", str(tmp_path), class_name, *arguments],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    expected_kernel = build_kernel(kernel, params)
+    expected = [expected_kernel.step(time_seconds, *inputs)[0] for time_seconds, inputs in rows]
+    assert [float(line) for line in result.stdout.splitlines()] == expected
+    assert program["source_contract"]["standard"].startswith("Buildings.Controls.OBC.CDL.")

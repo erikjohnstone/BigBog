@@ -15,6 +15,8 @@ from __future__ import annotations
 import math
 from typing import Protocol
 
+from bactalk.psychrometrics import wet_bulb
+
 _MIN_WINDOW_SECONDS = 1.0e-5
 
 
@@ -759,6 +761,102 @@ class Round:
         return (float(rounded),)
 
 
+class IntegratorWithReset:
+    """``numeric_integrator_with_reset``: CDL.Reals.IntegratorWithReset as the reference
+    engine discretises it. A step returns the state the previous instant left, then takes
+    a forward-Euler step of ``gain * input`` over the time since the previous instant (none
+    on the first) or loads the reset value on a rising trigger. A second step at the same
+    instant recomputes from that instant's inputs, so a resample never integrates twice."""
+
+    def __init__(self, gain: float, initial: float) -> None:
+        if not _finite(gain, initial):
+            raise ValueError("IntegratorWithReset needs finite gain and start")
+        self.gain = gain
+        self.initial = initial
+        self.reset()
+
+    def reset(self) -> None:
+        self.state = self.initial
+        self.previous_time = math.nan
+        self.previous_trigger = False
+        self.instant = math.nan
+        self.instant_state = self.initial
+        self.instant_previous_time = math.nan
+        self.instant_previous_trigger = False
+
+    def step(
+        self, time_seconds: float, value: float, reset_value: float, trigger: bool
+    ) -> tuple[float]:
+        if time_seconds != self.instant:
+            self.instant = time_seconds
+            self.instant_state = self.state
+            self.instant_previous_time = self.previous_time
+            self.instant_previous_trigger = self.previous_trigger
+        dt = (
+            0.0
+            if math.isnan(self.instant_previous_time)
+            else time_seconds - self.instant_previous_time
+        )
+        if trigger and not self.instant_previous_trigger:
+            self.state = reset_value
+        else:
+            self.state = self.instant_state + self.gain * value * dt
+        self.previous_time = time_seconds
+        self.previous_trigger = trigger
+        return (self.instant_state,)
+
+
+class OnCounter:
+    """``numeric_on_counter``: CDL.Integers.OnCounter as the reference engine discretises
+    it. A step returns the count the previous instant left; the first instant only records
+    the inputs, later ones add one on a rising trigger and return to the start on a rising
+    reset (reset wins). A second step at the same instant recomputes from its inputs."""
+
+    def __init__(self, initial: float) -> None:
+        if not _finite(initial) or initial != round(initial):
+            raise ValueError("OnCounter needs an integer start value")
+        self.initial = float(initial)
+        self.reset()
+
+    def reset(self) -> None:
+        self.count = self.initial
+        self.previous_trigger = False
+        self.previous_reset = False
+        self.history = False
+        self.instant = math.nan
+        self.instant_count = self.initial
+        self.instant_trigger = False
+        self.instant_reset = False
+        self.instant_history = False
+
+    def step(self, time_seconds: float, trigger: bool, reset_input: bool) -> tuple[float]:
+        if time_seconds != self.instant:
+            self.instant = time_seconds
+            self.instant_count = self.count
+            self.instant_trigger = self.previous_trigger
+            self.instant_reset = self.previous_reset
+            self.instant_history = self.history
+        self.count = self.instant_count
+        if self.instant_history and (
+            (trigger and not self.instant_trigger) or (reset_input and not self.instant_reset)
+        ):
+            self.count = self.initial if reset_input else self.instant_count + 1.0
+        self.previous_trigger = trigger
+        self.previous_reset = reset_input
+        self.history = True
+        return (self.instant_count,)
+
+
+class WetBulb:
+    """``wet_bulb_temperature``: CDL Psychrometrics.WetBulb_TDryBulPhi (stateless)."""
+
+    def reset(self) -> None:
+        return None
+
+    def step(self, time_seconds: float, dry_bulb: float, relative_humidity: float) -> tuple[float]:
+        return (wet_bulb(dry_bulb, relative_humidity),)
+
+
 class LimitSlewRate:
     """``numeric_limit_slew_rate``: CDL.Reals.LimitSlewRate as the reference engine
     discretises it. The first execution passes the input through; each later one takes
@@ -1006,6 +1104,12 @@ def build_kernel(name: str, params: dict[str, object]) -> Kernel:
         return RisingEdge(_bool(params, "initial", False))
     if name == "Round":
         return Round()
+    if name == "IntegratorWithReset":
+        return IntegratorWithReset(_num(params, "gain", 1.0), _num(params, "initial", 0.0))
+    if name == "OnCounter":
+        return OnCounter(_num(params, "initial", 0.0))
+    if name == "WetBulb":
+        return WetBulb()
     if name == "LimitSlewRate":
         return LimitSlewRate(
             _num(params, "raisingSlewRate"),
@@ -1050,6 +1154,9 @@ KERNEL_NAMES: tuple[str, ...] = (
     "Hysteresis",
     "Round",
     "LimitSlewRate",
+    "IntegratorWithReset",
+    "OnCounter",
+    "WetBulb",
 )
 
 
@@ -1063,6 +1170,9 @@ def format_row(values: tuple[float | bool, ...]) -> str:
 
 __all__ = [
     "LimitSlewRate",
+    "IntegratorWithReset",
+    "OnCounter",
+    "WetBulb",
     "KERNEL_NAMES",
     "BooleanInitialization",
     "FallingEdge",

@@ -1,0 +1,259 @@
+{
+ "configuration_id": "tpl-pumps-primary-enable-lead-headered",
+ "controller_id": "Pumps.Primary.EnableLeadHeadered",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.EnableLeadHeadered",
+  "inputs": [
+   {
+    "description": "Isolation valve command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.EnableLeadHeadered.u1ValIso__1",
+    "label": "u1ValIso__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Isolation valve command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.EnableLeadHeadered.u1ValIso__2",
+    "label": "u1ValIso__2",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Lead pump enable signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.EnableLeadHeadered.y1",
+    "label": "y1",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 1
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "nValIso": 2,
+  "typCon": "Buildings.Templates.Plants.Controls.Types.EquipmentConnection.Series",
+  "typValIso": "Buildings.Templates.Plants.Controls.Types.Actuator.TwoPosition"
+ },
+ "points": [
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1ValIso__1",
+   "name": "u1ValIso__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.EnableLeadHeadered.u1ValIso__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1ValIso__2",
+   "name": "u1ValIso__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.EnableLeadHeadered.u1ValIso__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1",
+   "name": "y1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.EnableLeadHeadered.y1",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Pumps/Primary/EnableLeadHeadered.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "834af2ae7dd9c0f48db943f9bfa1be1398c612a0917d8f6ea4bbdc4efee32ad9",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "4460438bc0c0e0b497b906c6fb9d5d2222d92f78e562a5e35b75781cc551f40c",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1ValIso__1",
+    "kind": "boolean_input",
+    "label": "u1ValIso__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1ValIso__2",
+    "kind": "boolean_input",
+    "label": "u1ValIso__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1",
+    "kind": "boolean_output",
+    "label": "y1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "allOpeSer_fold_2",
+    "kind": "and",
+    "label": "allOpeSer fold 2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "anyCloSer_fold_2",
+    "kind": "or",
+    "label": "anyCloSer fold 2",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cloTwo__1",
+    "kind": "not",
+    "label": "cloTwo__1",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cloTwo__2",
+    "kind": "not",
+    "label": "cloTwo__2",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat",
+    "kind": "boolean_set_reset",
+    "label": "lat",
+    "x": 720,
+    "y": 0
+   }
+  ],
+  "links": [
+   {
+    "source": "u1ValIso__1",
+    "source_slot": "out",
+    "target": "allOpeSer_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1ValIso__1",
+    "source_slot": "out",
+    "target": "cloTwo__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1ValIso__2",
+    "source_slot": "out",
+    "target": "allOpeSer_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1ValIso__2",
+    "source_slot": "out",
+    "target": "cloTwo__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "allOpeSer_fold_2",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "clear"
+   },
+   {
+    "source": "anyCloSer_fold_2",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "set"
+   },
+   {
+    "source": "cloTwo__1",
+    "source_slot": "out",
+    "target": "anyCloSer_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "cloTwo__2",
+    "source_slot": "out",
+    "target": "anyCloSer_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "lat",
+    "source_slot": "out",
+    "target": "y1",
+    "target_slot": "in"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "allOpeSer_fold_2": "allOpeSer__fold_2",
+    "anyCloSer_fold_2": "anyCloSer__fold_2",
+    "cloTwo__1": "cloTwo__1",
+    "cloTwo__2": "cloTwo__2",
+    "lat": "lat"
+   },
+   "coverage": {
+    "boundary_inputs": 2,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Logical.And": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 1
+    },
+    "component_count": 5,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.Latch"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Pumps.Primary.EnableLeadHeadered",
+    "root_label": "EnableLeadHeadered",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "4460438bc0c0e0b497b906c6fb9d5d2222d92f78e562a5e35b75781cc551f40c",
+    "supported_class_count": 5,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "4460438bc0c0e0b497b906c6fb9d5d2222d92f78e562a5e35b75781cc551f40c"
+  },
+  "name": "EnableLeadHeadered"
+ }
+}

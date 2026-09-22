@@ -1,0 +1,501 @@
+{
+ "configuration_id": "tpl-minimum-flow-setpoint",
+ "controller_id": "MinimumFlow.Setpoint",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Setpoint",
+  "inputs": [
+   {
+    "description": "Equipment enable command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Setpoint.u1__1",
+    "label": "u1__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Equipment enable command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Setpoint.u1__2",
+    "label": "u1__2",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Primary flow setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Setpoint.VPriSet_flow",
+    "label": "VPriSet_flow",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 0
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "V_flow_min": [
+   0.01,
+   0.03
+  ],
+  "V_flow_nominal": [
+   0.02,
+   0.05
+  ],
+  "nEqu": 2
+ },
+ "points": [
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1__1",
+   "name": "u1__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Setpoint.u1__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1__2",
+   "name": "u1__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Setpoint.u1__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VPriSet_flow",
+   "name": "VPriSet_flow",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.MinimumFlow.Setpoint.VPriSet_flow",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "MinimumFlow/Setpoint.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "2e97cc6203250b402484d8089c7fbf8ec64342dcb9412aab0154d7fa6396c5ba",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "4eacf0a919fd9d507d5db6e5d518bde46393a651c6ca1225dce8ab1018aa3d81",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1__1",
+    "kind": "boolean_input",
+    "label": "u1__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1__2",
+    "kind": "boolean_input",
+    "label": "u1__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "VPriSet_flow",
+    "kind": "numeric_output",
+    "label": "VPriSet_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea__1_true",
+    "kind": "numeric_const",
+    "label": "booToRea__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea__1_false",
+    "kind": "numeric_const",
+    "label": "booToRea__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea__1",
+    "kind": "numeric_switch",
+    "label": "booToRea__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea__2_true",
+    "kind": "numeric_const",
+    "label": "booToRea__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea__2_false",
+    "kind": "numeric_const",
+    "label": "booToRea__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea__2",
+    "kind": "numeric_switch",
+    "label": "booToRea__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.02
+    },
+    "id": "floDes__1",
+    "kind": "numeric_const",
+    "label": "floDes__1",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.05
+    },
+    "id": "floDes__2",
+    "kind": "numeric_const",
+    "label": "floDes__2",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "floDesEqu__1",
+    "kind": "multiply",
+    "label": "floDesEqu__1",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "floDesEqu__2",
+    "kind": "multiply",
+    "label": "floDesEqu__2",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.01
+    },
+    "id": "floMin__1",
+    "kind": "numeric_const",
+    "label": "floMin__1",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.03
+    },
+    "id": "floMin__2",
+    "kind": "numeric_const",
+    "label": "floMin__2",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "floMinEna__1",
+    "kind": "multiply",
+    "label": "floMinEna__1",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "floMinEna__2",
+    "kind": "multiply",
+    "label": "floMinEna__2",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "floMinSet",
+    "kind": "multiply",
+    "label": "floMinSet",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "maxRatFloMinEna_fold_2",
+    "kind": "maximum",
+    "label": "maxRatFloMinEna fold 2",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "ratFloMinEna__1",
+    "kind": "divide",
+    "label": "ratFloMinEna__1",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "ratFloMinEna__2",
+    "kind": "divide",
+    "label": "ratFloMinEna__2",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "sumFloDesEna_fold_2",
+    "kind": "add",
+    "label": "sumFloDesEna fold 2",
+    "x": 360,
+    "y": 240
+   }
+  ],
+  "links": [
+   {
+    "source": "booToRea__1_true",
+    "source_slot": "out",
+    "target": "booToRea__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea__1_false",
+    "source_slot": "out",
+    "target": "booToRea__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea__2_true",
+    "source_slot": "out",
+    "target": "booToRea__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea__2_false",
+    "source_slot": "out",
+    "target": "booToRea__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "u1__1",
+    "source_slot": "out",
+    "target": "booToRea__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1__2",
+    "source_slot": "out",
+    "target": "booToRea__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "booToRea__1",
+    "source_slot": "out",
+    "target": "floDesEqu__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToRea__1",
+    "source_slot": "out",
+    "target": "floMinEna__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea__2",
+    "source_slot": "out",
+    "target": "floDesEqu__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToRea__2",
+    "source_slot": "out",
+    "target": "floMinEna__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "floDes__1",
+    "source_slot": "out",
+    "target": "floDesEqu__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "floDes__1",
+    "source_slot": "out",
+    "target": "ratFloMinEna__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "floDes__2",
+    "source_slot": "out",
+    "target": "floDesEqu__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "floDes__2",
+    "source_slot": "out",
+    "target": "ratFloMinEna__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "floDesEqu__1",
+    "source_slot": "out",
+    "target": "sumFloDesEna_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "floDesEqu__2",
+    "source_slot": "out",
+    "target": "sumFloDesEna_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "floMin__1",
+    "source_slot": "out",
+    "target": "floMinEna__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "floMin__2",
+    "source_slot": "out",
+    "target": "floMinEna__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "floMinEna__1",
+    "source_slot": "out",
+    "target": "ratFloMinEna__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "floMinEna__2",
+    "source_slot": "out",
+    "target": "ratFloMinEna__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "floMinSet",
+    "source_slot": "out",
+    "target": "VPriSet_flow",
+    "target_slot": "in"
+   },
+   {
+    "source": "maxRatFloMinEna_fold_2",
+    "source_slot": "out",
+    "target": "floMinSet",
+    "target_slot": "a"
+   },
+   {
+    "source": "ratFloMinEna__1",
+    "source_slot": "out",
+    "target": "maxRatFloMinEna_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "ratFloMinEna__2",
+    "source_slot": "out",
+    "target": "maxRatFloMinEna_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "sumFloDesEna_fold_2",
+    "source_slot": "out",
+    "target": "floMinSet",
+    "target_slot": "b"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "booToRea__1": "booToRea__1",
+    "booToRea__1_false": "booToRea__1",
+    "booToRea__1_true": "booToRea__1",
+    "booToRea__2": "booToRea__2",
+    "booToRea__2_false": "booToRea__2",
+    "booToRea__2_true": "booToRea__2",
+    "floDesEqu__1": "floDesEqu__1",
+    "floDesEqu__2": "floDesEqu__2",
+    "floDes__1": "floDes__1",
+    "floDes__2": "floDes__2",
+    "floMinEna__1": "floMinEna__1",
+    "floMinEna__2": "floMinEna__2",
+    "floMinSet": "floMinSet",
+    "floMin__1": "floMin__1",
+    "floMin__2": "floMin__2",
+    "maxRatFloMinEna_fold_2": "maxRatFloMinEna__fold_2",
+    "ratFloMinEna__1": "ratFloMinEna__1",
+    "ratFloMinEna__2": "ratFloMinEna__2",
+    "sumFloDesEna_fold_2": "sumFloDesEna__fold_2"
+   },
+   "coverage": {
+    "boundary_inputs": 2,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Divide": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Max": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Multiply": 5,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 4
+    },
+    "component_count": 15,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": true,
+    "niagara_unsupported_classes": [],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.MinimumFlow.Setpoint",
+    "root_label": "Setpoint",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "4eacf0a919fd9d507d5db6e5d518bde46393a651c6ca1225dce8ab1018aa3d81",
+    "supported_class_count": 15,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "4eacf0a919fd9d507d5db6e5d518bde46393a651c6ca1225dce8ab1018aa3d81"
+  },
+  "name": "Setpoint"
+ }
+}

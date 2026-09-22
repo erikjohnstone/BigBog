@@ -28,7 +28,7 @@ stack is present on the development box and the LBNL translation lane runs
 | N5 Point linking | **done** | `tests/test_native_bog_points.py` in `make test-native-bog`: one AHU + 25 VAVs linked in one station, validator clean | station structure is doc-only until Gate G-WB (docs/decisions/006) |
 | N6 Shadow Runtime | **done** | `make test-native-bog` (232 passed: `tests/test_native_bog_shadow_*.py` add the loader, block-semantics, kernel-equivalence and driver tests incl. both Tier 1 suites and the AHU + 25 VAVs fan-out); `make test-minimal` (408 passed, 1 skipped); `make shadow-check` | stock semantics are ASSUMED until Gate G-WB's calibration kit (N7); event-ordering hazard in the VAV time-suppression logic recorded for N7 (docs/niagara-semantics.md) |
 | N7 Prove it | **done (D4 target not met; recorded)** | `make test-native-bog` (calibration kit `--check` + 312 native_bog tests: differential, property, mutation, calibration, shadow qualification); `make test-minimal` (469 passed, 1 skipped); committed proofs `artifacts/native-bog/d1..d4-tier1.json`; web: `make web-lint`, `make web-build`, `make web-test`, Playwright `e2e/shadow.spec.ts` | D4 catch rate: neither Tier 1 suite meets ≥ 95 % (VAV reheat 63.5 %, multizone AHU 65.5 % on 200-mutant samples; the AHU's earlier 100 % was a failing-baseline artifact found in N8; survivors listed, N8's first work list, docs/decisions/009); stock semantics stay ASSUMED until a human runs `calibration/` (Gate G-WB) |
-| N8 Library Tier 2 | **partial** | `make test-native-bog` (`tests/test_native_bog_tier2.py`, `tests/test_native_bog_requests.py`); `make test-minimal`; `scripts/retain_tier2.py --check`; `docs/coverage.md` + `src/bactalk/library_tier2/coverage.json` from `make coverage-report` | 27 Tier 2 configurations, all retained with OCE references and none blocked: the 22 airside, zone and terminal-unit rows (the four former blockers, single-zone AHU ×2, fan coil and cooling-only Title 24, now retain; docs/decisions/014) and five G36 chiller-plant rows from a second locked LBNL master checkout (plant enable, plant reset, supply setpoints, head pressure, minimum-flow bypass); D1 and D2 pass on all 27, D3 on 25 (the two constant-volume fan-powered boxes fail at the 1 s module tick and pass at the scan tick, recorded below); D4 ≥ 95 % on none (42.5–82.5 % on 40-mutant samples); the full `Plants.Chillers.Controller` and its staging, pump, tower and economizer subsystems stay blocked on arrays crossing composite boundaries (decision 014); Tier 2b plant templates not started |
+| N8 Library Tier 2 and 2b | **partial** | `make test-native-bog` (`tests/test_native_bog_tier2.py`, `tests/test_native_bog_requests.py`); `make test-minimal`; `scripts/retain_tier2.py --check`; `docs/coverage.md` + `src/bactalk/library_tier2/coverage.json` from `make coverage-report` | 73 configurations. Tier 2: 35 rows, 34 retained with OCE references: the 22 airside, zone and terminal-unit rows and 12 G36 chiller-plant rows from the pre-release LBNL master checkout (five sequences from decision 014 plus the economizer, both pump groups, towers, staging setpoints and the stage-up and stage-down processes, decision 015); the full `Plants.Chillers.Controller` is blocked by an algebraic loop the engine finds in LBNL's own wiring. Tier 2b: all 38 `Templates.Plants.Controls` controllers are rows; 22 retain with OCE references, 15 are blocked because they are or contain Modelica-equation or StateGraph utilities (`TimerWithReset`, `Initialization`, `TrueArrayConditional`, `StageIndex`, `EquipmentAvailability`) and one (`Enabling.Enable`) because BACTalk does not map `CDL.Logical.Sources.TimeTable`. D1–D4 per row in `docs/coverage.md`: Tier 2 D1/D2 on all 34 retained, D3 on 31 (the two CVF boxes and chiller stage-up fail at the 1 s tick and pass at the scan tick), D4 42.5–82.5 %, economizer D4 blocked (module `Pre` startup lag); Tier 2b D1–D3 on all 22, D4 ≥ 95 % on one (`Pumps.Primary.EnableLeadHeadered`, 19 of 20), the rest 0–77.5 % |
 | N9 Tier 3 (Test Generation Protocol) | **done (Gate G-ENG waiting on a human)** | `make test-native-bog` (`tests/test_native_bog_tier3.py`), `make test-minimal` (`tests/test_protocol.py`, `tests/test_protocol_api.py`); `make tier3-adequacy` retains `library_tier3/hw_plant_boiler/adequacy.json` and `docs/test-plans/hw-plant-boiler.md`; web: `make web-lint`, `make web-build`, `make web-test` | hot water plant: 20 requirements, 5 invariants, 165 generated scenarios; suite passes, decision coverage 100 %, invariants 0 violations on 10 000 randomised sequences, Shadow differential both legs agree on all 165 scenarios, mutation 82.5 % (165 of 200) (scan leg, docs/decisions/011); 20 open questions (unstated failure behaviour) for the engineer; requirements `unapproved` until Gate G-ENG |
 | N10 Tier 4 standard sequences | **done (D4 target not met; recorded; Gate G-ENG waiting on a human)** | `make test-native-bog` (`tests/test_native_bog_tier4.py`: every configuration lowers, validates, passes its generated suite with full decision coverage and invariants, author reproduces the JSON, retained adequacy current); `make protocol-adequacy` | exhaust fan (basic, isolation damper), duty/standby pump pair, rooftop unit (with/without economizer), air-source heat pump (with/without auxiliary heat), DOAS (with/without energy recovery): 9 configurations, labelled BACTalk standard sequence, never G36; mutation 72–90 % on 100-mutant samples (docs/decisions/012) |
 | N11 Tier 5 custom sequences | **done (fixture; Gate G-ENG waiting on a human)** | `make test-minimal` (`tests/test_protocol_custom.py`: AI drafting through a fake provider, approval before program, adequacy, labelled run); `make test-native-bog` (`tests/test_native_bog_tier5.py`: Tier 1 AHU + VAV + two custom sequences in one validated `.bog`) | `bactalk.protocol.custom` + `/api/protocol/custom` + the web form; fixture custom sequences (kitchen hood interlock, seasonal changeover) mutation 78 % and 83 %; custom programs need an AI provider at runtime (docs/decisions/013) |
@@ -402,9 +402,53 @@ stack is present on the development box and the LBNL translation lane runs
   made both loops flip between their limits on every 60 s scan (checked against the
   source wiring; a scan of every reference found no other row doing this). All 27
   rows pass `retain_tier2.py --check` with no drift.
-- **Not done.** The full `Plants.Chillers.Controller` and its staging, pump, tower
-  and economizer subsystems (arrays crossing composite boundaries; the exact stop for
-  each is in decision 014); Tier 2b plant templates; the CVF runtime defect.
+- **Chiller-plant subsystems and Tier 2b (decision 015).** Arrays now cross composite
+  boundaries: a child composite is an opaque block whose ports the child-port oracle
+  sizes in the child's own scope, every composite holding an array is scalarised,
+  arrays of composite instances and of elaborated constructs expand per element, and
+  array parameters are grounded where they are written (Modelica if-expressions,
+  enumeration literals, multi-iterator comprehensions, `fill`, `sum`/`size`/`min`/
+  `max`). New constructs: the extractors, `ExtractSignal`, `MatrixMax`/`MatrixMin`,
+  `Reals.Sort` (Modelica's shellsort, tie for tie), Integer and vector replicators,
+  `Integers.Greater`/`GreaterEqual`/`Less`, `AddParameter`, `TimerAccumulating`,
+  CDL `eps`/`small`. Three new IR kinds with `bactalkG36` kernels (Java and Python
+  agreeing on 7 920 equivalence rows): `IntegratorWithReset`, `OnCounter` and
+  `WetBulb_TDryBulPhi` (fdlibm `atan` in both ports). Step scenarios let an
+  event-driven sequence start (the stage setpoint steps 1 → 2 and 2 → 1). That
+  retained seven more `Plants.Chillers` subsystems. The full controller stops at the
+  engine on an algebraic loop in LBNL's own wiring (staging latch → chiller enable →
+  pump → plant reset → setpoint → triggered sampler → stage setpoint → latch clear;
+  Controller.mo lines 1841–2289), recorded with its path. Tier 2b runs LBNL's plain
+  CDL through `PlantControlsCdlLibrary`: 22 of the 38 controllers retain. The other
+  16 are listed with the exact class that stops them, read from source (see the N8 row).
+  All 34 earlier retained rows pass `retain_tier2.py --check` with no drift. Grades: the seven new chiller rows pass D1 and D2, D3 on six
+  (stage-up is the 1 s-tick exception), D4 55–72.5 %; the 22 Tier 2b rows pass D1–D3,
+  and D4 reaches the 95 % target on `Pumps.Primary.EnableLeadHeadered` (19 of 20), the
+  first row of any tier to do so.
+- **Findings.** (1) The source-package lane labelled every block without a
+  ProgramObject `qualified_stock_or_boundary`; that was false for `LimitSlewRate` and
+  `Round` (decision 014) and the three new kinds, which now get generated
+  ProgramObjects and standalone kernels tested value for value against the Shadow
+  kernels. `one_shot`, `numeric_increased` and `numeric_decreased` have the same gap
+  in that lane, Tier 1 included; it predates this work and is not fixed here.
+  (2) `G36Library.execute` falls back to BACTalk's own interpreter for a reviewed
+  composite the engine cannot load; retention now refuses that as a reference (it
+  would make D3 compare the interpreter with itself). No earlier reference was
+  affected. (3) The module `Pre` emits its start value for its first execution period
+  after station start, where CDL's `Pre` has already latched its t = 0 input: a 1 s
+  startup lag at the default period, a whole scan under the scan-period policy. On the
+  economizer that catches the unmutated file, so its D4 is recorded as blocked; the fix
+  (latch once at start without emitting, Java wrapper and Shadow Runtime alike) is a
+  semantics change left for its own decision. Separately, the economizer's scenarios
+  end in a period-2 limit cycle (LBNL's reference too), so an output whose last four
+  reference samples alternate no longer gets an end-of-scenario expectation (only the
+  economizer's four). (4) LBNL's 0.5 s integral
+  time flips the minimum-flow bypass valves between their limits on every 60 s scan,
+  as it did the plant bypass; those rows set 120 s and say so.
+- **Not done.** `CDL.Logical.Sources.TimeTable` (one Tier 2b row); the 15 Tier 2b
+  rows built on Modelica-equation and StateGraph utilities, which the reference engine
+  cannot execute; the full chiller-plant controller (LBNL's algebraic loop); D4 ≥ 95 %
+  on any row; the module `Pre` startup lag (finding 3); the CVF runtime defect.
 
 ## N9 results
 

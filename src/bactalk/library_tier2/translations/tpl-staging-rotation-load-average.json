@@ -1,0 +1,315 @@
+{
+ "configuration_id": "tpl-staging-rotation-load-average",
+ "controller_id": "StagingRotation.LoadAverage",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.LoadAverage",
+  "inputs": [
+   {
+    "description": "Return temperature",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.LoadAverage.TRet",
+    "label": "TRet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Active supply temperature setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.LoadAverage.TSupSet",
+    "label": "TSupSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Volume flow rate",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.LoadAverage.V_flow",
+    "label": "V_flow",
+    "type": "S231:RealInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Load",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.LoadAverage.QReq_flow",
+    "label": "QReq_flow",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 1
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "cp_default": 4186,
+  "rho_default": 1000,
+  "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating"
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TRet",
+   "name": "TRet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.LoadAverage.TRet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TSupSet",
+   "name": "TSupSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.LoadAverage.TSupSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "V_flow",
+   "name": "V_flow",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.LoadAverage.V_flow",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "QReq_flow",
+   "name": "QReq_flow",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.LoadAverage.QReq_flow",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "StagingRotation/LoadAverage.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "fe8f845db1ca88b581cbc20f7d5b671a1d8bf8dab3d4e1abd766aa5ea6c0e063",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "642e4b732b3647de64b8386abc49253b2bafef524b4d0e553d2b85c3f6e8a0b1",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TRet",
+    "kind": "numeric_input",
+    "label": "TRet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TSupSet",
+    "kind": "numeric_input",
+    "label": "TSupSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "V_flow",
+    "kind": "numeric_input",
+    "label": "V_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "QReq_flow",
+    "kind": "numeric_output",
+    "label": "QReq_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 4186000.0
+    },
+    "id": "capFlo_parameter",
+    "kind": "numeric_const",
+    "label": "capFlo parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "capFlo",
+    "kind": "multiply",
+    "label": "capFlo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "capReq",
+    "kind": "multiply",
+    "label": "capReq",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "delT",
+    "kind": "subtract",
+    "label": "delT",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Reals.MovingAverage",
+     "window_seconds": 300.0
+    },
+    "id": "movAve",
+    "kind": "moving_average",
+    "label": "movAve",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "polHeaCoo_parameter",
+    "kind": "numeric_const",
+    "label": "polHeaCoo parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "polHeaCoo",
+    "kind": "multiply",
+    "label": "polHeaCoo",
+    "x": 720,
+    "y": 0
+   }
+  ],
+  "links": [
+   {
+    "source": "capFlo_parameter",
+    "source_slot": "out",
+    "target": "capFlo",
+    "target_slot": "b"
+   },
+   {
+    "source": "polHeaCoo_parameter",
+    "source_slot": "out",
+    "target": "polHeaCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "TRet",
+    "source_slot": "out",
+    "target": "delT",
+    "target_slot": "b"
+   },
+   {
+    "source": "TSupSet",
+    "source_slot": "out",
+    "target": "delT",
+    "target_slot": "a"
+   },
+   {
+    "source": "V_flow",
+    "source_slot": "out",
+    "target": "capFlo",
+    "target_slot": "a"
+   },
+   {
+    "source": "capFlo",
+    "source_slot": "out",
+    "target": "capReq",
+    "target_slot": "b"
+   },
+   {
+    "source": "capReq",
+    "source_slot": "out",
+    "target": "polHeaCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "delT",
+    "source_slot": "out",
+    "target": "capReq",
+    "target_slot": "a"
+   },
+   {
+    "source": "movAve",
+    "source_slot": "out",
+    "target": "QReq_flow",
+    "target_slot": "in"
+   },
+   {
+    "source": "polHeaCoo",
+    "source_slot": "out",
+    "target": "movAve",
+    "target_slot": "in"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "capFlo": "capFlo",
+    "capFlo_parameter": "capFlo",
+    "capReq": "capReq",
+    "delT": "delT",
+    "movAve": "movAve",
+    "polHeaCoo": "polHeaCoo",
+    "polHeaCoo_parameter": "polHeaCoo"
+   },
+   "coverage": {
+    "boundary_inputs": 3,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Reals.MovingAverage": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Multiply": 1,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 1
+    },
+    "component_count": 5,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Reals.MovingAverage"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.StagingRotation.LoadAverage",
+    "root_label": "LoadAverage",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "642e4b732b3647de64b8386abc49253b2bafef524b4d0e553d2b85c3f6e8a0b1",
+    "supported_class_count": 5,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "642e4b732b3647de64b8386abc49253b2bafef524b4d0e553d2b85c3f6e8a0b1"
+  },
+  "name": "LoadAverage"
+ }
+}

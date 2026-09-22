@@ -1,0 +1,352 @@
+{
+ "configuration_id": "tpl-pumps-primary-disable-dedicated",
+ "controller_id": "Pumps.Primary.DisableDedicated",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.DisableDedicated",
+  "inputs": [
+   {
+    "description": "Enable signal from system enable logic",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.DisableDedicated.u1",
+    "label": "u1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Equipment enable signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.DisableDedicated.u1Equ",
+    "label": "u1Equ",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Equipment status",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.DisableDedicated.u1Equ_actual",
+    "label": "u1Equ_actual",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Lead pump enable signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.DisableDedicated.y1",
+    "label": "y1",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 3
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {},
+ "points": [
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1",
+   "name": "u1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.DisableDedicated.u1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Equ",
+   "name": "u1Equ",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.DisableDedicated.u1Equ",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Equ_actual",
+   "name": "u1Equ_actual",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.DisableDedicated.u1Equ_actual",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1",
+   "name": "y1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Pumps.Primary.DisableDedicated.y1",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Pumps/Primary/DisableDedicated.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "c84bbda011846cbc1c0c94d27a5a842619f11cce079c81edb82bd555d63ca2a8",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "244162739c769a73e82d7727e17d2c90d5775d885ddbdb1d159c93522bf6c8ad",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1",
+    "kind": "boolean_input",
+    "label": "u1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Equ",
+    "kind": "boolean_input",
+    "label": "u1Equ",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Equ_actual",
+    "kind": "boolean_input",
+    "label": "u1Equ_actual",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1",
+    "kind": "boolean_output",
+    "label": "y1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "dis",
+    "kind": "not",
+    "label": "dis",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "disAndOffOrNotReq",
+    "kind": "and",
+    "label": "disAndOffOrNotReq",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg",
+    "kind": "one_shot",
+    "label": "edg",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal",
+    "kind": "boolean_const",
+    "label": "fal",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": false,
+     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.Initialization"
+    },
+    "id": "ini",
+    "kind": "boolean_initialization",
+    "label": "ini",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat",
+    "kind": "boolean_set_reset",
+    "label": "lat",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "off",
+    "kind": "not",
+    "label": "off",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "offOrNotReq",
+    "kind": "or",
+    "label": "offOrNotReq",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 180.0
+    },
+    "id": "timOff",
+    "kind": "timer",
+    "label": "timOff",
+    "x": 360,
+    "y": 120
+   }
+  ],
+  "links": [
+   {
+    "source": "u1",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "set"
+   },
+   {
+    "source": "u1Equ",
+    "source_slot": "out",
+    "target": "dis",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Equ_actual",
+    "source_slot": "out",
+    "target": "off",
+    "target_slot": "in"
+   },
+   {
+    "source": "dis",
+    "source_slot": "out",
+    "target": "disAndOffOrNotReq",
+    "target_slot": "a"
+   },
+   {
+    "source": "disAndOffOrNotReq",
+    "source_slot": "out",
+    "target": "edg",
+    "target_slot": "in"
+   },
+   {
+    "source": "edg",
+    "source_slot": "out",
+    "target": "ini",
+    "target_slot": "in"
+   },
+   {
+    "source": "fal",
+    "source_slot": "out",
+    "target": "offOrNotReq",
+    "target_slot": "b"
+   },
+   {
+    "source": "ini",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "clear"
+   },
+   {
+    "source": "lat",
+    "source_slot": "out",
+    "target": "y1",
+    "target_slot": "in"
+   },
+   {
+    "source": "off",
+    "source_slot": "out",
+    "target": "timOff",
+    "target_slot": "in"
+   },
+   {
+    "source": "offOrNotReq",
+    "source_slot": "out",
+    "target": "disAndOffOrNotReq",
+    "target_slot": "b"
+   },
+   {
+    "source": "timOff",
+    "source_slot": "passed",
+    "target": "offOrNotReq",
+    "target_slot": "a"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "dis": "dis",
+    "disAndOffOrNotReq": "disAndOffOrNotReq",
+    "edg": "edg",
+    "fal": "fal",
+    "ini": "ini",
+    "lat": "lat",
+    "off": "off",
+    "offOrNotReq": "offOrNotReq",
+    "timOff": "timOff"
+   },
+   "coverage": {
+    "boundary_inputs": 3,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Logical.And": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Edge": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Timer": 1,
+     "Utilities.Initialization": 1
+    },
+    "component_count": 9,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Timer",
+     "Utilities.Initialization"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Pumps.Primary.DisableDedicated",
+    "root_label": "DisableDedicated",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "244162739c769a73e82d7727e17d2c90d5775d885ddbdb1d159c93522bf6c8ad",
+    "supported_class_count": 9,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "244162739c769a73e82d7727e17d2c90d5775d885ddbdb1d159c93522bf6c8ad"
+  },
+  "name": "DisableDedicated"
+ }
+}

@@ -217,7 +217,16 @@ function CoverageMatrix({ coverage }: { coverage: LibraryCoverage }) {
               <tr key={item.id}>
                 <td className="px-4 h-8 font-mono text-xs">{item.id}</td>
                 <td className="px-4 text-xs">{item.controller}</td>
-                <td className="px-4 text-xs text-fg-1">{item.variant}</td>
+                <td className="px-4 text-xs text-fg-1">
+                  <span className="inline-flex items-center gap-2">
+                    {item.variant}
+                    {item.release === 'pre-release' && (
+                      <span title="From an unreleased Modelica Buildings commit (master); not in a tagged release yet">
+                        <StatusPill tone="warn">pre-release</StatusPill>
+                      </span>
+                    )}
+                  </span>
+                </td>
                 <td className="px-4 num text-xs">{item.tier}</td>
                 <td className="px-4 num text-xs">{item.scenarios ?? '—'}</td>
                 {([item.d1, item.d2, item.d3, item.d4] as CoverageProof[]).map((proof, index) => {

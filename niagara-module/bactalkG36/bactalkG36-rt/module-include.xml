@@ -20,6 +20,9 @@
   <type class="com.bactalk.g36.BRisingEdge" name="RisingEdge"/>
   <type class="com.bactalk.g36.BRound" name="Round"/>
   <type class="com.bactalk.g36.BLimitSlewRate" name="LimitSlewRate"/>
+  <type class="com.bactalk.g36.BIntegratorWithReset" name="IntegratorWithReset"/>
+  <type class="com.bactalk.g36.BOnCounter" name="OnCounter"/>
+  <type class="com.bactalk.g36.BWetBulb" name="WetBulb"/>
   <type class="com.bactalk.g36.BFallingEdge" name="FallingEdge"/>
   <type class="com.bactalk.g36.BSetReset" name="SetReset"/>
   <type class="com.bactalk.g36.BSampler" name="Sampler"/>

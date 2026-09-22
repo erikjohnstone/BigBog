@@ -26,6 +26,7 @@ from typing import Any
 
 from bactalk.domain import (
     AcceptanceCase,
+    AcceptancePhase,
     ComparisonOperator,
     ControlGraph,
     DataType,
@@ -92,6 +93,11 @@ class Configuration:
     tables below suit the airside controllers; a plant sequence needs its own (plant
     scheduled on, pumps proven, condenser water at design) or every mechanical
     scenario sits in the disabled state and exercises nothing."""
+    events: tuple[tuple[str, int, dict[str, Any], str], ...] = ()
+    """Step scenarios: (name, scan, changes, rationale). The nominal point holds until
+    ``scan``; the changes apply from the next scan on. An event-driven sequence (a
+    chiller staging process starts on a change of the stage setpoint) does nothing under
+    constant inputs, so its row declares the change that starts it."""
 
     @property
     def translation_file(self) -> str:
@@ -279,6 +285,716 @@ CONFIGURATIONS: tuple[Configuration, ...] = (
         source="plants",
         # Pump on, measured flow a little under the 0.0089 m³/s minimum setpoint.
         nominal={"VChiWatSet_flow": 0.0089, "VChiWat_flow": 0.008, "uChiWatPum": True},
+    ),
+)
+# The chiller-plant subsystems of the full G36 controller (docs/decisions/015). A common
+# operating point: plant enabled, stage 1 with chiller 1 running, chilled water at 7 °C
+# supply / 12 °C return, condenser water 24/29 °C, remote pressure a little under its
+# 10 psi setpoint. The staging processes are set up mid-change (up: stage 1 asked for
+# 2; down: stage 2 asked for 1) so their sequences run inside the scenario.
+_PSI = 6894.76
+_ONE_CHILLER = {
+    "u1ChiIsoVal__1": True,
+    "u1ChiIsoVal__2": False,
+    "u1ChiWatIsoVal__1": True,
+    "u1ChiWatIsoVal__2": False,
+    "uChiConIsoVal__1": True,
+    "uChiConIsoVal__2": False,
+    "uChiHeaCon__1": True,
+    "uChiHeaCon__2": False,
+    "uChiWatPum__1": True,
+    "uChiWatPum__2": False,
+    "uChiWatReq__1": True,
+    "uChiWatReq__2": False,
+    "uConWatReq__1": True,
+    "uConWatReq__2": False,
+    "uConWatPum__1": True,
+    "uConWatPum__2": False,
+    "uChi__1": True,
+    "uChi__2": False,
+    "uChiAva__1": True,
+    "uChiAva__2": True,
+    "uTowSta__1": True,
+    "uTowSta__2": False,
+    "uPla": True,
+    "uEnaPla": True,
+    "uChiSta": 1,
+    "uSta": 1,
+    "uIni": 1,
+    "uWSE": False,
+    "uWse": False,
+    "TChiWatSup": 280.15,
+    "TChiWatSupSet": 280.15,
+    "TChiWatRet": 285.15,
+    "TChiWatRetDow": 283.15,
+    "TConWatSup": 297.15,
+    "TConWatRet": 302.15,
+    "TOutWet": 283.15,
+    "VChiWat_flow": 0.02,
+    "dpChiWat": 9 * _PSI,
+    "dpChiWat_remote__1": 9 * _PSI,
+    "dpChiWat_remote__2": 9 * _PSI,
+    "dpChiWatSet_remote__1": 10 * _PSI,
+    "dpChiWatSet_remote__2": 10 * _PSI,
+}
+
+
+def _plant_subsystem(
+    identifier: str,
+    controller: str,
+    parameters: dict[str, Any],
+    description: str,
+    nominal: dict[str, Any] | None = None,
+    events: tuple[tuple[str, int, dict[str, Any], str], ...] = (),
+) -> Configuration:
+    return Configuration(
+        identifier,
+        f"Plants.Chillers.{controller}",
+        "Plants.Chillers",
+        "two chillers",
+        parameters,
+        description,
+        source="plants",
+        nominal={**_ONE_CHILLER, **(nominal or {})},
+        events=events,
+    )
+
+
+CONFIGURATIONS = CONFIGURATIONS + (
+    _plant_subsystem(
+        "chw-economizer",
+        "Economizers.Controller",
+        {"Ti": 120.0},
+        "Waterside economizer enable, tuning and bypass valve; integral time 120 s (LBNL's "
+        "0.5 s default flips the valve loop between its limits on every 60 s scan)",
+        # 3 °C wet bulb: the predicted heat-exchanger leaving temperature sits well under
+        # the chilled-water return, so the economizer has cause to enable.
+        {"uTowFanSpeMax": 1.0, "TOutWet": 276.15},
+        (
+            (
+                "wet bulb rises",
+                10,
+                {"TOutWet": 290.15},
+                "the wet bulb climbs to 17 °C: the economizer loses its advantage",
+            ),
+        ),
+    ),
+    _plant_subsystem(
+        "chw-pumps-chilled-water",
+        "Pumps.ChilledWater.Controller",
+        {"Ti": 120.0},
+        "Chilled-water pump staging and speed (headered, remote pressure); integral time "
+        "120 s (LBNL's 0.5 s default flips the speed loop on every 60 s scan)",
+        {"uPumLeaLag__1": 1, "uPumLeaLag__2": 2},
+        (
+            (
+                "flow rises",
+                10,
+                {"VChiWat_flow": 0.045},
+                "chilled-water flow climbs past what one pump carries",
+            ),
+        ),
+    ),
+    _plant_subsystem(
+        "chw-pumps-condenser-water",
+        "Pumps.CondenserWater.Controller",
+        {},
+        "Condenser-water pump staging and design speed",
+        {"uLeaChiEna": True, "uLeaChiSta": True, "uLeaConWatReq": True},
+    ),
+    _plant_subsystem(
+        "chw-towers",
+        "Towers.Controller",
+        {"TiIntOpe": 120.0, "TiWSE": 120.0, "TiCouPla": 120.0, "TiSupCon": 120.0},
+        "Cooling tower fan speed, cell staging and make-up water; integral times 120 s "
+        "(LBNL's 0.5 s defaults flip the fan speed loops on every 60 s scan)",
+        {
+            "reqPlaCap": 150.0,
+            "uChiLoa": 0.5,
+            "uChiStaSet": 1,
+            "uMaxSpeSet__1": 1.0,
+            "uMaxSpeSet__2": 1.0,
+            "uTowStaCha": False,
+            "watLev": 0.85,
+        },
+    ),
+    _plant_subsystem(
+        "chw-staging-setpoints",
+        "Staging.SetPoints.SetpointController",
+        {"chiDesCap": [200.0, 200.0], "chiMinCap": [20.0, 20.0]},
+        "Chiller stage setpoint (capacity, efficiency and failsafe conditions)",
+        {"chaPro": False},
+        (
+            (
+                "load rises",
+                10,
+                {"TChiWatRet": 290.15, "VChiWat_flow": 0.035},
+                "return water warms and flow climbs: the required capacity passes stage 1",
+            ),
+        ),
+    ),
+    _plant_subsystem(
+        "chw-staging-up",
+        "Staging.Processes.Up",
+        {},
+        "Chiller stage-up process (minimum flow, head pressure, isolation valves, enable)",
+        {"uStaSet": 1, "uChiSet__1": True, "uChiSet__2": False, "uEndPro": False},
+        (
+            (
+                "stage up to 2",
+                10,
+                {"uStaSet": 2, "uChiSet__2": True},
+                "the stage setpoint steps from 1 to 2: the stage-up process runs",
+            ),
+        ),
+    ),
+    _plant_subsystem(
+        "chw-plant-controller",
+        "Controller",
+        {
+            # LBNL's Validation.Controller configuration: two chillers, a waterside
+            # economizer, headered pumps, two tower cells.
+            "nChi": 2,
+            "nSta": 2,
+            "nPlaSta": 6,
+            "chiTyp": [
+                "Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Types.ChillersAndStages."
+                "PositiveDisplacement"
+            ]
+            * 2,
+            "chiDesCap": [200.0, 200.0],
+            "chiMinCap": [20.0, 20.0],
+            "staMat": [[1, 0], [1, 1]],
+            "TChiWatSupMin": [278.15, 278.15],
+            "dTChiMinLif": [12.0, 12.0],
+            "dTChiMaxLif": [18.0, 18.0],
+            "minFloSet": [0.0089, 0.0089],
+            "maxFloSet": [0.025, 0.025],
+            "nChiWatPum": 2,
+            "nSenChiWatPum": 1,
+            "nConWatPum": 2,
+            "nPum_nominal": 2,
+            "conWatPumStaMat": [[0, 0], [1, 0], [1, 0], [1, 1], [1, 1], [1, 1]],
+            "desConWatPumSpe": [0.0, 0.5, 0.75, 0.5, 0.75, 0.9],
+            "towCelOnSet": [0, 1, 1, 2, 2, 2],
+            "nTowCel": 2,
+            "cooTowAppDes": 2.0,
+            "heaExcAppDes": 2.0,
+            "TOutWetDes": 288.15,
+            "VHeaExcDes_flow": 0.015,
+            "VChiWat_flow_nominal": 0.5,
+            "dpChiWatMax": [10 * _PSI],
+            "TConWatSup_nominal": [293.15, 293.15],
+            "TConWatRet_nominal": [303.15, 303.15],
+            "watLevMin": 0.7,
+            "watLevMax": 1.0,
+            "TdMinFloBypCon": 0.1,
+        },
+        "The complete G36 chilled-water plant controller (LBNL's validation "
+        "configuration; Td of the bypass loop 0.1 s, unused by its PI loop)",
+    ),
+    _plant_subsystem(
+        "chw-staging-down",
+        "Staging.Processes.Down",
+        {
+            "byPasSetTim": 300.0,
+            "chaChiWatIsoTim": 300.0,
+            "desConWatPumNum": [0, 1, 2],
+            "desConWatPumSpe": [0.0, 0.5, 0.75],
+            "maxFloSet": [0.025, 0.025],
+            "minFloSet": [0.0089, 0.0089],
+            "staVec": [0.0, 1.0, 2.0],
+        },
+        "Chiller stage-down process (demand limit, disable, isolation valves, pumps)",
+        {
+            "uChiSta": 2,
+            "uStaSet": 2,
+            "uChiSet__1": True,
+            "uChiSet__2": True,
+            "uChi__2": True,
+            "uChiWatReq__2": True,
+            "uConWatReq__2": True,
+            "uChiHeaCon__2": True,
+            "uChiConIsoVal__2": True,
+            "u1ChiWatIsoVal__2": True,
+            "uEndPro": False,
+        },
+        (
+            (
+                "stage down to 1",
+                10,
+                {"uStaSet": 1, "uChiSet__2": False},
+                "the stage setpoint steps from 2 to 1: the stage-down process runs",
+            ),
+        ),
+    ),
+)
+
+
+def _template(
+    identifier: str,
+    controller: str,
+    variant: str,
+    parameters: dict[str, Any],
+    description: str,
+    nominal: dict[str, Any] | None = None,
+    events: tuple[tuple[str, int, dict[str, Any], str], ...] = (),
+) -> Configuration:
+    """A Tier 2b row: one LBNL ``Templates.Plants.Controls`` controller, translated from its
+    plain CDL (``PlantControlsCdlLibrary``) with the parameters of an LBNL validation
+    model instance (``variant``)."""
+
+    return Configuration(
+        identifier,
+        controller,
+        "Plants.Templates",
+        variant,
+        parameters,
+        description,
+        tier="2b",
+        source="templates",
+        nominal=nominal or {},
+        events=events,
+    )
+
+
+CONFIGURATIONS = CONFIGURATIONS + (
+    _template(
+        "tpl-heat-recovery-chillers-controller",
+        "HeatRecoveryChillers.Controller",
+        "EnableAndModeControl (composed)",
+        {
+            "COPHea_nominal": 2.8,
+            "TChiWatSup_min": 277.15,
+            "THeaWatSup_max": 328.15,
+            "capCoo_min": 192857.142857,
+            "capHea_min": 90000.0,
+            "cp_default": 4184.0,
+            "rho_default": 996.0,
+        },
+        "Heat recovery chiller enable, mode control, load averaging and dedicated pump disable",
+    ),
+    _template(
+        "tpl-enabling-enable",
+        "Enabling.Enable",
+        "Enable · enaHea",
+        {"nReqIgn": 1, "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating"},
+        "Plant enable from requests and schedule",
+    ),
+    _template(
+        "tpl-heat-recovery-chillers-mode-control",
+        "HeatRecoveryChillers.ModeControl",
+        "EnableAndModeControl · setMod",
+        {"COPHea_nominal": 2.8},
+        "Heat recovery chiller operating mode from simultaneous loads",
+    ),
+    _template(
+        "tpl-heat-recovery-chillers-enable",
+        "HeatRecoveryChillers.Enable",
+        "EnableAndModeControl · ena",
+        {
+            "TChiWatSup_min": 277.15,
+            "THeaWatSup_max": 328.15,
+            "capCoo_min": 192857.142857,
+            "capHea_min": 90000.0,
+        },
+        "Heat recovery chiller enable from simultaneous loads and supply temperatures",
+        # Simultaneous loads above both minimum capacities, both plants enabled and the
+        # leaving temperatures inside their limits: the enable timers can run out.
+        {
+            "u1Coo": True,
+            "u1Hea": True,
+            "u1CooHrc": True,
+            "QChiWatReq_flow": 300000.0,
+            "QHeaWatReq_flow": 200000.0,
+            "TChiWatHrcLvg": 280.15,
+            "THeaWatHrcLvg": 318.15,
+        },
+    ),
+    _template(
+        "tpl-utilities-hold-real",
+        "Utilities.HoldReal",
+        "HoldReal · hol",
+        {"dtHol": 0},
+        "Real signal hold",
+    ),
+    _template(
+        "tpl-minimum-flow-setpoint",
+        "MinimumFlow.Setpoint",
+        "Setpoint · setFloMin",
+        {"V_flow_min": [0.01, 0.03], "V_flow_nominal": [0.02, 0.05], "nEqu": 2},
+        "Minimum flow bypass setpoint from enabled equipment",
+    ),
+    _template(
+        "tpl-minimum-flow-controller",
+        "MinimumFlow.Controller",
+        "Controller · ctlFloMinPum",
+        {
+            "Ti": 120.0,
+            "V_flow_min": [0.01, 0.03],
+            "V_flow_nominal": [0.02, 0.05],
+            "have_valInlIso": False,
+            "have_valOutIso": False,
+            "nEna": 2,
+            "nEqu": 2,
+        },
+        "Minimum flow bypass valve control; integral time 120 s (LBNL's 0.5 s default "
+        "flips the valve between its limits on every 60 s scan)",
+    ),
+    _template(
+        "tpl-minimum-flow-controller-dual-mode",
+        "MinimumFlow.ControllerDualMode",
+        "ControllerDualMode · ctlFloMinPumHeaCoo",
+        {
+            "Ti": 120.0,
+            "VChiWat_flow_min": [0.01, 0.03],
+            "VChiWat_flow_nominal": [0.02, 0.05],
+            "VHeaWat_flow_min": [0.01, 0.03],
+            "VHeaWat_flow_nominal": [0.02, 0.05],
+            "have_chiWat": True,
+            "have_heaWat": True,
+            "have_pumChiWatPri": False,
+            "have_valInlIso": False,
+            "have_valOutIso": False,
+            "nEnaChiWat": 2,
+            "nEnaHeaWat": 2,
+            "nEqu": 2,
+        },
+        "Minimum flow bypass valve control, heating and cooling; integral time 120 s "
+        "(LBNL's 0.5 s default flips the valves between their limits on every 60 s scan)",
+    ),
+    _template(
+        "tpl-setpoints-plant-reset",
+        "Setpoints.PlantReset",
+        "PlantReset · res",
+        {
+            "TSupSetLim": 298.15,
+            "TSup_nominal": 323.15,
+            "dpSet_max": [50000.0, 80000.0],
+            "nSenDpRem": 2,
+            "resDp_max": 0.75,
+            "resTSup_min": 0.25,
+        },
+        "Plant supply temperature and differential pressure reset",
+    ),
+    _template(
+        "tpl-pumps-generic-reset-local-differential-pressure",
+        "Pumps.Generic.ResetLocalDifferentialPressure",
+        "ResetLocalDifferentialPressure · resDpLoc",
+        {"Ti": 10, "dpLocSet_max": 100000.0},
+        "Local differential pressure setpoint reset from the remote sensors",
+    ),
+    _template(
+        "tpl-pumps-generic-control-differential-pressure",
+        "Pumps.Generic.ControlDifferentialPressure",
+        "ControlDifferentialPressure · ctlDpRem",
+        {"have_senDpRemWir": True, "nPum": 2, "nSenDpRem": 2},
+        "Pump speed control from remote differential pressure",
+    ),
+    _template(
+        "tpl-utilities-count-true",
+        "Utilities.CountTrue",
+        "CountTrue · couTru",
+        {"nin": 6},
+        "Count of true signals",
+    ),
+    _template(
+        "tpl-pumps-primary-disable-dedicated",
+        "Pumps.Primary.DisableDedicated",
+        "DisableDedicated · enaDed",
+        {},
+        "Dedicated primary pump disable after equipment shutdown",
+    ),
+    _template(
+        "tpl-staging-rotation-failsafe-condition",
+        "StagingRotation.FailsafeCondition",
+        "FailsafeCondition · faiSafHea",
+        {
+            "dT": 2.5,
+            "have_pumSec": True,
+            "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating",
+        },
+        "Failsafe stage-up condition from supply temperature",
+    ),
+    _template(
+        "tpl-staging-rotation-stage-completion",
+        "StagingRotation.StageCompletion",
+        "StageCompletion · comSta",
+        {"nin": 2},
+        "Stage change completion check",
+    ),
+    _template(
+        "tpl-staging-rotation-sort-runtime",
+        "StagingRotation.SortRuntime",
+        "SortRuntime · sorRunTim",
+        {"nin": 3},
+        "Lead/lag rotation by runtime",
+    ),
+    _template(
+        "tpl-pumps-generic-staging-headered-deltap",
+        "Pumps.Generic.StagingHeaderedDeltaP",
+        "StagingHeaderedDeltaP · staPum",
+        {"V_flow_nominal": 0.1, "nPum": 4, "nSenDp": 1},
+        "Headered pump staging from differential pressure",
+    ),
+    _template(
+        "tpl-staging-rotation-stage-change-command",
+        "StagingRotation.StageChangeCommand",
+        "StageChangeCommand · chaSta",
+        {
+            "capEqu": [100000.0, 450000.0, 450000.0],
+            "cp_default": 4184.0,
+            "dT": 2.5,
+            "have_pumSec": False,
+            "nEqu": 3,
+            "nSta": 5,
+            "plrSta": 0.9,
+            "rho_default": 996.0,
+            "staEqu": [[1, 0, 0], [0, 0.5, 0.5], [1, 0.5, 0.5], [0, 1, 1], [1, 1, 1]],
+            "traStaEqu": [[1, 0, 1, 0, 1], [0, 0.5, 0.5, 1, 1], [0, 0.5, 0.5, 1, 1]],
+            "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating",
+        },
+        "Stage change command from load, capacity and failsafe",
+    ),
+    _template(
+        "tpl-pumps-generic-staging-headered",
+        "Pumps.Generic.StagingHeadered",
+        "StagingHeadered · staPumPriDp",
+        {
+            "V_flow_nominal": 0.1,
+            "have_valInlIso": True,
+            "have_valOutIso": True,
+            "is_ctlDp": True,
+            "is_hdr": True,
+            "is_pri": True,
+            "nEqu": 3,
+            "nPum": 3,
+            "nSenDp": 1,
+        },
+        "Headered pump staging and lead/lag",
+    ),
+    _template(
+        "tpl-pumps-primary-variable-speed",
+        "Pumps.Primary.VariableSpeed",
+        "VariableSpeed · ctlPumPriDedSepDp",
+        {
+            "have_chiWat": True,
+            "have_heaWat": True,
+            "have_pumChiWatPriDed": True,
+            "have_pumPriCtlDp": True,
+            "have_pumPriHdr": False,
+            "have_senDpChiWatRemWir": False,
+            "have_senDpHeaWatRemWir": False,
+            "nEqu": 2,
+            "nPumChiWatPri": 2,
+            "nPumHeaWatPri": 2,
+            "nSenDpChiWatRem": 2,
+            "nSenDpHeaWatRem": 2,
+            "yPumChiWatPriSet": 0.9,
+            "yPumHeaWatPriSet": 0.8,
+        },
+        "Variable speed primary pump control, heating and cooling",
+    ),
+    _template(
+        "tpl-heat-pumps-air-to-water",
+        "HeatPumps.AirToWater",
+        "AirToWater · ctl",
+        {
+            "COPHeaHrc_nominal": 2.8,
+            "TChiWatSupHrc_min": 277.15,
+            "TChiWatSupSet_max": 288.15,
+            "TChiWatSup_nominal": 280.15,
+            "THeaWatSupHrc_max": 333.15,
+            "THeaWatSupSet_min": 298.15,
+            "THeaWatSup_nominal": 323.15,
+            "VChiWatHp_flow_min": [0.0110864106521, 0.0110864106521, 0.0110864106521],
+            "VChiWatHp_flow_nominal": [0.0184773510869, 0.0184773510869, 0.0184773510869],
+            "VChiWatSec_flow_nominal": 0.0503927756917,
+            "VHeaWatHp_flow_min": [0.00692900665758, 0.00692900665758, 0.00692900665758],
+            "VHeaWatHp_flow_nominal": [0.0115483444293, 0.0115483444293, 0.0115483444293],
+            "VHeaWatSec_flow_nominal": 0.0314954848073,
+            "capCooHp_nominal": [350000.0, 350000.0, 350000.0],
+            "capCooHrc_min": 101250.0,
+            "capHeaHp_nominal": [350000.0, 350000.0, 350000.0],
+            "capHeaHrc_min": 157500.0,
+            "dpChiWatRemSet_max": [50000.0],
+            "dpHeaWatRemSet_max": [50000.0],
+            "have_chiWat": True,
+            "have_heaWat": True,
+            "have_hrc_select": True,
+            "have_pumChiWatPriDed_select": True,
+            "have_pumChiWatPriVar_select": False,
+            "have_pumHeaWatPriVar_select": False,
+            "have_pumPriHdr": False,
+            "have_senDpChiWatRemWir": False,
+            "have_senDpHeaWatRemWir": False,
+            "have_senTChiWatPriRet_select": False,
+            "have_senTHeaWatPriRet_select": False,
+            "have_senVChiWatPri_select": False,
+            "have_senVHeaWatPri_select": False,
+            "have_valHpInlIso": True,
+            "have_valHpOutIso": True,
+            "idxEquAlt": [1, 2, 3],
+            "is_priOnl": False,
+            "nEquAlt": 3,
+            "nHp": 3,
+            "nSenDpChiWatRem": 1,
+            "nSenDpHeaWatRem": 1,
+            "staEqu": [
+                [0.333333333333, 0.333333333333, 0.333333333333],
+                [0.666666666667, 0.666666666667, 0.666666666667],
+                [1, 1, 1],
+            ],
+            "yPumChiWatPriSet": 0.7,
+            "yPumHeaWatPriSet": 0.8,
+        },
+        "Air-to-water heat pump plant controller",
+    ),
+    _template(
+        "tpl-staging-rotation-equipment-enable",
+        "StagingRotation.EquipmentEnable",
+        "EquipmentEnable · equEnaOneTwo",
+        {"staEqu": [[1, 0, 0], [0, 0.5, 0.5], [1, 0.5, 0.5], [0, 1, 1], [1, 1, 1]]},
+        "Equipment enable from the stage and lead/lag order",
+    ),
+    _template(
+        "tpl-utilities-first-true-index",
+        "Utilities.FirstTrueIndex",
+        "FirstTrueIndex · idxFirTru",
+        {"nin": 6},
+        "Index of the first true signal",
+    ),
+    _template(
+        "tpl-utilities-last-true-index",
+        "Utilities.LastTrueIndex",
+        "LastTrueIndex · idxLasTru",
+        {"nin": 6},
+        "Index of the last true signal",
+    ),
+    _template(
+        "tpl-utilities-true-array-conditional",
+        "Utilities.TrueArrayConditional",
+        "TrueArrayConditional · truArrConSam",
+        {"nin": 2},
+        "Indices of true signals",
+    ),
+    _template(
+        "tpl-staging-rotation-load-average",
+        "StagingRotation.LoadAverage",
+        "LoadAverage · loaHea",
+        {
+            "cp_default": 4186,
+            "rho_default": 1000,
+            "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating",
+        },
+        "Moving average of the plant load",
+    ),
+    _template(
+        "tpl-pumps-primary-enable-lead-headered",
+        "Pumps.Primary.EnableLeadHeadered",
+        "EnableLeadHeadered · enaSerTwo",
+        {
+            "nValIso": 2,
+            "typCon": "Buildings.Templates.Plants.Controls.Types.EquipmentConnection.Series",
+            "typValIso": "Buildings.Templates.Plants.Controls.Types.Actuator.TwoPosition",
+        },
+        "Lead headered primary pump enable",
+    ),
+    _template(
+        "tpl-staging-rotation-stage-availability",
+        "StagingRotation.StageAvailability",
+        "StageAvailability · avaStaEqu",
+        {
+            "staEqu": [
+                [0.333333333333, 0.333333333333, 0.333333333333],
+                [0.666666666667, 0.666666666667, 0.666666666667],
+                [1, 1, 1],
+            ]
+        },
+        "Stage availability from equipment availability",
+    ),
+    _template(
+        "tpl-staging-rotation-equipment-availability",
+        "StagingRotation.EquipmentAvailability",
+        "EquipmentAvailability · avaHeaCoo",
+        {"have_chiWat": True, "have_heaWat": True},
+        "Equipment availability for heating and cooling",
+    ),
+    _template(
+        "tpl-staging-rotation-event-sequencing",
+        "StagingRotation.EventSequencing",
+        "EventSequencing · seqEveHeaCoo",
+        {
+            "have_chiWat": True,
+            "have_heaWat": True,
+            "have_pumChiWatPri": False,
+            "have_pumChiWatSec": False,
+            "have_pumHeaWatPri": True,
+            "have_pumHeaWatSec": False,
+            "have_valInlIso": True,
+            "have_valOutIso": True,
+        },
+        "Equipment enable event sequencing (valves, pumps, equipment)",
+    ),
+    _template(
+        "tpl-utilities-placeholder-logical",
+        "Utilities.PlaceholderLogical",
+        "PlaceholderLogical · phPar",
+        {"have_inp": False, "have_inpPh": False, "u_internal": False},
+        "Boolean placeholder (constant when the input is absent)",
+    ),
+    _template(
+        "tpl-utilities-placeholder-real",
+        "Utilities.PlaceholderReal",
+        "PlaceholderReal · phPar",
+        {"have_inp": False, "have_inpPh": False, "u_internal": 1.0},
+        "Real placeholder (constant when the input is absent)",
+    ),
+    _template(
+        "tpl-utilities-placeholder-integer",
+        "Utilities.PlaceholderInteger",
+        "PlaceholderInteger · phPar",
+        {"have_inp": False, "have_inpPh": False, "u_internal": 1},
+        "Integer placeholder (constant when the input is absent)",
+    ),
+)
+# The five utilities of the 38 that are Modelica equations or a StateGraph, not CDL
+# block diagrams; they are rows so the coverage report lists them with that blocker.
+CONFIGURATIONS = CONFIGURATIONS + (
+    _template(
+        "tpl-utilities-initialization",
+        "Utilities.Initialization",
+        "default",
+        {"yIni": False},
+        "Force a Boolean value at initial time (y = if initial() then yIni else u)",
+    ),
+    _template(
+        "tpl-utilities-multi-max-integer",
+        "Utilities.MultiMaxInteger",
+        "nin = 3",
+        {"nin": 3},
+        "Maximum of an Integer vector (y = max(u))",
+    ),
+    _template(
+        "tpl-utilities-multi-min-integer",
+        "Utilities.MultiMinInteger",
+        "nin = 3",
+        {"nin": 3},
+        "Minimum of an Integer vector (y = min(u))",
+    ),
+    _template(
+        "tpl-utilities-stage-index",
+        "Utilities.StageIndex",
+        "nSta = 3",
+        {"nSta": 3, "dtRun": 900.0},
+        "Stage index from stage up/down commands (Modelica.StateGraph)",
+    ),
+    _template(
+        "tpl-utilities-timer-with-reset",
+        "Utilities.TimerWithReset",
+        "t = 60 s",
+        {"t": 60.0},
+        "Timer with reset (a when-equation)",
     ),
 )
 CONFIGURATIONS_BY_ID = {item.id: item for item in CONFIGURATIONS}
@@ -485,7 +1201,20 @@ def graph_for(config_id: str, points: list[PointSpec]) -> ControlGraph:
 def sequence_for(config_id: str) -> SequenceSpec:
     config = CONFIGURATIONS_BY_ID[config_id]
     translation = retained_translation(config_id)
-    release = "v13.0.0" if config.source == "release" else "master (plants)"
+    release = "master (plants)" if config.source == "plants" else "v13.0.0"
+    if config.source == "templates":
+        return SequenceSpec(
+            family="LBNL_PLANT_CONTROLLER",
+            version=(
+                f"LBNL Modelica Buildings {release} Templates.Plants.Controls "
+                f"({translation['source']['revision'][:12]}) · retained translation "
+                f"cxf {translation['translator']['cxf_source_sha256'][:12]}"
+            ),
+            library="plant_controls",
+            controller_id=config.controller_id,
+            execution_profile=translation["execution_profile"],
+            parameters=dict(translation["parameters"]),
+        )
     return SequenceSpec(
         family="LBNL_G36_CONTROLLER",
         version=(
@@ -508,6 +1237,27 @@ class Scenario:
     name: str
     inputs: dict[str, float | bool | int]
     rationale: str
+    after: dict[str, float | bool | int] | None = None
+    """For a step scenario, the inputs from scan ``at_scan + 1`` on."""
+    at_scan: int = 0
+
+    def timeline(self) -> list[AcceptancePhase] | None:
+        if self.after is None:
+            return None
+        return [
+            AcceptancePhase(
+                name="before",
+                inputs=dict(self.inputs),
+                repeat=self.at_scan,
+                step_seconds=SCAN_SECONDS,
+            ),
+            AcceptancePhase(
+                name="after",
+                inputs=dict(self.after),
+                repeat=SCANS - self.at_scan,
+                step_seconds=SCAN_SECONDS,
+            ),
+        ]
 
 
 def _perturb(name: str, data_type: str, value: float | bool | int) -> list[tuple[str, Any, str]]:
@@ -577,6 +1327,21 @@ def scenarios_for(
             scenarios.append(
                 Scenario(f"{name} {tag}", {**nominal, name: value}, f"{name} at {why}")
             )
+    types = {p["name"]: _data_type(p) for p in inputs}
+    for event, at_scan, changes, why in CONFIGURATIONS_BY_ID[config_id].events:
+        if not 0 < at_scan < SCANS:
+            raise ValueError(f"{config_id} event {event!r} must change between scans")
+        after = dict(nominal)
+        for name, value in changes.items():
+            if name in types:
+                after[name] = (
+                    bool(value)
+                    if types[name] == "boolean"
+                    else int(value)
+                    if types[name] == "integer"
+                    else float(value)
+                )
+        scenarios.append(Scenario(event, dict(nominal), why, after=after, at_scan=at_scan))
     return scenarios[:limit] if limit is not None else scenarios
 
 
@@ -593,16 +1358,20 @@ def probe_cases(config_id: str) -> list[AcceptanceCase]:
         if numeric
         else OutputExpectation(target=outputs[0]["name"], value=False)
     )
-    return [
-        AcceptanceCase(
-            name=scenario.name,
-            inputs=scenario.inputs,
-            repeat=SCANS,
-            step_seconds=SCAN_SECONDS,
-            expectations=[expectation],
-        )
-        for scenario in scenarios_for(config_id)
-    ]
+    return [_case(scenario, [expectation]) for scenario in scenarios_for(config_id)]
+
+
+def _case(scenario: Scenario, expectations: list[OutputExpectation]) -> AcceptanceCase:
+    timeline = scenario.timeline()
+    if timeline is not None:
+        return AcceptanceCase(name=scenario.name, timeline=timeline, expectations=expectations)
+    return AcceptanceCase(
+        name=scenario.name,
+        inputs=scenario.inputs,
+        repeat=SCANS,
+        step_seconds=SCAN_SECONDS,
+        expectations=expectations,
+    )
 
 
 # --- reference-derived expectations ---------------------------------------------------------
@@ -630,6 +1399,29 @@ def _ranges(reference: dict[str, Any]) -> dict[str, float]:
     return {signal: high[signal] - low[signal] for signal in low}
 
 
+def _alternates(values: list[Any], tolerance: float) -> bool:
+    """True when the last four samples alternate: up, down, up (or the reverse)."""
+
+    tail = values[-4:]
+    if len(tail) < 4:
+        return False
+    if any(isinstance(value, bool) for value in tail):
+        return all(isinstance(value, bool) for value in tail) and all(
+            tail[index] != tail[index + 1] for index in range(3)
+        )
+    try:
+        numbers = [float(value) for value in tail]
+    except (TypeError, ValueError):
+        return False
+    if not all(math.isfinite(number) for number in numbers):
+        return False
+    steps = [numbers[index + 1] - numbers[index] for index in range(3)]
+    threshold = max(tolerance, 1e-9)
+    return all(abs(step) > threshold for step in steps) and all(
+        (steps[index] > 0) != (steps[index + 1] > 0) for index in range(2)
+    )
+
+
 def expectations_for(config_id: str, case_name: str) -> list[OutputExpectation]:
     """The reference's final values, inside the D3 band."""
 
@@ -646,6 +1438,11 @@ def expectations_for(config_id: str, case_name: str) -> list[OutputExpectation]:
     for signal, values in sorted(entry["outputs"].items()):
         final = values[-1]
         kind = types.get(signal, "numeric")
+        if _alternates(values, RELATIVE_TOLERANCE * ranges.get(signal, 0.0)):
+            # A scenario that ends inside a period-2 limit cycle has no final value: a
+            # one-scan phase shift, which the scan band set allows (decision 011),
+            # would flip it. D3 still judges the whole trajectory (decision 015).
+            continue
         if kind == "boolean" or isinstance(final, bool):
             expectations.append(OutputExpectation(target=signal, value=bool(final)))
             continue
@@ -661,13 +1458,7 @@ def expectations_for(config_id: str, case_name: str) -> list[OutputExpectation]:
 
 def cases_for(config_id: str) -> list[AcceptanceCase]:
     return [
-        AcceptanceCase(
-            name=scenario.name,
-            inputs=scenario.inputs,
-            repeat=SCANS,
-            step_seconds=SCAN_SECONDS,
-            expectations=expectations_for(config_id, scenario.name),
-        )
+        _case(scenario, expectations_for(config_id, scenario.name))
         for scenario in scenarios_for(config_id)
     ]
 

@@ -1,0 +1,779 @@
+{
+ "configuration_id": "tpl-staging-rotation-stage-completion",
+ "controller_id": "StagingRotation.StageCompletion",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion",
+  "inputs": [
+   {
+    "description": "Equipment enable command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.u1__1",
+    "label": "u1__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Equipment enable command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.u1__2",
+    "label": "u1__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Equipment status",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.u1_actual__1",
+    "label": "u1_actual__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Equipment status",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.u1_actual__2",
+    "label": "u1_actual__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Stage index",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.uSta",
+    "label": "uSta",
+    "type": "S231:IntegerInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Stage change in progress",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.y1",
+    "label": "y1",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Successful completion of stage change",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.y1End",
+    "label": "y1End",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 5
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "nin": 2
+ },
+ "points": [
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1__1",
+   "name": "u1__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.u1__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1__2",
+   "name": "u1__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.u1__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1_actual__1",
+   "name": "u1_actual__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.u1_actual__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1_actual__2",
+   "name": "u1_actual__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.u1_actual__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uSta",
+   "name": "uSta",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.uSta",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1",
+   "name": "y1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.y1",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1End",
+   "name": "y1End",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion.y1End",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "StagingRotation/StageCompletion.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "6695b0a115a66aea7cf0b4b83c8710a0113ce3308d9f30a549249808737e0574",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "a73debc315c7225394e7ba1c2171a42f787fe4282e2a20376ea762c290f011b4",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1__1",
+    "kind": "boolean_input",
+    "label": "u1__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1__2",
+    "kind": "boolean_input",
+    "label": "u1__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1_actual__1",
+    "kind": "boolean_input",
+    "label": "u1_actual__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1_actual__2",
+    "kind": "boolean_input",
+    "label": "u1_actual__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uSta",
+    "kind": "numeric_input",
+    "label": "uSta",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1",
+    "kind": "boolean_output",
+    "label": "y1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1End",
+    "kind": "boolean_output",
+    "label": "y1End",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "allTru_fold_2",
+    "kind": "and",
+    "label": "allTru fold 2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "anyCha_fold_2",
+    "kind": "or",
+    "label": "anyCha fold 2",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "cha__1_rising",
+    "kind": "one_shot",
+    "label": "cha__1 rising",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cha__1_invert",
+    "kind": "not",
+    "label": "cha__1 invert",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": true
+    },
+    "id": "cha__1_falling",
+    "kind": "one_shot",
+    "label": "cha__1 falling",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cha__1_either",
+    "kind": "or",
+    "label": "cha__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "cha__2_rising",
+    "kind": "one_shot",
+    "label": "cha__2 rising",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cha__2_invert",
+    "kind": "not",
+    "label": "cha__2 invert",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": true
+    },
+    "id": "cha__2_falling",
+    "kind": "one_shot",
+    "label": "cha__2 falling",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cha__2_either",
+    "kind": "or",
+    "label": "cha__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chaAndMat",
+    "kind": "and",
+    "label": "chaAndMat",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": 0.0
+    },
+    "id": "chaSta_changed",
+    "kind": "numeric_changed",
+    "label": "chaSta changed",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": 0.0
+    },
+    "id": "chaSta_increased",
+    "kind": "numeric_increased",
+    "label": "chaSta increased",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": 0.0
+    },
+    "id": "chaSta_decreased",
+    "kind": "numeric_decreased",
+    "label": "chaSta decreased",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "disAndOff__1_or",
+    "kind": "or",
+    "label": "disAndOff__1 or",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "disAndOff__1_not",
+    "kind": "not",
+    "label": "disAndOff__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "disAndOff__2_or",
+    "kind": "or",
+    "label": "disAndOff__2 or",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "disAndOff__2_not",
+    "kind": "not",
+    "label": "disAndOff__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "enaAndOn__1",
+    "kind": "and",
+    "label": "enaAndOn__1",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "enaAndOn__2",
+    "kind": "and",
+    "label": "enaAndOn__2",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
+    },
+    "id": "endStaPro",
+    "kind": "boolean_falling_edge",
+    "label": "endStaPro",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lckAnyCha",
+    "kind": "boolean_set_reset",
+    "label": "lckAnyCha",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lckChaSta",
+    "kind": "boolean_set_reset",
+    "label": "lckChaSta",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "onOrOff__1",
+    "kind": "or",
+    "label": "onOrOff__1",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "onOrOff__2",
+    "kind": "or",
+    "label": "onOrOff__2",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preAnyCha",
+    "kind": "boolean_pre_host_tick",
+    "label": "preAnyCha",
+    "x": 540,
+    "y": 240
+   }
+  ],
+  "links": [
+   {
+    "source": "cha__1_invert",
+    "source_slot": "out",
+    "target": "cha__1_falling",
+    "target_slot": "in"
+   },
+   {
+    "source": "cha__1_rising",
+    "source_slot": "out",
+    "target": "cha__1_either",
+    "target_slot": "a"
+   },
+   {
+    "source": "cha__1_falling",
+    "source_slot": "out",
+    "target": "cha__1_either",
+    "target_slot": "b"
+   },
+   {
+    "source": "cha__2_invert",
+    "source_slot": "out",
+    "target": "cha__2_falling",
+    "target_slot": "in"
+   },
+   {
+    "source": "cha__2_rising",
+    "source_slot": "out",
+    "target": "cha__2_either",
+    "target_slot": "a"
+   },
+   {
+    "source": "cha__2_falling",
+    "source_slot": "out",
+    "target": "cha__2_either",
+    "target_slot": "b"
+   },
+   {
+    "source": "disAndOff__1_or",
+    "source_slot": "out",
+    "target": "disAndOff__1_not",
+    "target_slot": "in"
+   },
+   {
+    "source": "disAndOff__2_or",
+    "source_slot": "out",
+    "target": "disAndOff__2_not",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1__1",
+    "source_slot": "out",
+    "target": "cha__1_rising",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1__1",
+    "source_slot": "out",
+    "target": "cha__1_invert",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1__1",
+    "source_slot": "out",
+    "target": "disAndOff__1_or",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1__1",
+    "source_slot": "out",
+    "target": "enaAndOn__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1__2",
+    "source_slot": "out",
+    "target": "cha__2_rising",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1__2",
+    "source_slot": "out",
+    "target": "cha__2_invert",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1__2",
+    "source_slot": "out",
+    "target": "disAndOff__2_or",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1__2",
+    "source_slot": "out",
+    "target": "enaAndOn__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1_actual__1",
+    "source_slot": "out",
+    "target": "disAndOff__1_or",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1_actual__1",
+    "source_slot": "out",
+    "target": "enaAndOn__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1_actual__2",
+    "source_slot": "out",
+    "target": "disAndOff__2_or",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1_actual__2",
+    "source_slot": "out",
+    "target": "enaAndOn__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "uSta",
+    "source_slot": "out",
+    "target": "chaSta_changed",
+    "target_slot": "in"
+   },
+   {
+    "source": "uSta",
+    "source_slot": "out",
+    "target": "chaSta_increased",
+    "target_slot": "in"
+   },
+   {
+    "source": "uSta",
+    "source_slot": "out",
+    "target": "chaSta_decreased",
+    "target_slot": "in"
+   },
+   {
+    "source": "allTru_fold_2",
+    "source_slot": "out",
+    "target": "chaAndMat",
+    "target_slot": "b"
+   },
+   {
+    "source": "anyCha_fold_2",
+    "source_slot": "out",
+    "target": "preAnyCha",
+    "target_slot": "in"
+   },
+   {
+    "source": "cha__1_either",
+    "source_slot": "out",
+    "target": "anyCha_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "cha__2_either",
+    "source_slot": "out",
+    "target": "anyCha_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "chaAndMat",
+    "source_slot": "out",
+    "target": "lckChaSta",
+    "target_slot": "clear"
+   },
+   {
+    "source": "chaSta_changed",
+    "source_slot": "out",
+    "target": "lckAnyCha",
+    "target_slot": "clear"
+   },
+   {
+    "source": "chaSta_changed",
+    "source_slot": "out",
+    "target": "lckChaSta",
+    "target_slot": "set"
+   },
+   {
+    "source": "disAndOff__1_not",
+    "source_slot": "out",
+    "target": "onOrOff__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "disAndOff__2_not",
+    "source_slot": "out",
+    "target": "onOrOff__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "enaAndOn__1",
+    "source_slot": "out",
+    "target": "onOrOff__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "enaAndOn__2",
+    "source_slot": "out",
+    "target": "onOrOff__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "endStaPro",
+    "source_slot": "out",
+    "target": "y1End",
+    "target_slot": "in"
+   },
+   {
+    "source": "lckAnyCha",
+    "source_slot": "out",
+    "target": "chaAndMat",
+    "target_slot": "a"
+   },
+   {
+    "source": "lckChaSta",
+    "source_slot": "out",
+    "target": "endStaPro",
+    "target_slot": "in"
+   },
+   {
+    "source": "lckChaSta",
+    "source_slot": "out",
+    "target": "y1",
+    "target_slot": "in"
+   },
+   {
+    "source": "onOrOff__1",
+    "source_slot": "out",
+    "target": "allTru_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "onOrOff__2",
+    "source_slot": "out",
+    "target": "allTru_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "preAnyCha",
+    "source_slot": "out",
+    "target": "lckAnyCha",
+    "target_slot": "set"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "allTru_fold_2": "allTru__fold_2",
+    "anyCha_fold_2": "anyCha__fold_2",
+    "chaAndMat": "chaAndMat",
+    "chaSta": "chaSta",
+    "chaSta_changed": "chaSta",
+    "chaSta_decreased": "chaSta",
+    "chaSta_increased": "chaSta",
+    "cha__1": "cha__1",
+    "cha__1_either": "cha__1",
+    "cha__1_falling": "cha__1",
+    "cha__1_invert": "cha__1",
+    "cha__1_rising": "cha__1",
+    "cha__2": "cha__2",
+    "cha__2_either": "cha__2",
+    "cha__2_falling": "cha__2",
+    "cha__2_invert": "cha__2",
+    "cha__2_rising": "cha__2",
+    "disAndOff__1": "disAndOff__1",
+    "disAndOff__1_not": "disAndOff__1",
+    "disAndOff__1_or": "disAndOff__1",
+    "disAndOff__2": "disAndOff__2",
+    "disAndOff__2_not": "disAndOff__2",
+    "disAndOff__2_or": "disAndOff__2",
+    "enaAndOn__1": "enaAndOn__1",
+    "enaAndOn__2": "enaAndOn__2",
+    "endStaPro": "endStaPro",
+    "lckAnyCha": "lckAnyCha",
+    "lckChaSta": "lckChaSta",
+    "onOrOff__1": "onOrOff__1",
+    "onOrOff__2": "onOrOff__2",
+    "preAnyCha": "preAnyCha"
+   },
+   "coverage": {
+    "boundary_inputs": 5,
+    "boundary_outputs": 2,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Integers.Change": 1,
+     "Buildings.Controls.OBC.CDL.Logical.And": 4,
+     "Buildings.Controls.OBC.CDL.Logical.Change": 2,
+     "Buildings.Controls.OBC.CDL.Logical.FallingEdge": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Nor": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 1
+    },
+    "component_count": 16,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Integers.Change",
+     "Buildings.Controls.OBC.CDL.Logical.FallingEdge",
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Pre"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.StagingRotation.StageCompletion",
+    "root_label": "StageCompletion",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "a73debc315c7225394e7ba1c2171a42f787fe4282e2a20376ea762c290f011b4",
+    "supported_class_count": 16,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "a73debc315c7225394e7ba1c2171a42f787fe4282e2a20376ea762c290f011b4"
+  },
+  "name": "StageCompletion"
+ }
+}

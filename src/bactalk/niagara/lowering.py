@@ -197,6 +197,26 @@ _ROWS: tuple[LoweringDecision, ...] = (
         "Round half away from zero (CDL RealToInteger); kitControl has no rounding block.",
     ),
     _module(
+        BlockKind.NUMERIC_INTEGRATOR_WITH_RESET,
+        "IntegratorWithReset",
+        "CDL IntegratorWithReset as the reference engine discretises it (forward Euler "
+        "over the tick, reset on a rising trigger, output one tick behind); a module "
+        "kernel so those tick semantics are exact rather than a stock approximation.",
+    ),
+    _module(
+        BlockKind.NUMERIC_ON_COUNTER,
+        "OnCounter",
+        "CDL OnCounter (count rising triggers, rising reset returns to start, output one "
+        "tick behind as the reference engine emits it); a module kernel so the edge and "
+        "reset semantics are exact rather than a stock approximation.",
+    ),
+    _module(
+        BlockKind.WET_BULB_TEMPERATURE,
+        "WetBulb",
+        "CDL WetBulb_TDryBulPhi (Stull's closed form, fdlibm atan as the reference "
+        "engine evaluates it).",
+    ),
+    _module(
         BlockKind.NUMERIC_LIMIT_SLEW_RATE,
         "LimitSlewRate",
         "CDL LimitSlewRate as the reference engine discretises it (implicit lag, clamped "

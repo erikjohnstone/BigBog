@@ -115,7 +115,16 @@ stateless `Round` and `LimitSlewRate`. `LimitSlewRate` follows CDL's
 `Reals.LimitSlewRate` discretised as the Open Control Engine does it: the first
 execution passes `in` through, later ones lag it by `derivativeTime` (implicit
 Euler) and clamp the change to `fallingSlewRate·dt … raisingSlewRate·dt`, with
-`dt` the time since the previous execution. A `WsTextBlock` note carries no
+`dt` the time since the previous execution. The chiller-plant follow-up adds
+`IntegratorWithReset`, `OnCounter` and `WetBulb`. The first two emit the state the
+previous instant left, as the reference engine does: the integrator takes a
+forward-Euler step of `gain·in` over the time since its previous instant (none on the
+first) or loads `resetValue` on a rising `trigger`; the counter ignores its first
+instant, then adds one on a rising `trigger` and returns to its start on a rising
+`reset`. Both resample at the end of an instant (S-MODULE-6), and a second step at one
+instant recomputes from that instant's inputs, so nothing is integrated or counted
+twice. `WetBulb` is Stull's closed form with fdlibm `atan` (Java `StrictMath`, the
+engine's `libm`, and a Python port agree bit for bit). A `WsTextBlock` note carries no
 behaviour.
 
 | Id | Rule | Status | Source |

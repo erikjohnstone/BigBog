@@ -1,0 +1,3426 @@
+{
+ "configuration_id": "chw-pumps-chilled-water",
+ "controller_id": "Plants.Chillers.Pumps.ChilledWater.Controller",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller",
+  "inputs": [
+   {
+    "description": "Chilled water flow",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.VChiWat_flow",
+    "label": "VChiWat_flow",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Chilled water differential static pressure setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.dpChiWatSet_remote__1",
+    "label": "dpChiWatSet_remote__1",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Chilled water differential static pressure setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.dpChiWatSet_remote__2",
+    "label": "dpChiWatSet_remote__2",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Chilled water differential static pressure from remote sensor",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.dpChiWat_remote__1",
+    "label": "dpChiWat_remote__1",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Chilled water differential static pressure from remote sensor",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.dpChiWat_remote__2",
+    "label": "dpChiWat_remote__2",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Chilled water isolation valve commanded position",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.u1ChiWatIsoVal__1",
+    "label": "u1ChiWatIsoVal__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Chilled water isolation valve commanded position",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.u1ChiWatIsoVal__2",
+    "label": "u1ChiWatIsoVal__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Chilled water pumps proven on status",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.uChiWatPum__1",
+    "label": "uChiWatPum__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Chilled water pumps proven on status",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.uChiWatPum__2",
+    "label": "uChiWatPum__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Index of chilled water pumps in lead-lag order: lead pump, first lag pump, second lag pump, etc.",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.uPumLeaLag__1",
+    "label": "uPumLeaLag__1",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "Index of chilled water pumps in lead-lag order: lead pump, first lag pump, second lag pump, etc.",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.uPumLeaLag__2",
+    "label": "uPumLeaLag__2",
+    "type": "S231:IntegerInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Chilled water pump status setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.yChiWatPum__1",
+    "label": "yChiWatPum__1",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Chilled water pump status setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.yChiWatPum__2",
+    "label": "yChiWatPum__2",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Lead pump status setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.yLea",
+    "label": "yLea",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Enabled chilled water pump speed",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.yPumSpe",
+    "label": "yPumSpe",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 14
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "Ti": 120.0
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VChiWat_flow",
+   "name": "VChiWat_flow",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.VChiWat_flow",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dpChiWatSet_remote__1",
+   "name": "dpChiWatSet_remote__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.dpChiWatSet_remote__1",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dpChiWatSet_remote__2",
+   "name": "dpChiWatSet_remote__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.dpChiWatSet_remote__2",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dpChiWat_remote__1",
+   "name": "dpChiWat_remote__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.dpChiWat_remote__1",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dpChiWat_remote__2",
+   "name": "dpChiWat_remote__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.dpChiWat_remote__2",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1ChiWatIsoVal__1",
+   "name": "u1ChiWatIsoVal__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.u1ChiWatIsoVal__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1ChiWatIsoVal__2",
+   "name": "u1ChiWatIsoVal__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.u1ChiWatIsoVal__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uChiWatPum__1",
+   "name": "uChiWatPum__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.uChiWatPum__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uChiWatPum__2",
+   "name": "uChiWatPum__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.uChiWatPum__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uPumLeaLag__1",
+   "name": "uPumLeaLag__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.uPumLeaLag__1",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uPumLeaLag__2",
+   "name": "uPumLeaLag__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.uPumLeaLag__2",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "yChiWatPum__1",
+   "name": "yChiWatPum__1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.yChiWatPum__1",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "yChiWatPum__2",
+   "name": "yChiWatPum__2",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.yChiWatPum__2",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "yLea",
+   "name": "yLea",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.yLea",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yPumSpe",
+   "name": "yPumSpe",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller.yPumSpe",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Plants/Chillers/Pumps/ChilledWater/Controller.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "a3cfdde4e2fa1605f351875c2199b6aafaee7fe0",
+  "source_sha256": "b295287ca2d986192203a1585cacbcf57b5a0f2a0471ceb82ff094ac029082f9",
+  "tag": "master after v13.0.0 (2026-09-16)"
+ },
+ "translator": {
+  "cxf_source_sha256": "95e39b4c9b64e1d2ee1a9e9d730cd8f083ee79a97f6dca41e6f0c945c98462e8",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "dpChiWat_remote__1",
+    "kind": "numeric_input",
+    "label": "dpChiWat_remote__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "dpChiWat_remote__2",
+    "kind": "numeric_input",
+    "label": "dpChiWat_remote__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "dpChiWatSet_remote__1",
+    "kind": "numeric_input",
+    "label": "dpChiWatSet_remote__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "dpChiWatSet_remote__2",
+    "kind": "numeric_input",
+    "label": "dpChiWatSet_remote__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1ChiWatIsoVal__1",
+    "kind": "boolean_input",
+    "label": "u1ChiWatIsoVal__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1ChiWatIsoVal__2",
+    "kind": "boolean_input",
+    "label": "u1ChiWatIsoVal__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uChiWatPum__1",
+    "kind": "boolean_input",
+    "label": "uChiWatPum__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uChiWatPum__2",
+    "kind": "boolean_input",
+    "label": "uChiWatPum__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uPumLeaLag__1",
+    "kind": "numeric_input",
+    "label": "uPumLeaLag__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uPumLeaLag__2",
+    "kind": "numeric_input",
+    "label": "uPumLeaLag__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "VChiWat_flow",
+    "kind": "numeric_input",
+    "label": "VChiWat_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yChiWatPum__1",
+    "kind": "boolean_output",
+    "label": "yChiWatPum__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yChiWatPum__2",
+    "kind": "boolean_output",
+    "label": "yChiWatPum__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yLea",
+    "kind": "boolean_output",
+    "label": "yLea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yPumSpe",
+    "kind": "numeric_output",
+    "label": "yPumSpe",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addInt",
+    "kind": "add",
+    "label": "addInt",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPum__1",
+    "kind": "boolean_switch",
+    "label": "addPum__1",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPum__2",
+    "kind": "boolean_switch",
+    "label": "addPum__2",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__1_true",
+    "kind": "numeric_const",
+    "label": "booToInt__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__1_false",
+    "kind": "numeric_const",
+    "label": "booToInt__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__1",
+    "kind": "numeric_switch",
+    "label": "booToInt__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__2_true",
+    "kind": "numeric_const",
+    "label": "booToInt__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__2_false",
+    "kind": "numeric_const",
+    "label": "booToInt__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__2",
+    "kind": "numeric_switch",
+    "label": "booToInt__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt1__1_true",
+    "kind": "numeric_const",
+    "label": "booToInt1__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt1__1_false",
+    "kind": "numeric_const",
+    "label": "booToInt1__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt1__1",
+    "kind": "numeric_switch",
+    "label": "booToInt1__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt1__2_true",
+    "kind": "numeric_const",
+    "label": "booToInt1__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt1__2_false",
+    "kind": "numeric_const",
+    "label": "booToInt1__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt1__2",
+    "kind": "numeric_switch",
+    "label": "booToInt1__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt2_true",
+    "kind": "numeric_const",
+    "label": "booToInt2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt2_false",
+    "kind": "numeric_const",
+    "label": "booToInt2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt2",
+    "kind": "numeric_switch",
+    "label": "booToInt2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt3_true",
+    "kind": "numeric_const",
+    "label": "booToInt3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt3_false",
+    "kind": "numeric_const",
+    "label": "booToInt3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt3",
+    "kind": "numeric_switch",
+    "label": "booToInt3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conInt",
+    "kind": "numeric_const",
+    "label": "conInt",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conInt1",
+    "kind": "numeric_const",
+    "label": "conInt1",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conInt2",
+    "kind": "numeric_const",
+    "label": "conInt2",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "disLasLag",
+    "kind": "boolean_set_reset",
+    "label": "disLasLag",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg",
+    "kind": "one_shot",
+    "label": "edg",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "anyIsoVal_fold_2",
+    "kind": "or",
+    "label": "anyIsoVal fold 2",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "con",
+    "kind": "boolean_const",
+    "label": "con",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "con1",
+    "kind": "boolean_const",
+    "label": "con1",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "con2",
+    "kind": "boolean_const",
+    "label": "con2",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "leaPumSta",
+    "kind": "boolean_switch",
+    "label": "leaPumSta",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "or2",
+    "kind": "or",
+    "label": "or2",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": -1.0
+    },
+    "id": "addPar1_parameter",
+    "kind": "numeric_const",
+    "label": "addPar1 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar1",
+    "kind": "add",
+    "label": "addPar1",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__1_2_true",
+    "kind": "numeric_const",
+    "label": "booToInt__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__1_2_false",
+    "kind": "numeric_const",
+    "label": "booToInt__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__1_2",
+    "kind": "numeric_switch",
+    "label": "booToInt__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__2_2_true",
+    "kind": "numeric_const",
+    "label": "booToInt__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__2_2_false",
+    "kind": "numeric_const",
+    "label": "booToInt__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__2_2",
+    "kind": "numeric_switch",
+    "label": "booToInt__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": 0.0
+    },
+    "id": "cha_changed",
+    "kind": "numeric_changed",
+    "label": "cha changed",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": 0.0
+    },
+    "id": "cha_increased",
+    "kind": "numeric_increased",
+    "label": "cha increased",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "initial": 0.0
+    },
+    "id": "cha_decreased",
+    "kind": "numeric_decreased",
+    "label": "cha decreased",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "chiWatFloRat_parameter",
+    "kind": "numeric_const",
+    "label": "chiWatFloRat parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatFloRat",
+    "kind": "multiply",
+    "label": "chiWatFloRat",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.03
+    },
+    "id": "con2_2",
+    "kind": "numeric_const",
+    "label": "con2",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.01,
+     "u_low": -0.01
+    },
+    "id": "disPum",
+    "kind": "hysteresis",
+    "label": "disPum",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "disPum1",
+    "kind": "and",
+    "label": "disPum1",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.01,
+     "u_low": -0.01
+    },
+    "id": "enaPum",
+    "kind": "hysteresis",
+    "label": "enaPum",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "enaPum1",
+    "kind": "and",
+    "label": "enaPum1",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intGreThr_threshold",
+    "kind": "numeric_const",
+    "label": "intGreThr threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intGreThr",
+    "kind": "greater_than",
+    "label": "intGreThr",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intToRea_zero",
+    "kind": "numeric_const",
+    "label": "intToRea zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intToRea",
+    "kind": "add",
+    "label": "intToRea",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "nomPum_parameter",
+    "kind": "numeric_const",
+    "label": "nomPum parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "nomPum",
+    "kind": "multiply",
+    "label": "nomPum",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "nomPum1_parameter",
+    "kind": "numeric_const",
+    "label": "nomPum1 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "nomPum1",
+    "kind": "multiply",
+    "label": "nomPum1",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "numOpePum_fold_2",
+    "kind": "add",
+    "label": "numOpePum fold 2",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "sub",
+    "kind": "subtract",
+    "label": "sub",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "sub1",
+    "kind": "subtract",
+    "label": "sub1",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "sub2",
+    "kind": "subtract",
+    "label": "sub2",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "sub3",
+    "kind": "subtract",
+    "label": "sub3",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg_2",
+    "kind": "one_shot",
+    "label": "edg",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 600.0
+    },
+    "id": "tim",
+    "kind": "timer",
+    "label": "tim",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "xor",
+    "kind": "xor",
+    "label": "xor",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg_3",
+    "kind": "one_shot",
+    "label": "edg",
+    "x": 0,
+    "y": 840
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 600.0
+    },
+    "id": "tim_2",
+    "kind": "timer",
+    "label": "tim",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "xor_2",
+    "kind": "xor",
+    "label": "xor",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "enaNexLag",
+    "kind": "boolean_set_reset",
+    "label": "enaNexLag",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "enaPum__1",
+    "kind": "or",
+    "label": "enaPum__1",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "enaPum__2",
+    "kind": "or",
+    "label": "enaPum__2",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "intEqu1__1",
+    "kind": "equal",
+    "label": "intEqu1__1",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "intEqu1__2",
+    "kind": "equal",
+    "label": "intEqu1__2",
+    "x": 180,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "intEqu2__1",
+    "kind": "equal",
+    "label": "intEqu2__1",
+    "x": 360,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "intEqu2__2",
+    "kind": "equal",
+    "label": "intEqu2__2",
+    "x": 540,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "intEqu3__1",
+    "kind": "equal",
+    "label": "intEqu3__1",
+    "x": 720,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "intEqu3__2",
+    "kind": "equal",
+    "label": "intEqu3__2",
+    "x": 900,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "intEqu4__1",
+    "kind": "equal",
+    "label": "intEqu4__1",
+    "x": 0,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "intEqu4__2",
+    "kind": "equal",
+    "label": "intEqu4__2",
+    "x": 180,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intGreThr_2_threshold",
+    "kind": "numeric_const",
+    "label": "intGreThr threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intGreThr_2",
+    "kind": "greater_than",
+    "label": "intGreThr",
+    "x": 360,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "intLesThr_threshold",
+    "kind": "numeric_const",
+    "label": "intLesThr threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intLesThr",
+    "kind": "less_than",
+    "label": "intLesThr",
+    "x": 540,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "intSwi",
+    "kind": "numeric_switch",
+    "label": "intSwi",
+    "x": 720,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "intSwi1",
+    "kind": "numeric_switch",
+    "label": "intSwi1",
+    "x": 900,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intToRea__1_zero",
+    "kind": "numeric_const",
+    "label": "intToRea__1 zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intToRea__1",
+    "kind": "add",
+    "label": "intToRea__1",
+    "x": 0,
+    "y": 1200
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intToRea__2_zero",
+    "kind": "numeric_const",
+    "label": "intToRea__2 zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intToRea__2",
+    "kind": "add",
+    "label": "intToRea__2",
+    "x": 180,
+    "y": 1200
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "lasLagPum_index____1_threshold",
+    "kind": "numeric_const",
+    "label": "lasLagPum index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lasLagPum_index____1",
+    "kind": "less_than",
+    "label": "lasLagPum index <= 1",
+    "x": 360,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "lasLagPum_element_1",
+    "kind": "numeric_switch",
+    "label": "lasLagPum element 1",
+    "x": 540,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "lasLagPumSta__1",
+    "kind": "boolean_switch",
+    "label": "lasLagPumSta__1",
+    "x": 720,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "lasLagPumSta__2",
+    "kind": "boolean_switch",
+    "label": "lasLagPumSta__2",
+    "x": 900,
+    "y": 1200
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "leaPum_index____1_threshold",
+    "kind": "numeric_const",
+    "label": "leaPum index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "leaPum_index____1",
+    "kind": "less_than",
+    "label": "leaPum index <= 1",
+    "x": 0,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "leaPum_element_1",
+    "kind": "numeric_switch",
+    "label": "leaPum element 1",
+    "x": 180,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "leaPumSta__1",
+    "kind": "boolean_switch",
+    "label": "leaPumSta__1",
+    "x": 360,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "leaPumSta__2",
+    "kind": "boolean_switch",
+    "label": "leaPumSta__2",
+    "x": 540,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "mulAnd_fold_2",
+    "kind": "and",
+    "label": "mulAnd fold 2",
+    "x": 720,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "mulInt",
+    "kind": "multiply",
+    "label": "mulInt",
+    "x": 900,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "mulInt1",
+    "kind": "multiply",
+    "label": "mulInt1",
+    "x": 0,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "mulOr_fold_2",
+    "kind": "or",
+    "label": "mulOr fold 2",
+    "x": 180,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "mulSumInt_fold_2",
+    "kind": "add",
+    "label": "mulSumInt fold 2",
+    "x": 360,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "nexLagPum_index____1_threshold",
+    "kind": "numeric_const",
+    "label": "nexLagPum index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "nexLagPum_index____1",
+    "kind": "less_than",
+    "label": "nexLagPum index <= 1",
+    "x": 540,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "nexLagPum_element_1",
+    "kind": "numeric_switch",
+    "label": "nexLagPum element 1",
+    "x": 720,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "nexLagPumSta__1",
+    "kind": "boolean_switch",
+    "label": "nexLagPumSta__1",
+    "x": 900,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "nexLagPumSta__2",
+    "kind": "boolean_switch",
+    "label": "nexLagPumSta__2",
+    "x": 0,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "not2",
+    "kind": "not",
+    "label": "not2",
+    "x": 180,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "or2_2",
+    "kind": "or",
+    "label": "or2",
+    "x": 360,
+    "y": 1560
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "pre1__1",
+    "kind": "boolean_pre_host_tick",
+    "label": "pre1__1",
+    "x": 540,
+    "y": 1560
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "pre1__2",
+    "kind": "boolean_pre_host_tick",
+    "label": "pre1__2",
+    "x": 720,
+    "y": 1560
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "pumIndCon__1",
+    "kind": "numeric_const",
+    "label": "pumIndCon__1",
+    "x": 900,
+    "y": 1560
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "pumIndCon__2",
+    "kind": "numeric_const",
+    "label": "pumIndCon__2",
+    "x": 0,
+    "y": 1680
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 1.0,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 1.0,
+     "reverse_acting": true,
+     "td": 0.1,
+     "ti": 120.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.0,
+     "y_reset": 0.0,
+     "yd_start": 0.0
+    },
+    "id": "conPID",
+    "kind": "pid_with_reset",
+    "label": "conPID",
+    "x": 180,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "swiInp",
+    "kind": "numeric_switch",
+    "label": "swiInp",
+    "x": 360,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "swiOut",
+    "kind": "numeric_switch",
+    "label": "swiOut",
+    "x": 540,
+    "y": 1680
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "valDis",
+    "kind": "numeric_const",
+    "label": "valDis",
+    "x": 720,
+    "y": 1680
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 1.0,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 1.0,
+     "reverse_acting": true,
+     "td": 0.1,
+     "ti": 120.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.0,
+     "y_reset": 0.0,
+     "yd_start": 0.0
+    },
+    "id": "conPID_2",
+    "kind": "pid_with_reset",
+    "label": "conPID",
+    "x": 900,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "swiInp_2",
+    "kind": "numeric_switch",
+    "label": "swiInp",
+    "x": 0,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "swiOut_2",
+    "kind": "numeric_switch",
+    "label": "swiOut",
+    "x": 180,
+    "y": 1800
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "valDis_2",
+    "kind": "numeric_const",
+    "label": "valDis",
+    "x": 360,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "div__1",
+    "kind": "divide",
+    "label": "div__1",
+    "x": 540,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "div__2",
+    "kind": "divide",
+    "label": "div__2",
+    "x": 720,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "maxLoo_fold_2",
+    "kind": "maximum",
+    "label": "maxLoo fold 2",
+    "x": 900,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "mulOr_fold_2_2",
+    "kind": "or",
+    "label": "mulOr fold 2",
+    "x": 0,
+    "y": 1920
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "one",
+    "kind": "numeric_const",
+    "label": "one",
+    "x": 180,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "pumSpe_delta_f",
+    "kind": "subtract",
+    "label": "pumSpe \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pumSpe_delta_x",
+    "kind": "subtract",
+    "label": "pumSpe \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pumSpe_slope",
+    "kind": "divide",
+    "label": "pumSpe slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pumSpe_slope_x2",
+    "kind": "multiply",
+    "label": "pumSpe slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pumSpe_intercept",
+    "kind": "subtract",
+    "label": "pumSpe intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pumSpe_scaled",
+    "kind": "multiply",
+    "label": "pumSpe b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pumSpe_result",
+    "kind": "add",
+    "label": "pumSpe",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pumSpe_lower_limit",
+    "kind": "maximum",
+    "label": "pumSpe lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pumSpe_upper_limit",
+    "kind": "minimum",
+    "label": "pumSpe upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "pumSpe_max",
+    "kind": "numeric_const",
+    "label": "pumSpe_max",
+    "x": 540,
+    "y": 1920
+   },
+   {
+    "config": {
+     "value": 0.1
+    },
+    "id": "pumSpe_min",
+    "kind": "numeric_const",
+    "label": "pumSpe_min",
+    "x": 720,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "numeric_switch",
+    "label": "swi",
+    "x": 900,
+    "y": 1920
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 0,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "pumSta__1",
+    "kind": "and",
+    "label": "pumSta__1",
+    "x": 180,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "pumSta__2",
+    "kind": "and",
+    "label": "pumSta__2",
+    "x": 360,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "pumSta1__1",
+    "kind": "and",
+    "label": "pumSta1__1",
+    "x": 540,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "pumSta1__2",
+    "kind": "and",
+    "label": "pumSta1__2",
+    "x": 720,
+    "y": 2040
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "reaToInt",
+    "kind": "numeric_round",
+    "label": "reaToInt",
+    "x": 900,
+    "y": 2040
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "reaToInt1",
+    "kind": "numeric_round",
+    "label": "reaToInt1",
+    "x": 0,
+    "y": 2160
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "reaToInt2",
+    "kind": "numeric_round",
+    "label": "reaToInt2",
+    "x": 180,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "remPum__1",
+    "kind": "boolean_switch",
+    "label": "remPum__1",
+    "x": 360,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "remPum__2",
+    "kind": "boolean_switch",
+    "label": "remPum__2",
+    "x": 540,
+    "y": 2160
+   }
+  ],
+  "links": [
+   {
+    "source": "booToInt__1_true",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__1_false",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__2_true",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__2_false",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt1__1_true",
+    "source_slot": "out",
+    "target": "booToInt1__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt1__1_false",
+    "source_slot": "out",
+    "target": "booToInt1__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt1__2_true",
+    "source_slot": "out",
+    "target": "booToInt1__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt1__2_false",
+    "source_slot": "out",
+    "target": "booToInt1__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt2_true",
+    "source_slot": "out",
+    "target": "booToInt2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt2_false",
+    "source_slot": "out",
+    "target": "booToInt2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt3_true",
+    "source_slot": "out",
+    "target": "booToInt3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt3_false",
+    "source_slot": "out",
+    "target": "booToInt3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "addPar1_parameter",
+    "source_slot": "out",
+    "target": "addPar1",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__1_2_true",
+    "source_slot": "out",
+    "target": "booToInt__1_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__1_2_false",
+    "source_slot": "out",
+    "target": "booToInt__1_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__2_2_true",
+    "source_slot": "out",
+    "target": "booToInt__2_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__2_2_false",
+    "source_slot": "out",
+    "target": "booToInt__2_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "chiWatFloRat_parameter",
+    "source_slot": "out",
+    "target": "chiWatFloRat",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr_threshold",
+    "source_slot": "out",
+    "target": "intGreThr",
+    "target_slot": "b"
+   },
+   {
+    "source": "intToRea_zero",
+    "source_slot": "out",
+    "target": "intToRea",
+    "target_slot": "b"
+   },
+   {
+    "source": "nomPum_parameter",
+    "source_slot": "out",
+    "target": "nomPum",
+    "target_slot": "b"
+   },
+   {
+    "source": "nomPum1_parameter",
+    "source_slot": "out",
+    "target": "nomPum1",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr_2_threshold",
+    "source_slot": "out",
+    "target": "intGreThr_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intLesThr_threshold",
+    "source_slot": "out",
+    "target": "intLesThr",
+    "target_slot": "b"
+   },
+   {
+    "source": "intToRea__1_zero",
+    "source_slot": "out",
+    "target": "intToRea__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "intToRea__2_zero",
+    "source_slot": "out",
+    "target": "intToRea__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "lasLagPum_index____1_threshold",
+    "source_slot": "out",
+    "target": "lasLagPum_index____1",
+    "target_slot": "b"
+   },
+   {
+    "source": "leaPum_index____1_threshold",
+    "source_slot": "out",
+    "target": "leaPum_index____1",
+    "target_slot": "b"
+   },
+   {
+    "source": "nexLagPum_index____1_threshold",
+    "source_slot": "out",
+    "target": "nexLagPum_index____1",
+    "target_slot": "b"
+   },
+   {
+    "source": "pumSpe_delta_f",
+    "source_slot": "out",
+    "target": "pumSpe_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "pumSpe_delta_x",
+    "source_slot": "out",
+    "target": "pumSpe_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "pumSpe_slope",
+    "source_slot": "out",
+    "target": "pumSpe_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "pumSpe_slope",
+    "source_slot": "out",
+    "target": "pumSpe_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "pumSpe_slope_x2",
+    "source_slot": "out",
+    "target": "pumSpe_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "pumSpe_intercept",
+    "source_slot": "out",
+    "target": "pumSpe_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "pumSpe_scaled",
+    "source_slot": "out",
+    "target": "pumSpe_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "pumSpe_lower_limit",
+    "source_slot": "out",
+    "target": "pumSpe_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "pumSpe_upper_limit",
+    "source_slot": "out",
+    "target": "pumSpe_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "dpChiWat_remote__1",
+    "source_slot": "out",
+    "target": "div__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "dpChiWat_remote__2",
+    "source_slot": "out",
+    "target": "div__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "dpChiWatSet_remote__1",
+    "source_slot": "out",
+    "target": "div__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "dpChiWatSet_remote__2",
+    "source_slot": "out",
+    "target": "div__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1ChiWatIsoVal__1",
+    "source_slot": "out",
+    "target": "anyIsoVal_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1ChiWatIsoVal__2",
+    "source_slot": "out",
+    "target": "anyIsoVal_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "uChiWatPum__1",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "uChiWatPum__1",
+    "source_slot": "out",
+    "target": "booToInt__1_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "uChiWatPum__1",
+    "source_slot": "out",
+    "target": "lasLagPumSta__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "uChiWatPum__1",
+    "source_slot": "out",
+    "target": "leaPumSta__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "uChiWatPum__1",
+    "source_slot": "out",
+    "target": "mulOr_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "uChiWatPum__1",
+    "source_slot": "out",
+    "target": "nexLagPumSta__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "uChiWatPum__2",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "uChiWatPum__2",
+    "source_slot": "out",
+    "target": "booToInt__2_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "uChiWatPum__2",
+    "source_slot": "out",
+    "target": "lasLagPumSta__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "uChiWatPum__2",
+    "source_slot": "out",
+    "target": "leaPumSta__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "uChiWatPum__2",
+    "source_slot": "out",
+    "target": "mulOr_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "uChiWatPum__2",
+    "source_slot": "out",
+    "target": "nexLagPumSta__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "uPumLeaLag__1",
+    "source_slot": "out",
+    "target": "intToRea__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "uPumLeaLag__2",
+    "source_slot": "out",
+    "target": "intToRea__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "VChiWat_flow",
+    "source_slot": "out",
+    "target": "chiWatFloRat",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt",
+    "source_slot": "out",
+    "target": "intLesThr",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt",
+    "source_slot": "out",
+    "target": "intSwi1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "addPum__1",
+    "source_slot": "out",
+    "target": "pumSta1__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPum__2",
+    "source_slot": "out",
+    "target": "pumSta1__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__1",
+    "source_slot": "out",
+    "target": "intEqu4__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__1",
+    "source_slot": "out",
+    "target": "mulSumInt_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt__2",
+    "source_slot": "out",
+    "target": "intEqu4__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__2",
+    "source_slot": "out",
+    "target": "mulSumInt_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt1__1",
+    "source_slot": "out",
+    "target": "intEqu4__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt1__2",
+    "source_slot": "out",
+    "target": "intEqu4__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt2",
+    "source_slot": "out",
+    "target": "mulInt",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt3",
+    "source_slot": "out",
+    "target": "mulInt1",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt",
+    "source_slot": "out",
+    "target": "addInt",
+    "target_slot": "a"
+   },
+   {
+    "source": "conInt",
+    "source_slot": "out",
+    "target": "leaPum_index____1",
+    "target_slot": "a"
+   },
+   {
+    "source": "conInt1",
+    "source_slot": "out",
+    "target": "intSwi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conInt2",
+    "source_slot": "out",
+    "target": "intSwi1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "disLasLag",
+    "source_slot": "out",
+    "target": "not2",
+    "target_slot": "in"
+   },
+   {
+    "source": "edg",
+    "source_slot": "out",
+    "target": "disLasLag",
+    "target_slot": "clear"
+   },
+   {
+    "source": "edg",
+    "source_slot": "out",
+    "target": "enaNexLag",
+    "target_slot": "clear"
+   },
+   {
+    "source": "anyIsoVal_fold_2",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "a"
+   },
+   {
+    "source": "con",
+    "source_slot": "out",
+    "target": "leaPumSta",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "con1",
+    "source_slot": "out",
+    "target": "leaPumSta",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "con2",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "b"
+   },
+   {
+    "source": "leaPumSta",
+    "source_slot": "out",
+    "target": "or2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "or2",
+    "source_slot": "out",
+    "target": "leaPumSta",
+    "target_slot": "selector"
+   },
+   {
+    "source": "addPar1",
+    "source_slot": "out",
+    "target": "nomPum1",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt__1_2",
+    "source_slot": "out",
+    "target": "numOpePum_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt__2_2",
+    "source_slot": "out",
+    "target": "numOpePum_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "cha_increased",
+    "source_slot": "out",
+    "target": "edg_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "cha_decreased",
+    "source_slot": "out",
+    "target": "edg_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "chiWatFloRat",
+    "source_slot": "out",
+    "target": "sub1",
+    "target_slot": "b"
+   },
+   {
+    "source": "chiWatFloRat",
+    "source_slot": "out",
+    "target": "sub2",
+    "target_slot": "a"
+   },
+   {
+    "source": "con2_2",
+    "source_slot": "out",
+    "target": "sub",
+    "target_slot": "b"
+   },
+   {
+    "source": "con2_2",
+    "source_slot": "out",
+    "target": "sub3",
+    "target_slot": "b"
+   },
+   {
+    "source": "disPum",
+    "source_slot": "out",
+    "target": "disPum1",
+    "target_slot": "a"
+   },
+   {
+    "source": "disPum1",
+    "source_slot": "out",
+    "target": "xor_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "enaPum",
+    "source_slot": "out",
+    "target": "enaPum1",
+    "target_slot": "a"
+   },
+   {
+    "source": "enaPum1",
+    "source_slot": "out",
+    "target": "xor",
+    "target_slot": "a"
+   },
+   {
+    "source": "intGreThr",
+    "source_slot": "out",
+    "target": "disPum1",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr",
+    "source_slot": "out",
+    "target": "enaPum1",
+    "target_slot": "b"
+   },
+   {
+    "source": "intToRea",
+    "source_slot": "out",
+    "target": "addPar1",
+    "target_slot": "a"
+   },
+   {
+    "source": "intToRea",
+    "source_slot": "out",
+    "target": "nomPum",
+    "target_slot": "a"
+   },
+   {
+    "source": "nomPum",
+    "source_slot": "out",
+    "target": "sub3",
+    "target_slot": "a"
+   },
+   {
+    "source": "nomPum1",
+    "source_slot": "out",
+    "target": "sub",
+    "target_slot": "a"
+   },
+   {
+    "source": "numOpePum_fold_2",
+    "source_slot": "out",
+    "target": "cha_changed",
+    "target_slot": "in"
+   },
+   {
+    "source": "numOpePum_fold_2",
+    "source_slot": "out",
+    "target": "cha_increased",
+    "target_slot": "in"
+   },
+   {
+    "source": "numOpePum_fold_2",
+    "source_slot": "out",
+    "target": "cha_decreased",
+    "target_slot": "in"
+   },
+   {
+    "source": "numOpePum_fold_2",
+    "source_slot": "out",
+    "target": "intGreThr",
+    "target_slot": "a"
+   },
+   {
+    "source": "numOpePum_fold_2",
+    "source_slot": "out",
+    "target": "intToRea",
+    "target_slot": "a"
+   },
+   {
+    "source": "sub",
+    "source_slot": "out",
+    "target": "sub1",
+    "target_slot": "a"
+   },
+   {
+    "source": "sub1",
+    "source_slot": "out",
+    "target": "disPum",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub2",
+    "source_slot": "out",
+    "target": "enaPum",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub3",
+    "source_slot": "out",
+    "target": "sub2",
+    "target_slot": "b"
+   },
+   {
+    "source": "edg_2",
+    "source_slot": "out",
+    "target": "xor",
+    "target_slot": "b"
+   },
+   {
+    "source": "tim",
+    "source_slot": "passed",
+    "target": "enaNexLag",
+    "target_slot": "set"
+   },
+   {
+    "source": "xor",
+    "source_slot": "out",
+    "target": "tim",
+    "target_slot": "in"
+   },
+   {
+    "source": "edg_3",
+    "source_slot": "out",
+    "target": "xor_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "tim_2",
+    "source_slot": "passed",
+    "target": "disLasLag",
+    "target_slot": "set"
+   },
+   {
+    "source": "xor_2",
+    "source_slot": "out",
+    "target": "tim_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "enaNexLag",
+    "source_slot": "out",
+    "target": "addPum__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "enaNexLag",
+    "source_slot": "out",
+    "target": "addPum__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "enaNexLag",
+    "source_slot": "out",
+    "target": "nexLagPumSta__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "enaNexLag",
+    "source_slot": "out",
+    "target": "nexLagPumSta__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "enaPum__1",
+    "source_slot": "out",
+    "target": "addPum__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "enaPum__1",
+    "source_slot": "out",
+    "target": "pumSta__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "enaPum__2",
+    "source_slot": "out",
+    "target": "addPum__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "enaPum__2",
+    "source_slot": "out",
+    "target": "pumSta__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intEqu1__1",
+    "source_slot": "out",
+    "target": "leaPumSta__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu1__2",
+    "source_slot": "out",
+    "target": "leaPumSta__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu2__1",
+    "source_slot": "out",
+    "target": "nexLagPumSta__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu2__2",
+    "source_slot": "out",
+    "target": "nexLagPumSta__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu3__1",
+    "source_slot": "out",
+    "target": "lasLagPumSta__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu3__2",
+    "source_slot": "out",
+    "target": "lasLagPumSta__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu4__1",
+    "source_slot": "out",
+    "target": "mulAnd_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "intEqu4__2",
+    "source_slot": "out",
+    "target": "mulAnd_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr_2",
+    "source_slot": "out",
+    "target": "booToInt2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intGreThr_2",
+    "source_slot": "out",
+    "target": "intSwi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intLesThr",
+    "source_slot": "out",
+    "target": "booToInt3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intLesThr",
+    "source_slot": "out",
+    "target": "intSwi1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intSwi",
+    "source_slot": "out",
+    "target": "lasLagPum_index____1",
+    "target_slot": "a"
+   },
+   {
+    "source": "intSwi1",
+    "source_slot": "out",
+    "target": "nexLagPum_index____1",
+    "target_slot": "a"
+   },
+   {
+    "source": "intToRea__1",
+    "source_slot": "out",
+    "target": "lasLagPum_element_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "intToRea__1",
+    "source_slot": "out",
+    "target": "leaPum_element_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "intToRea__1",
+    "source_slot": "out",
+    "target": "nexLagPum_element_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "intToRea__2",
+    "source_slot": "out",
+    "target": "lasLagPum_element_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "intToRea__2",
+    "source_slot": "out",
+    "target": "leaPum_element_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "intToRea__2",
+    "source_slot": "out",
+    "target": "nexLagPum_element_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "lasLagPum_index____1",
+    "source_slot": "out",
+    "target": "lasLagPum_element_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lasLagPum_element_1",
+    "source_slot": "out",
+    "target": "reaToInt2",
+    "target_slot": "in"
+   },
+   {
+    "source": "lasLagPumSta__1",
+    "source_slot": "out",
+    "target": "pumSta__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "lasLagPumSta__2",
+    "source_slot": "out",
+    "target": "pumSta__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "leaPum_index____1",
+    "source_slot": "out",
+    "target": "leaPum_element_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "leaPum_element_1",
+    "source_slot": "out",
+    "target": "reaToInt",
+    "target_slot": "in"
+   },
+   {
+    "source": "leaPumSta__1",
+    "source_slot": "out",
+    "target": "enaPum__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "leaPumSta__1",
+    "source_slot": "out",
+    "target": "remPum__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "leaPumSta__2",
+    "source_slot": "out",
+    "target": "enaPum__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "leaPumSta__2",
+    "source_slot": "out",
+    "target": "remPum__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "mulAnd_fold_2",
+    "source_slot": "out",
+    "target": "edg",
+    "target_slot": "in"
+   },
+   {
+    "source": "mulInt",
+    "source_slot": "out",
+    "target": "intEqu3__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulInt",
+    "source_slot": "out",
+    "target": "intEqu3__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulInt1",
+    "source_slot": "out",
+    "target": "intEqu2__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulInt1",
+    "source_slot": "out",
+    "target": "intEqu2__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulOr_fold_2",
+    "source_slot": "out",
+    "target": "or2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_2",
+    "source_slot": "out",
+    "target": "addInt",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulSumInt_fold_2",
+    "source_slot": "out",
+    "target": "intGreThr_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSumInt_fold_2",
+    "source_slot": "out",
+    "target": "intSwi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "nexLagPum_index____1",
+    "source_slot": "out",
+    "target": "nexLagPum_element_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "nexLagPum_element_1",
+    "source_slot": "out",
+    "target": "reaToInt1",
+    "target_slot": "in"
+   },
+   {
+    "source": "nexLagPumSta__1",
+    "source_slot": "out",
+    "target": "enaPum__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "nexLagPumSta__2",
+    "source_slot": "out",
+    "target": "enaPum__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "not2",
+    "source_slot": "out",
+    "target": "lasLagPumSta__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "not2",
+    "source_slot": "out",
+    "target": "lasLagPumSta__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "not2",
+    "source_slot": "out",
+    "target": "remPum__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not2",
+    "source_slot": "out",
+    "target": "remPum__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or2_2",
+    "source_slot": "out",
+    "target": "leaPumSta__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "or2_2",
+    "source_slot": "out",
+    "target": "leaPumSta__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "or2_2",
+    "source_slot": "out",
+    "target": "mulOr_fold_2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "or2_2",
+    "source_slot": "out",
+    "target": "mulOr_fold_2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "or2_2",
+    "source_slot": "out",
+    "target": "pumSta1__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "or2_2",
+    "source_slot": "out",
+    "target": "pumSta1__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "or2_2",
+    "source_slot": "out",
+    "target": "yLea",
+    "target_slot": "in"
+   },
+   {
+    "source": "pre1__1",
+    "source_slot": "out",
+    "target": "booToInt1__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "pre1__2",
+    "source_slot": "out",
+    "target": "booToInt1__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "pumIndCon__1",
+    "source_slot": "out",
+    "target": "intEqu1__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "pumIndCon__1",
+    "source_slot": "out",
+    "target": "intEqu2__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "pumIndCon__1",
+    "source_slot": "out",
+    "target": "intEqu3__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "pumIndCon__2",
+    "source_slot": "out",
+    "target": "intEqu1__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "pumIndCon__2",
+    "source_slot": "out",
+    "target": "intEqu2__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "pumIndCon__2",
+    "source_slot": "out",
+    "target": "intEqu3__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "conPID",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swiInp",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "swiOut",
+    "source_slot": "out",
+    "target": "maxLoo_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "valDis",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conPID_2",
+    "source_slot": "out",
+    "target": "swiOut_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swiInp_2",
+    "source_slot": "out",
+    "target": "conPID_2",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "swiOut_2",
+    "source_slot": "out",
+    "target": "maxLoo_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "valDis_2",
+    "source_slot": "out",
+    "target": "swiOut_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "div__1",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "div__1",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "div__2",
+    "source_slot": "out",
+    "target": "conPID_2",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "div__2",
+    "source_slot": "out",
+    "target": "swiInp_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "maxLoo_fold_2",
+    "source_slot": "out",
+    "target": "pumSpe_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulOr_fold_2_2",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "mulOr_fold_2_2",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "selector"
+   },
+   {
+    "source": "mulOr_fold_2_2",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "selector"
+   },
+   {
+    "source": "mulOr_fold_2_2",
+    "source_slot": "out",
+    "target": "conPID_2",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "mulOr_fold_2_2",
+    "source_slot": "out",
+    "target": "swiInp_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "mulOr_fold_2_2",
+    "source_slot": "out",
+    "target": "swiOut_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "mulOr_fold_2_2",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "swiInp_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "pumSpe_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "pumSpe_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "pumSpe_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "pumSpe_result",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "pumSpe_max",
+    "source_slot": "out",
+    "target": "pumSpe_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "pumSpe_max",
+    "source_slot": "out",
+    "target": "pumSpe_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "pumSpe_min",
+    "source_slot": "out",
+    "target": "pumSpe_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "yPumSpe",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "pumSpe_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "pumSpe_lower_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "pumSta__1",
+    "source_slot": "out",
+    "target": "remPum__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "pumSta__2",
+    "source_slot": "out",
+    "target": "remPum__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "pumSta1__1",
+    "source_slot": "out",
+    "target": "pre1__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "pumSta1__1",
+    "source_slot": "out",
+    "target": "yChiWatPum__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "pumSta1__2",
+    "source_slot": "out",
+    "target": "pre1__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "pumSta1__2",
+    "source_slot": "out",
+    "target": "yChiWatPum__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "reaToInt",
+    "source_slot": "out",
+    "target": "intEqu1__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "reaToInt",
+    "source_slot": "out",
+    "target": "intEqu1__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "reaToInt1",
+    "source_slot": "out",
+    "target": "mulInt1",
+    "target_slot": "a"
+   },
+   {
+    "source": "reaToInt2",
+    "source_slot": "out",
+    "target": "mulInt",
+    "target_slot": "a"
+   },
+   {
+    "source": "remPum__1",
+    "source_slot": "out",
+    "target": "addPum__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "remPum__2",
+    "source_slot": "out",
+    "target": "addPum__2",
+    "target_slot": "when_false"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "addInt": "addInt",
+    "addPar1": "enaLagChiPum.addPar1",
+    "addPar1_parameter": "enaLagChiPum.addPar1",
+    "addPum__1": "addPum__1",
+    "addPum__2": "addPum__2",
+    "anyIsoVal_fold_2": "enaHeaLeaPum.anyIsoVal__fold_2",
+    "booToInt1__1": "booToInt1__1",
+    "booToInt1__1_false": "booToInt1__1",
+    "booToInt1__1_true": "booToInt1__1",
+    "booToInt1__2": "booToInt1__2",
+    "booToInt1__2_false": "booToInt1__2",
+    "booToInt1__2_true": "booToInt1__2",
+    "booToInt2": "booToInt2",
+    "booToInt2_false": "booToInt2",
+    "booToInt2_true": "booToInt2",
+    "booToInt3": "booToInt3",
+    "booToInt3_false": "booToInt3",
+    "booToInt3_true": "booToInt3",
+    "booToInt__1": "booToInt__1",
+    "booToInt__1_2": "enaLagChiPum.booToInt__1",
+    "booToInt__1_2_false": "enaLagChiPum.booToInt__1",
+    "booToInt__1_2_true": "enaLagChiPum.booToInt__1",
+    "booToInt__1_false": "booToInt__1",
+    "booToInt__1_true": "booToInt__1",
+    "booToInt__2": "booToInt__2",
+    "booToInt__2_2": "enaLagChiPum.booToInt__2",
+    "booToInt__2_2_false": "enaLagChiPum.booToInt__2",
+    "booToInt__2_2_true": "enaLagChiPum.booToInt__2",
+    "booToInt__2_false": "booToInt__2",
+    "booToInt__2_true": "booToInt__2",
+    "cha": "enaLagChiPum.cha",
+    "cha_changed": "enaLagChiPum.cha",
+    "cha_decreased": "enaLagChiPum.cha",
+    "cha_increased": "enaLagChiPum.cha",
+    "chiWatFloRat": "enaLagChiPum.chiWatFloRat",
+    "chiWatFloRat_parameter": "enaLagChiPum.chiWatFloRat",
+    "con": "enaHeaLeaPum.con",
+    "con1": "enaHeaLeaPum.con1",
+    "con2": "enaHeaLeaPum.con2",
+    "con2_2": "enaLagChiPum.con2",
+    "conInt": "conInt",
+    "conInt1": "conInt1",
+    "conInt2": "conInt2",
+    "conPID": "pumSpeRemDp.conPID__1.conPID",
+    "conPID_2": "pumSpeRemDp.conPID__2.conPID",
+    "disLasLag": "disLasLag",
+    "disPum": "enaLagChiPum.disPum",
+    "disPum1": "enaLagChiPum.disPum1",
+    "div__1": "pumSpeRemDp.div__1",
+    "div__2": "pumSpeRemDp.div__2",
+    "edg": "edg",
+    "edg_2": "enaLagChiPum.tim.edg",
+    "edg_3": "enaLagChiPum.tim1.edg",
+    "enaNexLag": "enaNexLag",
+    "enaPum": "enaLagChiPum.enaPum",
+    "enaPum1": "enaLagChiPum.enaPum1",
+    "enaPum__1": "enaPum__1",
+    "enaPum__2": "enaPum__2",
+    "intEqu1__1": "intEqu1__1",
+    "intEqu1__2": "intEqu1__2",
+    "intEqu2__1": "intEqu2__1",
+    "intEqu2__2": "intEqu2__2",
+    "intEqu3__1": "intEqu3__1",
+    "intEqu3__2": "intEqu3__2",
+    "intEqu4__1": "intEqu4__1",
+    "intEqu4__2": "intEqu4__2",
+    "intGreThr": "enaLagChiPum.intGreThr",
+    "intGreThr_2": "intGreThr",
+    "intGreThr_2_threshold": "intGreThr",
+    "intGreThr_threshold": "enaLagChiPum.intGreThr",
+    "intLesThr": "intLesThr",
+    "intLesThr_threshold": "intLesThr",
+    "intSwi": "intSwi",
+    "intSwi1": "intSwi1",
+    "intToRea": "enaLagChiPum.intToRea",
+    "intToRea__1": "intToRea__1",
+    "intToRea__1_zero": "intToRea__1",
+    "intToRea__2": "intToRea__2",
+    "intToRea__2_zero": "intToRea__2",
+    "intToRea_zero": "enaLagChiPum.intToRea",
+    "lasLagPumSta__1": "lasLagPumSta__1",
+    "lasLagPumSta__2": "lasLagPumSta__2",
+    "lasLagPum_element_1": "lasLagPum__select_1",
+    "lasLagPum_index____1": "lasLagPum__atMost_1",
+    "lasLagPum_index____1_threshold": "lasLagPum__atMost_1",
+    "leaPumSta": "enaHeaLeaPum.leaPumSta",
+    "leaPumSta__1": "leaPumSta__1",
+    "leaPumSta__2": "leaPumSta__2",
+    "leaPum_element_1": "leaPum__select_1",
+    "leaPum_index____1": "leaPum__atMost_1",
+    "leaPum_index____1_threshold": "leaPum__atMost_1",
+    "maxLoo_fold_2": "pumSpeRemDp.maxLoo__fold_2",
+    "mulAnd_fold_2": "mulAnd__fold_2",
+    "mulInt": "mulInt",
+    "mulInt1": "mulInt1",
+    "mulOr_fold_2": "mulOr__fold_2",
+    "mulOr_fold_2_2": "pumSpeRemDp.mulOr__fold_2",
+    "mulSumInt_fold_2": "mulSumInt__fold_2",
+    "nexLagPumSta__1": "nexLagPumSta__1",
+    "nexLagPumSta__2": "nexLagPumSta__2",
+    "nexLagPum_element_1": "nexLagPum__select_1",
+    "nexLagPum_index____1": "nexLagPum__atMost_1",
+    "nexLagPum_index____1_threshold": "nexLagPum__atMost_1",
+    "nomPum": "enaLagChiPum.nomPum",
+    "nomPum1": "enaLagChiPum.nomPum1",
+    "nomPum1_parameter": "enaLagChiPum.nomPum1",
+    "nomPum_parameter": "enaLagChiPum.nomPum",
+    "not2": "not2",
+    "numOpePum_fold_2": "enaLagChiPum.numOpePum__fold_2",
+    "one": "pumSpeRemDp.one",
+    "or2": "enaHeaLeaPum.or2",
+    "or2_2": "or2",
+    "pre1__1": "pre1__1",
+    "pre1__2": "pre1__2",
+    "pumIndCon__1": "pumIndCon__1",
+    "pumIndCon__2": "pumIndCon__2",
+    "pumSpe": "pumSpeRemDp.pumSpe",
+    "pumSpe_delta_f": "pumSpeRemDp.pumSpe",
+    "pumSpe_delta_x": "pumSpeRemDp.pumSpe",
+    "pumSpe_intercept": "pumSpeRemDp.pumSpe",
+    "pumSpe_lower_limit": "pumSpeRemDp.pumSpe",
+    "pumSpe_max": "pumSpeRemDp.pumSpe_max",
+    "pumSpe_min": "pumSpeRemDp.pumSpe_min",
+    "pumSpe_result": "pumSpeRemDp.pumSpe",
+    "pumSpe_scaled": "pumSpeRemDp.pumSpe",
+    "pumSpe_slope": "pumSpeRemDp.pumSpe",
+    "pumSpe_slope_x2": "pumSpeRemDp.pumSpe",
+    "pumSpe_upper_limit": "pumSpeRemDp.pumSpe",
+    "pumSta1__1": "pumSta1__1",
+    "pumSta1__2": "pumSta1__2",
+    "pumSta__1": "pumSta__1",
+    "pumSta__2": "pumSta__2",
+    "reaToInt": "reaToInt",
+    "reaToInt1": "reaToInt1",
+    "reaToInt2": "reaToInt2",
+    "remPum__1": "remPum__1",
+    "remPum__2": "remPum__2",
+    "sub": "enaLagChiPum.sub",
+    "sub1": "enaLagChiPum.sub1",
+    "sub2": "enaLagChiPum.sub2",
+    "sub3": "enaLagChiPum.sub3",
+    "swi": "pumSpeRemDp.swi",
+    "swiInp": "pumSpeRemDp.conPID__1.swiInp",
+    "swiInp_2": "pumSpeRemDp.conPID__2.swiInp",
+    "swiOut": "pumSpeRemDp.conPID__1.swiOut",
+    "swiOut_2": "pumSpeRemDp.conPID__2.swiOut",
+    "tim": "enaLagChiPum.tim.tim",
+    "tim_2": "enaLagChiPum.tim1.tim",
+    "valDis": "pumSpeRemDp.conPID__1.valDis",
+    "valDis_2": "pumSpeRemDp.conPID__2.valDis",
+    "xor": "enaLagChiPum.tim.xor",
+    "xor_2": "enaLagChiPum.tim1.xor",
+    "zer": "pumSpeRemDp.zer"
+   },
+   "coverage": {
+    "boundary_inputs": 11,
+    "boundary_outputs": 4,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger": 8,
+     "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal": 3,
+     "Buildings.Controls.OBC.CDL.Conversions.RealToInteger": 3,
+     "Buildings.Controls.OBC.CDL.Integers.Add": 3,
+     "Buildings.Controls.OBC.CDL.Integers.Change": 1,
+     "Buildings.Controls.OBC.CDL.Integers.Equal": 8,
+     "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold": 2,
+     "Buildings.Controls.OBC.CDL.Integers.LessThreshold": 4,
+     "Buildings.Controls.OBC.CDL.Integers.Multiply": 2,
+     "Buildings.Controls.OBC.CDL.Integers.Sources.Constant": 5,
+     "Buildings.Controls.OBC.CDL.Integers.Switch": 2,
+     "Buildings.Controls.OBC.CDL.Logical.And": 7,
+     "Buildings.Controls.OBC.CDL.Logical.Edge": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 7,
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Switch": 11,
+     "Buildings.Controls.OBC.CDL.Logical.Timer": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Xor": 2,
+     "Buildings.Controls.OBC.CDL.Reals.AddParameter": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Divide": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Hysteresis": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Line": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Max": 1,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 3,
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 7,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 4,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 8
+    },
+    "component_count": 112,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
+     "Buildings.Controls.OBC.CDL.Integers.Change",
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Pre",
+     "Buildings.Controls.OBC.CDL.Logical.Timer",
+     "Buildings.Controls.OBC.CDL.Reals.Hysteresis",
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset"
+    ],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Pumps.ChilledWater.Controller",
+    "root_label": "Controller",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "95e39b4c9b64e1d2ee1a9e9d730cd8f083ee79a97f6dca41e6f0c945c98462e8",
+    "supported_class_count": 112,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "95e39b4c9b64e1d2ee1a9e9d730cd8f083ee79a97f6dca41e6f0c945c98462e8"
+  },
+  "name": "Controller"
+ }
+}

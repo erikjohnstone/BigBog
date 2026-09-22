@@ -1,0 +1,811 @@
+{
+ "configuration_id": "tpl-staging-rotation-event-sequencing",
+ "controller_id": "StagingRotation.EventSequencing",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing",
+  "inputs": [
+   {
+    "description": "Enable command from cooling mode sequence",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.u1Coo",
+    "label": "u1Coo",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Enable command from heating mode sequence",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.u1Hea",
+    "label": "u1Hea",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Primary HW pump status (dedicated or lead headered pump)",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.u1PumHeaWatPri_actual",
+    "label": "u1PumHeaWatPri_actual",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Equipment enable command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1",
+    "label": "y1",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Equipment commanded on in cooling mode",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1AndCoo",
+    "label": "y1AndCoo",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Equipment commanded on in heating mode",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1AndHea",
+    "label": "y1AndHea",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Heating/cooling mode command: true=heating, false=cooling",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1Hea",
+    "label": "y1Hea",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Primary HW pump start command \u2013 Dedicated or lead headered pump",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1PumHeaWatPri",
+    "label": "y1PumHeaWatPri",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Inlet CHW isolation valve command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1ValChiWatInlIso",
+    "label": "y1ValChiWatInlIso",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Outlet CHW isolation valve command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1ValChiWatOutIso",
+    "label": "y1ValChiWatOutIso",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Inlet HW inlet isolation valve command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1ValHeaWatInlIso",
+    "label": "y1ValHeaWatInlIso",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Outlet HW isolation valve command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1ValHeaWatOutIso",
+    "label": "y1ValHeaWatOutIso",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 5
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "have_chiWat": true,
+  "have_heaWat": true,
+  "have_pumChiWatPri": false,
+  "have_pumChiWatSec": false,
+  "have_pumHeaWatPri": true,
+  "have_pumHeaWatSec": false,
+  "have_valInlIso": true,
+  "have_valOutIso": true
+ },
+ "points": [
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Coo",
+   "name": "u1Coo",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.u1Coo",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Hea",
+   "name": "u1Hea",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.u1Hea",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1PumHeaWatPri_actual",
+   "name": "u1PumHeaWatPri_actual",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.u1PumHeaWatPri_actual",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1",
+   "name": "y1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1AndCoo",
+   "name": "y1AndCoo",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1AndCoo",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1AndHea",
+   "name": "y1AndHea",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1AndHea",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1Hea",
+   "name": "y1Hea",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1Hea",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1PumHeaWatPri",
+   "name": "y1PumHeaWatPri",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1PumHeaWatPri",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1ValChiWatInlIso",
+   "name": "y1ValChiWatInlIso",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1ValChiWatInlIso",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1ValChiWatOutIso",
+   "name": "y1ValChiWatOutIso",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1ValChiWatOutIso",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1ValHeaWatInlIso",
+   "name": "y1ValHeaWatInlIso",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1ValHeaWatInlIso",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1ValHeaWatOutIso",
+   "name": "y1ValHeaWatOutIso",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing.y1ValHeaWatOutIso",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "StagingRotation/EventSequencing.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "49f1cee67779216ebce074b7113cf583fb81b5f31ba89a6766a490d2dd81fefd",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "a4cd930f1fe5b921623ee00ac3f571b9c0b84af0b4a9245e52e1f1fac209c503",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Coo",
+    "kind": "boolean_input",
+    "label": "u1Coo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Hea",
+    "kind": "boolean_input",
+    "label": "u1Hea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1PumHeaWatPri_actual",
+    "kind": "boolean_input",
+    "label": "u1PumHeaWatPri_actual",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1",
+    "kind": "boolean_output",
+    "label": "y1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1AndCoo",
+    "kind": "boolean_output",
+    "label": "y1AndCoo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1AndHea",
+    "kind": "boolean_output",
+    "label": "y1AndHea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1Hea",
+    "kind": "boolean_output",
+    "label": "y1Hea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1PumHeaWatPri",
+    "kind": "boolean_output",
+    "label": "y1PumHeaWatPri",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1ValChiWatInlIso",
+    "kind": "boolean_output",
+    "label": "y1ValChiWatInlIso",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1ValChiWatOutIso",
+    "kind": "boolean_output",
+    "label": "y1ValChiWatOutIso",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1ValHeaWatInlIso",
+    "kind": "boolean_output",
+    "label": "y1ValHeaWatInlIso",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1ValHeaWatOutIso",
+    "kind": "boolean_output",
+    "label": "y1ValHeaWatOutIso",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cooValPum_fold_2",
+    "kind": "and",
+    "label": "cooValPum fold 2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cooValPum_fold_3",
+    "kind": "and",
+    "label": "cooValPum fold 3",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cooValPum_fold_4",
+    "kind": "and",
+    "label": "cooValPum fold 4",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "ena",
+    "kind": "or",
+    "label": "ena",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "enaAndCoo",
+    "kind": "and",
+    "label": "enaAndCoo",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "enaAndHea",
+    "kind": "and",
+    "label": "enaAndHea",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "heaValPum_fold_2",
+    "kind": "and",
+    "label": "heaValPum fold 2",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "heaValPum_fold_3",
+    "kind": "and",
+    "label": "heaValPum fold 3",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "latPumHeaWatPri",
+    "kind": "boolean_set_reset",
+    "label": "latPumHeaWatPri",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "latValChiWatIso",
+    "kind": "boolean_set_reset",
+    "label": "latValChiWatIso",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "latValHeaWatIso",
+    "kind": "boolean_set_reset",
+    "label": "latValHeaWatIso",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "off_or",
+    "kind": "or",
+    "label": "off or",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "off_not",
+    "kind": "not",
+    "label": "off",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 180.0
+    },
+    "id": "timHp",
+    "kind": "timer",
+    "label": "timHp",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 90.0
+    },
+    "id": "timVal",
+    "kind": "timer",
+    "label": "timVal",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "u1HeaOrCoo",
+    "kind": "or",
+    "label": "u1HeaOrCoo",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "ph",
+    "kind": "boolean_const",
+    "label": "ph",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "ph_2",
+    "kind": "boolean_const",
+    "label": "ph",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "ph_3",
+    "kind": "boolean_const",
+    "label": "ph",
+    "x": 900,
+    "y": 240
+   }
+  ],
+  "links": [
+   {
+    "source": "off_or",
+    "source_slot": "out",
+    "target": "off_not",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Coo",
+    "source_slot": "out",
+    "target": "cooValPum_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Coo",
+    "source_slot": "out",
+    "target": "enaAndCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Coo",
+    "source_slot": "out",
+    "target": "latValChiWatIso",
+    "target_slot": "set"
+   },
+   {
+    "source": "u1Coo",
+    "source_slot": "out",
+    "target": "off_or",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Coo",
+    "source_slot": "out",
+    "target": "u1HeaOrCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Hea",
+    "source_slot": "out",
+    "target": "enaAndHea",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Hea",
+    "source_slot": "out",
+    "target": "latValHeaWatIso",
+    "target_slot": "set"
+   },
+   {
+    "source": "u1Hea",
+    "source_slot": "out",
+    "target": "off_or",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1Hea",
+    "source_slot": "out",
+    "target": "u1HeaOrCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1Hea",
+    "source_slot": "out",
+    "target": "y1Hea",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1PumHeaWatPri_actual",
+    "source_slot": "out",
+    "target": "heaValPum_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "cooValPum_fold_2",
+    "source_slot": "out",
+    "target": "cooValPum_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooValPum_fold_3",
+    "source_slot": "out",
+    "target": "cooValPum_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooValPum_fold_4",
+    "source_slot": "out",
+    "target": "ena",
+    "target_slot": "b"
+   },
+   {
+    "source": "ena",
+    "source_slot": "out",
+    "target": "enaAndCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "ena",
+    "source_slot": "out",
+    "target": "enaAndHea",
+    "target_slot": "a"
+   },
+   {
+    "source": "ena",
+    "source_slot": "out",
+    "target": "y1",
+    "target_slot": "in"
+   },
+   {
+    "source": "enaAndCoo",
+    "source_slot": "out",
+    "target": "y1AndCoo",
+    "target_slot": "in"
+   },
+   {
+    "source": "enaAndHea",
+    "source_slot": "out",
+    "target": "y1AndHea",
+    "target_slot": "in"
+   },
+   {
+    "source": "heaValPum_fold_2",
+    "source_slot": "out",
+    "target": "heaValPum_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaValPum_fold_3",
+    "source_slot": "out",
+    "target": "ena",
+    "target_slot": "a"
+   },
+   {
+    "source": "latPumHeaWatPri",
+    "source_slot": "out",
+    "target": "y1PumHeaWatPri",
+    "target_slot": "in"
+   },
+   {
+    "source": "latValChiWatIso",
+    "source_slot": "out",
+    "target": "y1ValChiWatInlIso",
+    "target_slot": "in"
+   },
+   {
+    "source": "latValChiWatIso",
+    "source_slot": "out",
+    "target": "y1ValChiWatOutIso",
+    "target_slot": "in"
+   },
+   {
+    "source": "latValHeaWatIso",
+    "source_slot": "out",
+    "target": "y1ValHeaWatInlIso",
+    "target_slot": "in"
+   },
+   {
+    "source": "latValHeaWatIso",
+    "source_slot": "out",
+    "target": "y1ValHeaWatOutIso",
+    "target_slot": "in"
+   },
+   {
+    "source": "off_not",
+    "source_slot": "out",
+    "target": "timHp",
+    "target_slot": "in"
+   },
+   {
+    "source": "timHp",
+    "source_slot": "passed",
+    "target": "latPumHeaWatPri",
+    "target_slot": "clear"
+   },
+   {
+    "source": "timHp",
+    "source_slot": "passed",
+    "target": "latValChiWatIso",
+    "target_slot": "clear"
+   },
+   {
+    "source": "timHp",
+    "source_slot": "passed",
+    "target": "latValHeaWatIso",
+    "target_slot": "clear"
+   },
+   {
+    "source": "timVal",
+    "source_slot": "passed",
+    "target": "cooValPum_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "timVal",
+    "source_slot": "passed",
+    "target": "heaValPum_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1HeaOrCoo",
+    "source_slot": "out",
+    "target": "latPumHeaWatPri",
+    "target_slot": "set"
+   },
+   {
+    "source": "u1HeaOrCoo",
+    "source_slot": "out",
+    "target": "timVal",
+    "target_slot": "in"
+   },
+   {
+    "source": "ph",
+    "source_slot": "out",
+    "target": "cooValPum_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "ph_2",
+    "source_slot": "out",
+    "target": "cooValPum_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "ph_3",
+    "source_slot": "out",
+    "target": "heaValPum_fold_3",
+    "target_slot": "b"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "cooValPum_fold_2": "cooValPum__fold_2",
+    "cooValPum_fold_3": "cooValPum__fold_3",
+    "cooValPum_fold_4": "cooValPum__fold_4",
+    "ena": "ena",
+    "enaAndCoo": "enaAndCoo",
+    "enaAndHea": "enaAndHea",
+    "heaValPum_fold_2": "heaValPum__fold_2",
+    "heaValPum_fold_3": "heaValPum__fold_3",
+    "latPumHeaWatPri": "latPumHeaWatPri",
+    "latValChiWatIso": "latValChiWatIso",
+    "latValHeaWatIso": "latValHeaWatIso",
+    "off": "off",
+    "off_not": "off",
+    "off_or": "off",
+    "ph": "u1PumChiWatPri_internal.ph",
+    "ph_2": "u1PumChiWatSec_internal.ph",
+    "ph_3": "u1PumHeaWatSec_internal.ph",
+    "timHp": "timHp",
+    "timVal": "timVal",
+    "u1HeaOrCoo": "u1HeaOrCoo"
+   },
+   "coverage": {
+    "boundary_inputs": 3,
+    "boundary_outputs": 9,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Logical.And": 7,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Nor": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Timer": 2
+    },
+    "component_count": 18,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Timer"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.StagingRotation.EventSequencing",
+    "root_label": "EventSequencing",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "a4cd930f1fe5b921623ee00ac3f571b9c0b84af0b4a9245e52e1f1fac209c503",
+    "supported_class_count": 18,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "a4cd930f1fe5b921623ee00ac3f571b9c0b84af0b4a9245e52e1f1fac209c503"
+  },
+  "name": "EventSequencing"
+ }
+}

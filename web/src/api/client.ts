@@ -1548,6 +1548,7 @@ const libraryCoverageSchema = z.object({
     family: z.string(),
     variant: z.string(),
     tier: z.string(),
+    release: z.enum(['release', 'pre-release']).optional(),
     source_of_truth: z.string(),
     expectations: z.string(),
     scenarios: z.number().optional(),

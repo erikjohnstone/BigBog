@@ -786,6 +786,9 @@ class BlockKind(StrEnum):
     NUMERIC_DECREASED = "numeric_decreased"
     NUMERIC_ROUND = "numeric_round"
     NUMERIC_LIMIT_SLEW_RATE = "numeric_limit_slew_rate"
+    NUMERIC_INTEGRATOR_WITH_RESET = "numeric_integrator_with_reset"
+    NUMERIC_ON_COUNTER = "numeric_on_counter"
+    WET_BULB_TEMPERATURE = "wet_bulb_temperature"
     NUMERIC_LATCH = "numeric_latch"
     BOOLEAN_LATCH = "boolean_latch"
     BOOLEAN_PRE_HOST_TICK = "boolean_pre_host_tick"
@@ -808,6 +811,19 @@ class BlockKind(StrEnum):
     PLANT_HRC_MODE_CONTROL = "plant_hrc_mode_control"
     PLANT_STAGE_COMPLETION = "plant_stage_completion"
     PLANT_STAGE_INDEX = "plant_stage_index"
+
+
+FEEDBACK_KINDS: frozenset[BlockKind] = frozenset(
+    {
+        BlockKind.NUMERIC_UNIT_DELAY,
+        BlockKind.BOOLEAN_PRE_HOST_TICK,
+        BlockKind.NUMERIC_INTEGRATOR_WITH_RESET,
+        BlockKind.NUMERIC_ON_COUNTER,
+    }
+)
+"""Kinds whose output at a tick is the state the previous tick left (they do not feed
+through): their incoming links do not order the tick, so a loop through one is legal,
+and the interpreter updates them after every other block has run."""
 
 
 class SlotSpec(BaseModel):
@@ -908,6 +924,22 @@ BLOCK_SLOTS: dict[BlockKind, SlotSpec] = {
     ),
     BlockKind.NUMERIC_LIMIT_SLEW_RATE: SlotSpec(
         inputs={"in": DataType.NUMERIC}, outputs={"out": DataType.NUMERIC}
+    ),
+    BlockKind.NUMERIC_INTEGRATOR_WITH_RESET: SlotSpec(
+        inputs={
+            "in": DataType.NUMERIC,
+            "reset_value": DataType.NUMERIC,
+            "trigger": DataType.BOOLEAN,
+        },
+        outputs={"out": DataType.NUMERIC},
+    ),
+    BlockKind.NUMERIC_ON_COUNTER: SlotSpec(
+        inputs={"trigger": DataType.BOOLEAN, "reset": DataType.BOOLEAN},
+        outputs={"out": DataType.NUMERIC},
+    ),
+    BlockKind.WET_BULB_TEMPERATURE: SlotSpec(
+        inputs={"dry_bulb": DataType.NUMERIC, "relative_humidity": DataType.NUMERIC},
+        outputs={"out": DataType.NUMERIC},
     ),
     BlockKind.NUMERIC_SAMPLER: SlotSpec(
         inputs={"in": DataType.NUMERIC}, outputs={"out": DataType.NUMERIC}
@@ -1437,6 +1469,25 @@ class Block(BaseModel):
                 raise ValueError(
                     "plant_stage_index config.minimum_runtime_seconds must be non-negative finite"
                 )
+        if self.kind == BlockKind.NUMERIC_INTEGRATOR_WITH_RESET:
+            for key, default in (("gain", 1.0), ("initial", 0.0)):
+                value = self.config.get(key, default)
+                if (
+                    isinstance(value, bool)
+                    or not isinstance(value, (int, float))
+                    or not math.isfinite(float(value))
+                ):
+                    raise ValueError(
+                        f"numeric_integrator_with_reset config.{key} must be finite numeric"
+                    )
+        if self.kind == BlockKind.NUMERIC_ON_COUNTER:
+            initial = self.config.get("initial", 0)
+            if (
+                isinstance(initial, bool)
+                or not isinstance(initial, (int, float))
+                or not float(initial).is_integer()
+            ):
+                raise ValueError("numeric_on_counter config.initial must be an integer")
         if self.kind == BlockKind.NUMERIC_LIMIT_SLEW_RATE:
             rates = {}
             for key in ("raising_slew_rate", "falling_slew_rate", "td_seconds"):
@@ -1542,10 +1593,7 @@ class ControlGraph(BaseModel):
             if input_key in connected_inputs:
                 raise ValueError(f"input has multiple drivers: {link.target}.{link.target_slot}")
             connected_inputs.add(input_key)
-            if by_id[link.target].kind not in {
-                BlockKind.NUMERIC_UNIT_DELAY,
-                BlockKind.BOOLEAN_PRE_HOST_TICK,
-            }:
+            if by_id[link.target].kind not in FEEDBACK_KINDS:
                 adjacency[link.source].append(link.target)
                 indegree[link.target] += 1
         for block in self.blocks:
@@ -1570,10 +1618,7 @@ class ControlGraph(BaseModel):
         adjacency: dict[str, list[str]] = defaultdict(list)
         indegree = {block.id: 0 for block in self.blocks}
         for link in self.links:
-            if by_id[link.target].kind not in {
-                BlockKind.NUMERIC_UNIT_DELAY,
-                BlockKind.BOOLEAN_PRE_HOST_TICK,
-            }:
+            if by_id[link.target].kind not in FEEDBACK_KINDS:
                 adjacency[link.source].append(link.target)
                 indegree[link.target] += 1
         queue = deque(block.id for block in self.blocks if indegree[block.id] == 0)

@@ -28,6 +28,9 @@ _BINARY: dict[str, BlockKind] = {
     "Buildings.Controls.OBC.CDL.Reals.Greater": BlockKind.GREATER_THAN,
     "Buildings.Controls.OBC.CDL.Reals.Average": BlockKind.AVERAGE,
     "Buildings.Controls.OBC.CDL.Integers.LessEqual": BlockKind.LESS_THAN_OR_EQUAL,
+    "Buildings.Controls.OBC.CDL.Integers.Greater": BlockKind.GREATER_THAN,
+    "Buildings.Controls.OBC.CDL.Integers.GreaterEqual": BlockKind.GREATER_THAN_OR_EQUAL,
+    "Buildings.Controls.OBC.CDL.Integers.Less": BlockKind.LESS_THAN,
     "Buildings.Controls.OBC.CDL.Reals.Less": BlockKind.LESS_THAN,
     "Buildings.Controls.OBC.CDL.Logical.And": BlockKind.AND,
     "Buildings.Controls.OBC.CDL.Logical.Or": BlockKind.OR,
@@ -49,6 +52,9 @@ _THRESHOLD: dict[str, BlockKind] = {
 _PARAMETER_ARITHMETIC: dict[str, BlockKind] = {
     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": BlockKind.MULTIPLY,
     "Buildings.Controls.OBC.CDL.Reals.AddParameter": BlockKind.ADD,
+    # Integers travel as numerics in the typed IR (Integer constants and switches
+    # are numeric too); y = u + p is exact for integer-valued u and p.
+    "Buildings.Controls.OBC.CDL.Integers.AddParameter": BlockKind.ADD,
 }
 _CONSTANTS: dict[str, BlockKind] = {
     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": BlockKind.NUMERIC_CONST,
@@ -86,6 +92,10 @@ _NAMED_NUMERIC_CONSTANTS: dict[str, float] = {
     "Buildings.Controls.OBC.ASHRAE.G36.Types.DemandLimitLevels.heating1": 1.0,
     "Buildings.Controls.OBC.ASHRAE.G36.Types.DemandLimitLevels.heating2": 2.0,
     "Buildings.Controls.OBC.ASHRAE.G36.Types.DemandLimitLevels.heating3": 3.0,
+    # CDL.Constants (final constant Real eps=1E-15, small=1E-37), used in
+    # expressions such as ``100*Buildings.Controls.OBC.CDL.Constants.eps``.
+    "Buildings.Controls.OBC.CDL.Constants.eps": 1e-15,
+    "Buildings.Controls.OBC.CDL.Constants.small": 1e-37,
 }
 TRIM_AND_RESPOND_CLASS = "Buildings.Controls.OBC.ASHRAE.G36.Generic.TrimAndRespond"
 TRUE_FALSE_HOLD_CLASS = "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold"
@@ -152,6 +162,10 @@ SUPPORTED_CLASSES = frozenset(
         "Buildings.Controls.OBC.CDL.Logical.Nor",
         "Buildings.Controls.OBC.CDL.Logical.Pre",
         "Buildings.Controls.OBC.CDL.Logical.Timer",
+        "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+        "Buildings.Controls.OBC.CDL.Integers.OnCounter",
+        "Buildings.Controls.OBC.CDL.Reals.IntegratorWithReset",
+        "Buildings.Controls.OBC.CDL.Psychrometrics.WetBulb_TDryBulPhi",
         TRUE_FALSE_HOLD_CLASS,
         ASSERT_WARNING_CLASS,
         "Buildings.Controls.OBC.CDL.Reals.MovingAverage",
@@ -173,6 +187,10 @@ SUPPORTED_CLASSES = frozenset(
 )
 NIAGARA_UNSUPPORTED_CLASSES = frozenset(
     {
+        # no stock kitControl block has these semantics; the source-package lane emits a
+        # ProgramObject for each, the native lane a bactalkG36 component
+        "Buildings.Controls.OBC.CDL.Reals.LimitSlewRate",
+        "Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
         "Buildings.Controls.OBC.CDL.Reals.MovingAverage",
         "Buildings.Controls.OBC.CDL.Discrete.Sampler",
         "Buildings.Controls.OBC.CDL.Discrete.FirstOrderHold",
@@ -187,6 +205,10 @@ NIAGARA_UNSUPPORTED_CLASSES = frozenset(
         "Buildings.Controls.OBC.CDL.Logical.Latch",
         "Buildings.Controls.OBC.CDL.Logical.Pre",
         "Buildings.Controls.OBC.CDL.Logical.Timer",
+        "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+        "Buildings.Controls.OBC.CDL.Integers.OnCounter",
+        "Buildings.Controls.OBC.CDL.Reals.IntegratorWithReset",
+        "Buildings.Controls.OBC.CDL.Psychrometrics.WetBulb_TDryBulPhi",
         TRUE_FALSE_HOLD_CLASS,
         "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler",
         TRIM_AND_RESPOND_CLASS,
@@ -215,6 +237,7 @@ INSTANCE_SCHEMAS: dict[str, dict[str, tuple[str, ...]]] = {
     **{name: _schema(("u",), parameters=("t",)) for name in _THRESHOLD},
     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": _schema(("u",), parameters=("k",)),
     "Buildings.Controls.OBC.CDL.Reals.AddParameter": _schema(("u",), parameters=("p",)),
+    "Buildings.Controls.OBC.CDL.Integers.AddParameter": _schema(("u",), parameters=("p",)),
     **{name: _schema(parameters=("k",)) for name in _CONSTANTS},
     **{name: _schema(("u1", "u2", "u3")) for name in _SWITCHES},
     "Buildings.Controls.OBC.CDL.Logical.TrueDelay": _schema(
@@ -263,6 +286,18 @@ INSTANCE_SCHEMAS: dict[str, dict[str, tuple[str, ...]]] = {
     "Buildings.Controls.OBC.CDL.Logical.Pre": _schema(("u",), parameters=("pre_u_start",)),
     "Buildings.Controls.OBC.CDL.Logical.Timer": _schema(
         ("u",), outputs=("y", "passed"), parameters=("t",)
+    ),
+    "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating": _schema(
+        ("u", "reset"), outputs=("y", "passed"), parameters=("t",)
+    ),
+    "Buildings.Controls.OBC.CDL.Integers.OnCounter": _schema(
+        ("trigger", "reset"), parameters=("y_start",)
+    ),
+    "Buildings.Controls.OBC.CDL.Reals.IntegratorWithReset": _schema(
+        ("u", "y_reset_in", "trigger"), parameters=("k", "y_start")
+    ),
+    "Buildings.Controls.OBC.CDL.Psychrometrics.WetBulb_TDryBulPhi": _schema(
+        ("TDryBul", "phi"), outputs=("TWetBul",)
     ),
     TRUE_FALSE_HOLD_CLASS: _schema(("u",), parameters=("trueHoldDuration", "falseHoldDuration")),
     ASSERT_WARNING_CLASS: _schema(("u",), outputs=(), parameters=("message",)),
@@ -639,8 +674,10 @@ class CxfImporter:
                     raise CxfImportError(f"missing value for CXF parameter {parameter_id}")
                 continue
             value = _literal(parameter["S231:value"])
-            if isinstance(value, str) and root_parameters:
-                value = resolve_parameter_expression(value, root_parameters)
+            if isinstance(value, str):
+                value = resolve_parameter_expression(
+                    value, {**_NAMED_NUMERIC_CONSTANTS, **(root_parameters or {})}
+                )
             if isinstance(value, str) and value in _NAMED_NUMERIC_CONSTANTS:
                 value = _NAMED_NUMERIC_CONSTANTS[value]
             parameters[_local_name(parameter_id)] = value
@@ -1199,6 +1236,37 @@ class CxfImporter:
                     "y": (block_id, "elapsed"),
                     "passed": (block_id, "passed"),
                 }
+            elif class_name == "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating":
+                kind = BlockKind.TIMER_ACCUMULATING
+                slot_map = {"u": "in", "reset": "reset"}
+                config = {
+                    "threshold_seconds": _numeric_parameter(parameters, label, "t", 0.0),
+                    "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+                }
+                expanded_outputs = {
+                    "y": (block_id, "elapsed"),
+                    "passed": (block_id, "passed"),
+                }
+            elif class_name == "Buildings.Controls.OBC.CDL.Integers.OnCounter":
+                kind = BlockKind.NUMERIC_ON_COUNTER
+                slot_map = {"trigger": "trigger", "reset": "reset"}
+                start = _numeric_parameter(parameters, label, "y_start", 0.0)
+                if not float(start).is_integer():
+                    raise CxfImportError(f"{label} requires an Integer y_start")
+                config = {"initial": int(start), "semantic_contract": "CDL.Integers.OnCounter"}
+            elif class_name == "Buildings.Controls.OBC.CDL.Reals.IntegratorWithReset":
+                kind = BlockKind.NUMERIC_INTEGRATOR_WITH_RESET
+                slot_map = {"u": "in", "y_reset_in": "reset_value", "trigger": "trigger"}
+                config = {
+                    "gain": _numeric_parameter(parameters, label, "k", 1.0),
+                    "initial": _numeric_parameter(parameters, label, "y_start", 0.0),
+                    "semantic_contract": "CDL.Reals.IntegratorWithReset",
+                }
+            elif class_name == "Buildings.Controls.OBC.CDL.Psychrometrics.WetBulb_TDryBulPhi":
+                kind = BlockKind.WET_BULB_TEMPERATURE
+                slot_map = {"TDryBul": "dry_bulb", "phi": "relative_humidity"}
+                config = {"semantic_contract": "CDL.Psychrometrics.WetBulb_TDryBulPhi"}
+                expanded_outputs = {"TWetBul": (block_id, "out")}
             elif class_name in TIMER_WITH_RESET_CLASSES:
                 kind = BlockKind.TIMER_WITH_RESET
                 slot_map = {"u": "in", "reset": "reset"}

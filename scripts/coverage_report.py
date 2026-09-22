@@ -338,6 +338,9 @@ def build(only: set[str] | None, *, mutants: int, resume: bool = False) -> dict[
             "variant": config.variant,
             "tier": config.tier,
             "parameters": config.parameters,
+            # N8 step 1: a controller from an unreleased Modelica Buildings commit is
+            # labelled pre-release wherever it is shown
+            "release": "pre-release" if config.source == "plants" else "release",
             "source_of_truth": "Open Control Engine (retained reference)",
             "expectations": "reference-derived (docs/decisions/010)",
         }
@@ -445,7 +448,8 @@ def render(report: dict[str, Any]) -> str:
         f"{report['mutation_sample']} mutants is caught at ≥ 95 %, judged on the D3 leg the",
         "unmutated file passed (a row graded on the coarse leg says `coarse` beside its",
         "rate). A configuration that fails or cannot be built is listed with its exact",
-        "blocker.",
+        "blocker. A row marked **pre-release** comes from an unreleased Modelica Buildings",
+        "commit (the G36 chiller plant is on LBNL master, not yet in a tagged release).",
         "",
         f"Summary: {summary['configurations']} configurations, "
         f"{summary['all_four']} pass all four; "
@@ -459,6 +463,7 @@ def render(report: dict[str, Any]) -> str:
         lines.append(
             f"| `{item['id']}` | {item['controller']} | {item['variant']}"
             + (f" · Gate G-ENG {item['gate_g_eng']}" if "gate_g_eng" in item else "")
+            + (" · **pre-release**" if item.get("release") == "pre-release" else "")
             + f" | {item['tier']} "
             f"| {item.get('scenarios', '—')} | {_mark(item['d1'])} | {_mark(item['d2'])} "
             f"| {_mark(item['d3'])} | {_mark(item['d4'])} |"

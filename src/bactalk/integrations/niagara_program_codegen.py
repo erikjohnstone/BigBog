@@ -3768,11 +3768,285 @@ private void scheduleNext() {{
 """
 
 
+# Module kernels (the bactalkG36 components) packaged as ProgramObjects for the
+# source-package lane: each is the kernel's recurrence written once in Java, a
+# ProgramObject shell that steps it on the execute period, and a standalone class
+# for trajectory tests. (slot, type spec, Java type) per input, in step() order.
+_KERNEL_PROGRAMS: dict[BlockKind, dict[str, Any]] = {
+    BlockKind.NUMERIC_LIMIT_SLEW_RATE: {
+        "stem": "CdlLimitSlewRate",
+        "contract": "Buildings.Controls.OBC.CDL.Reals.LimitSlewRate",
+        "recurrence": (
+            "first execution passes the input; later ones take an implicit first-order lag "
+            "toward it over the elapsed time, the change clamped to the slew rates"
+        ),
+        "inputs": (("in", "b:StatusNumeric", "double"),),
+        "output_type": "b:StatusNumeric",
+        "constants": lambda c: {
+            "RAISING": float(c["raising_slew_rate"]),
+            "FALLING": float(c["falling_slew_rate"]),
+            "TD_SECONDS": float(c["td_seconds"]),
+            "ENABLE": bool(c.get("enable", True)),
+        },
+        "members": """  private double y = Double.NaN;
+  private double previousTime = Double.NaN;
+
+  private void resetControllerState() {
+    y = Double.NaN;
+    previousTime = Double.NaN;
+  }
+
+  public double step(double timeSeconds, double input) {
+    if (!ENABLE || Double.isNaN(previousTime)) {
+      y = input;
+    } else {
+      double dt = timeSeconds - previousTime;
+      if (dt > 0.0) {
+        double alpha = dt / TD_SECONDS;
+        double filtered = (y + alpha * input) / (1.0 + alpha);
+        double change = Math.min(Math.max(filtered - y, FALLING * dt), RAISING * dt);
+        y = y + change;
+      }
+    }
+    previousTime = timeSeconds;
+    return y;
+  }
+""",
+    },
+    BlockKind.NUMERIC_ROUND: {
+        "stem": "CdlRealToInteger",
+        "contract": "Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
+        "recurrence": "round half away from zero (stateless)",
+        "inputs": (("in", "b:StatusNumeric", "double"),),
+        "output_type": "b:StatusNumeric",
+        "constants": lambda c: {},
+        "members": """  private void resetControllerState() {}
+
+  public double step(double timeSeconds, double input) {
+    return input > 0.0 ? Math.floor(input + 0.5) : Math.ceil(input - 0.5);
+  }
+""",
+    },
+    BlockKind.NUMERIC_INTEGRATOR_WITH_RESET: {
+        "stem": "CdlIntegratorWithReset",
+        "contract": "Buildings.Controls.OBC.CDL.Reals.IntegratorWithReset",
+        "recurrence": (
+            "emit the state the previous execution left, then a forward-Euler step of "
+            "gain * input over the elapsed time, or the reset value on a rising trigger"
+        ),
+        "inputs": (
+            ("in", "b:StatusNumeric", "double"),
+            ("resetValue", "b:StatusNumeric", "double"),
+            ("trigger", "b:StatusBoolean", "boolean"),
+        ),
+        "output_type": "b:StatusNumeric",
+        "constants": lambda c: {
+            "GAIN": float(c.get("gain", 1.0)),
+            "INITIAL": float(c.get("initial", 0.0)),
+        },
+        "members": """  private double state = INITIAL;
+  private double previousTime = Double.NaN;
+  private boolean previousTrigger = false;
+
+  private void resetControllerState() {
+    state = INITIAL;
+    previousTime = Double.NaN;
+    previousTrigger = false;
+  }
+
+  public double step(double timeSeconds, double input, double resetValue, boolean trigger) {
+    double output = state;
+    double dt = Double.isNaN(previousTime) ? 0.0 : timeSeconds - previousTime;
+    state = trigger && !previousTrigger ? resetValue : state + GAIN * input * dt;
+    previousTime = timeSeconds;
+    previousTrigger = trigger;
+    return output;
+  }
+""",
+    },
+    BlockKind.NUMERIC_ON_COUNTER: {
+        "stem": "CdlOnCounter",
+        "contract": "Buildings.Controls.OBC.CDL.Integers.OnCounter",
+        "recurrence": (
+            "emit the count the previous execution left; the first execution only records "
+            "the inputs, later ones add one on a rising trigger and return to the start on "
+            "a rising reset"
+        ),
+        "inputs": (
+            ("trigger", "b:StatusBoolean", "boolean"),
+            ("reset", "b:StatusBoolean", "boolean"),
+        ),
+        "output_type": "b:StatusNumeric",
+        "constants": lambda c: {"INITIAL": float(c.get("initial", 0))},
+        "members": """  private double count = INITIAL;
+  private boolean previousTrigger = false;
+  private boolean previousReset = false;
+  private boolean history = false;
+
+  private void resetControllerState() {
+    count = INITIAL;
+    previousTrigger = false;
+    previousReset = false;
+    history = false;
+  }
+
+  public double step(double timeSeconds, boolean trigger, boolean reset) {
+    double output = count;
+    if (history && ((trigger && !previousTrigger) || (reset && !previousReset))) {
+      count = reset ? INITIAL : count + 1.0;
+    }
+    previousTrigger = trigger;
+    previousReset = reset;
+    history = true;
+    return output;
+  }
+""",
+    },
+    BlockKind.WET_BULB_TEMPERATURE: {
+        "stem": "CdlWetBulb",
+        "contract": "Buildings.Controls.OBC.CDL.Psychrometrics.WetBulb_TDryBulPhi",
+        "recurrence": "Stull's closed-form wet-bulb temperature with fdlibm atan (stateless)",
+        "inputs": (
+            ("dryBulb", "b:StatusNumeric", "double"),
+            ("relativeHumidity", "b:StatusNumeric", "double"),
+        ),
+        "output_type": "b:StatusNumeric",
+        "constants": lambda c: {},
+        "members": """  private void resetControllerState() {}
+
+  public double step(double timeSeconds, double dryBulb, double relativeHumidity) {
+    if (!Double.isFinite(dryBulb) || !Double.isFinite(relativeHumidity)) {
+      return Double.NaN;
+    }
+    double tC = dryBulb - 273.15;
+    double rh = 100.0 * relativeHumidity;
+    return 273.15
+        + tC * StrictMath.atan(0.151977 * StrictMath.sqrt(rh + 8.313659))
+        + StrictMath.atan(tC + rh)
+        - StrictMath.atan(rh - 1.676331)
+        + 0.00391838 * (rh * StrictMath.sqrt(rh)) * StrictMath.atan(0.023101 * rh)
+        - 4.686035;
+  }
+""",
+    },
+}
+
+
+def _kernel_program_assets(
+    block: Block, execute_period_seconds: int, digest: str
+) -> tuple[dict[str, Any], str, str, str, list[tuple[str, str]], str, dict[str, Any]]:
+    spec = _KERNEL_PROGRAMS[block.kind]
+    constants = spec["constants"](block.config)
+    declarations = "".join(
+        f"  private static final boolean {name} = {'true' if value else 'false'};\n"
+        if isinstance(value, bool)
+        else f"  private static final double {name} = {_java_number(value)};\n"
+        for name, value in constants.items()
+    )
+    members = declarations + ("\n" if declarations else "") + spec["members"]
+    class_name = f"{spec['stem']}_{digest[:12]}"
+    inputs = spec["inputs"]
+    width = len(inputs) + 1
+    parsed = ", ".join(
+        f"Double.parseDouble(args[index + {position}])"
+        if java_type == "double"
+        else f"Double.parseDouble(args[index + {position}]) != 0.0"
+        for position, (_, _, java_type) in enumerate(inputs, start=1)
+    )
+    kernel = f"""// Generated by BACTalk. Exact {spec["contract"]} kernel.
+public final class {class_name} {{
+{members}
+  public static void main(String[] args) {{
+    if (args.length == 0 || args.length % {width} != 0) {{
+      throw new IllegalArgumentException("expected groups: time and {len(inputs)} input(s)");
+    }}
+    {class_name} controller = new {class_name}();
+    for (int index = 0; index < args.length; index += {width}) {{
+      System.out.println(Double.toString(
+          controller.step(Double.parseDouble(args[index]), {parsed})));
+    }}
+  }}
+}}
+"""
+    program_members = members
+    for modifier in (
+        "private static final",
+        "private double",
+        "private boolean",
+        "private void",
+        "public double",
+    ):
+        program_members = program_members.replace(f"  {modifier}", modifier)
+    status_ok = " || ".join(
+        f"!get{name[0].upper()}{name[1:]}().getStatus().isOk()" for name, _, _ in inputs
+    )
+    arguments = ", ".join(f"get{name[0].upper()}{name[1:]}().getValue()" for name, _, _ in inputs)
+    source = f"""// Generated by BACTalk from the pinned {spec["contract"]} contract.
+// Paste/import this as Niagara ProgramObject source with the slots in slots.json.
+Clock.Ticket ticket;
+private static final int EXECUTE_PERIOD_SECONDS = {execute_period_seconds};
+private long programStartedMillis = 0L;
+
+{program_members}
+public void onStart() throws Exception {{
+  resetControllerState();
+  programStartedMillis = System.currentTimeMillis();
+  scheduleNext();
+}}
+
+public void onExecute() throws Exception {{
+  try {{
+    if ({status_ok}) {{
+      getOut().setStatus(BStatus.NULL);
+      return;
+    }}
+    double timeSeconds = Math.max(
+        0.0, (System.currentTimeMillis() - programStartedMillis) / 1000.0);
+    getOut().setValue(step(timeSeconds, {arguments}));
+  }} finally {{
+    scheduleNext();
+  }}
+}}
+
+public void onStop() throws Exception {{
+  if (ticket != null) {{ ticket.cancel(); ticket = null; }}
+}}
+
+private void scheduleNext() {{
+  if (ticket != null) {{ ticket.cancel(); }}
+  ticket = Clock.schedule(
+      getComponent(), BRelTime.makeSeconds(EXECUTE_PERIOD_SECONDS), BProgram.execute, null);
+}}
+"""
+    config = {
+        **{name.lower(): value for name, value in constants.items()},
+        "semantic_contract": spec["contract"],
+    }
+    contract = {
+        "standard": spec["contract"],
+        "runtime_oracle": "Open Control Engine discretisation (bactalkG36 kernel)",
+        "recurrence": spec["recurrence"],
+    }
+    return (
+        config,
+        class_name,
+        source,
+        kernel,
+        [(name, type_spec) for name, type_spec, _ in inputs],
+        spec["output_type"],
+        contract,
+    )
+
+
 def _program_assets(
     block: Block, execute_period_seconds: int, digest: str
 ) -> tuple[dict[str, Any], str, str, str, dict[str, Any], dict[str, Any]]:
     outputs: list[tuple[str, str]] | None = None
-    if block.kind == BlockKind.PID_WITH_RESET:
+    if block.kind in _KERNEL_PROGRAMS:
+        config, class_name, source, kernel, inputs, output_type, contract = _kernel_program_assets(
+            block, execute_period_seconds, digest
+        )
+    elif block.kind == BlockKind.PID_WITH_RESET:
         config = _pid_config(block)
         class_name = f"G36PidWithReset_{digest[:12]}"
         source = _pid_program_source(config, execute_period_seconds)
@@ -4325,6 +4599,7 @@ class NiagaraProgramPackageBuilder:
             BlockKind.PLANT_STAGE_INDEX,
             BlockKind.PLANT_HRC_ENABLE,
             BlockKind.PLANT_HRC_MODE_CONTROL,
+            *_KERNEL_PROGRAMS,
         }
         programs = [block for block in graph.blocks if block.kind in supported_kinds]
         if not programs:
