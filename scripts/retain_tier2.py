@@ -31,6 +31,7 @@ from bactalk.library_tier2 import (
     CONFIGURATIONS_BY_ID,
     SCHEMA_REFERENCE,
     SCHEMA_TRANSLATION,
+    absent_inputs,
     probe_cases,
     retained_translation,
     scenarios_for,
@@ -59,6 +60,13 @@ def _lock_component(name: str) -> dict[str, Any]:
     }
 
 
+LOCK_COMPONENT = {"release": "modelica-buildings", "plants": "modelica-buildings-plants"}
+MODELICA_ROOT = {
+    "release": ROOT / ".vendor" / "modelica-buildings",
+    "plants": ROOT / ".vendor" / "modelica-buildings-plants",
+}
+
+
 def translation_envelope(library: G36Library, config_id: str) -> dict[str, Any]:
     config = CONFIGURATIONS_BY_ID[config_id]
     fresh = library.translate(
@@ -83,7 +91,7 @@ def translation_envelope(library: G36Library, config_id: str) -> dict[str, Any]:
         parameters=dict(config.parameters),
         execution_profile=config.execution_profile,  # type: ignore[arg-type]
     )
-    lock = _lock_component("modelica-buildings")
+    lock = _lock_component(LOCK_COMPONENT[config.source])
     assessment = template["target_assessment"]
     return {
         "schema": SCHEMA_TRANSLATION,
@@ -139,7 +147,9 @@ def reference_envelope(library: G36Library, config_id: str) -> dict[str, Any]:
     }
     cases = []
     runtime = profile = None
-    absent: list[str] = []
+    # The probe cases already leave out the inputs the retained reference recorded as
+    # absent, so the engine is told about them up front; new ones are learned below.
+    absent: list[str] = list(absent_inputs(config_id))
     for case in probe_cases(config_id):
         # A conditional input (``if have_...``) is part of the translated interface but
         # absent from the engine's instance for this parameter set; the engine names
@@ -152,6 +162,7 @@ def reference_envelope(library: G36Library, config_id: str) -> dict[str, Any]:
                     config.controller_id,
                     samples=_case_samples(probe, integer_inputs),
                     parameters=dict(config.parameters),
+                    absent_inputs=list(absent),
                 )
                 break
             except RuntimeError as exc:
@@ -218,7 +229,13 @@ def main(argv: list[str] | None = None) -> int:
         if args.only
         else list(CONFIGURATIONS)
     )
-    library = G36Library()
+    libraries: dict[str, G36Library] = {}
+
+    def library_for(config: Any) -> G36Library:
+        if config.source not in libraries:
+            libraries[config.source] = G36Library(modelica_root=MODELICA_ROOT[config.source])
+        return libraries[config.source]
+
     blockers: dict[str, Any] = (
         json.loads(BLOCKERS.read_text(encoding="utf-8")) if BLOCKERS.is_file() else {}
     )
@@ -234,7 +251,7 @@ def main(argv: list[str] | None = None) -> int:
             continue
         try:
             if not args.references_only or not (TRANSLATIONS / config.translation_file).is_file():
-                translation = translation_envelope(library, config.id)
+                translation = translation_envelope(library_for(config), config.id)
                 rendered = _render(translation)
                 path = TRANSLATIONS / config.translation_file
                 if args.check:
@@ -245,7 +262,7 @@ def main(argv: list[str] | None = None) -> int:
                     TRANSLATIONS.mkdir(parents=True, exist_ok=True)
                     path.write_text(rendered, encoding="utf-8")
                     retained_translation.cache_clear()
-            reference = reference_envelope(library, config.id)
+            reference = reference_envelope(library_for(config), config.id)
             rendered = _render(reference)
             path = REFERENCES / config.translation_file
             if args.check:

@@ -83,6 +83,15 @@ class Configuration:
     execution_profile: str = "host_tick_v1"
     tier: str = "2"
     notes: tuple[str, ...] = field(default_factory=tuple)
+    source: str = "release"
+    """Which locked Modelica Buildings checkout translates it: ``release`` (the tagged
+    release every G36 airside controller uses) or ``plants`` (LBNL master, for the G36
+    chiller-plant controllers no release carries yet; ops/stack.lock.json)."""
+    nominal: dict[str, Any] = field(default_factory=dict)
+    """Nominal operating point overrides for this configuration's inputs. The shared
+    tables below suit the airside controllers; a plant sequence needs its own (plant
+    scheduled on, pumps proven, condenser water at design) or every mechanical
+    scenario sits in the disabled state and exercises nothing."""
 
     @property
     def translation_file(self) -> str:
@@ -201,6 +210,75 @@ CONFIGURATIONS: tuple[Configuration, ...] = (
         "one zone",
         {"nZon": 1},
         "Zone group operation mode selection for one zone",
+    ),
+    # --- G36 chiller plant (§5.20), from LBNL master (source "plants"). The design values
+    # are LBNL's own validation plant: two 200 kW chillers, two primary pumps, two
+    # condenser pumps, two tower cells (Plants/Chillers/Validation/Controller.mo).
+    Configuration(
+        "chw-plant-enable",
+        "Plants.Chillers.Generic.PlantEnable.Enable",
+        "Plants.Chillers",
+        "default",
+        {},
+        "Chiller plant enable and disable (schedule, requests, outdoor lockout)",
+        source="plants",
+        # Scheduled on with two requests at 7 °C outside: the cold move (3 °C) crosses
+        # the 4.35 °C lockout, zero requests and the schedule toggle disable it.
+        nominal={"TOut": 280.15, "chiPlaReq": 2, "uPlaSchEna": True},
+    ),
+    Configuration(
+        "chw-plant-reset",
+        "Plants.Chillers.SetPoints.ChilledWaterPlantReset",
+        "Plants.Chillers",
+        "default",
+        {},
+        "Chilled-water plant reset by trim and respond on plant requests",
+        source="plants",
+        # Four requests against two ignored, one of two pumps proven on.
+        nominal={"TChiWatSupResReq": 4, "uChiWatPum__1": True, "uChiWatPum__2": False},
+    ),
+    Configuration(
+        "chw-supply-setpoints",
+        "Plants.Chillers.SetPoints.ChilledWaterSupply",
+        "Plants.Chillers",
+        "one remote dp sensor",
+        {"TChiWatSupMin": 278.15, "dpChiWatMax": [10 * 6894.76]},
+        "Chilled-water supply temperature and differential pressure setpoints from the plant reset",
+        source="plants",
+        nominal={"uChiWatPlaRes": 0.5},
+    ),
+    Configuration(
+        "chw-head-pressure",
+        "Plants.Chillers.HeadPressure.Controller",
+        "Plants.Chillers",
+        "Ti 120 s",
+        {"Ti": 120.0},
+        "Chiller head pressure control (condenser water valve and tower fan limits); "
+        "integral time 120 s, since LBNL's 0.5 s default makes the loop flip between "
+        "its limits on every 60 s scan",
+        source="plants",
+        # Head pressure control enabled, 7 °C chilled water, 18 °C condenser return: an
+        # 11 K lift just above the 10 K minimum, so the cold move puts the loop to work.
+        nominal={
+            "TChiWatSup": 280.15,
+            "TConWatRet": 291.15,
+            "desConWatPumSpe": 0.75,
+            "uChiHeaCon": True,
+            "uWSE": False,
+        },
+    ),
+    Configuration(
+        "chw-minimum-flow-bypass",
+        "Plants.Chillers.MinimumFlowBypass.Controller",
+        "Plants.Chillers",
+        "two chillers",
+        {"minFloSet": [0.0089, 0.0089], "Ti": 120.0, "Td": 0.1},
+        "Chilled-water minimum flow bypass valve control; integral time 120 s (LBNL's "
+        "0.5 s default flips the valve between its limits on every 60 s scan) and Td "
+        "0.1 s (the default of 0 is unused by the PI loop but below PIDWithEnable's minimum)",
+        source="plants",
+        # Pump on, measured flow a little under the 0.0089 m³/s minimum setpoint.
+        nominal={"VChiWatSet_flow": 0.0089, "VChiWat_flow": 0.008, "uChiWatPum": True},
     ),
 )
 CONFIGURATIONS_BY_ID = {item.id: item for item in CONFIGURATIONS}
@@ -335,6 +413,18 @@ def nominal_input(name: str, data_type: str) -> float | bool | int:
     return float(value)
 
 
+def _nominal_for(config_id: str, name: str, data_type: str) -> float | bool | int:
+    override = CONFIGURATIONS_BY_ID[config_id].nominal
+    if name in override:
+        value = override[name]
+        if data_type == "boolean":
+            return bool(value)
+        if data_type == "integer":
+            return int(value)
+        return float(value)
+    return nominal_input(name, data_type)
+
+
 def _unit_for(name: str, data_type: str) -> str | None:
     if data_type != "numeric":
         return None
@@ -364,7 +454,7 @@ def points_for(config_id: str) -> list[PointSpec]:
         name = point["name"]
         data_type = _data_type(point)
         is_input = point["source_interface_direction"] == "input"
-        default = nominal_input(name, data_type) if is_input else point["default"]
+        default = _nominal_for(config_id, name, data_type) if is_input else point["default"]
         points.append(
             PointSpec(
                 name=name,
@@ -395,10 +485,11 @@ def graph_for(config_id: str, points: list[PointSpec]) -> ControlGraph:
 def sequence_for(config_id: str) -> SequenceSpec:
     config = CONFIGURATIONS_BY_ID[config_id]
     translation = retained_translation(config_id)
+    release = "v13.0.0" if config.source == "release" else "master (plants)"
     return SequenceSpec(
         family="LBNL_G36_CONTROLLER",
         version=(
-            "LBNL Modelica Buildings v13.0.0 "
+            f"LBNL Modelica Buildings {release} "
             f"({translation['source']['revision'][:12]}) · retained translation "
             f"cxf {translation['translator']['cxf_source_sha256'][:12]}"
         ),
@@ -433,6 +524,12 @@ def _perturb(name: str, data_type: str, value: float | bool | int) -> list[tuple
             ]
         return [("plus", int(value) + 2, "two more"), ("zero", 0, "none")]
     number = float(value)
+    if name.endswith("Req"):
+        # A request count carried as a Real: none, and twice as many.
+        return [("zero", 0.0, "no requests"), ("double", number * 2.0, "twice as many")]
+    if name.endswith("Spe"):
+        # A speed ratio lives in [0, 1]: halve it and run it flat out.
+        return [("half", number * 0.5, "half nominal"), ("full", 1.0, "full speed")]
     if name.startswith("T"):
         return [("cold", number - 4.0, "4 K below nominal"), ("hot", number + 4.0, "4 K above")]
     if name.startswith("V"):
@@ -472,7 +569,7 @@ def scenarios_for(
         for p in translation["points"]
         if p["source_interface_direction"] == "input" and p["name"] not in skip
     ]
-    nominal = {p["name"]: nominal_input(p["name"], _data_type(p)) for p in inputs}
+    nominal = {p["name"]: _nominal_for(config_id, p["name"], _data_type(p)) for p in inputs}
     scenarios = [Scenario("nominal", dict(nominal), "the nominal operating point")]
     for point in inputs:
         name, data_type = point["name"], _data_type(point)

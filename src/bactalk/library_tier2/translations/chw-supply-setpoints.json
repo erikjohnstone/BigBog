@@ -1,0 +1,622 @@
+{
+ "configuration_id": "chw-supply-setpoints",
+ "controller_id": "Plants.Chillers.SetPoints.ChilledWaterSupply",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterSupply",
+  "inputs": [
+   {
+    "description": "Chilled water plant reset",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterSupply.uChiWatPlaRes",
+    "label": "uChiWatPlaRes",
+    "type": "S231:RealInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Chilled water supply temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterSupply.TChiWatSupSet",
+    "label": "TChiWatSupSet",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Chilled water differential pressure setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterSupply.dpChiWatSet__1",
+    "label": "dpChiWatSet__1",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 0
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "TChiWatSupMin": 278.15,
+  "dpChiWatMax": [
+   68947.6
+  ]
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uChiWatPlaRes",
+   "name": "uChiWatPlaRes",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterSupply.uChiWatPlaRes",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TChiWatSupSet",
+   "name": "TChiWatSupSet",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterSupply.TChiWatSupSet",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "dpChiWatSet__1",
+   "name": "dpChiWatSet__1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterSupply.dpChiWatSet__1",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Plants/Chillers/SetPoints/ChilledWaterSupply.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "a3cfdde4e2fa1605f351875c2199b6aafaee7fe0",
+  "source_sha256": "c06a2debddad88643b516efe4185963eb353953c2025187e79b357ae36273b87",
+  "tag": "master after v13.0.0 (2026-09-16)"
+ },
+ "translator": {
+  "cxf_source_sha256": "311084c0aeb35025605fdb5b73d954c8699360918a325513acf427d08fd1253a",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uChiWatPlaRes",
+    "kind": "numeric_input",
+    "label": "uChiWatPlaRes",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "dpChiWatSet__1",
+    "kind": "numeric_output",
+    "label": "dpChiWatSet__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "TChiWatSupSet",
+    "kind": "numeric_output",
+    "label": "TChiWatSupSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatPumPre__1_delta_f",
+    "kind": "subtract",
+    "label": "chiWatPumPre__1 \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatPumPre__1_delta_x",
+    "kind": "subtract",
+    "label": "chiWatPumPre__1 \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatPumPre__1_slope",
+    "kind": "divide",
+    "label": "chiWatPumPre__1 slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatPumPre__1_slope_x2",
+    "kind": "multiply",
+    "label": "chiWatPumPre__1 slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatPumPre__1_intercept",
+    "kind": "subtract",
+    "label": "chiWatPumPre__1 intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatPumPre__1_scaled",
+    "kind": "multiply",
+    "label": "chiWatPumPre__1 b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatPumPre__1_result",
+    "kind": "add",
+    "label": "chiWatPumPre__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatPumPre__1_lower_limit",
+    "kind": "maximum",
+    "label": "chiWatPumPre__1 lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatPumPre__1_upper_limit",
+    "kind": "minimum",
+    "label": "chiWatPumPre__1 upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatTem_delta_f",
+    "kind": "subtract",
+    "label": "chiWatTem \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatTem_delta_x",
+    "kind": "subtract",
+    "label": "chiWatTem \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatTem_slope",
+    "kind": "divide",
+    "label": "chiWatTem slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatTem_slope_x2",
+    "kind": "multiply",
+    "label": "chiWatTem slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatTem_intercept",
+    "kind": "subtract",
+    "label": "chiWatTem intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatTem_scaled",
+    "kind": "multiply",
+    "label": "chiWatTem b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatTem_result",
+    "kind": "add",
+    "label": "chiWatTem",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatTem_lower_limit",
+    "kind": "maximum",
+    "label": "chiWatTem lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatTem_upper_limit",
+    "kind": "minimum",
+    "label": "chiWatTem upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "halRes__1",
+    "kind": "numeric_const",
+    "label": "halRes__1",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 68947.6
+    },
+    "id": "maxChiWatPumPre__1",
+    "kind": "numeric_const",
+    "label": "maxChiWatPumPre__1",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 288.706
+    },
+    "id": "maxChiWatTem",
+    "kind": "numeric_const",
+    "label": "maxChiWatTem",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 34473.8
+    },
+    "id": "minChiWatPumPre__1",
+    "kind": "numeric_const",
+    "label": "minChiWatPumPre__1",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 278.15
+    },
+    "id": "minChiWatTem",
+    "kind": "numeric_const",
+    "label": "minChiWatTem",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "oneRes",
+    "kind": "numeric_const",
+    "label": "oneRes",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zerRes__1",
+    "kind": "numeric_const",
+    "label": "zerRes__1",
+    "x": 360,
+    "y": 120
+   }
+  ],
+  "links": [
+   {
+    "source": "chiWatPumPre__1_delta_f",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "chiWatPumPre__1_delta_x",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "chiWatPumPre__1_slope",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "chiWatPumPre__1_slope",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "chiWatPumPre__1_slope_x2",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "chiWatPumPre__1_intercept",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "chiWatPumPre__1_scaled",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "chiWatPumPre__1_lower_limit",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "chiWatPumPre__1_upper_limit",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "chiWatTem_delta_f",
+    "source_slot": "out",
+    "target": "chiWatTem_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "chiWatTem_delta_x",
+    "source_slot": "out",
+    "target": "chiWatTem_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "chiWatTem_slope",
+    "source_slot": "out",
+    "target": "chiWatTem_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "chiWatTem_slope",
+    "source_slot": "out",
+    "target": "chiWatTem_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "chiWatTem_slope_x2",
+    "source_slot": "out",
+    "target": "chiWatTem_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "chiWatTem_intercept",
+    "source_slot": "out",
+    "target": "chiWatTem_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "chiWatTem_scaled",
+    "source_slot": "out",
+    "target": "chiWatTem_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "chiWatTem_lower_limit",
+    "source_slot": "out",
+    "target": "chiWatTem_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "chiWatTem_upper_limit",
+    "source_slot": "out",
+    "target": "chiWatTem_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "uChiWatPlaRes",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "uChiWatPlaRes",
+    "source_slot": "out",
+    "target": "chiWatTem_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "chiWatPumPre__1_result",
+    "source_slot": "out",
+    "target": "dpChiWatSet__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "chiWatTem_result",
+    "source_slot": "out",
+    "target": "TChiWatSupSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "halRes__1",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "halRes__1",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "halRes__1",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "halRes__1",
+    "source_slot": "out",
+    "target": "chiWatTem_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "halRes__1",
+    "source_slot": "out",
+    "target": "chiWatTem_lower_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxChiWatPumPre__1",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxChiWatPumPre__1",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxChiWatTem",
+    "source_slot": "out",
+    "target": "chiWatTem_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "minChiWatPumPre__1",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "minChiWatTem",
+    "source_slot": "out",
+    "target": "chiWatTem_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "minChiWatTem",
+    "source_slot": "out",
+    "target": "chiWatTem_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "oneRes",
+    "source_slot": "out",
+    "target": "chiWatTem_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "oneRes",
+    "source_slot": "out",
+    "target": "chiWatTem_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "oneRes",
+    "source_slot": "out",
+    "target": "chiWatTem_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "zerRes__1",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "zerRes__1",
+    "source_slot": "out",
+    "target": "chiWatPumPre__1_lower_limit",
+    "target_slot": "a"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "chiWatPumPre__1": "chiWatPumPre__1",
+    "chiWatPumPre__1_delta_f": "chiWatPumPre__1",
+    "chiWatPumPre__1_delta_x": "chiWatPumPre__1",
+    "chiWatPumPre__1_intercept": "chiWatPumPre__1",
+    "chiWatPumPre__1_lower_limit": "chiWatPumPre__1",
+    "chiWatPumPre__1_result": "chiWatPumPre__1",
+    "chiWatPumPre__1_scaled": "chiWatPumPre__1",
+    "chiWatPumPre__1_slope": "chiWatPumPre__1",
+    "chiWatPumPre__1_slope_x2": "chiWatPumPre__1",
+    "chiWatPumPre__1_upper_limit": "chiWatPumPre__1",
+    "chiWatTem": "chiWatTem",
+    "chiWatTem_delta_f": "chiWatTem",
+    "chiWatTem_delta_x": "chiWatTem",
+    "chiWatTem_intercept": "chiWatTem",
+    "chiWatTem_lower_limit": "chiWatTem",
+    "chiWatTem_result": "chiWatTem",
+    "chiWatTem_scaled": "chiWatTem",
+    "chiWatTem_slope": "chiWatTem",
+    "chiWatTem_slope_x2": "chiWatTem",
+    "chiWatTem_upper_limit": "chiWatTem",
+    "halRes__1": "halRes__1",
+    "maxChiWatPumPre__1": "maxChiWatPumPre__1",
+    "maxChiWatTem": "maxChiWatTem",
+    "minChiWatPumPre__1": "minChiWatPumPre__1",
+    "minChiWatTem": "minChiWatTem",
+    "oneRes": "oneRes",
+    "zerRes__1": "zerRes__1"
+   },
+   "coverage": {
+    "boundary_inputs": 1,
+    "boundary_outputs": 2,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Reals.Line": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 7
+    },
+    "component_count": 9,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": true,
+    "niagara_unsupported_classes": [],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterSupply",
+    "root_label": "ChilledWaterSupply",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "311084c0aeb35025605fdb5b73d954c8699360918a325513acf427d08fd1253a",
+    "supported_class_count": 9,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "311084c0aeb35025605fdb5b73d954c8699360918a325513acf427d08fd1253a"
+  },
+  "name": "ChilledWaterSupply"
+ }
+}

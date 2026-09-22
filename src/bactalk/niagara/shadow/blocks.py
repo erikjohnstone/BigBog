@@ -1123,6 +1123,18 @@ KERNEL_BINDINGS: tuple[KernelBinding, ...] = (
         source_at_start=True,
     ),
     KernelBinding(
+        "LimitSlewRate",
+        "LimitSlewRate",
+        (("in", NUMERIC),),
+        (("out", NUMERIC),),
+        (
+            ("raisingSlewRate", "raisingSlewRate", _D, None),
+            ("fallingSlewRate", "fallingSlewRate", _D, None),
+            ("tdSeconds", "derivativeTime", _S, None),
+            ("enable", "enable", _B, True),
+        ),
+    ),
+    KernelBinding(
         "Round",
         "Round",
         (("in", NUMERIC),),

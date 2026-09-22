@@ -1,8 +1,8 @@
 diff --git a/lib/cxfExtractor.js b/lib/cxfExtractor.js
-index c9a5479..3900ef0 100644
+index c9a5479..a2a0eb9 100644
 --- a/lib/cxfExtractor.js
 +++ b/lib/cxfExtractor.js
-@@ -578,4 +578,9 @@ function getCxfGraph (instances, requiredReferences, blockName, generateElementa
+@@ -578,6 +578,19 @@ function getCxfGraph (instances, requiredReferences, blockName, generateElementa
  
  function getInstanceNode (graph, element, newInstances, s231Ns, cxfPrefix) {
    let node = null
@@ -11,8 +11,18 @@ index c9a5479..3900ef0 100644
 +  // only whitespace, which cannot be part of an unquoted Modelica identifier,
 +  // before constructing or looking up the connector node.
 +  element = element.replace(/\s+/g, '')
++  // A connect statement may name one element of a component array
++  // (``halRes[1].y`` from an unrolled for-loop). The CXF names that element's
++  // port as the arrayed component's port indexed by the element
++  // (``halRes.y[1]``), which is what a component-array scalarizer resolves.
++  const componentElement = element.match(/^(.*?)([A-Za-z_][A-Za-z0-9_]*)\[([^\]]+)\]\.([A-Za-z_][A-Za-z0-9_]*)$/)
++  if (componentElement !== null && !(`${componentElement[1]}${componentElement[2]}` + `[${componentElement[3]}]` in newInstances)) {
++    element = `${componentElement[1]}${componentElement[2]}.${componentElement[4]}[${componentElement[3]}]`
++  }
    // TODO: uncomment to translate flatten vectors [] to _
-@@ -1027,7 +1032,7 @@ function findControlInstance (objects, directory, parentInstance = '') {
+   // while (element.includes('[')) {
+   //   let startIdx = element.indexOf('[')
+@@ -1027,7 +1040,7 @@ function findControlInstance (objects, directory, parentInstance = '') {
          controlInstanceDict = instanceDict
        }
      }

@@ -15,17 +15,17 @@ unmutated file passed (a row graded on the coarse leg says `coarse` beside its
 rate). A configuration that fails or cannot be built is listed with its exact
 blocker.
 
-Summary: 36 configurations, 0 pass all four; D1 32, D2 32, D3 30, D4 0, blocked 4.
+Summary: 41 configurations, 0 pass all four; D1 41, D2 41, D3 39, D4 0, blocked 0.
 
 | Id | Controller | Variant | Tier | Scenarios | D1 | D2 | D3 | D4 |
 |---|---|---|---|---|---|---|---|---|
 | `tier1-vav-reheat` | TerminalUnits.Reheat.Controller | LBNL validation configuration | 1 | 6 | pass | pass | pass | 62.5 % (target 95 %) |
 | `tier1-ahu-multizone-vav` | AHUs.MultiZone.VAV.Controller | LBNL validation configuration | 1 | 4 | pass | pass | pass | 45.0 % (target 95 %) |
-| `ahu-singlezone-vav-ashrae` | AHUs.SingleZone.VAV.Controller | ASHRAE90_1+ASHRAE62_1 | 2 | — | blocked: translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s) error|sing… | blocked: translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s) error|sing… | blocked: translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s) error|sing… | blocked: translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s) error|sing… |
-| `ahu-singlezone-vav-title24` | AHUs.SingleZone.VAV.Controller | Title24 | 2 | — | blocked: translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s) error|sing… | blocked: translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s) error|sing… | blocked: translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s) error|sing… | blocked: translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s) error|sing… |
-| `fcu-controller` | FanCoilUnits.Controller | default | 2 | — | blocked: translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsup… | blocked: translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsup… | blocked: translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsup… | blocked: translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsup… |
+| `ahu-singlezone-vav-ashrae` | AHUs.SingleZone.VAV.Controller | ASHRAE90_1+ASHRAE62_1 | 2 | 35 | pass | pass | pass | 47.5 % (target 95 %) (scan leg) |
+| `ahu-singlezone-vav-title24` | AHUs.SingleZone.VAV.Controller | Title24 | 2 | 35 | pass | pass | pass | 50.0 % (target 95 %) (scan leg) |
+| `fcu-controller` | FanCoilUnits.Controller | default | 2 | 24 | pass | pass | pass | 67.5 % (target 95 %) (scan leg) |
 | `tu-coolingonly-ashrae62-1` | TerminalUnits.CoolingOnly.Controller | ASHRAE62_1 | 2 | 21 | pass | pass | pass | 65.0 % (target 95 %) |
-| `tu-coolingonly-title24` | TerminalUnits.CoolingOnly.Controller | Title24 | 2 | — | blocked: reference: ValueError: first sample must initialize every public controller input; missing: TDis | blocked: reference: ValueError: first sample must initialize every public controller input; missing: TDis | blocked: reference: ValueError: first sample must initialize every public controller input; missing: TDis | blocked: reference: ValueError: first sample must initialize every public controller input; missing: TDis |
+| `tu-coolingonly-title24` | TerminalUnits.CoolingOnly.Controller | Title24 | 2 | 19 | pass | pass | pass | 50.0 % (target 95 %) |
 | `tu-seriesfancvf-ashrae62-1` | TerminalUnits.SeriesFanCVF.Controller | ASHRAE62_1 | 2 | 27 | pass | pass | fail: TZon cold (1 s module tick; passes at scan tick) | 57.5 % (target 95 %) (coarse leg) |
 | `tu-seriesfanvvf-ashrae62-1` | TerminalUnits.SeriesFanVVF.Controller | ASHRAE62_1 | 2 | 27 | pass | pass | pass | 65.0 % (target 95 %) (scan leg) |
 | `tu-parallelfancvf-ashrae62-1` | TerminalUnits.ParallelFanCVF.Controller | ASHRAE62_1 | 2 | 29 | pass | pass | fail: TZon cold (1 s module tick; passes at scan tick) | 65.0 % (target 95 %) (coarse leg) |
@@ -43,6 +43,11 @@ Summary: 36 configurations, 0 pass all four; D1 32, D2 32, D3 30, D4 0, blocked 
 | `vent-title24-setpoints` | VentilationZones.Title24.Setpoints | Title24 | 2 | 1 | pass | pass | pass | 50.0 % (target 95 %) |
 | `zone-group-status` | ZoneGroups.GroupStatus | default | 2 | 91 | pass | pass | pass | 55.0 % (target 95 %) |
 | `zone-group-operation-mode` | ZoneGroups.OperationMode | one zone | 2 | 17 | pass | pass | pass | 42.5 % (target 95 %) |
+| `chw-plant-enable` | Plants.Chillers.Generic.PlantEnable.Enable | default | 2 | 6 | pass | pass | pass | 75.0 % (target 95 %) |
+| `chw-plant-reset` | Plants.Chillers.SetPoints.ChilledWaterPlantReset | default | 2 | 6 | pass | pass | pass | 65.0 % (target 95 %) |
+| `chw-supply-setpoints` | Plants.Chillers.SetPoints.ChilledWaterSupply | one remote dp sensor | 2 | 2 | pass | pass | pass | 75.0 % (target 95 %) |
+| `chw-head-pressure` | Plants.Chillers.HeadPressure.Controller | Ti 120 s | 2 | 9 | pass | pass | pass | 82.5 % (target 95 %) |
+| `chw-minimum-flow-bypass` | Plants.Chillers.MinimumFlowBypass.Controller | two chillers | 2 | 6 | pass | pass | pass | 67.5 % (target 95 %) |
 | `hw-plant-boiler` | Hot water plant: two boilers, two primary pumps, minimum flow bypass | default · 20 requirements · Gate G-ENG unapproved | 3 | 165 | pass | pass | pass | 82.5 % (target 95 %) (scan leg) |
 | `doas` | Dedicated outdoor air system (BACTalk standard sequence) | no recovery · 6 requirements · Gate G-ENG unapproved | 4 | 38 | pass | pass | pass | 72.5 % (target 95 %) (scan leg) |
 | `doas-erv` | Dedicated outdoor air system with energy recovery (BACTalk standard sequence) | energy recovery · 9 requirements · Gate G-ENG unapproved | 4 | 61 | pass | pass | pass | 77.7 % (target 95 %) (scan leg) |
@@ -90,15 +95,48 @@ Summary: 36 configurations, 0 pass all four; D1 32, D2 32, D3 30, D4 0, blocked 
 
 ### `ahu-singlezone-vav-ashrae`
 
-- Blocked at translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s) error|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0) error|direction-mismatch|<none>|boundary connection has contradictory endpoint directions
+- Survivor: delete_link `/Controller/SetPoiVAV_2/heaSupTemDif__x/Link1`
+- Survivor: invert_parameter `/Controller/PlaReq/truDel1`
+- Survivor: delete_link `/Controller/ModSetPoi_3/booToRea1/Link2`
+- Survivor: delete_link `/Controller/ModSetPoi_4/intEqu7/Link1`
+- Survivor: delete_link `/Controller/ModSetPoi_4/not3/Link`
+- Survivor: change_block_type `/Controller/OutAirSetPoi/popBreOutAir__x`
+- Survivor: delete_link `/Controller/ModSetPoi_5/and5/Link1`
+- Survivor: change_block_type `/Controller/ModSetPoi_5/pro`
+- Survivor: delete_link `/Controller/ModSetPoi_1/hotZon/Link1`
+- Survivor: delete_link `/Controller/CooCoiVal/and2/Link`
+- Survivor: delete_link `/Controller/ConEco_2/or23/Link1`
+- Survivor: change_block_type `/Controller/ModSetPoi_5/or1`
 
 ### `ahu-singlezone-vav-title24`
 
-- Blocked at translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s) error|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0) error|direction-mismatch|<none>|boundary connection has contradictory endpoint directions
+- Survivor: delete_link `/Controller/ModSetPoi_2/or4/Link`
+- Survivor: delete_link `/Controller/ModSetPoi_4/swi15/Link2`
+- Survivor: change_block_type `/Controller/MinFlo/lin_b_x`
+- Survivor: delete_link `/Controller/FrePro_1/outDam2/Link1`
+- Survivor: change_priority_level `/Controller/Outputs/ySupFan/Link`
+- Survivor: alter_constant `/Controller/FrePro_1/greThr_threshold`
+- Survivor: delete_link `/Controller/ConEco_1/yDam_VOutMin_curSpe_slope_x2/Link`
+- Survivor: change_block_type `/Controller/ConEco_2/or16`
+- Survivor: delete_link `/Controller/ConEco_2/swi6/Link1`
+- Survivor: delete_link `/Controller/MinFlo/zonOccMin4_intercept/Link`
+- Survivor: alter_constant `/Controller/ConEco_3/heaCoiMinLimSig`
+- Survivor: alter_constant `/Controller/ZonSta/booToIntCoo_false`
 
 ### `fcu-controller`
 
-- Blocked at translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj
+- Survivor: delete_link `/Controller/ModSetPoi_2/sub4/Link`
+- Survivor: delete_link `/Controller/ModSetPoi_1/booToRea4/Link1`
+- Survivor: delete_link `/Controller/ModSetPoi_2/swi2/Link2`
+- Survivor: delete_link `/Controller/ModSetPoi_1/booToInt3/Link1`
+- Survivor: delete_link `/Controller/ModSetPoi_2/lat/Link1`
+- Survivor: delete_link `/Controller/ModSetPoi_1/allCol/Link`
+- Survivor: delete_link `/Controller/ModSetPoi_4/or1/Link1`
+- Survivor: delete_link `/Controller/ModSetPoi_2/truFalHol1/Link`
+- Survivor: delete_link `/Controller/FcuPlaReq/hotWatRes1/Link2`
+- Survivor: delete_link `/Controller/ModSetPoi_5/swi7/Link`
+- Survivor: change_block_type `/Controller/ModSetPoi_5/pro`
+- Survivor: alter_constant `/Controller/Outputs/yChiWatResReq`
 
 ### `tu-coolingonly-ashrae62-1`
 
@@ -117,7 +155,18 @@ Summary: 36 configurations, 0 pass all four; D1 32, D2 32, D3 30, D4 0, blocked 
 
 ### `tu-coolingonly-title24`
 
-- Blocked at reference: ValueError: first sample must initialize every public controller input; missing: TDis
+- Survivor: delete_link `/Controller/ConLoo/disHea/Link`
+- Survivor: alter_constant `/Controller/SysReq/gai1_parameter`
+- Survivor: alter_constant `/Controller/Inputs/TDis`
+- Survivor: invert_parameter `/Controller/TimSup/truDel`
+- Survivor: alter_constant `/Controller/Inputs/TCooSet`
+- Survivor: alter_constant `/Controller/SysReq/greThr4_threshold`
+- Survivor: delete_link `/Controller/SysReq/booToInt1/Link1`
+- Survivor: drop_facets `/Controller/Inputs/uOpeMod`
+- Survivor: drop_facets `/Controller/Outputs/yFloSenAla`
+- Survivor: delete_link `/Controller/ActAirSet/intEqu1/Link1`
+- Survivor: delete_link `/Controller/MinFlo/booToRea/Link`
+- Survivor: delete_link `/Controller/SysReq/greThr/Link1`
 
 ### `tu-seriesfancvf-ashrae62-1`
 
@@ -373,6 +422,72 @@ Summary: 36 configurations, 0 pass all four; D1 32, D2 32, D3 30, D4 0, blocked 
 - Survivor: change_block_type `/OperationMode/OperationMode_1/and5`
 - Survivor: delete_link `/OperationMode/OperationMode_1/addInt1/Link`
 - Survivor: delete_link `/OperationMode/OperationMode_2/sub2/Link1`
+
+### `chw-plant-enable`
+
+- Survivor: delete_link `/Enable/Enable/lesReq/Link`
+- Survivor: drop_facets `/Enable/Parameters/hasReq_threshold`
+- Survivor: delete_link `/Enable/Enable/enaTim/Link`
+- Survivor: change_block_type `/Enable/Enable/or1`
+- Survivor: change_block_type `/Enable/Enable/disPlaCon`
+- Survivor: delete_link `/Enable/Enable/enaTim1/Link`
+- Survivor: invert_parameter `/Enable/Enable/enaTim1`
+- Survivor: invert_parameter `/Enable/Enable/enaTim`
+- Survivor: change_priority_level `/Enable/Outputs/yPla/Link`
+- Survivor: delete_link `/Enable/Enable/disPla/Link1`
+
+### `chw-plant-reset`
+
+- Survivor: delete_link `/ChilledWaterPlantReset/TriRes/greThr2/Link1`
+- Survivor: invert_parameter `/ChilledWaterPlantReset/TriRes/sampler`
+- Survivor: change_block_type `/ChilledWaterPlantReset/TriRes/pro`
+- Survivor: delete_link `/ChilledWaterPlantReset/TriRes/pro2/Link1`
+- Survivor: alter_constant `/ChilledWaterPlantReset/TriRes/greThr_threshold`
+- Survivor: delete_link `/ChilledWaterPlantReset/TriRes/abs/Link`
+- Survivor: delete_link `/ChilledWaterPlantReset/TriRes/abs1_negate/Link`
+- Survivor: delete_link `/ChilledWaterPlantReset/TriRes/intToRea/Link`
+- Survivor: alter_constant `/ChilledWaterPlantReset/TriRes/lesThr1_threshold`
+- Survivor: delete_link `/ChilledWaterPlantReset/ChilledWaterPlantReset/mulAnd_fold_2/Link1`
+- Survivor: delete_link `/ChilledWaterPlantReset/TriRes/abs/Link2`
+- Survivor: alter_constant `/ChilledWaterPlantReset/TriRes/intToRea_zero`
+
+### `chw-supply-setpoints`
+
+- Survivor: delete_link `/ChilledWaterSupply/ChilledWaterSupply/chiWatPumPre__1_lower_limit/Link1`
+- Survivor: drop_facets `/ChilledWaterSupply/Parameters/maxChiWatTem`
+- Survivor: delete_link `/ChilledWaterSupply/ChilledWaterSupply/chiWatPumPre__1__f/Link`
+- Survivor: drop_facets `/ChilledWaterSupply/Parameters/oneRes`
+- Survivor: delete_link `/ChilledWaterSupply/ChilledWaterSupply/chiWatTem_lower_limit/Link1`
+- Survivor: drop_facets `/ChilledWaterSupply/Outputs/TChiWatSupSet`
+- Survivor: drop_facets `/ChilledWaterSupply/Parameters/maxChiWatPumPre__1`
+- Survivor: change_priority_level `/ChilledWaterSupply/Outputs/dpChiWatSet__1/Link`
+- Survivor: alter_constant `/ChilledWaterSupply/Outputs/dpChiWatSet__1`
+- Survivor: alter_constant `/ChilledWaterSupply/Inputs/uChiWatPlaRes`
+
+### `chw-head-pressure`
+
+- Survivor: drop_facets `/Controller/Outputs/yConWatPumSpeSet`
+- Survivor: change_block_type `/Controller/WithWSE/heaPreConVal__x`
+- Survivor: delete_link `/Controller/WithWSE/swi1/Link2`
+- Survivor: delete_link `/Controller/Controller/fixSpeWSE/Link`
+- Survivor: delete_link `/Controller/WithWSE/heaPreConVal_lower_limit/Link`
+- Survivor: alter_constant `/Controller/Outputs/yHeaPreConVal`
+- Survivor: change_block_type `/Controller/WithWSE/conWatPumSpe_slope_x2`
+
+### `chw-minimum-flow-bypass`
+
+- Survivor: alter_constant `/Controller/Inputs/VChiWat_flow`
+- Survivor: change_priority_level `/Controller/Outputs/yValPos/Link`
+- Survivor: drop_facets `/Controller/Inputs/VChiWatSet_flow`
+- Survivor: drop_facets `/Controller/Parameters/opeVal`
+- Survivor: drop_facets `/Controller/Inputs/VChiWat_flow`
+- Survivor: drop_facets `/Controller/Outputs/yValPos`
+- Survivor: alter_constant `/Controller/ValPos/valDis`
+- Survivor: alter_constant `/Controller/Outputs/yValPos`
+- Survivor: alter_constant `/Controller/Parameters/minFlo__1`
+- Survivor: drop_facets `/Controller/Parameters/minFlo__1`
+- Survivor: delete_link `/Controller/ValPos/swiInp/Link2`
+- Survivor: delete_link `/Controller/ValPos/swiOut/Link2`
 
 ### `hw-plant-boiler`
 

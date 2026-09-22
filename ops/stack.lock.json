@@ -62,12 +62,25 @@
         "Buildings/package.order"
       ]
     },
+    "modelica-buildings-plants": {
+      "repository": "https://github.com/lbl-srg/modelica-buildings",
+      "release": "master after v13.0.0 (2026-09-16)",
+      "revision": "a3cfdde4e2fa1605f351875c2199b6aafaee7fe0",
+      "license": "Revised BSD-3-Clause with notices",
+      "scope": "Buildings/Controls/OBC from LBNL master, used only for the Guideline 36 plant controllers (G36/Plants/Chillers) that no tagged release carries yet; every other controller stays on the release pin",
+      "sparse_paths": [
+        "Buildings/Controls/OBC",
+        "Buildings/Utilities",
+        "Buildings/package.mo",
+        "Buildings/package.order"
+      ]
+    },
     "modelica-json": {
       "repository": "https://github.com/lbl-srg/modelica-json",
       "revision": "5460add3b273286157412d8f5992493bd48ab061",
       "license": "Modified BSD-3-Clause",
-      "patch_sha256": "4aa839080fc23327a4a1da2c62bd3c1d850c536ae702b61b4e0d5746c4362124",
-      "scope": "CDL/CXF translation with local null-type and symbolic-array IRI guards"
+      "patch_sha256": "0dc10aeadaee7a3ef34a22b99f949c94dca72fba7d669df6855e4b0f5a68e73b",
+      "scope": "CDL/CXF translation with local null-type, symbolic-array IRI and component-array-element connect guards"
     },
     "ctrl-flow": {
       "repository": "https://github.com/lbl-srg/ctrl-flow-dev",

@@ -110,8 +110,13 @@ The components are `TrueDelay`, `Timer`, `TimerWithReset`, `TimerAccumulating`,
 `TrueFalseHold`, `Pre`, `UnitDelay`, `FirstOrderHold`, `MovingAverage`,
 `PIDWithReset`, `TrimAndRespond`, `BooleanInitialization`, `NumericChange` and,
 since N7, the host-tick `RisingEdge`, `FallingEdge`, `SetReset`, `Sampler`,
-`SampleTrigger` and `Hysteresis` (`bactalk.niagara.module`). A `WsTextBlock`
-note carries no behaviour.
+`SampleTrigger` and `Hysteresis` (`bactalk.niagara.module`), and since N8 the
+stateless `Round` and `LimitSlewRate`. `LimitSlewRate` follows CDL's
+`Reals.LimitSlewRate` discretised as the Open Control Engine does it: the first
+execution passes `in` through, later ones lag it by `derivativeTime` (implicit
+Euler) and clamp the change to `fallingSlewRate·dt … raisingSlewRate·dt`, with
+`dt` the time since the previous execution. A `WsTextBlock` note carries no
+behaviour.
 
 | Id | Rule | Status | Source |
 |---|---|---|---|

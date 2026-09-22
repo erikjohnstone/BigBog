@@ -1,18 +1,1 @@
-{
- "ahu-singlezone-vav-ashrae": {
-  "reason": "RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
-  "stage": "translation"
- },
- "ahu-singlezone-vav-title24": {
-  "reason": "RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
-  "stage": "translation"
- },
- "fcu-controller": {
-  "reason": "CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj",
-  "stage": "translation"
- },
- "tu-coolingonly-title24": {
-  "reason": "ValueError: first sample must initialize every public controller input; missing: TDis",
-  "stage": "reference"
- }
-}
+{}

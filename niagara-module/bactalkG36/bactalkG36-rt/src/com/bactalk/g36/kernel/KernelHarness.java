@@ -230,6 +230,14 @@ public final class KernelHarness {
         Round k = new Round();
         return row -> Double.toString(k.step(row[1]));
       }
+      case "LimitSlewRate": {
+        LimitSlewRate k = new LimitSlewRate(
+            num(params, "raisingSlewRate"),
+            num(params, "fallingSlewRate"),
+            num(params, "tdSeconds"),
+            bool(params, "enable", true));
+        return row -> Double.toString(k.step(row[0], row[1]));
+      }
       case "RisingEdge": {
         RisingEdge k = new RisingEdge(bool(params, "initial", false));
         return row -> Boolean.toString(k.step(b(row[1])));

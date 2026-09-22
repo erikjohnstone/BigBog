@@ -422,6 +422,26 @@ def _quote_assert_message_literals(graph: list[dict[str, Any]]) -> dict[str, Any
     }
 
 
+def _is_opaque_child_port(identifier: str, graph: list[dict[str, Any]]) -> bool:
+    """A port of a child composite whose internals are not in this graph."""
+
+    owner = identifier.rpartition(".")[0]
+    if not owner:
+        return False
+    prefix = owner + "."
+    owner_is_block = False
+    for node in graph:
+        node_id = node.get("@id")
+        if not isinstance(node_id, str):
+            continue
+        is_block = isinstance(node.get("@type"), str) and str(node["@type"]).startswith("ex:")
+        if node_id == owner and is_block:
+            owner_is_block = True
+        elif is_block and node_id.startswith(prefix):
+            return False
+    return owner_is_block
+
+
 def _port_directions(
     graph: list[dict[str, Any]],
     identifiers: set[str] | None = None,
@@ -433,16 +453,35 @@ def _port_directions(
         if (class_name := _class_name(node.get("@type"))) is not None
     }
     directions: dict[str, PortDirection] = {}
+    block_ids = {
+        identifier
+        for identifier, node in nodes.items()
+        if isinstance(node.get("@type"), str) and str(node["@type"]).startswith("ex:")
+    }
+
+    def opaque_child(parent: str) -> bool:
+        # A child composite whose internals are not in this graph: its typed ports are
+        # its pins (an input receives, an output drives), not this graph's boundary.
+        # Once the child is assembled its ports become through-connectors and keep
+        # the boundary reading below.
+        if parent not in block_ids:
+            return False
+        prefix = parent + "."
+        return not any(other.startswith(prefix) for other in block_ids)
+
     for identifier in identifiers or set(nodes):
         node = nodes.get(identifier, {})
         node_types = node.get("@type", [])
         values = node_types if isinstance(node_types, list) else [node_types]
+        owner = identifier.rpartition(".")[0]
+        pin = opaque_child(owner)
         if any(isinstance(value, str) and value.endswith("Input") for value in values):
-            # A controller boundary input is the signal source inside the graph.
-            directions[identifier] = "source"
+            # A controller boundary input is the signal source inside the graph; a
+            # child composite's input is a sink.
+            directions[identifier] = "sink" if pin else "source"
             continue
         if any(isinstance(value, str) and value.endswith("Output") for value in values):
-            directions[identifier] = "sink"
+            directions[identifier] = "source" if pin else "sink"
             continue
         parent, separator, slot = identifier.rpartition(".")
         if not separator or parent not in components:
@@ -516,13 +555,29 @@ def normalize_connection_sets(
             stack.extend(adjacency[current] - connection_set)
         visited.update(connection_set)
         examined += 1
-        if any(identifier not in directions for identifier in connection_set):
+        set_directions = {
+            identifier: directions[identifier]
+            for identifier in connection_set
+            if identifier in directions
+        }
+        unknown = connection_set - set(set_directions)
+        if unknown and all(_is_opaque_child_port(identifier, graph) for identifier in unknown):
+            # A pin of a child composite whose internals are not in this graph has no
+            # declared direction here. Modelica single assignment decides it: in a set
+            # that already has its one driver every other member is driven; in a set
+            # of sinks with exactly one unknown pin, that pin is the driver.
+            known_sources = [i for i, d in set_directions.items() if d == "source"]
+            if len(known_sources) == 1:
+                set_directions.update({identifier: "sink" for identifier in unknown})
+            elif not known_sources and len(unknown) == 1 and set_directions:
+                set_directions.update({identifier: "source" for identifier in unknown})
+        if any(identifier not in set_directions for identifier in connection_set):
             continue
         sources = sorted(
-            identifier for identifier in connection_set if directions[identifier] == "source"
+            identifier for identifier in connection_set if set_directions[identifier] == "source"
         )
         sinks = sorted(
-            identifier for identifier in connection_set if directions[identifier] == "sink"
+            identifier for identifier in connection_set if set_directions[identifier] == "sink"
         )
         if len(sources) != 1 or not sinks:
             continue

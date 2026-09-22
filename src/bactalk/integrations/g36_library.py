@@ -454,8 +454,14 @@ class G36Library:
         samples: list[dict[str, Any]],
         collect: list[str] | None = None,
         parameters: dict[str, Any] | None = None,
+        absent_inputs: list[str] | None = None,
     ) -> dict[str, Any]:
         """Translate and execute one allowlisted controller by public port name.
+
+        ``absent_inputs`` names public inputs whose every consumer is removed by a
+        conditional instance for this parameter set (``if venStd == ...``): the engine
+        reports them as unknown, so the caller leaves them out and names them here.
+        Each must still be a public input; any other omission is refused.
 
         The controller-specific route deliberately admits only public controller
         inputs and outputs. Internal block ports remain available through the
@@ -490,7 +496,13 @@ class G36Library:
                 }
             )
 
-        supplied_first = set(normalized_samples[0]["inputs"])
+        declared_absent = set(absent_inputs or ())
+        unknown_absent = sorted(declared_absent - set(input_ids))
+        if unknown_absent:
+            raise ValueError("absent_inputs are not public inputs: " + ", ".join(unknown_absent))
+        supplied_first = set(normalized_samples[0]["inputs"]) | {
+            input_ids[label] for label in declared_absent
+        }
         missing_first = sorted(set(input_ids.values()) - supplied_first)
         if missing_first:
             missing_labels = [label for label, path in input_ids.items() if path in missing_first]

@@ -244,6 +244,26 @@ class GraphInterpreter:
                     return math.nan
                 return math.copysign(math.inf, numerator * math.copysign(1.0, denominator))
             return numerator / denominator
+        if kind == BlockKind.NUMERIC_LIMIT_SLEW_RATE:
+            # CDL.Reals.LimitSlewRate as the Open Control Engine discretises it: the first
+            # tick passes the input through; later ticks take an implicit first-order lag
+            # toward the input and clamp the step to the slew rates times the tick.
+            value = self._number(args["in"])
+            state = self.state.get(block.id)
+            if state is None or not bool(block.config.get("enable", True)):
+                self.state[block.id] = {"y": value}
+                return value
+            previous = float(state["y"])
+            if step_seconds <= 0.0:
+                return previous
+            alpha = step_seconds / float(block.config["td_seconds"])
+            filtered = (previous + alpha * value) / (1.0 + alpha)
+            change = min(
+                max(filtered - previous, float(block.config["falling_slew_rate"]) * step_seconds),
+                float(block.config["raising_slew_rate"]) * step_seconds,
+            )
+            state["y"] = previous + change
+            return state["y"]
         if kind == BlockKind.NUMERIC_ROUND:
             # CDL.Conversions.RealToInteger: round half away from zero.
             value = self._number(args["in"])

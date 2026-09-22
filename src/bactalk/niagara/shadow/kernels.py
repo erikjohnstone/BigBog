@@ -759,6 +759,41 @@ class Round:
         return (float(rounded),)
 
 
+class LimitSlewRate:
+    """``numeric_limit_slew_rate``: CDL.Reals.LimitSlewRate as the reference engine
+    discretises it. The first execution passes the input through; each later one takes
+    an implicit first-order lag toward the input over the elapsed time and clamps the
+    change to ``fallingSlewRate * dt .. raisingSlewRate * dt``."""
+
+    def __init__(self, raising: float, falling: float, td_seconds: float, enable: bool) -> None:
+        if not raising > 0.0 or not falling < 0.0 or not td_seconds > 0.0:
+            raise ValueError("LimitSlewRate needs raising > 0, falling < 0 and Td > 0")
+        self.raising = raising
+        self.falling = falling
+        self.td_seconds = td_seconds
+        self.enable = enable
+        self.reset()
+
+    def reset(self) -> None:
+        self.y = math.nan
+        self.previous_time = math.nan
+
+    def step(self, time_seconds: float, value: float) -> tuple[float]:
+        if not _finite(time_seconds, value):
+            raise ValueError("LimitSlewRate inputs must be finite")
+        if not self.enable or math.isnan(self.previous_time):
+            self.y = value
+        else:
+            dt = time_seconds - self.previous_time
+            if dt > 0.0:
+                alpha = dt / self.td_seconds
+                filtered = (self.y + alpha * value) / (1.0 + alpha)
+                change = min(max(filtered - self.y, self.falling * dt), self.raising * dt)
+                self.y = self.y + change
+        self.previous_time = time_seconds
+        return (self.y,)
+
+
 class RisingEdge:
     """``one_shot``: one execution true per rising edge, judged between executions."""
 
@@ -971,6 +1006,13 @@ def build_kernel(name: str, params: dict[str, object]) -> Kernel:
         return RisingEdge(_bool(params, "initial", False))
     if name == "Round":
         return Round()
+    if name == "LimitSlewRate":
+        return LimitSlewRate(
+            _num(params, "raisingSlewRate"),
+            _num(params, "fallingSlewRate"),
+            _num(params, "tdSeconds"),
+            _bool(params, "enable", True),
+        )
     if name == "FallingEdge":
         return FallingEdge(_bool(params, "initial", False))
     if name == "SetReset":
@@ -1007,6 +1049,7 @@ KERNEL_NAMES: tuple[str, ...] = (
     "SampleTrigger",
     "Hysteresis",
     "Round",
+    "LimitSlewRate",
 )
 
 
@@ -1019,6 +1062,7 @@ def format_row(values: tuple[float | bool, ...]) -> str:
 
 
 __all__ = [
+    "LimitSlewRate",
     "KERNEL_NAMES",
     "BooleanInitialization",
     "FallingEdge",

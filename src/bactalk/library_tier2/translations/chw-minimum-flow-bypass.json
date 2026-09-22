@@ -1,0 +1,424 @@
+{
+ "configuration_id": "chw-minimum-flow-bypass",
+ "controller_id": "Plants.Chillers.MinimumFlowBypass.Controller",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.MinimumFlowBypass.Controller",
+  "inputs": [
+   {
+    "description": "Chiller water minimum flow setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.MinimumFlowBypass.Controller.VChiWatSet_flow",
+    "label": "VChiWatSet_flow",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Measured chilled water flow rate through chillers",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.MinimumFlowBypass.Controller.VChiWat_flow",
+    "label": "VChiWat_flow",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Maximum status feedback of all the chilled water pumps: true means at least one pump is proven on",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.MinimumFlowBypass.Controller.uChiWatPum",
+    "label": "uChiWatPum",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Chilled water minimum flow bypass valve position",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.MinimumFlowBypass.Controller.yValPos",
+    "label": "yValPos",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 1
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "Td": 0.1,
+  "Ti": 120.0,
+  "minFloSet": [
+   0.0089,
+   0.0089
+  ]
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VChiWatSet_flow",
+   "name": "VChiWatSet_flow",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.MinimumFlowBypass.Controller.VChiWatSet_flow",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VChiWat_flow",
+   "name": "VChiWat_flow",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.MinimumFlowBypass.Controller.VChiWat_flow",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uChiWatPum",
+   "name": "uChiWatPum",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.MinimumFlowBypass.Controller.uChiWatPum",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yValPos",
+   "name": "yValPos",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.MinimumFlowBypass.Controller.yValPos",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Plants/Chillers/MinimumFlowBypass/Controller.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "a3cfdde4e2fa1605f351875c2199b6aafaee7fe0",
+  "source_sha256": "7e9fb31da53752a2ebea74064b45a72c36d114d919363255f40ba1ee55f45d8b",
+  "tag": "master after v13.0.0 (2026-09-16)"
+ },
+ "translator": {
+  "cxf_source_sha256": "28a69d697264fa07397a9ef6a55b3a52b098f104d5af0ea24b093f01f4440c50",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uChiWatPum",
+    "kind": "boolean_input",
+    "label": "uChiWatPum",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "VChiWat_flow",
+    "kind": "numeric_input",
+    "label": "VChiWat_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "VChiWatSet_flow",
+    "kind": "numeric_input",
+    "label": "VChiWatSet_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yValPos",
+    "kind": "numeric_output",
+    "label": "yValPos",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "div",
+    "kind": "divide",
+    "label": "div",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "div1",
+    "kind": "divide",
+    "label": "div1",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0089
+    },
+    "id": "minFlo__1",
+    "kind": "numeric_const",
+    "label": "minFlo__1",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0089
+    },
+    "id": "minFlo__2",
+    "kind": "numeric_const",
+    "label": "minFlo__2",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "mulSum_fold_2",
+    "kind": "add",
+    "label": "mulSum fold 2",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "opeVal",
+    "kind": "numeric_const",
+    "label": "opeVal",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "numeric_switch",
+    "label": "swi",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 1.0,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 1.0,
+     "reverse_acting": true,
+     "td": 0.1,
+     "ti": 120.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.1,
+     "y_reset": 1.0,
+     "yd_start": 0.0
+    },
+    "id": "conPID",
+    "kind": "pid_with_reset",
+    "label": "conPID",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "swiInp",
+    "kind": "numeric_switch",
+    "label": "swiInp",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "swiOut",
+    "kind": "numeric_switch",
+    "label": "swiOut",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "valDis",
+    "kind": "numeric_const",
+    "label": "valDis",
+    "x": 720,
+    "y": 120
+   }
+  ],
+  "links": [
+   {
+    "source": "uChiWatPum",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "uChiWatPum",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "uChiWatPum",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "selector"
+   },
+   {
+    "source": "uChiWatPum",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "selector"
+   },
+   {
+    "source": "VChiWat_flow",
+    "source_slot": "out",
+    "target": "div1",
+    "target_slot": "a"
+   },
+   {
+    "source": "VChiWatSet_flow",
+    "source_slot": "out",
+    "target": "div",
+    "target_slot": "a"
+   },
+   {
+    "source": "div",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "div1",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "div1",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "minFlo__1",
+    "source_slot": "out",
+    "target": "mulSum_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "minFlo__2",
+    "source_slot": "out",
+    "target": "mulSum_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulSum_fold_2",
+    "source_slot": "out",
+    "target": "div",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulSum_fold_2",
+    "source_slot": "out",
+    "target": "div1",
+    "target_slot": "b"
+   },
+   {
+    "source": "opeVal",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "yValPos",
+    "target_slot": "in"
+   },
+   {
+    "source": "conPID",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swiInp",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "swiOut",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "valDis",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "when_false"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "conPID": "valPos.conPID",
+    "div": "div",
+    "div1": "div1",
+    "minFlo__1": "minFlo__1",
+    "minFlo__2": "minFlo__2",
+    "mulSum_fold_2": "mulSum__fold_2",
+    "opeVal": "opeVal",
+    "swi": "swi",
+    "swiInp": "valPos.swiInp",
+    "swiOut": "valPos.swiOut",
+    "valDis": "valPos.valDis"
+   },
+   "coverage": {
+    "boundary_inputs": 3,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Reals.Add": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Divide": 2,
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 4,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 3
+    },
+    "component_count": 11,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset"
+    ],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.MinimumFlowBypass.Controller",
+    "root_label": "Controller",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "28a69d697264fa07397a9ef6a55b3a52b098f104d5af0ea24b093f01f4440c50",
+    "supported_class_count": 11,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "28a69d697264fa07397a9ef6a55b3a52b098f104d5af0ea24b093f01f4440c50"
+  },
+  "name": "Controller"
+ }
+}

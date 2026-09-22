@@ -196,6 +196,12 @@ _ROWS: tuple[LoweringDecision, ...] = (
         "Round",
         "Round half away from zero (CDL RealToInteger); kitControl has no rounding block.",
     ),
+    _module(
+        BlockKind.NUMERIC_LIMIT_SLEW_RATE,
+        "LimitSlewRate",
+        "CDL LimitSlewRate as the reference engine discretises it (implicit lag, clamped "
+        "per-tick change); kitControl:Ramp is a signal generator, not a rate limiter.",
+    ),
     _bands(
         BlockKind.BOOLEAN_DELAY,
         "kitControl:BooleanDelay",

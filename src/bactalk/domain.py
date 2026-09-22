@@ -785,6 +785,7 @@ class BlockKind(StrEnum):
     NUMERIC_INCREASED = "numeric_increased"
     NUMERIC_DECREASED = "numeric_decreased"
     NUMERIC_ROUND = "numeric_round"
+    NUMERIC_LIMIT_SLEW_RATE = "numeric_limit_slew_rate"
     NUMERIC_LATCH = "numeric_latch"
     BOOLEAN_LATCH = "boolean_latch"
     BOOLEAN_PRE_HOST_TICK = "boolean_pre_host_tick"
@@ -903,6 +904,9 @@ BLOCK_SLOTS: dict[BlockKind, SlotSpec] = {
         inputs={"in": DataType.NUMERIC}, outputs={"out": DataType.NUMERIC}
     ),
     BlockKind.NUMERIC_ROUND: SlotSpec(
+        inputs={"in": DataType.NUMERIC}, outputs={"out": DataType.NUMERIC}
+    ),
+    BlockKind.NUMERIC_LIMIT_SLEW_RATE: SlotSpec(
         inputs={"in": DataType.NUMERIC}, outputs={"out": DataType.NUMERIC}
     ),
     BlockKind.NUMERIC_SAMPLER: SlotSpec(
@@ -1433,6 +1437,25 @@ class Block(BaseModel):
                 raise ValueError(
                     "plant_stage_index config.minimum_runtime_seconds must be non-negative finite"
                 )
+        if self.kind == BlockKind.NUMERIC_LIMIT_SLEW_RATE:
+            rates = {}
+            for key in ("raising_slew_rate", "falling_slew_rate", "td_seconds"):
+                value = self.config.get(key)
+                if (
+                    isinstance(value, bool)
+                    or not isinstance(value, (int, float))
+                    or not math.isfinite(float(value))
+                ):
+                    raise ValueError(f"numeric_limit_slew_rate config.{key} must be finite numeric")
+                rates[key] = float(value)
+            if rates["raising_slew_rate"] <= 0:
+                raise ValueError("numeric_limit_slew_rate raising_slew_rate must be positive")
+            if rates["falling_slew_rate"] >= 0:
+                raise ValueError("numeric_limit_slew_rate falling_slew_rate must be negative")
+            if rates["td_seconds"] <= 0:
+                raise ValueError("numeric_limit_slew_rate td_seconds must be positive")
+            if not isinstance(self.config.get("enable", True), bool):
+                raise ValueError("numeric_limit_slew_rate config.enable must be boolean")
         if self.kind == BlockKind.MOVING_AVERAGE:
             window = self.config.get("window_seconds")
             if isinstance(window, bool) or not isinstance(window, (int, float)) or window <= 0:

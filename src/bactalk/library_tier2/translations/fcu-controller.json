@@ -1,0 +1,8521 @@
+{
+ "configuration_id": "fcu-controller",
+ "controller_id": "FanCoilUnits.Controller",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller",
+  "inputs": [
+   {
+    "description": "Occupied cooling setpoint temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TOccCooSet",
+    "label": "TOccCooSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Occupied heating setpoint temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TOccHeaSet",
+    "label": "TOccHeaSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Measured supply air temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TSup",
+    "label": "TSup",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Unoccupied cooling setpoint temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TUnoCooSet",
+    "label": "TUnoCooSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Unoccupied heating setpoint temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TUnoHeaSet",
+    "label": "TUnoHeaSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Measured zone temperatures",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TZon",
+    "label": "TZon",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Cool-down time retrieved from optimal cool-down block",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.cooDowTim",
+    "label": "cooDowTim",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Setpoint adjustment value",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.setAdj",
+    "label": "setAdj",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Time to next occupied period",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.tNexOcc",
+    "label": "tNexOcc",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Fan proven on signal",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.u1Fan",
+    "label": "u1Fan",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Current occupancy period, true if it is in occupant period",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.u1Occ",
+    "label": "u1Occ",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Cooling demand limit level",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.uCooDemLimLev",
+    "label": "uCooDemLimLev",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "Heating demand limit level",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.uHeaDemLimLev",
+    "label": "uHeaDemLimLev",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "Warm-up time retrieved from optimal warm-up block",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.warUpTim",
+    "label": "warUpTim",
+    "type": "S231:RealInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Supply air temperature setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TSupSet",
+    "label": "TSupSet",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Cooling setpoint temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TZonCooSet",
+    "label": "TZonCooSet",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Heating setpoint temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TZonHeaSet",
+    "label": "TZonHeaSet",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Fan command on status",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.y1Fan",
+    "label": "y1Fan",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Chiller plant requests",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yChiPlaReq",
+    "label": "yChiPlaReq",
+    "type": "S231:IntegerOutput"
+   },
+   {
+    "description": "Chilled water reset request",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yChiWatResReq",
+    "label": "yChiWatResReq",
+    "type": "S231:IntegerOutput"
+   },
+   {
+    "description": "Cooling coil control signal",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yCooCoi",
+    "label": "yCooCoi",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Fan command speed",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yFan",
+    "label": "yFan",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Heating coil control signal",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yHeaCoi",
+    "label": "yHeaCoi",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Hot water plant requests",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yHotWatPlaReq",
+    "label": "yHotWatPlaReq",
+    "type": "S231:IntegerOutput"
+   },
+   {
+    "description": "Hot water reset requests",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yHotWatResReq",
+    "label": "yHotWatResReq",
+    "type": "S231:IntegerOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 43
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "TSupSet_max": 303.15,
+  "TSupSet_min": 285.15
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TOccCooSet",
+   "name": "TOccCooSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TOccCooSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TOccHeaSet",
+   "name": "TOccHeaSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TOccHeaSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TSup",
+   "name": "TSup",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TSup",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TUnoCooSet",
+   "name": "TUnoCooSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TUnoCooSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TUnoHeaSet",
+   "name": "TUnoHeaSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TUnoHeaSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZon",
+   "name": "TZon",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TZon",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "cooDowTim",
+   "name": "cooDowTim",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.cooDowTim",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "setAdj",
+   "name": "setAdj",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.setAdj",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "tNexOcc",
+   "name": "tNexOcc",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.tNexOcc",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Fan",
+   "name": "u1Fan",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.u1Fan",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Occ",
+   "name": "u1Occ",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.u1Occ",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uCooDemLimLev",
+   "name": "uCooDemLimLev",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.uCooDemLimLev",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uHeaDemLimLev",
+   "name": "uHeaDemLimLev",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.uHeaDemLimLev",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "warUpTim",
+   "name": "warUpTim",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.warUpTim",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TSupSet",
+   "name": "TSupSet",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TSupSet",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZonCooSet",
+   "name": "TZonCooSet",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TZonCooSet",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TZonHeaSet",
+   "name": "TZonHeaSet",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.TZonHeaSet",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1Fan",
+   "name": "y1Fan",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.y1Fan",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yChiPlaReq",
+   "name": "yChiPlaReq",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yChiPlaReq",
+   "source_interface_type": "S231:IntegerOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yChiWatResReq",
+   "name": "yChiWatResReq",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yChiWatResReq",
+   "source_interface_type": "S231:IntegerOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yCooCoi",
+   "name": "yCooCoi",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yCooCoi",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yFan",
+   "name": "yFan",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yFan",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yHeaCoi",
+   "name": "yHeaCoi",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yHeaCoi",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yHotWatPlaReq",
+   "name": "yHotWatPlaReq",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yHotWatPlaReq",
+   "source_interface_type": "S231:IntegerOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yHotWatResReq",
+   "name": "yHotWatResReq",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.yHotWatResReq",
+   "source_interface_type": "S231:IntegerOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "FanCoilUnits/Controller.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "42d0a6dfe34c228c3ad475294559a976c092b3255e2ea91527d1a97e7277d8b1",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "33836355aabbcac72d0e31604f042cfc67f704ba141092ea9886135fe8a6bee9",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "cooDowTim",
+    "kind": "numeric_input",
+    "label": "cooDowTim",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "setAdj",
+    "kind": "numeric_input",
+    "label": "setAdj",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "tNexOcc",
+    "kind": "numeric_input",
+    "label": "tNexOcc",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TOccCooSet",
+    "kind": "numeric_input",
+    "label": "TOccCooSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TOccHeaSet",
+    "kind": "numeric_input",
+    "label": "TOccHeaSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TSup",
+    "kind": "numeric_input",
+    "label": "TSup",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TUnoCooSet",
+    "kind": "numeric_input",
+    "label": "TUnoCooSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TUnoHeaSet",
+    "kind": "numeric_input",
+    "label": "TUnoHeaSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TZon",
+    "kind": "numeric_input",
+    "label": "TZon",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Fan",
+    "kind": "boolean_input",
+    "label": "u1Fan",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Occ",
+    "kind": "boolean_input",
+    "label": "u1Occ",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uCooDemLimLev",
+    "kind": "numeric_input",
+    "label": "uCooDemLimLev",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uHeaDemLimLev",
+    "kind": "numeric_input",
+    "label": "uHeaDemLimLev",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "warUpTim",
+    "kind": "numeric_input",
+    "label": "warUpTim",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "TSupSet",
+    "kind": "numeric_output",
+    "label": "TSupSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "TZonCooSet",
+    "kind": "numeric_output",
+    "label": "TZonCooSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "TZonHeaSet",
+    "kind": "numeric_output",
+    "label": "TZonHeaSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1Fan",
+    "kind": "boolean_output",
+    "label": "y1Fan",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yChiPlaReq",
+    "kind": "numeric_output",
+    "label": "yChiPlaReq",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yChiWatResReq",
+    "kind": "numeric_output",
+    "label": "yChiWatResReq",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yCooCoi",
+    "kind": "numeric_output",
+    "label": "yCooCoi",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yFan",
+    "kind": "numeric_output",
+    "label": "yFan",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yHeaCoi",
+    "kind": "numeric_output",
+    "label": "yHeaCoi",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yHotWatPlaReq",
+    "kind": "numeric_output",
+    "label": "yHotWatPlaReq",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yHotWatResReq",
+    "kind": "numeric_output",
+    "label": "yHotWatResReq",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 0.1,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 5.0,
+     "reverse_acting": false,
+     "td": 0.1,
+     "ti": 900.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.0,
+     "y_reset": 0.0,
+     "yd_start": 0.0
+    },
+    "id": "cooPI",
+    "kind": "pid_with_reset",
+    "label": "cooPI",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea_true",
+    "kind": "numeric_const",
+    "label": "booToRea true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea_false",
+    "kind": "numeric_const",
+    "label": "booToRea false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea",
+    "kind": "numeric_switch",
+    "label": "booToRea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "concooSpe_max",
+    "kind": "numeric_const",
+    "label": "concooSpe_max",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.1
+    },
+    "id": "concooSpe_min",
+    "kind": "numeric_const",
+    "label": "concooSpe_min",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.1
+    },
+    "id": "conDeaFanSpe",
+    "kind": "numeric_const",
+    "label": "conDeaFanSpe",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conheaSpe_max",
+    "kind": "numeric_const",
+    "label": "conheaSpe_max",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.1
+    },
+    "id": "conheaSpe_min",
+    "kind": "numeric_const",
+    "label": "conheaSpe_min",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conuCoo_max",
+    "kind": "numeric_const",
+    "label": "conuCoo_max",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "conuCoo_min",
+    "kind": "numeric_const",
+    "label": "conuCoo_min",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conuHea_max",
+    "kind": "numeric_const",
+    "label": "conuHea_max",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "conuHea_min",
+    "kind": "numeric_const",
+    "label": "conuHea_min",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": 0.05
+    },
+    "id": "hysDeaCoo",
+    "kind": "hysteresis",
+    "label": "hysDeaCoo",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": 0.05
+    },
+    "id": "hysDeaHea",
+    "kind": "hysteresis",
+    "label": "hysDeaHea",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "isUnOcc",
+    "kind": "equal",
+    "label": "isUnOcc",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "linCooFanSpe_delta_f",
+    "kind": "subtract",
+    "label": "linCooFanSpe \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linCooFanSpe_delta_x",
+    "kind": "subtract",
+    "label": "linCooFanSpe \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linCooFanSpe_slope",
+    "kind": "divide",
+    "label": "linCooFanSpe slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linCooFanSpe_slope_x2",
+    "kind": "multiply",
+    "label": "linCooFanSpe slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linCooFanSpe_intercept",
+    "kind": "subtract",
+    "label": "linCooFanSpe intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linCooFanSpe_scaled",
+    "kind": "multiply",
+    "label": "linCooFanSpe b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linCooFanSpe_result",
+    "kind": "add",
+    "label": "linCooFanSpe",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linCooFanSpe_lower_limit",
+    "kind": "maximum",
+    "label": "linCooFanSpe lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linCooFanSpe_upper_limit",
+    "kind": "minimum",
+    "label": "linCooFanSpe upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linHeaFanSpe_delta_f",
+    "kind": "subtract",
+    "label": "linHeaFanSpe \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linHeaFanSpe_delta_x",
+    "kind": "subtract",
+    "label": "linHeaFanSpe \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linHeaFanSpe_slope",
+    "kind": "divide",
+    "label": "linHeaFanSpe slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linHeaFanSpe_slope_x2",
+    "kind": "multiply",
+    "label": "linHeaFanSpe slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linHeaFanSpe_intercept",
+    "kind": "subtract",
+    "label": "linHeaFanSpe intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linHeaFanSpe_scaled",
+    "kind": "multiply",
+    "label": "linHeaFanSpe b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linHeaFanSpe_result",
+    "kind": "add",
+    "label": "linHeaFanSpe",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linHeaFanSpe_lower_limit",
+    "kind": "maximum",
+    "label": "linHeaFanSpe lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linHeaFanSpe_upper_limit",
+    "kind": "minimum",
+    "label": "linHeaFanSpe upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "mulDeaSpe",
+    "kind": "multiply",
+    "label": "mulDeaSpe",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "mulFanSpe",
+    "kind": "multiply",
+    "label": "mulFanSpe",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "notUno",
+    "kind": "not",
+    "label": "notUno",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "swiDeaCoo",
+    "kind": "numeric_switch",
+    "label": "swiDeaCoo",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "swiDeaHea",
+    "kind": "numeric_switch",
+    "label": "swiDeaHea",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "swiFanPro",
+    "kind": "numeric_switch",
+    "label": "swiFanPro",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 7.0
+    },
+    "id": "unOccMod",
+    "kind": "numeric_const",
+    "label": "unOccMod",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToIntCoo_true",
+    "kind": "numeric_const",
+    "label": "booToIntCoo true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToIntCoo_false",
+    "kind": "numeric_const",
+    "label": "booToIntCoo false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToIntCoo",
+    "kind": "numeric_switch",
+    "label": "booToIntCoo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToIntHea_true",
+    "kind": "numeric_const",
+    "label": "booToIntHea true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToIntHea_false",
+    "kind": "numeric_const",
+    "label": "booToIntHea false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToIntHea",
+    "kind": "numeric_switch",
+    "label": "booToIntHea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "chiWatRes1",
+    "kind": "numeric_switch",
+    "label": "chiWatRes1",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "chiWatRes2",
+    "kind": "numeric_switch",
+    "label": "chiWatRes2",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "chiWatRes3",
+    "kind": "numeric_switch",
+    "label": "chiWatRes3",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "cooSupTemDif",
+    "kind": "subtract",
+    "label": "cooSupTemDif",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 5.56
+    },
+    "id": "greThr_threshold",
+    "kind": "numeric_const",
+    "label": "greThr threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greThr",
+    "kind": "greater_than",
+    "label": "greThr",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 2.78
+    },
+    "id": "greThr1_threshold",
+    "kind": "numeric_const",
+    "label": "greThr1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greThr1",
+    "kind": "greater_than",
+    "label": "greThr1",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 17.0
+    },
+    "id": "greThr3_threshold",
+    "kind": "numeric_const",
+    "label": "greThr3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greThr3",
+    "kind": "greater_than",
+    "label": "greThr3",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 8.0
+    },
+    "id": "greThr4_threshold",
+    "kind": "numeric_const",
+    "label": "greThr4 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greThr4",
+    "kind": "greater_than",
+    "label": "greThr4",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "heaSupTemDif",
+    "kind": "subtract",
+    "label": "heaSupTemDif",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "hotWatRes1",
+    "kind": "numeric_switch",
+    "label": "hotWatRes1",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "hotWatRes2",
+    "kind": "numeric_switch",
+    "label": "hotWatRes2",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "hotWatRes3",
+    "kind": "numeric_switch",
+    "label": "hotWatRes3",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.95,
+     "u_low": 0.85
+    },
+    "id": "hys",
+    "kind": "hysteresis",
+    "label": "hys",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.95,
+     "u_low": 0.1
+    },
+    "id": "hys1",
+    "kind": "hysteresis",
+    "label": "hys1",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.95,
+     "u_low": 0.85
+    },
+    "id": "hys2",
+    "kind": "hysteresis",
+    "label": "hys2",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.95,
+     "u_low": 0.1
+    },
+    "id": "hys3",
+    "kind": "hysteresis",
+    "label": "hys3",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.95,
+     "u_low": 0.9
+    },
+    "id": "hysFanCoo",
+    "kind": "hysteresis",
+    "label": "hysFanCoo",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.95,
+     "u_low": 0.9
+    },
+    "id": "hysFanHea",
+    "kind": "hysteresis",
+    "label": "hysFanHea",
+    "x": 0,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "intSwi1",
+    "kind": "numeric_switch",
+    "label": "intSwi1",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "intSwi3",
+    "kind": "numeric_switch",
+    "label": "intSwi3",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "mulIntCoo",
+    "kind": "multiply",
+    "label": "mulIntCoo",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "mulIntHea",
+    "kind": "multiply",
+    "label": "mulIntHea",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "one",
+    "kind": "numeric_const",
+    "label": "one",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "thr",
+    "kind": "numeric_const",
+    "label": "thr",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {
+     "delay_on_init": false,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 300.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "truDel",
+    "kind": "boolean_delay",
+    "label": "truDel",
+    "x": 180,
+    "y": 960
+   },
+   {
+    "config": {
+     "delay_on_init": false,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 300.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "truDel1",
+    "kind": "boolean_delay",
+    "label": "truDel1",
+    "x": 360,
+    "y": 960
+   },
+   {
+    "config": {
+     "delay_on_init": false,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 300.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "truDel2",
+    "kind": "boolean_delay",
+    "label": "truDel2",
+    "x": 540,
+    "y": 960
+   },
+   {
+    "config": {
+     "delay_on_init": false,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 300.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "truDel3",
+    "kind": "boolean_delay",
+    "label": "truDel3",
+    "x": 720,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "two",
+    "kind": "numeric_const",
+    "label": "two",
+    "x": 900,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 0,
+    "y": 1080
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 0.1,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 5.0,
+     "reverse_acting": true,
+     "td": 0.1,
+     "ti": 900.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.0,
+     "y_reset": 0.0,
+     "yd_start": 0.0
+    },
+    "id": "heaPI",
+    "kind": "pid_with_reset",
+    "label": "heaPI",
+    "x": 180,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "isOcc",
+    "kind": "not",
+    "label": "isOcc",
+    "x": 360,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "isUnOcc_2",
+    "kind": "equal",
+    "label": "isUnOcc",
+    "x": 540,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt_true",
+    "kind": "numeric_const",
+    "label": "booToInt true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt_false",
+    "kind": "numeric_const",
+    "label": "booToInt false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt",
+    "kind": "numeric_switch",
+    "label": "booToInt",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "colZon_true",
+    "kind": "numeric_const",
+    "label": "colZon true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "colZon_false",
+    "kind": "numeric_const",
+    "label": "colZon false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "colZon",
+    "kind": "numeric_switch",
+    "label": "colZon",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "hotZon_true",
+    "kind": "numeric_const",
+    "label": "hotZon true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "hotZon_false",
+    "kind": "numeric_const",
+    "label": "hotZon false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "hotZon",
+    "kind": "numeric_switch",
+    "label": "hotZon",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "occSta",
+    "kind": "boolean_const",
+    "label": "occSta",
+    "x": 180,
+    "y": 1200
+   },
+   {
+    "config": {
+     "value": 277.15
+    },
+    "id": "actFreProTem",
+    "kind": "numeric_const",
+    "label": "actFreProTem",
+    "x": 360,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "addInt",
+    "kind": "add",
+    "label": "addInt",
+    "x": 540,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "addInt1",
+    "kind": "add",
+    "label": "addInt1",
+    "x": 720,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "addInt2",
+    "kind": "add",
+    "label": "addInt2",
+    "x": 900,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "addInt3",
+    "kind": "add",
+    "label": "addInt3",
+    "x": 0,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "addInt4",
+    "kind": "add",
+    "label": "addInt4",
+    "x": 180,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "addInt5",
+    "kind": "add",
+    "label": "addInt5",
+    "x": 360,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "addInt6",
+    "kind": "add",
+    "label": "addInt6",
+    "x": 540,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "addInt7",
+    "kind": "add",
+    "label": "addInt7",
+    "x": 720,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "allCol",
+    "kind": "equal",
+    "label": "allCol",
+    "x": 900,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "allHot",
+    "kind": "equal",
+    "label": "allHot",
+    "x": 0,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "and1",
+    "kind": "and",
+    "label": "and1",
+    "x": 180,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "and2",
+    "kind": "and",
+    "label": "and2",
+    "x": 360,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "and3",
+    "kind": "and",
+    "label": "and3",
+    "x": 540,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "and4",
+    "kind": "and",
+    "label": "and4",
+    "x": 720,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "and5",
+    "kind": "and",
+    "label": "and5",
+    "x": 900,
+    "y": 1440
+   },
+   {
+    "config": {
+     "message": "Level 3 alarm: freeze protection setback",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "assMes",
+    "kind": "boolean_assert_warning",
+    "label": "assMes",
+    "x": 0,
+    "y": 1560
+   },
+   {
+    "config": {
+     "value": 7.0
+    },
+    "id": "booToInt3_true",
+    "kind": "numeric_const",
+    "label": "booToInt3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt3_false",
+    "kind": "numeric_const",
+    "label": "booToInt3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt3",
+    "kind": "numeric_switch",
+    "label": "booToInt3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "booToRea_2_true",
+    "kind": "numeric_const",
+    "label": "booToRea true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea_2_false",
+    "kind": "numeric_const",
+    "label": "booToRea false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea_2",
+    "kind": "numeric_switch",
+    "label": "booToRea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "booToRea1_true",
+    "kind": "numeric_const",
+    "label": "booToRea1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea1_false",
+    "kind": "numeric_const",
+    "label": "booToRea1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea1",
+    "kind": "numeric_switch",
+    "label": "booToRea1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "booToRea3_true",
+    "kind": "numeric_const",
+    "label": "booToRea3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea3_false",
+    "kind": "numeric_const",
+    "label": "booToRea3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea3",
+    "kind": "numeric_switch",
+    "label": "booToRea3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 6.0
+    },
+    "id": "booToRea4_true",
+    "kind": "numeric_const",
+    "label": "booToRea4 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea4_false",
+    "kind": "numeric_const",
+    "label": "booToRea4 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea4",
+    "kind": "numeric_switch",
+    "label": "booToRea4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "booToRea6_true",
+    "kind": "numeric_const",
+    "label": "booToRea6 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea6_false",
+    "kind": "numeric_const",
+    "label": "booToRea6 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea6",
+    "kind": "numeric_switch",
+    "label": "booToRea6",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "corCooDowTim",
+    "kind": "numeric_switch",
+    "label": "corCooDowTim",
+    "x": 180,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "corWarUpTim",
+    "kind": "numeric_switch",
+    "label": "corWarUpTim",
+    "x": 360,
+    "y": 1680
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg",
+    "kind": "one_shot",
+    "label": "edg",
+    "x": 540,
+    "y": 1680
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg1",
+    "kind": "one_shot",
+    "label": "edg1",
+    "x": 720,
+    "y": 1680
+   },
+   {
+    "config": {
+     "value": 280.15
+    },
+    "id": "endFreProTem",
+    "kind": "numeric_const",
+    "label": "endFreProTem",
+    "x": 900,
+    "y": 1680
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "endSetBac",
+    "kind": "one_shot",
+    "label": "endSetBac",
+    "x": 0,
+    "y": 1800
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "endSetUp",
+    "kind": "one_shot",
+    "label": "endSetUp",
+    "x": 180,
+    "y": 1800
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "freProSetBacMod",
+    "kind": "numeric_round",
+    "label": "freProSetBacMod",
+    "x": 360,
+    "y": 1800
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": -0.1
+    },
+    "id": "hys10",
+    "kind": "hysteresis",
+    "label": "hys10",
+    "x": 540,
+    "y": 1800
+   },
+   {
+    "config": {
+     "initial": true,
+     "u_high": 0.0,
+     "u_low": -60.0
+    },
+    "id": "hys2_2",
+    "kind": "hysteresis",
+    "label": "hys2",
+    "x": 720,
+    "y": 1800
+   },
+   {
+    "config": {
+     "initial": true,
+     "u_high": 0.0,
+     "u_low": -60.0
+    },
+    "id": "hys3_2",
+    "kind": "hysteresis",
+    "label": "hys3",
+    "x": 900,
+    "y": 1800
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.0,
+     "u_low": -60.0
+    },
+    "id": "hys4",
+    "kind": "hysteresis",
+    "label": "hys4",
+    "x": 0,
+    "y": 1920
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.0,
+     "u_low": -60.0
+    },
+    "id": "hys5",
+    "kind": "hysteresis",
+    "label": "hys5",
+    "x": 180,
+    "y": 1920
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": -0.1
+    },
+    "id": "hys9",
+    "kind": "hysteresis",
+    "label": "hys9",
+    "x": 360,
+    "y": 1920
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "intGreThr_threshold",
+    "kind": "numeric_const",
+    "label": "intGreThr threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intGreThr",
+    "kind": "greater_than",
+    "label": "intGreThr",
+    "x": 540,
+    "y": 1920
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "intGreThr1_threshold",
+    "kind": "numeric_const",
+    "label": "intGreThr1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intGreThr1",
+    "kind": "greater_than",
+    "label": "intGreThr1",
+    "x": 720,
+    "y": 1920
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "intGreThr2_threshold",
+    "kind": "numeric_const",
+    "label": "intGreThr2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intGreThr2",
+    "kind": "greater_than",
+    "label": "intGreThr2",
+    "x": 900,
+    "y": 1920
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat",
+    "kind": "boolean_set_reset",
+    "label": "lat",
+    "x": 0,
+    "y": 2040
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat1",
+    "kind": "boolean_set_reset",
+    "label": "lat1",
+    "x": 180,
+    "y": 2040
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat2",
+    "kind": "boolean_set_reset",
+    "label": "lat2",
+    "x": 360,
+    "y": 2040
+   },
+   {
+    "config": {
+     "value": 10800.0
+    },
+    "id": "maxWarCooTime",
+    "kind": "numeric_const",
+    "label": "maxWarCooTime",
+    "x": 540,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "not1",
+    "kind": "not",
+    "label": "not1",
+    "x": 720,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "not2",
+    "kind": "not",
+    "label": "not2",
+    "x": 900,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "not5",
+    "kind": "not",
+    "label": "not5",
+    "x": 0,
+    "y": 2160
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "notOcc_threshold",
+    "kind": "numeric_const",
+    "label": "notOcc threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notOcc",
+    "kind": "greater_than",
+    "label": "notOcc",
+    "x": 180,
+    "y": 2160
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "occMod",
+    "kind": "numeric_round",
+    "label": "occMod",
+    "x": 360,
+    "y": 2160
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "occModInd",
+    "kind": "numeric_const",
+    "label": "occModInd",
+    "x": 540,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "or1",
+    "kind": "or",
+    "label": "or1",
+    "x": 720,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "or10",
+    "kind": "or",
+    "label": "or10",
+    "x": 900,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "or2",
+    "kind": "or",
+    "label": "or2",
+    "x": 0,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "or4",
+    "kind": "or",
+    "label": "or4",
+    "x": 180,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "or5",
+    "kind": "or",
+    "label": "or5",
+    "x": 360,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "or6",
+    "kind": "or",
+    "label": "or6",
+    "x": 540,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "or7",
+    "kind": "or",
+    "label": "or7",
+    "x": 720,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "or8",
+    "kind": "or",
+    "label": "or8",
+    "x": 900,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "or9",
+    "kind": "or",
+    "label": "or9",
+    "x": 0,
+    "y": 2400
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "setBacMod",
+    "kind": "numeric_round",
+    "label": "setBacMod",
+    "x": 180,
+    "y": 2400
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "setBacMod1",
+    "kind": "numeric_round",
+    "label": "setBacMod1",
+    "x": 360,
+    "y": 2400
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "setBacMod2",
+    "kind": "numeric_round",
+    "label": "setBacMod2",
+    "x": 540,
+    "y": 2400
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "setUpMod",
+    "kind": "numeric_round",
+    "label": "setUpMod",
+    "x": 720,
+    "y": 2400
+   },
+   {
+    "config": {},
+    "id": "sub1",
+    "kind": "subtract",
+    "label": "sub1",
+    "x": 900,
+    "y": 2400
+   },
+   {
+    "config": {},
+    "id": "sub2",
+    "kind": "subtract",
+    "label": "sub2",
+    "x": 0,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "sub3",
+    "kind": "subtract",
+    "label": "sub3",
+    "x": 180,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "sub4",
+    "kind": "subtract",
+    "label": "sub4",
+    "x": 360,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "sub5",
+    "kind": "subtract",
+    "label": "sub5",
+    "x": 540,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "sub6",
+    "kind": "subtract",
+    "label": "sub6",
+    "x": 720,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "numeric_switch",
+    "label": "swi",
+    "x": 900,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "swi1",
+    "kind": "numeric_switch",
+    "label": "swi1",
+    "x": 0,
+    "y": 2640
+   },
+   {
+    "config": {},
+    "id": "swi2",
+    "kind": "numeric_switch",
+    "label": "swi2",
+    "x": 180,
+    "y": 2640
+   },
+   {
+    "config": {},
+    "id": "swi3",
+    "kind": "numeric_switch",
+    "label": "swi3",
+    "x": 360,
+    "y": 2640
+   },
+   {
+    "config": {},
+    "id": "swi4",
+    "kind": "numeric_switch",
+    "label": "swi4",
+    "x": 540,
+    "y": 2640
+   },
+   {
+    "config": {},
+    "id": "swi5",
+    "kind": "numeric_switch",
+    "label": "swi5",
+    "x": 720,
+    "y": 2640
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "totZon",
+    "kind": "numeric_const",
+    "label": "totZon",
+    "x": 900,
+    "y": 2640
+   },
+   {
+    "config": {
+     "false_hold_seconds": 10800.0,
+     "true_hold_seconds": 10800.0
+    },
+    "id": "truFalHol",
+    "kind": "boolean_true_false_hold",
+    "label": "truFalHol",
+    "x": 0,
+    "y": 2760
+   },
+   {
+    "config": {
+     "false_hold_seconds": 10800.0,
+     "true_hold_seconds": 10800.0
+    },
+    "id": "truFalHol1",
+    "kind": "boolean_true_false_hold",
+    "label": "truFalHol1",
+    "x": 180,
+    "y": 2760
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "unoPerInd",
+    "kind": "numeric_const",
+    "label": "unoPerInd",
+    "x": 360,
+    "y": 2760
+   },
+   {
+    "config": {
+     "message": "Level 4 alarm: window open during modes other than occupied mode",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "winOpe",
+    "kind": "boolean_assert_warning",
+    "label": "winOpe",
+    "x": 540,
+    "y": 2760
+   },
+   {
+    "config": {},
+    "id": "add1",
+    "kind": "add",
+    "label": "add1",
+    "x": 720,
+    "y": 2760
+   },
+   {
+    "config": {},
+    "id": "add2",
+    "kind": "add",
+    "label": "add2",
+    "x": 900,
+    "y": 2760
+   },
+   {
+    "config": {},
+    "id": "add3",
+    "kind": "add",
+    "label": "add3",
+    "x": 0,
+    "y": 2880
+   },
+   {
+    "config": {},
+    "id": "add4",
+    "kind": "add",
+    "label": "add4",
+    "x": 180,
+    "y": 2880
+   },
+   {
+    "config": {},
+    "id": "add5",
+    "kind": "add",
+    "label": "add5",
+    "x": 360,
+    "y": 2880
+   },
+   {
+    "config": {},
+    "id": "add6",
+    "kind": "add",
+    "label": "add6",
+    "x": 540,
+    "y": 2880
+   },
+   {
+    "config": {},
+    "id": "add7",
+    "kind": "add",
+    "label": "add7",
+    "x": 720,
+    "y": 2880
+   },
+   {
+    "config": {},
+    "id": "add8",
+    "kind": "add",
+    "label": "add8",
+    "x": 900,
+    "y": 2880
+   },
+   {
+    "config": {
+     "value": -0.5
+    },
+    "id": "addPar_parameter",
+    "kind": "numeric_const",
+    "label": "addPar parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar",
+    "kind": "add",
+    "label": "addPar",
+    "x": 0,
+    "y": 3000
+   },
+   {
+    "config": {
+     "value": 1.1
+    },
+    "id": "addPar1_parameter",
+    "kind": "numeric_const",
+    "label": "addPar1 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar1",
+    "kind": "add",
+    "label": "addPar1",
+    "x": 180,
+    "y": 3000
+   },
+   {
+    "config": {
+     "value": 0.56
+    },
+    "id": "addPar2_parameter",
+    "kind": "numeric_const",
+    "label": "addPar2 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar2",
+    "kind": "add",
+    "label": "addPar2",
+    "x": 360,
+    "y": 3000
+   },
+   {
+    "config": {
+     "value": 2.2
+    },
+    "id": "addPar3_parameter",
+    "kind": "numeric_const",
+    "label": "addPar3 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar3",
+    "kind": "add",
+    "label": "addPar3",
+    "x": 540,
+    "y": 3000
+   },
+   {
+    "config": {
+     "value": -2.2
+    },
+    "id": "addPar4_parameter",
+    "kind": "numeric_const",
+    "label": "addPar4 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar4",
+    "kind": "add",
+    "label": "addPar4",
+    "x": 720,
+    "y": 3000
+   },
+   {
+    "config": {
+     "value": -1.1
+    },
+    "id": "addPar5_parameter",
+    "kind": "numeric_const",
+    "label": "addPar5 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar5",
+    "kind": "add",
+    "label": "addPar5",
+    "x": 900,
+    "y": 3000
+   },
+   {
+    "config": {
+     "value": -0.56
+    },
+    "id": "addPar6_parameter",
+    "kind": "numeric_const",
+    "label": "addPar6 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "addPar6",
+    "kind": "add",
+    "label": "addPar6",
+    "x": 0,
+    "y": 3120
+   },
+   {
+    "config": {
+     "value": 3.8
+    },
+    "id": "alaFou",
+    "kind": "numeric_const",
+    "label": "alaFou",
+    "x": 180,
+    "y": 3120
+   },
+   {
+    "config": {
+     "value": -0.2
+    },
+    "id": "alaZer",
+    "kind": "numeric_const",
+    "label": "alaZer",
+    "x": 360,
+    "y": 3120
+   },
+   {
+    "config": {},
+    "id": "and10",
+    "kind": "and",
+    "label": "and10",
+    "x": 540,
+    "y": 3120
+   },
+   {
+    "config": {},
+    "id": "and11",
+    "kind": "and",
+    "label": "and11",
+    "x": 720,
+    "y": 3120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea_3_true",
+    "kind": "numeric_const",
+    "label": "booToRea true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea_3_false",
+    "kind": "numeric_const",
+    "label": "booToRea false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea_3",
+    "kind": "numeric_switch",
+    "label": "booToRea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea1_2_true",
+    "kind": "numeric_const",
+    "label": "booToRea1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea1_2_false",
+    "kind": "numeric_const",
+    "label": "booToRea1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea1_2",
+    "kind": "numeric_switch",
+    "label": "booToRea1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea2_true",
+    "kind": "numeric_const",
+    "label": "booToRea2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea2_false",
+    "kind": "numeric_const",
+    "label": "booToRea2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea2",
+    "kind": "numeric_switch",
+    "label": "booToRea2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea3_2_true",
+    "kind": "numeric_const",
+    "label": "booToRea3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea3_2_false",
+    "kind": "numeric_const",
+    "label": "booToRea3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea3_2",
+    "kind": "numeric_switch",
+    "label": "booToRea3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea4_2_true",
+    "kind": "numeric_const",
+    "label": "booToRea4 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea4_2_false",
+    "kind": "numeric_const",
+    "label": "booToRea4 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea4_2",
+    "kind": "numeric_switch",
+    "label": "booToRea4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea5_true",
+    "kind": "numeric_const",
+    "label": "booToRea5 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea5_false",
+    "kind": "numeric_const",
+    "label": "booToRea5 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea5",
+    "kind": "numeric_switch",
+    "label": "booToRea5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea6_2_true",
+    "kind": "numeric_const",
+    "label": "booToRea6 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea6_2_false",
+    "kind": "numeric_const",
+    "label": "booToRea6 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea6_2",
+    "kind": "numeric_switch",
+    "label": "booToRea6",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea7_true",
+    "kind": "numeric_const",
+    "label": "booToRea7 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea7_false",
+    "kind": "numeric_const",
+    "label": "booToRea7 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea7",
+    "kind": "numeric_switch",
+    "label": "booToRea7",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "con",
+    "kind": "numeric_const",
+    "label": "con",
+    "x": 180,
+    "y": 3360
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "con1",
+    "kind": "numeric_const",
+    "label": "con1",
+    "x": 360,
+    "y": 3360
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "con2",
+    "kind": "boolean_const",
+    "label": "con2",
+    "x": 540,
+    "y": 3360
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "conFal",
+    "kind": "boolean_const",
+    "label": "conFal",
+    "x": 720,
+    "y": 3360
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "conInt",
+    "kind": "numeric_const",
+    "label": "conInt",
+    "x": 900,
+    "y": 3360
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "conInt1",
+    "kind": "numeric_const",
+    "label": "conInt1",
+    "x": 0,
+    "y": 3480
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conInt2",
+    "kind": "numeric_const",
+    "label": "conInt2",
+    "x": 180,
+    "y": 3480
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conInt3",
+    "kind": "numeric_const",
+    "label": "conInt3",
+    "x": 360,
+    "y": 3480
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "conInt4",
+    "kind": "numeric_const",
+    "label": "conInt4",
+    "x": 540,
+    "y": 3480
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "conInt5",
+    "kind": "numeric_const",
+    "label": "conInt5",
+    "x": 720,
+    "y": 3480
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "conInt6",
+    "kind": "numeric_const",
+    "label": "conInt6",
+    "x": 900,
+    "y": 3480
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "conInt7",
+    "kind": "numeric_const",
+    "label": "conInt7",
+    "x": 0,
+    "y": 3600
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "conInt8",
+    "kind": "numeric_const",
+    "label": "conInt8",
+    "x": 180,
+    "y": 3600
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "conTru",
+    "kind": "boolean_const",
+    "label": "conTru",
+    "x": 360,
+    "y": 3600
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "cooSetAdjCon",
+    "kind": "boolean_const",
+    "label": "cooSetAdjCon",
+    "x": 540,
+    "y": 3600
+   },
+   {
+    "config": {
+     "initial": 0.0,
+     "semantic_contract": "CDL.Discrete.TriggeredSampler"
+    },
+    "id": "cooSetFre",
+    "kind": "numeric_latch",
+    "label": "cooSetFre",
+    "x": 720,
+    "y": 3600
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "cooSetInc_parameter",
+    "kind": "numeric_const",
+    "label": "cooSetInc parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cooSetInc",
+    "kind": "add",
+    "label": "cooSetInc",
+    "x": 900,
+    "y": 3600
+   },
+   {
+    "config": {
+     "value": 295.15
+    },
+    "id": "cooSetLim_minimum",
+    "kind": "numeric_const",
+    "label": "cooSetLim minimum",
+    "x": 0,
+    "y": 3720
+   },
+   {
+    "config": {
+     "value": 300.15
+    },
+    "id": "cooSetLim_maximum",
+    "kind": "numeric_const",
+    "label": "cooSetLim maximum",
+    "x": 180,
+    "y": 3720
+   },
+   {
+    "config": {},
+    "id": "cooSetLim_clamp",
+    "kind": "maximum",
+    "label": "cooSetLim clamp",
+    "x": 360,
+    "y": 3720
+   },
+   {
+    "config": {},
+    "id": "cooSetLim_clamp_2",
+    "kind": "minimum",
+    "label": "cooSetLim clamp",
+    "x": 540,
+    "y": 3720
+   },
+   {
+    "config": {
+     "initial": 0.0,
+     "semantic_contract": "CDL.Discrete.TriggeredSampler"
+    },
+    "id": "cooSetSam",
+    "kind": "numeric_latch",
+    "label": "cooSetSam",
+    "x": 720,
+    "y": 3720
+   },
+   {
+    "config": {
+     "value": 322.15
+    },
+    "id": "cooSetWinOpe",
+    "kind": "numeric_const",
+    "label": "cooSetWinOpe",
+    "x": 900,
+    "y": 3720
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg_2",
+    "kind": "one_shot",
+    "label": "edg",
+    "x": 0,
+    "y": 3840
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg1_2",
+    "kind": "one_shot",
+    "label": "edg1",
+    "x": 180,
+    "y": 3840
+   },
+   {
+    "config": {},
+    "id": "gre",
+    "kind": "greater_than",
+    "label": "gre",
+    "x": 360,
+    "y": 3840
+   },
+   {
+    "config": {},
+    "id": "gre2",
+    "kind": "greater_than",
+    "label": "gre2",
+    "x": 540,
+    "y": 3840
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "have_occSenCon",
+    "kind": "boolean_const",
+    "label": "have_occSenCon",
+    "x": 720,
+    "y": 3840
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "heaSetAdjCon",
+    "kind": "boolean_const",
+    "label": "heaSetAdjCon",
+    "x": 900,
+    "y": 3840
+   },
+   {
+    "config": {
+     "value": -0.5
+    },
+    "id": "heaSetDec_parameter",
+    "kind": "numeric_const",
+    "label": "heaSetDec parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "heaSetDec",
+    "kind": "add",
+    "label": "heaSetDec",
+    "x": 0,
+    "y": 3960
+   },
+   {
+    "config": {
+     "initial": 0.0,
+     "semantic_contract": "CDL.Discrete.TriggeredSampler"
+    },
+    "id": "heaSetFre",
+    "kind": "numeric_latch",
+    "label": "heaSetFre",
+    "x": 180,
+    "y": 3960
+   },
+   {
+    "config": {
+     "value": 291.15
+    },
+    "id": "heaSetLim_minimum",
+    "kind": "numeric_const",
+    "label": "heaSetLim minimum",
+    "x": 360,
+    "y": 3960
+   },
+   {
+    "config": {
+     "value": 295.15
+    },
+    "id": "heaSetLim_maximum",
+    "kind": "numeric_const",
+    "label": "heaSetLim maximum",
+    "x": 540,
+    "y": 3960
+   },
+   {
+    "config": {},
+    "id": "heaSetLim_clamp",
+    "kind": "maximum",
+    "label": "heaSetLim clamp",
+    "x": 720,
+    "y": 3960
+   },
+   {
+    "config": {},
+    "id": "heaSetLim_clamp_2",
+    "kind": "minimum",
+    "label": "heaSetLim clamp",
+    "x": 900,
+    "y": 3960
+   },
+   {
+    "config": {
+     "initial": 0.0,
+     "semantic_contract": "CDL.Discrete.TriggeredSampler"
+    },
+    "id": "heaSetSam",
+    "kind": "numeric_latch",
+    "label": "heaSetSam",
+    "x": 0,
+    "y": 4080
+   },
+   {
+    "config": {
+     "value": 277.15
+    },
+    "id": "heaSetWinOpe",
+    "kind": "numeric_const",
+    "label": "heaSetWinOpe",
+    "x": 180,
+    "y": 4080
+   },
+   {
+    "config": {},
+    "id": "intEqu",
+    "kind": "equal",
+    "label": "intEqu",
+    "x": 360,
+    "y": 4080
+   },
+   {
+    "config": {},
+    "id": "intEqu1",
+    "kind": "equal",
+    "label": "intEqu1",
+    "x": 540,
+    "y": 4080
+   },
+   {
+    "config": {},
+    "id": "intEqu2",
+    "kind": "equal",
+    "label": "intEqu2",
+    "x": 720,
+    "y": 4080
+   },
+   {
+    "config": {},
+    "id": "intEqu3",
+    "kind": "equal",
+    "label": "intEqu3",
+    "x": 900,
+    "y": 4080
+   },
+   {
+    "config": {},
+    "id": "intEqu4",
+    "kind": "equal",
+    "label": "intEqu4",
+    "x": 0,
+    "y": 4200
+   },
+   {
+    "config": {},
+    "id": "intEqu5",
+    "kind": "equal",
+    "label": "intEqu5",
+    "x": 180,
+    "y": 4200
+   },
+   {
+    "config": {},
+    "id": "intEqu6",
+    "kind": "equal",
+    "label": "intEqu6",
+    "x": 360,
+    "y": 4200
+   },
+   {
+    "config": {},
+    "id": "intEqu7",
+    "kind": "equal",
+    "label": "intEqu7",
+    "x": 540,
+    "y": 4200
+   },
+   {
+    "config": {},
+    "id": "intEqu8",
+    "kind": "equal",
+    "label": "intEqu8",
+    "x": 720,
+    "y": 4200
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intGreThr_2_threshold",
+    "kind": "numeric_const",
+    "label": "intGreThr threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intGreThr_2",
+    "kind": "greater_than",
+    "label": "intGreThr",
+    "x": 900,
+    "y": 4200
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intGreThr1_2_threshold",
+    "kind": "numeric_const",
+    "label": "intGreThr1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intGreThr1_2",
+    "kind": "greater_than",
+    "label": "intGreThr1",
+    "x": 0,
+    "y": 4320
+   },
+   {
+    "config": {},
+    "id": "les",
+    "kind": "less_than",
+    "label": "les",
+    "x": 180,
+    "y": 4320
+   },
+   {
+    "config": {},
+    "id": "not1_2",
+    "kind": "not",
+    "label": "not1",
+    "x": 360,
+    "y": 4320
+   },
+   {
+    "config": {},
+    "id": "not2_2",
+    "kind": "not",
+    "label": "not2",
+    "x": 540,
+    "y": 4320
+   },
+   {
+    "config": {},
+    "id": "not3",
+    "kind": "not",
+    "label": "not3",
+    "x": 720,
+    "y": 4320
+   },
+   {
+    "config": {},
+    "id": "not4",
+    "kind": "not",
+    "label": "not4",
+    "x": 900,
+    "y": 4320
+   },
+   {
+    "config": {},
+    "id": "not5_2",
+    "kind": "not",
+    "label": "not5",
+    "x": 0,
+    "y": 4440
+   },
+   {
+    "config": {},
+    "id": "or1_2",
+    "kind": "or",
+    "label": "or1",
+    "x": 180,
+    "y": 4440
+   },
+   {
+    "config": {},
+    "id": "or2_2",
+    "kind": "or",
+    "label": "or2",
+    "x": 360,
+    "y": 4440
+   },
+   {
+    "config": {},
+    "id": "or4_2",
+    "kind": "or",
+    "label": "or4",
+    "x": 540,
+    "y": 4440
+   },
+   {
+    "config": {},
+    "id": "or5_2",
+    "kind": "or",
+    "label": "or5",
+    "x": 720,
+    "y": 4440
+   },
+   {
+    "config": {},
+    "id": "or6_2",
+    "kind": "or",
+    "label": "or6",
+    "x": 900,
+    "y": 4440
+   },
+   {
+    "config": {},
+    "id": "or7_2",
+    "kind": "or",
+    "label": "or7",
+    "x": 0,
+    "y": 4560
+   },
+   {
+    "config": {},
+    "id": "or8_2",
+    "kind": "or",
+    "label": "or8",
+    "x": 180,
+    "y": 4560
+   },
+   {
+    "config": {},
+    "id": "or9_2",
+    "kind": "or",
+    "label": "or9",
+    "x": 360,
+    "y": 4560
+   },
+   {
+    "config": {},
+    "id": "pro",
+    "kind": "multiply",
+    "label": "pro",
+    "x": 540,
+    "y": 4560
+   },
+   {
+    "config": {},
+    "id": "pro1",
+    "kind": "multiply",
+    "label": "pro1",
+    "x": 720,
+    "y": 4560
+   },
+   {
+    "config": {},
+    "id": "pro2",
+    "kind": "multiply",
+    "label": "pro2",
+    "x": 900,
+    "y": 4560
+   },
+   {
+    "config": {},
+    "id": "pro3",
+    "kind": "multiply",
+    "label": "pro3",
+    "x": 0,
+    "y": 4680
+   },
+   {
+    "config": {},
+    "id": "pro4",
+    "kind": "multiply",
+    "label": "pro4",
+    "x": 180,
+    "y": 4680
+   },
+   {
+    "config": {},
+    "id": "pro5",
+    "kind": "multiply",
+    "label": "pro5",
+    "x": 360,
+    "y": 4680
+   },
+   {
+    "config": {},
+    "id": "pro6",
+    "kind": "multiply",
+    "label": "pro6",
+    "x": 540,
+    "y": 4680
+   },
+   {
+    "config": {},
+    "id": "pro7",
+    "kind": "multiply",
+    "label": "pro7",
+    "x": 720,
+    "y": 4680
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "reaToInt",
+    "kind": "numeric_round",
+    "label": "reaToInt",
+    "x": 900,
+    "y": 4680
+   },
+   {
+    "config": {},
+    "id": "swi_2",
+    "kind": "numeric_switch",
+    "label": "swi",
+    "x": 0,
+    "y": 4800
+   },
+   {
+    "config": {},
+    "id": "swi1_2",
+    "kind": "numeric_switch",
+    "label": "swi1",
+    "x": 180,
+    "y": 4800
+   },
+   {
+    "config": {},
+    "id": "swi10",
+    "kind": "numeric_switch",
+    "label": "swi10",
+    "x": 360,
+    "y": 4800
+   },
+   {
+    "config": {},
+    "id": "swi11",
+    "kind": "numeric_switch",
+    "label": "swi11",
+    "x": 540,
+    "y": 4800
+   },
+   {
+    "config": {},
+    "id": "swi12",
+    "kind": "numeric_switch",
+    "label": "swi12",
+    "x": 720,
+    "y": 4800
+   },
+   {
+    "config": {},
+    "id": "swi13",
+    "kind": "numeric_switch",
+    "label": "swi13",
+    "x": 900,
+    "y": 4800
+   },
+   {
+    "config": {},
+    "id": "swi14",
+    "kind": "numeric_switch",
+    "label": "swi14",
+    "x": 0,
+    "y": 4920
+   },
+   {
+    "config": {},
+    "id": "swi15",
+    "kind": "numeric_switch",
+    "label": "swi15",
+    "x": 180,
+    "y": 4920
+   },
+   {
+    "config": {},
+    "id": "swi16",
+    "kind": "numeric_switch",
+    "label": "swi16",
+    "x": 360,
+    "y": 4920
+   },
+   {
+    "config": {},
+    "id": "swi17",
+    "kind": "numeric_switch",
+    "label": "swi17",
+    "x": 540,
+    "y": 4920
+   },
+   {
+    "config": {},
+    "id": "swi18",
+    "kind": "numeric_switch",
+    "label": "swi18",
+    "x": 720,
+    "y": 4920
+   },
+   {
+    "config": {},
+    "id": "swi19",
+    "kind": "numeric_switch",
+    "label": "swi19",
+    "x": 900,
+    "y": 4920
+   },
+   {
+    "config": {},
+    "id": "swi2_2",
+    "kind": "numeric_switch",
+    "label": "swi2",
+    "x": 0,
+    "y": 5040
+   },
+   {
+    "config": {},
+    "id": "swi20",
+    "kind": "numeric_switch",
+    "label": "swi20",
+    "x": 180,
+    "y": 5040
+   },
+   {
+    "config": {},
+    "id": "swi21",
+    "kind": "numeric_switch",
+    "label": "swi21",
+    "x": 360,
+    "y": 5040
+   },
+   {
+    "config": {},
+    "id": "swi22",
+    "kind": "numeric_switch",
+    "label": "swi22",
+    "x": 540,
+    "y": 5040
+   },
+   {
+    "config": {},
+    "id": "swi3_2",
+    "kind": "numeric_switch",
+    "label": "swi3",
+    "x": 720,
+    "y": 5040
+   },
+   {
+    "config": {},
+    "id": "swi4_2",
+    "kind": "numeric_switch",
+    "label": "swi4",
+    "x": 900,
+    "y": 5040
+   },
+   {
+    "config": {},
+    "id": "swi6",
+    "kind": "numeric_switch",
+    "label": "swi6",
+    "x": 0,
+    "y": 5160
+   },
+   {
+    "config": {},
+    "id": "swi7",
+    "kind": "numeric_switch",
+    "label": "swi7",
+    "x": 180,
+    "y": 5160
+   },
+   {
+    "config": {},
+    "id": "swi8",
+    "kind": "numeric_switch",
+    "label": "swi8",
+    "x": 360,
+    "y": 5160
+   },
+   {
+    "config": {},
+    "id": "swi9",
+    "kind": "numeric_switch",
+    "label": "swi9",
+    "x": 540,
+    "y": 5160
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 300.0
+    },
+    "id": "tim",
+    "kind": "timer",
+    "label": "tim",
+    "x": 720,
+    "y": 5160
+   },
+   {
+    "config": {
+     "false_hold_seconds": 0.0,
+     "true_hold_seconds": 60.0
+    },
+    "id": "truHol",
+    "kind": "boolean_true_false_hold",
+    "label": "truHol",
+    "x": 900,
+    "y": 5160
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "winSenCon",
+    "kind": "boolean_const",
+    "label": "winSenCon",
+    "x": 0,
+    "y": 5280
+   },
+   {
+    "config": {},
+    "id": "winOpe_2",
+    "kind": "not",
+    "label": "winOpe",
+    "x": 180,
+    "y": 5280
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "winSta",
+    "kind": "boolean_const",
+    "label": "winSta",
+    "x": 360,
+    "y": 5280
+   },
+   {
+    "config": {},
+    "id": "and1_2",
+    "kind": "and",
+    "label": "and1",
+    "x": 540,
+    "y": 5280
+   },
+   {
+    "config": {},
+    "id": "and2_2",
+    "kind": "and",
+    "label": "and2",
+    "x": 720,
+    "y": 5280
+   },
+   {
+    "config": {},
+    "id": "and3_2",
+    "kind": "and",
+    "label": "and3",
+    "x": 900,
+    "y": 5280
+   },
+   {
+    "config": {},
+    "id": "and5_2",
+    "kind": "and",
+    "label": "and5",
+    "x": 0,
+    "y": 5400
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea_4_true",
+    "kind": "numeric_const",
+    "label": "booToRea true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea_4_false",
+    "kind": "numeric_const",
+    "label": "booToRea false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea_4",
+    "kind": "numeric_switch",
+    "label": "booToRea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "con_2",
+    "kind": "boolean_const",
+    "label": "con",
+    "x": 360,
+    "y": 5400
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": -0.1
+    },
+    "id": "hys_2",
+    "kind": "hysteresis",
+    "label": "hys",
+    "x": 540,
+    "y": 5400
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": -0.1
+    },
+    "id": "hys1_2",
+    "kind": "hysteresis",
+    "label": "hys1",
+    "x": 720,
+    "y": 5400
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": -0.1
+    },
+    "id": "hys2_3",
+    "kind": "hysteresis",
+    "label": "hys2",
+    "x": 900,
+    "y": 5400
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 1.0,
+     "u_low": 0.0
+    },
+    "id": "hys3_3",
+    "kind": "hysteresis",
+    "label": "hys3",
+    "x": 0,
+    "y": 5520
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 1.0,
+     "u_low": 0.0
+    },
+    "id": "hys4_2",
+    "kind": "hysteresis",
+    "label": "hys4",
+    "x": 180,
+    "y": 5520
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": -0.1
+    },
+    "id": "hys5_2",
+    "kind": "hysteresis",
+    "label": "hys5",
+    "x": 360,
+    "y": 5520
+   },
+   {
+    "config": {},
+    "id": "not1_3",
+    "kind": "not",
+    "label": "not1",
+    "x": 540,
+    "y": 5520
+   },
+   {
+    "config": {},
+    "id": "or1_3",
+    "kind": "or",
+    "label": "or1",
+    "x": 720,
+    "y": 5520
+   },
+   {
+    "config": {},
+    "id": "or2_3",
+    "kind": "or",
+    "label": "or2",
+    "x": 900,
+    "y": 5520
+   },
+   {
+    "config": {},
+    "id": "pro_2",
+    "kind": "multiply",
+    "label": "pro",
+    "x": 0,
+    "y": 5640
+   },
+   {
+    "config": {},
+    "id": "pro1_2",
+    "kind": "multiply",
+    "label": "pro1",
+    "x": 180,
+    "y": 5640
+   },
+   {
+    "config": {},
+    "id": "sub",
+    "kind": "subtract",
+    "label": "sub",
+    "x": 360,
+    "y": 5640
+   },
+   {
+    "config": {},
+    "id": "sub1_2",
+    "kind": "subtract",
+    "label": "sub1",
+    "x": 540,
+    "y": 5640
+   },
+   {
+    "config": {},
+    "id": "sub2_2",
+    "kind": "subtract",
+    "label": "sub2",
+    "x": 720,
+    "y": 5640
+   },
+   {
+    "config": {},
+    "id": "sub3_2",
+    "kind": "subtract",
+    "label": "sub3",
+    "x": 900,
+    "y": 5640
+   },
+   {
+    "config": {},
+    "id": "sub4_2",
+    "kind": "subtract",
+    "label": "sub4",
+    "x": 0,
+    "y": 5760
+   },
+   {
+    "config": {},
+    "id": "sub5_2",
+    "kind": "subtract",
+    "label": "sub5",
+    "x": 180,
+    "y": 5760
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToRea2_2_true",
+    "kind": "numeric_const",
+    "label": "booToRea2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToRea2_2_false",
+    "kind": "numeric_const",
+    "label": "booToRea2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToRea2_2",
+    "kind": "numeric_switch",
+    "label": "booToRea2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "conPIDCoo_reset_false",
+    "kind": "boolean_const",
+    "label": "conPIDCoo reset disabled",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 0.1,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 10.0,
+     "reverse_acting": false,
+     "td": 0.1,
+     "ti": 900.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.0,
+     "y_reset": 0.0,
+     "yd_start": 0.0
+    },
+    "id": "conPIDCoo",
+    "kind": "pid_with_reset",
+    "label": "conPIDCoo",
+    "x": 540,
+    "y": 5760
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "conPIDHea_reset_false",
+    "kind": "boolean_const",
+    "label": "conPIDHea reset disabled",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 0.1,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 10.0,
+     "reverse_acting": true,
+     "td": 0.1,
+     "ti": 900.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.0,
+     "y_reset": 0.0,
+     "yd_start": 0.0
+    },
+    "id": "conPIDHea",
+    "kind": "pid_with_reset",
+    "label": "conPIDHea",
+    "x": 720,
+    "y": 5760
+   },
+   {
+    "config": {
+     "value": 303.15
+    },
+    "id": "conTSupSet_max",
+    "kind": "numeric_const",
+    "label": "conTSupSet_max",
+    "x": 900,
+    "y": 5760
+   },
+   {
+    "config": {
+     "value": 285.15
+    },
+    "id": "conTSupSet_min",
+    "kind": "numeric_const",
+    "label": "conTSupSet_min",
+    "x": 0,
+    "y": 5880
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "conUCoo_max",
+    "kind": "numeric_const",
+    "label": "conUCoo_max",
+    "x": 180,
+    "y": 5880
+   },
+   {
+    "config": {
+     "value": 0.1
+    },
+    "id": "conUCoo_min",
+    "kind": "numeric_const",
+    "label": "conUCoo_min",
+    "x": 360,
+    "y": 5880
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "conUHea_max",
+    "kind": "numeric_const",
+    "label": "conUHea_max",
+    "x": 540,
+    "y": 5880
+   },
+   {
+    "config": {
+     "value": 0.1
+    },
+    "id": "conUHea_min",
+    "kind": "numeric_const",
+    "label": "conUHea_min",
+    "x": 720,
+    "y": 5880
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "conZer",
+    "kind": "numeric_const",
+    "label": "conZer",
+    "x": 900,
+    "y": 5880
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": 0.05
+    },
+    "id": "hysDeaCoo_2",
+    "kind": "hysteresis",
+    "label": "hysDeaCoo",
+    "x": 0,
+    "y": 6000
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.1,
+     "u_low": 0.05
+    },
+    "id": "hysDeaHea_2",
+    "kind": "hysteresis",
+    "label": "hysDeaHea",
+    "x": 180,
+    "y": 6000
+   },
+   {
+    "config": {},
+    "id": "linTCooSupAir_delta_f",
+    "kind": "subtract",
+    "label": "linTCooSupAir \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTCooSupAir_delta_x",
+    "kind": "subtract",
+    "label": "linTCooSupAir \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTCooSupAir_slope",
+    "kind": "divide",
+    "label": "linTCooSupAir slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTCooSupAir_slope_x2",
+    "kind": "multiply",
+    "label": "linTCooSupAir slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTCooSupAir_intercept",
+    "kind": "subtract",
+    "label": "linTCooSupAir intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTCooSupAir_scaled",
+    "kind": "multiply",
+    "label": "linTCooSupAir b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTCooSupAir_result",
+    "kind": "add",
+    "label": "linTCooSupAir",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTCooSupAir_lower_limit",
+    "kind": "maximum",
+    "label": "linTCooSupAir lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTCooSupAir_upper_limit",
+    "kind": "minimum",
+    "label": "linTCooSupAir upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTHeaSupAir_delta_f",
+    "kind": "subtract",
+    "label": "linTHeaSupAir \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTHeaSupAir_delta_x",
+    "kind": "subtract",
+    "label": "linTHeaSupAir \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTHeaSupAir_slope",
+    "kind": "divide",
+    "label": "linTHeaSupAir slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTHeaSupAir_slope_x2",
+    "kind": "multiply",
+    "label": "linTHeaSupAir slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTHeaSupAir_intercept",
+    "kind": "subtract",
+    "label": "linTHeaSupAir intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTHeaSupAir_scaled",
+    "kind": "multiply",
+    "label": "linTHeaSupAir b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTHeaSupAir_result",
+    "kind": "add",
+    "label": "linTHeaSupAir",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTHeaSupAir_lower_limit",
+    "kind": "maximum",
+    "label": "linTHeaSupAir lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "linTHeaSupAir_upper_limit",
+    "kind": "minimum",
+    "label": "linTHeaSupAir upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "mul2",
+    "kind": "multiply",
+    "label": "mul2",
+    "x": 720,
+    "y": 6000
+   },
+   {
+    "config": {},
+    "id": "mul3",
+    "kind": "multiply",
+    "label": "mul3",
+    "x": 900,
+    "y": 6000
+   },
+   {
+    "config": {},
+    "id": "swiCooCoi",
+    "kind": "numeric_switch",
+    "label": "swiCooCoi",
+    "x": 0,
+    "y": 6120
+   },
+   {
+    "config": {},
+    "id": "swiDeaCoo_2",
+    "kind": "numeric_switch",
+    "label": "swiDeaCoo",
+    "x": 180,
+    "y": 6120
+   },
+   {
+    "config": {},
+    "id": "swiDeaHea_2",
+    "kind": "numeric_switch",
+    "label": "swiDeaHea",
+    "x": 360,
+    "y": 6120
+   },
+   {
+    "config": {},
+    "id": "swiHeaCoi",
+    "kind": "numeric_switch",
+    "label": "swiHeaCoi",
+    "x": 540,
+    "y": 6120
+   },
+   {
+    "config": {
+     "value": 7.0
+    },
+    "id": "unOccMod_2",
+    "kind": "numeric_const",
+    "label": "unOccMod",
+    "x": 720,
+    "y": 6120
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "win",
+    "kind": "boolean_const",
+    "label": "win",
+    "x": 900,
+    "y": 6120
+   }
+  ],
+  "links": [
+   {
+    "source": "booToRea_true",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea_false",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "linCooFanSpe_delta_f",
+    "source_slot": "out",
+    "target": "linCooFanSpe_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "linCooFanSpe_delta_x",
+    "source_slot": "out",
+    "target": "linCooFanSpe_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "linCooFanSpe_slope",
+    "source_slot": "out",
+    "target": "linCooFanSpe_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "linCooFanSpe_slope",
+    "source_slot": "out",
+    "target": "linCooFanSpe_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "linCooFanSpe_slope_x2",
+    "source_slot": "out",
+    "target": "linCooFanSpe_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "linCooFanSpe_intercept",
+    "source_slot": "out",
+    "target": "linCooFanSpe_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "linCooFanSpe_scaled",
+    "source_slot": "out",
+    "target": "linCooFanSpe_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "linCooFanSpe_lower_limit",
+    "source_slot": "out",
+    "target": "linCooFanSpe_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "linCooFanSpe_upper_limit",
+    "source_slot": "out",
+    "target": "linCooFanSpe_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "linHeaFanSpe_delta_f",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "linHeaFanSpe_delta_x",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "linHeaFanSpe_slope",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "linHeaFanSpe_slope",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "linHeaFanSpe_slope_x2",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "linHeaFanSpe_intercept",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "linHeaFanSpe_scaled",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "linHeaFanSpe_lower_limit",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "linHeaFanSpe_upper_limit",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToIntCoo_true",
+    "source_slot": "out",
+    "target": "booToIntCoo",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToIntCoo_false",
+    "source_slot": "out",
+    "target": "booToIntCoo",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToIntHea_true",
+    "source_slot": "out",
+    "target": "booToIntHea",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToIntHea_false",
+    "source_slot": "out",
+    "target": "booToIntHea",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "greThr_threshold",
+    "source_slot": "out",
+    "target": "greThr",
+    "target_slot": "b"
+   },
+   {
+    "source": "greThr1_threshold",
+    "source_slot": "out",
+    "target": "greThr1",
+    "target_slot": "b"
+   },
+   {
+    "source": "greThr3_threshold",
+    "source_slot": "out",
+    "target": "greThr3",
+    "target_slot": "b"
+   },
+   {
+    "source": "greThr4_threshold",
+    "source_slot": "out",
+    "target": "greThr4",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt_true",
+    "source_slot": "out",
+    "target": "booToInt",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt_false",
+    "source_slot": "out",
+    "target": "booToInt",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "colZon_true",
+    "source_slot": "out",
+    "target": "colZon",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "colZon_false",
+    "source_slot": "out",
+    "target": "colZon",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "hotZon_true",
+    "source_slot": "out",
+    "target": "hotZon",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "hotZon_false",
+    "source_slot": "out",
+    "target": "hotZon",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt3_true",
+    "source_slot": "out",
+    "target": "booToInt3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt3_false",
+    "source_slot": "out",
+    "target": "booToInt3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea_2_true",
+    "source_slot": "out",
+    "target": "booToRea_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea_2_false",
+    "source_slot": "out",
+    "target": "booToRea_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea1_true",
+    "source_slot": "out",
+    "target": "booToRea1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea1_false",
+    "source_slot": "out",
+    "target": "booToRea1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea3_true",
+    "source_slot": "out",
+    "target": "booToRea3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea3_false",
+    "source_slot": "out",
+    "target": "booToRea3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea4_true",
+    "source_slot": "out",
+    "target": "booToRea4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea4_false",
+    "source_slot": "out",
+    "target": "booToRea4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea6_true",
+    "source_slot": "out",
+    "target": "booToRea6",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea6_false",
+    "source_slot": "out",
+    "target": "booToRea6",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "intGreThr_threshold",
+    "source_slot": "out",
+    "target": "intGreThr",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr1_threshold",
+    "source_slot": "out",
+    "target": "intGreThr1",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr2_threshold",
+    "source_slot": "out",
+    "target": "intGreThr2",
+    "target_slot": "b"
+   },
+   {
+    "source": "notOcc_threshold",
+    "source_slot": "out",
+    "target": "notOcc",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar_parameter",
+    "source_slot": "out",
+    "target": "addPar",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar1_parameter",
+    "source_slot": "out",
+    "target": "addPar1",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar2_parameter",
+    "source_slot": "out",
+    "target": "addPar2",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar3_parameter",
+    "source_slot": "out",
+    "target": "addPar3",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar4_parameter",
+    "source_slot": "out",
+    "target": "addPar4",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar5_parameter",
+    "source_slot": "out",
+    "target": "addPar5",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar6_parameter",
+    "source_slot": "out",
+    "target": "addPar6",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea_3_true",
+    "source_slot": "out",
+    "target": "booToRea_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea_3_false",
+    "source_slot": "out",
+    "target": "booToRea_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea1_2_true",
+    "source_slot": "out",
+    "target": "booToRea1_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea1_2_false",
+    "source_slot": "out",
+    "target": "booToRea1_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea2_true",
+    "source_slot": "out",
+    "target": "booToRea2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea2_false",
+    "source_slot": "out",
+    "target": "booToRea2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea3_2_true",
+    "source_slot": "out",
+    "target": "booToRea3_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea3_2_false",
+    "source_slot": "out",
+    "target": "booToRea3_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea4_2_true",
+    "source_slot": "out",
+    "target": "booToRea4_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea4_2_false",
+    "source_slot": "out",
+    "target": "booToRea4_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea5_true",
+    "source_slot": "out",
+    "target": "booToRea5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea5_false",
+    "source_slot": "out",
+    "target": "booToRea5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea6_2_true",
+    "source_slot": "out",
+    "target": "booToRea6_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea6_2_false",
+    "source_slot": "out",
+    "target": "booToRea6_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea7_true",
+    "source_slot": "out",
+    "target": "booToRea7",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea7_false",
+    "source_slot": "out",
+    "target": "booToRea7",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "cooSetInc_parameter",
+    "source_slot": "out",
+    "target": "cooSetInc",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaSetDec_parameter",
+    "source_slot": "out",
+    "target": "heaSetDec",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr_2_threshold",
+    "source_slot": "out",
+    "target": "intGreThr_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr1_2_threshold",
+    "source_slot": "out",
+    "target": "intGreThr1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea_4_true",
+    "source_slot": "out",
+    "target": "booToRea_4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea_4_false",
+    "source_slot": "out",
+    "target": "booToRea_4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea2_2_true",
+    "source_slot": "out",
+    "target": "booToRea2_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToRea2_2_false",
+    "source_slot": "out",
+    "target": "booToRea2_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conPIDCoo_reset_false",
+    "source_slot": "out",
+    "target": "conPIDCoo",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "conPIDHea_reset_false",
+    "source_slot": "out",
+    "target": "conPIDHea",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "linTCooSupAir_delta_f",
+    "source_slot": "out",
+    "target": "linTCooSupAir_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "linTCooSupAir_delta_x",
+    "source_slot": "out",
+    "target": "linTCooSupAir_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "linTCooSupAir_slope",
+    "source_slot": "out",
+    "target": "linTCooSupAir_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "linTCooSupAir_slope",
+    "source_slot": "out",
+    "target": "linTCooSupAir_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "linTCooSupAir_slope_x2",
+    "source_slot": "out",
+    "target": "linTCooSupAir_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "linTCooSupAir_intercept",
+    "source_slot": "out",
+    "target": "linTCooSupAir_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "linTCooSupAir_scaled",
+    "source_slot": "out",
+    "target": "linTCooSupAir_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "linTCooSupAir_lower_limit",
+    "source_slot": "out",
+    "target": "linTCooSupAir_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "linTCooSupAir_upper_limit",
+    "source_slot": "out",
+    "target": "linTCooSupAir_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "linTHeaSupAir_delta_f",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "linTHeaSupAir_delta_x",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "linTHeaSupAir_slope",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "linTHeaSupAir_slope",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "linTHeaSupAir_slope_x2",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "linTHeaSupAir_intercept",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "linTHeaSupAir_scaled",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "linTHeaSupAir_lower_limit",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "linTHeaSupAir_upper_limit",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "cooDowTim",
+    "source_slot": "out",
+    "target": "pro_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "setAdj",
+    "source_slot": "out",
+    "target": "swi4_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "setAdj",
+    "source_slot": "out",
+    "target": "swi6",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "tNexOcc",
+    "source_slot": "out",
+    "target": "sub5",
+    "target_slot": "b"
+   },
+   {
+    "source": "tNexOcc",
+    "source_slot": "out",
+    "target": "sub6",
+    "target_slot": "b"
+   },
+   {
+    "source": "TOccCooSet",
+    "source_slot": "out",
+    "target": "swi_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "TOccCooSet",
+    "source_slot": "out",
+    "target": "sub1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "TOccHeaSet",
+    "source_slot": "out",
+    "target": "swi1_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "TOccHeaSet",
+    "source_slot": "out",
+    "target": "sub",
+    "target_slot": "a"
+   },
+   {
+    "source": "TSup",
+    "source_slot": "out",
+    "target": "conPIDCoo",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "TSup",
+    "source_slot": "out",
+    "target": "conPIDHea",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "TSup",
+    "source_slot": "out",
+    "target": "swiDeaHea_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "TSup",
+    "source_slot": "out",
+    "target": "cooSupTemDif",
+    "target_slot": "a"
+   },
+   {
+    "source": "TSup",
+    "source_slot": "out",
+    "target": "heaSupTemDif",
+    "target_slot": "b"
+   },
+   {
+    "source": "TUnoCooSet",
+    "source_slot": "out",
+    "target": "les",
+    "target_slot": "b"
+   },
+   {
+    "source": "TUnoCooSet",
+    "source_slot": "out",
+    "target": "swi_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "TUnoCooSet",
+    "source_slot": "out",
+    "target": "swi9",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "TUnoCooSet",
+    "source_slot": "out",
+    "target": "sub4_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "TUnoCooSet",
+    "source_slot": "out",
+    "target": "sub5_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "TUnoHeaSet",
+    "source_slot": "out",
+    "target": "gre",
+    "target_slot": "b"
+   },
+   {
+    "source": "TUnoHeaSet",
+    "source_slot": "out",
+    "target": "swi1_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "TUnoHeaSet",
+    "source_slot": "out",
+    "target": "swi8",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "TUnoHeaSet",
+    "source_slot": "out",
+    "target": "sub2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "TUnoHeaSet",
+    "source_slot": "out",
+    "target": "sub3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "cooPI",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "heaPI",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "sub1",
+    "target_slot": "a"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "sub2",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "sub",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "sub1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "sub2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "sub3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "sub4_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "TZon",
+    "source_slot": "out",
+    "target": "sub5_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "u1Fan",
+    "source_slot": "out",
+    "target": "booToRea2_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1Fan",
+    "source_slot": "out",
+    "target": "swiFanPro",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1Occ",
+    "source_slot": "out",
+    "target": "or8",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1Occ",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1Occ",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u1Occ",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "uCooDemLimLev",
+    "source_slot": "out",
+    "target": "intEqu3",
+    "target_slot": "a"
+   },
+   {
+    "source": "uCooDemLimLev",
+    "source_slot": "out",
+    "target": "intEqu4",
+    "target_slot": "a"
+   },
+   {
+    "source": "uCooDemLimLev",
+    "source_slot": "out",
+    "target": "intEqu5",
+    "target_slot": "a"
+   },
+   {
+    "source": "uCooDemLimLev",
+    "source_slot": "out",
+    "target": "intGreThr_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "uHeaDemLimLev",
+    "source_slot": "out",
+    "target": "intEqu6",
+    "target_slot": "a"
+   },
+   {
+    "source": "uHeaDemLimLev",
+    "source_slot": "out",
+    "target": "intEqu7",
+    "target_slot": "a"
+   },
+   {
+    "source": "uHeaDemLimLev",
+    "source_slot": "out",
+    "target": "intEqu8",
+    "target_slot": "a"
+   },
+   {
+    "source": "uHeaDemLimLev",
+    "source_slot": "out",
+    "target": "intGreThr1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "warUpTim",
+    "source_slot": "out",
+    "target": "pro1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooPI",
+    "source_slot": "out",
+    "target": "hysDeaCoo_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "cooPI",
+    "source_slot": "out",
+    "target": "linTCooSupAir_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "cooPI",
+    "source_slot": "out",
+    "target": "hysDeaCoo",
+    "target_slot": "in"
+   },
+   {
+    "source": "cooPI",
+    "source_slot": "out",
+    "target": "linCooFanSpe_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea",
+    "source_slot": "out",
+    "target": "mulDeaSpe",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToRea",
+    "source_slot": "out",
+    "target": "mulFanSpe",
+    "target_slot": "a"
+   },
+   {
+    "source": "concooSpe_max",
+    "source_slot": "out",
+    "target": "linCooFanSpe_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "concooSpe_max",
+    "source_slot": "out",
+    "target": "linCooFanSpe_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "concooSpe_min",
+    "source_slot": "out",
+    "target": "linCooFanSpe_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "conDeaFanSpe",
+    "source_slot": "out",
+    "target": "mulDeaSpe",
+    "target_slot": "b"
+   },
+   {
+    "source": "conDeaFanSpe",
+    "source_slot": "out",
+    "target": "swiDeaHea",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conheaSpe_max",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "conheaSpe_max",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "conheaSpe_min",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "conuCoo_max",
+    "source_slot": "out",
+    "target": "linCooFanSpe_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "conuCoo_max",
+    "source_slot": "out",
+    "target": "linCooFanSpe_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "conuCoo_max",
+    "source_slot": "out",
+    "target": "linCooFanSpe_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "conuCoo_min",
+    "source_slot": "out",
+    "target": "linCooFanSpe_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "conuCoo_min",
+    "source_slot": "out",
+    "target": "linCooFanSpe_lower_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "conuHea_max",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "conuHea_max",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "conuHea_max",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "conuHea_min",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "conuHea_min",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_lower_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "hysDeaCoo",
+    "source_slot": "out",
+    "target": "swiDeaCoo",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hysDeaHea",
+    "source_slot": "out",
+    "target": "swiDeaHea",
+    "target_slot": "selector"
+   },
+   {
+    "source": "isUnOcc",
+    "source_slot": "out",
+    "target": "notUno",
+    "target_slot": "in"
+   },
+   {
+    "source": "linCooFanSpe_result",
+    "source_slot": "out",
+    "target": "swiDeaCoo",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "linHeaFanSpe_result",
+    "source_slot": "out",
+    "target": "swiDeaHea",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "mulDeaSpe",
+    "source_slot": "out",
+    "target": "swiFanPro",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "mulFanSpe",
+    "source_slot": "out",
+    "target": "swiFanPro",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "notUno",
+    "source_slot": "out",
+    "target": "booToRea",
+    "target_slot": "selector"
+   },
+   {
+    "source": "notUno",
+    "source_slot": "out",
+    "target": "y1Fan",
+    "target_slot": "in"
+   },
+   {
+    "source": "swiDeaCoo",
+    "source_slot": "out",
+    "target": "mulFanSpe",
+    "target_slot": "b"
+   },
+   {
+    "source": "swiDeaHea",
+    "source_slot": "out",
+    "target": "swiDeaCoo",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swiFanPro",
+    "source_slot": "out",
+    "target": "hysFanCoo",
+    "target_slot": "in"
+   },
+   {
+    "source": "swiFanPro",
+    "source_slot": "out",
+    "target": "hysFanHea",
+    "target_slot": "in"
+   },
+   {
+    "source": "swiFanPro",
+    "source_slot": "out",
+    "target": "yFan",
+    "target_slot": "in"
+   },
+   {
+    "source": "unOccMod",
+    "source_slot": "out",
+    "target": "isUnOcc",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToIntCoo",
+    "source_slot": "out",
+    "target": "mulIntCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToIntHea",
+    "source_slot": "out",
+    "target": "mulIntHea",
+    "target_slot": "a"
+   },
+   {
+    "source": "chiWatRes1",
+    "source_slot": "out",
+    "target": "chiWatRes2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "chiWatRes2",
+    "source_slot": "out",
+    "target": "chiWatRes3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "chiWatRes3",
+    "source_slot": "out",
+    "target": "mulIntCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "cooSupTemDif",
+    "source_slot": "out",
+    "target": "greThr",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooSupTemDif",
+    "source_slot": "out",
+    "target": "greThr1",
+    "target_slot": "a"
+   },
+   {
+    "source": "greThr",
+    "source_slot": "out",
+    "target": "truDel",
+    "target_slot": "in"
+   },
+   {
+    "source": "greThr1",
+    "source_slot": "out",
+    "target": "truDel1",
+    "target_slot": "in"
+   },
+   {
+    "source": "greThr3",
+    "source_slot": "out",
+    "target": "truDel2",
+    "target_slot": "in"
+   },
+   {
+    "source": "greThr4",
+    "source_slot": "out",
+    "target": "truDel3",
+    "target_slot": "in"
+   },
+   {
+    "source": "heaSupTemDif",
+    "source_slot": "out",
+    "target": "greThr3",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaSupTemDif",
+    "source_slot": "out",
+    "target": "greThr4",
+    "target_slot": "a"
+   },
+   {
+    "source": "hotWatRes1",
+    "source_slot": "out",
+    "target": "hotWatRes2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "hotWatRes2",
+    "source_slot": "out",
+    "target": "hotWatRes3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "hotWatRes3",
+    "source_slot": "out",
+    "target": "mulIntHea",
+    "target_slot": "b"
+   },
+   {
+    "source": "hys",
+    "source_slot": "out",
+    "target": "chiWatRes1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hys1",
+    "source_slot": "out",
+    "target": "intSwi3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hys2",
+    "source_slot": "out",
+    "target": "hotWatRes1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hys3",
+    "source_slot": "out",
+    "target": "intSwi1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hysFanCoo",
+    "source_slot": "out",
+    "target": "booToIntCoo",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hysFanHea",
+    "source_slot": "out",
+    "target": "booToIntHea",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intSwi1",
+    "source_slot": "out",
+    "target": "yHotWatPlaReq",
+    "target_slot": "in"
+   },
+   {
+    "source": "intSwi3",
+    "source_slot": "out",
+    "target": "yChiPlaReq",
+    "target_slot": "in"
+   },
+   {
+    "source": "mulIntCoo",
+    "source_slot": "out",
+    "target": "yChiWatResReq",
+    "target_slot": "in"
+   },
+   {
+    "source": "mulIntHea",
+    "source_slot": "out",
+    "target": "yHotWatResReq",
+    "target_slot": "in"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "chiWatRes1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "hotWatRes1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "intSwi1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "intSwi3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "thr",
+    "source_slot": "out",
+    "target": "chiWatRes3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "thr",
+    "source_slot": "out",
+    "target": "hotWatRes3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "truDel",
+    "source_slot": "out",
+    "target": "chiWatRes3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "truDel1",
+    "source_slot": "out",
+    "target": "chiWatRes2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "truDel2",
+    "source_slot": "out",
+    "target": "hotWatRes3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "truDel3",
+    "source_slot": "out",
+    "target": "hotWatRes2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "two",
+    "source_slot": "out",
+    "target": "chiWatRes2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "two",
+    "source_slot": "out",
+    "target": "hotWatRes2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "chiWatRes1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "hotWatRes1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "intSwi1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "intSwi3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "heaPI",
+    "source_slot": "out",
+    "target": "hysDeaHea_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "heaPI",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaPI",
+    "source_slot": "out",
+    "target": "hysDeaHea",
+    "target_slot": "in"
+   },
+   {
+    "source": "heaPI",
+    "source_slot": "out",
+    "target": "linHeaFanSpe_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "isOcc",
+    "source_slot": "out",
+    "target": "cooPI",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "isOcc",
+    "source_slot": "out",
+    "target": "heaPI",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "isUnOcc_2",
+    "source_slot": "out",
+    "target": "isOcc",
+    "target_slot": "in"
+   },
+   {
+    "source": "booToInt",
+    "source_slot": "out",
+    "target": "addInt6",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt",
+    "source_slot": "out",
+    "target": "addInt7",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt",
+    "source_slot": "out",
+    "target": "intGreThr1",
+    "target_slot": "a"
+   },
+   {
+    "source": "colZon",
+    "source_slot": "out",
+    "target": "addInt6",
+    "target_slot": "b"
+   },
+   {
+    "source": "colZon",
+    "source_slot": "out",
+    "target": "intGreThr",
+    "target_slot": "a"
+   },
+   {
+    "source": "hotZon",
+    "source_slot": "out",
+    "target": "addInt7",
+    "target_slot": "b"
+   },
+   {
+    "source": "hotZon",
+    "source_slot": "out",
+    "target": "intGreThr2",
+    "target_slot": "a"
+   },
+   {
+    "source": "actFreProTem",
+    "source_slot": "out",
+    "target": "sub2",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt",
+    "source_slot": "out",
+    "target": "addInt1",
+    "target_slot": "b"
+   },
+   {
+    "source": "addInt1",
+    "source_slot": "out",
+    "target": "addInt5",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt2",
+    "source_slot": "out",
+    "target": "addInt3",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt3",
+    "source_slot": "out",
+    "target": "addInt4",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt4",
+    "source_slot": "out",
+    "target": "addInt5",
+    "target_slot": "b"
+   },
+   {
+    "source": "addInt5",
+    "source_slot": "out",
+    "target": "isUnOcc",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt5",
+    "source_slot": "out",
+    "target": "isUnOcc_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt5",
+    "source_slot": "out",
+    "target": "intEqu",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt5",
+    "source_slot": "out",
+    "target": "intEqu1",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt5",
+    "source_slot": "out",
+    "target": "intEqu2",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt5",
+    "source_slot": "out",
+    "target": "notOcc",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt6",
+    "source_slot": "out",
+    "target": "allCol",
+    "target_slot": "a"
+   },
+   {
+    "source": "addInt7",
+    "source_slot": "out",
+    "target": "allHot",
+    "target_slot": "a"
+   },
+   {
+    "source": "allCol",
+    "source_slot": "out",
+    "target": "or1",
+    "target_slot": "b"
+   },
+   {
+    "source": "allHot",
+    "source_slot": "out",
+    "target": "or4",
+    "target_slot": "b"
+   },
+   {
+    "source": "and1",
+    "source_slot": "out",
+    "target": "booToRea1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "and1",
+    "source_slot": "out",
+    "target": "or9",
+    "target_slot": "a"
+   },
+   {
+    "source": "and2",
+    "source_slot": "out",
+    "target": "edg1",
+    "target_slot": "in"
+   },
+   {
+    "source": "and3",
+    "source_slot": "out",
+    "target": "not1",
+    "target_slot": "in"
+   },
+   {
+    "source": "and4",
+    "source_slot": "out",
+    "target": "booToRea_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "and4",
+    "source_slot": "out",
+    "target": "or9",
+    "target_slot": "b"
+   },
+   {
+    "source": "and5",
+    "source_slot": "out",
+    "target": "edg",
+    "target_slot": "in"
+   },
+   {
+    "source": "booToInt3",
+    "source_slot": "out",
+    "target": "addInt4",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea_2",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea1",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea3",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea4",
+    "source_slot": "out",
+    "target": "swi4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToRea6",
+    "source_slot": "out",
+    "target": "swi5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "corCooDowTim",
+    "source_slot": "out",
+    "target": "sub5",
+    "target_slot": "a"
+   },
+   {
+    "source": "corWarUpTim",
+    "source_slot": "out",
+    "target": "sub6",
+    "target_slot": "a"
+   },
+   {
+    "source": "edg",
+    "source_slot": "out",
+    "target": "truFalHol1",
+    "target_slot": "in"
+   },
+   {
+    "source": "edg1",
+    "source_slot": "out",
+    "target": "truFalHol",
+    "target_slot": "in"
+   },
+   {
+    "source": "endFreProTem",
+    "source_slot": "out",
+    "target": "sub1",
+    "target_slot": "b"
+   },
+   {
+    "source": "endSetBac",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "clear"
+   },
+   {
+    "source": "endSetUp",
+    "source_slot": "out",
+    "target": "lat2",
+    "target_slot": "clear"
+   },
+   {
+    "source": "freProSetBacMod",
+    "source_slot": "out",
+    "target": "addInt2",
+    "target_slot": "b"
+   },
+   {
+    "source": "hys10",
+    "source_slot": "out",
+    "target": "lat1",
+    "target_slot": "clear"
+   },
+   {
+    "source": "hys2_2",
+    "source_slot": "out",
+    "target": "corCooDowTim",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hys3_2",
+    "source_slot": "out",
+    "target": "corWarUpTim",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hys4",
+    "source_slot": "out",
+    "target": "and2",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys4",
+    "source_slot": "out",
+    "target": "and4",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys5",
+    "source_slot": "out",
+    "target": "and1",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys5",
+    "source_slot": "out",
+    "target": "and5",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys9",
+    "source_slot": "out",
+    "target": "lat1",
+    "target_slot": "set"
+   },
+   {
+    "source": "intGreThr",
+    "source_slot": "out",
+    "target": "or1",
+    "target_slot": "a"
+   },
+   {
+    "source": "intGreThr1",
+    "source_slot": "out",
+    "target": "and3",
+    "target_slot": "a"
+   },
+   {
+    "source": "intGreThr2",
+    "source_slot": "out",
+    "target": "or4",
+    "target_slot": "a"
+   },
+   {
+    "source": "lat",
+    "source_slot": "out",
+    "target": "booToRea3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lat",
+    "source_slot": "out",
+    "target": "or10",
+    "target_slot": "b"
+   },
+   {
+    "source": "lat1",
+    "source_slot": "out",
+    "target": "booToRea4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lat1",
+    "source_slot": "out",
+    "target": "not5",
+    "target_slot": "in"
+   },
+   {
+    "source": "lat1",
+    "source_slot": "out",
+    "target": "or5",
+    "target_slot": "b"
+   },
+   {
+    "source": "lat2",
+    "source_slot": "out",
+    "target": "booToRea6",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lat2",
+    "source_slot": "out",
+    "target": "or5",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxWarCooTime",
+    "source_slot": "out",
+    "target": "corCooDowTim",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "maxWarCooTime",
+    "source_slot": "out",
+    "target": "corWarUpTim",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "maxWarCooTime",
+    "source_slot": "out",
+    "target": "sub3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxWarCooTime",
+    "source_slot": "out",
+    "target": "sub4",
+    "target_slot": "a"
+   },
+   {
+    "source": "not1",
+    "source_slot": "out",
+    "target": "winOpe",
+    "target_slot": "condition"
+   },
+   {
+    "source": "not2",
+    "source_slot": "out",
+    "target": "booToInt3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not5",
+    "source_slot": "out",
+    "target": "assMes",
+    "target_slot": "condition"
+   },
+   {
+    "source": "notOcc",
+    "source_slot": "out",
+    "target": "and3",
+    "target_slot": "b"
+   },
+   {
+    "source": "occMod",
+    "source_slot": "out",
+    "target": "addInt1",
+    "target_slot": "a"
+   },
+   {
+    "source": "occModInd",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "or1",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "a"
+   },
+   {
+    "source": "or10",
+    "source_slot": "out",
+    "target": "or6",
+    "target_slot": "a"
+   },
+   {
+    "source": "or2",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "set"
+   },
+   {
+    "source": "or4",
+    "source_slot": "out",
+    "target": "or7",
+    "target_slot": "a"
+   },
+   {
+    "source": "or5",
+    "source_slot": "out",
+    "target": "or10",
+    "target_slot": "a"
+   },
+   {
+    "source": "or6",
+    "source_slot": "out",
+    "target": "not2",
+    "target_slot": "in"
+   },
+   {
+    "source": "or7",
+    "source_slot": "out",
+    "target": "lat2",
+    "target_slot": "set"
+   },
+   {
+    "source": "or8",
+    "source_slot": "out",
+    "target": "or6",
+    "target_slot": "b"
+   },
+   {
+    "source": "or8",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or8",
+    "source_slot": "out",
+    "target": "swi4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or8",
+    "source_slot": "out",
+    "target": "swi5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or9",
+    "source_slot": "out",
+    "target": "or8",
+    "target_slot": "a"
+   },
+   {
+    "source": "setBacMod",
+    "source_slot": "out",
+    "target": "addInt2",
+    "target_slot": "a"
+   },
+   {
+    "source": "setBacMod1",
+    "source_slot": "out",
+    "target": "addInt",
+    "target_slot": "a"
+   },
+   {
+    "source": "setBacMod2",
+    "source_slot": "out",
+    "target": "addInt",
+    "target_slot": "b"
+   },
+   {
+    "source": "setUpMod",
+    "source_slot": "out",
+    "target": "addInt3",
+    "target_slot": "b"
+   },
+   {
+    "source": "sub1",
+    "source_slot": "out",
+    "target": "hys10",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub2",
+    "source_slot": "out",
+    "target": "hys9",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub3",
+    "source_slot": "out",
+    "target": "hys2_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub4",
+    "source_slot": "out",
+    "target": "hys3_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub5",
+    "source_slot": "out",
+    "target": "hys4",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub6",
+    "source_slot": "out",
+    "target": "hys5",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "occMod",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi1",
+    "source_slot": "out",
+    "target": "setBacMod1",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi2",
+    "source_slot": "out",
+    "target": "setBacMod2",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi3",
+    "source_slot": "out",
+    "target": "setBacMod",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi4",
+    "source_slot": "out",
+    "target": "freProSetBacMod",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi5",
+    "source_slot": "out",
+    "target": "setUpMod",
+    "target_slot": "in"
+   },
+   {
+    "source": "totZon",
+    "source_slot": "out",
+    "target": "allCol",
+    "target_slot": "b"
+   },
+   {
+    "source": "totZon",
+    "source_slot": "out",
+    "target": "allHot",
+    "target_slot": "b"
+   },
+   {
+    "source": "truFalHol",
+    "source_slot": "out",
+    "target": "and4",
+    "target_slot": "b"
+   },
+   {
+    "source": "truFalHol1",
+    "source_slot": "out",
+    "target": "and1",
+    "target_slot": "b"
+   },
+   {
+    "source": "unoPerInd",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "unoPerInd",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "unoPerInd",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "unoPerInd",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "unoPerInd",
+    "source_slot": "out",
+    "target": "swi4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "unoPerInd",
+    "source_slot": "out",
+    "target": "swi5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "add1",
+    "source_slot": "out",
+    "target": "swi3_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "add2",
+    "source_slot": "out",
+    "target": "swi2_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "add3",
+    "source_slot": "out",
+    "target": "add5",
+    "target_slot": "a"
+   },
+   {
+    "source": "add4",
+    "source_slot": "out",
+    "target": "add5",
+    "target_slot": "b"
+   },
+   {
+    "source": "add5",
+    "source_slot": "out",
+    "target": "swi10",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "add6",
+    "source_slot": "out",
+    "target": "add8",
+    "target_slot": "a"
+   },
+   {
+    "source": "add7",
+    "source_slot": "out",
+    "target": "add8",
+    "target_slot": "b"
+   },
+   {
+    "source": "add8",
+    "source_slot": "out",
+    "target": "swi11",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "addPar",
+    "source_slot": "out",
+    "target": "gre2",
+    "target_slot": "b"
+   },
+   {
+    "source": "addPar",
+    "source_slot": "out",
+    "target": "swi7",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "addPar1",
+    "source_slot": "out",
+    "target": "pro1",
+    "target_slot": "a"
+   },
+   {
+    "source": "addPar2",
+    "source_slot": "out",
+    "target": "pro",
+    "target_slot": "a"
+   },
+   {
+    "source": "addPar3",
+    "source_slot": "out",
+    "target": "pro2",
+    "target_slot": "a"
+   },
+   {
+    "source": "addPar4",
+    "source_slot": "out",
+    "target": "pro5",
+    "target_slot": "a"
+   },
+   {
+    "source": "addPar5",
+    "source_slot": "out",
+    "target": "pro4",
+    "target_slot": "a"
+   },
+   {
+    "source": "addPar6",
+    "source_slot": "out",
+    "target": "pro3",
+    "target_slot": "a"
+   },
+   {
+    "source": "alaFou",
+    "source_slot": "out",
+    "target": "swi16",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "alaZer",
+    "source_slot": "out",
+    "target": "swi16",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "and10",
+    "source_slot": "out",
+    "target": "tim",
+    "target_slot": "in"
+   },
+   {
+    "source": "and11",
+    "source_slot": "out",
+    "target": "swi16",
+    "target_slot": "selector"
+   },
+   {
+    "source": "booToRea_3",
+    "source_slot": "out",
+    "target": "pro",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea1_2",
+    "source_slot": "out",
+    "target": "pro1",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea2",
+    "source_slot": "out",
+    "target": "pro2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea3_2",
+    "source_slot": "out",
+    "target": "pro3",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea4_2",
+    "source_slot": "out",
+    "target": "pro4",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea5",
+    "source_slot": "out",
+    "target": "pro5",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea6_2",
+    "source_slot": "out",
+    "target": "pro6",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToRea7",
+    "source_slot": "out",
+    "target": "pro7",
+    "target_slot": "a"
+   },
+   {
+    "source": "con",
+    "source_slot": "out",
+    "target": "swi4_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "con1",
+    "source_slot": "out",
+    "target": "swi6",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "con2",
+    "source_slot": "out",
+    "target": "or5_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "conFal",
+    "source_slot": "out",
+    "target": "and11",
+    "target_slot": "b"
+   },
+   {
+    "source": "conFal",
+    "source_slot": "out",
+    "target": "swi14",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conFal",
+    "source_slot": "out",
+    "target": "swi15",
+    "target_slot": "selector"
+   },
+   {
+    "source": "conInt",
+    "source_slot": "out",
+    "target": "intEqu",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt1",
+    "source_slot": "out",
+    "target": "intEqu1",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt2",
+    "source_slot": "out",
+    "target": "intEqu2",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt3",
+    "source_slot": "out",
+    "target": "intEqu3",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt4",
+    "source_slot": "out",
+    "target": "intEqu4",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt5",
+    "source_slot": "out",
+    "target": "intEqu5",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt6",
+    "source_slot": "out",
+    "target": "intEqu6",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt7",
+    "source_slot": "out",
+    "target": "intEqu7",
+    "target_slot": "b"
+   },
+   {
+    "source": "conInt8",
+    "source_slot": "out",
+    "target": "intEqu8",
+    "target_slot": "b"
+   },
+   {
+    "source": "conTru",
+    "source_slot": "out",
+    "target": "not4",
+    "target_slot": "in"
+   },
+   {
+    "source": "cooSetAdjCon",
+    "source_slot": "out",
+    "target": "swi4_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "cooSetFre",
+    "source_slot": "out",
+    "target": "addPar1",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooSetFre",
+    "source_slot": "out",
+    "target": "addPar2",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooSetFre",
+    "source_slot": "out",
+    "target": "addPar3",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooSetFre",
+    "source_slot": "out",
+    "target": "pro6",
+    "target_slot": "b"
+   },
+   {
+    "source": "cooSetInc",
+    "source_slot": "out",
+    "target": "swi12",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "cooSetLim_minimum",
+    "source_slot": "out",
+    "target": "cooSetLim_clamp",
+    "target_slot": "b"
+   },
+   {
+    "source": "cooSetLim_maximum",
+    "source_slot": "out",
+    "target": "cooSetLim_clamp_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "cooSetLim_clamp",
+    "source_slot": "out",
+    "target": "cooSetLim_clamp_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooSetLim_clamp_2",
+    "source_slot": "out",
+    "target": "swi17",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "cooSetSam",
+    "source_slot": "out",
+    "target": "cooSetInc",
+    "target_slot": "a"
+   },
+   {
+    "source": "cooSetWinOpe",
+    "source_slot": "out",
+    "target": "swi14",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "edg_2",
+    "source_slot": "out",
+    "target": "cooSetFre",
+    "target_slot": "clock"
+   },
+   {
+    "source": "edg_2",
+    "source_slot": "out",
+    "target": "heaSetFre",
+    "target_slot": "clock"
+   },
+   {
+    "source": "edg1_2",
+    "source_slot": "out",
+    "target": "cooSetSam",
+    "target_slot": "clock"
+   },
+   {
+    "source": "edg1_2",
+    "source_slot": "out",
+    "target": "heaSetSam",
+    "target_slot": "clock"
+   },
+   {
+    "source": "gre",
+    "source_slot": "out",
+    "target": "swi8",
+    "target_slot": "selector"
+   },
+   {
+    "source": "gre2",
+    "source_slot": "out",
+    "target": "swi7",
+    "target_slot": "selector"
+   },
+   {
+    "source": "have_occSenCon",
+    "source_slot": "out",
+    "target": "swi19",
+    "target_slot": "selector"
+   },
+   {
+    "source": "have_occSenCon",
+    "source_slot": "out",
+    "target": "swi20",
+    "target_slot": "selector"
+   },
+   {
+    "source": "heaSetAdjCon",
+    "source_slot": "out",
+    "target": "swi6",
+    "target_slot": "selector"
+   },
+   {
+    "source": "heaSetDec",
+    "source_slot": "out",
+    "target": "swi13",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "heaSetFre",
+    "source_slot": "out",
+    "target": "addPar4",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaSetFre",
+    "source_slot": "out",
+    "target": "addPar5",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaSetFre",
+    "source_slot": "out",
+    "target": "addPar6",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaSetFre",
+    "source_slot": "out",
+    "target": "pro7",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaSetLim_minimum",
+    "source_slot": "out",
+    "target": "heaSetLim_clamp",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaSetLim_maximum",
+    "source_slot": "out",
+    "target": "heaSetLim_clamp_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaSetLim_clamp",
+    "source_slot": "out",
+    "target": "heaSetLim_clamp_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaSetLim_clamp_2",
+    "source_slot": "out",
+    "target": "swi18",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "heaSetSam",
+    "source_slot": "out",
+    "target": "heaSetDec",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaSetWinOpe",
+    "source_slot": "out",
+    "target": "swi15",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "intEqu",
+    "source_slot": "out",
+    "target": "or6_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "intEqu1",
+    "source_slot": "out",
+    "target": "or6_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intEqu2",
+    "source_slot": "out",
+    "target": "and10",
+    "target_slot": "a"
+   },
+   {
+    "source": "intEqu2",
+    "source_slot": "out",
+    "target": "not5_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "intEqu2",
+    "source_slot": "out",
+    "target": "or9_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intEqu2",
+    "source_slot": "out",
+    "target": "swi17",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu2",
+    "source_slot": "out",
+    "target": "swi18",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu2",
+    "source_slot": "out",
+    "target": "swi3_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu3",
+    "source_slot": "out",
+    "target": "booToRea_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu3",
+    "source_slot": "out",
+    "target": "or1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "intEqu4",
+    "source_slot": "out",
+    "target": "booToRea1_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu4",
+    "source_slot": "out",
+    "target": "or1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intEqu5",
+    "source_slot": "out",
+    "target": "booToRea2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu5",
+    "source_slot": "out",
+    "target": "or7_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intEqu6",
+    "source_slot": "out",
+    "target": "booToRea3_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu6",
+    "source_slot": "out",
+    "target": "or4_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "intEqu7",
+    "source_slot": "out",
+    "target": "booToRea4_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu7",
+    "source_slot": "out",
+    "target": "or4_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intEqu8",
+    "source_slot": "out",
+    "target": "booToRea5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intEqu8",
+    "source_slot": "out",
+    "target": "or8_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intGreThr_2",
+    "source_slot": "out",
+    "target": "or2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "intGreThr1_2",
+    "source_slot": "out",
+    "target": "or2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "les",
+    "source_slot": "out",
+    "target": "swi9",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not1_2",
+    "source_slot": "out",
+    "target": "booToRea6_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not2_2",
+    "source_slot": "out",
+    "target": "booToRea7",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not3",
+    "source_slot": "out",
+    "target": "or5_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "not4",
+    "source_slot": "out",
+    "target": "and10",
+    "target_slot": "b"
+   },
+   {
+    "source": "not5_2",
+    "source_slot": "out",
+    "target": "and11",
+    "target_slot": "a"
+   },
+   {
+    "source": "or1_2",
+    "source_slot": "out",
+    "target": "or7_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "or2_2",
+    "source_slot": "out",
+    "target": "edg_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "or2_2",
+    "source_slot": "out",
+    "target": "not3",
+    "target_slot": "in"
+   },
+   {
+    "source": "or4_2",
+    "source_slot": "out",
+    "target": "or8_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "or5_2",
+    "source_slot": "out",
+    "target": "swi10",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or5_2",
+    "source_slot": "out",
+    "target": "swi11",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or6_2",
+    "source_slot": "out",
+    "target": "or9_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "or7_2",
+    "source_slot": "out",
+    "target": "not1_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "or8_2",
+    "source_slot": "out",
+    "target": "not2_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "or9_2",
+    "source_slot": "out",
+    "target": "swi_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or9_2",
+    "source_slot": "out",
+    "target": "swi1_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or9_2",
+    "source_slot": "out",
+    "target": "swi2_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "pro",
+    "source_slot": "out",
+    "target": "add3",
+    "target_slot": "b"
+   },
+   {
+    "source": "pro1",
+    "source_slot": "out",
+    "target": "add4",
+    "target_slot": "a"
+   },
+   {
+    "source": "pro2",
+    "source_slot": "out",
+    "target": "add4",
+    "target_slot": "b"
+   },
+   {
+    "source": "pro3",
+    "source_slot": "out",
+    "target": "add6",
+    "target_slot": "b"
+   },
+   {
+    "source": "pro4",
+    "source_slot": "out",
+    "target": "add7",
+    "target_slot": "a"
+   },
+   {
+    "source": "pro5",
+    "source_slot": "out",
+    "target": "add7",
+    "target_slot": "b"
+   },
+   {
+    "source": "pro6",
+    "source_slot": "out",
+    "target": "add3",
+    "target_slot": "a"
+   },
+   {
+    "source": "pro7",
+    "source_slot": "out",
+    "target": "add6",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi_2",
+    "source_slot": "out",
+    "target": "add2",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi_2",
+    "source_slot": "out",
+    "target": "swi2_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi1_2",
+    "source_slot": "out",
+    "target": "add1",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi1_2",
+    "source_slot": "out",
+    "target": "swi3_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi10",
+    "source_slot": "out",
+    "target": "cooSetSam",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi10",
+    "source_slot": "out",
+    "target": "swi12",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi10",
+    "source_slot": "out",
+    "target": "swi20",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi11",
+    "source_slot": "out",
+    "target": "heaSetSam",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi11",
+    "source_slot": "out",
+    "target": "swi13",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi11",
+    "source_slot": "out",
+    "target": "swi19",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi12",
+    "source_slot": "out",
+    "target": "swi20",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi13",
+    "source_slot": "out",
+    "target": "swi19",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi14",
+    "source_slot": "out",
+    "target": "swi22",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi15",
+    "source_slot": "out",
+    "target": "swi21",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi16",
+    "source_slot": "out",
+    "target": "reaToInt",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi17",
+    "source_slot": "out",
+    "target": "les",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi17",
+    "source_slot": "out",
+    "target": "swi9",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi18",
+    "source_slot": "out",
+    "target": "gre",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi18",
+    "source_slot": "out",
+    "target": "swi8",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi19",
+    "source_slot": "out",
+    "target": "swi15",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi19",
+    "source_slot": "out",
+    "target": "swi21",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi2_2",
+    "source_slot": "out",
+    "target": "cooSetFre",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi2_2",
+    "source_slot": "out",
+    "target": "swi10",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi20",
+    "source_slot": "out",
+    "target": "swi14",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi20",
+    "source_slot": "out",
+    "target": "swi22",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi21",
+    "source_slot": "out",
+    "target": "heaSetLim_clamp",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi21",
+    "source_slot": "out",
+    "target": "swi18",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi22",
+    "source_slot": "out",
+    "target": "cooSetLim_clamp",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi22",
+    "source_slot": "out",
+    "target": "swi17",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi3_2",
+    "source_slot": "out",
+    "target": "heaSetFre",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi3_2",
+    "source_slot": "out",
+    "target": "swi11",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi4_2",
+    "source_slot": "out",
+    "target": "add2",
+    "target_slot": "b"
+   },
+   {
+    "source": "swi6",
+    "source_slot": "out",
+    "target": "add1",
+    "target_slot": "b"
+   },
+   {
+    "source": "swi7",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "swi7",
+    "source_slot": "out",
+    "target": "TZonHeaSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi7",
+    "source_slot": "out",
+    "target": "heaPI",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "swi8",
+    "source_slot": "out",
+    "target": "gre2",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi8",
+    "source_slot": "out",
+    "target": "swi7",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi9",
+    "source_slot": "out",
+    "target": "linTCooSupAir_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "swi9",
+    "source_slot": "out",
+    "target": "TZonCooSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi9",
+    "source_slot": "out",
+    "target": "cooPI",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "swi9",
+    "source_slot": "out",
+    "target": "addPar",
+    "target_slot": "a"
+   },
+   {
+    "source": "tim",
+    "source_slot": "passed",
+    "target": "truHol",
+    "target_slot": "in"
+   },
+   {
+    "source": "truHol",
+    "source_slot": "out",
+    "target": "edg1_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "truHol",
+    "source_slot": "out",
+    "target": "swi12",
+    "target_slot": "selector"
+   },
+   {
+    "source": "truHol",
+    "source_slot": "out",
+    "target": "swi13",
+    "target_slot": "selector"
+   },
+   {
+    "source": "winSenCon",
+    "source_slot": "out",
+    "target": "swi21",
+    "target_slot": "selector"
+   },
+   {
+    "source": "winSenCon",
+    "source_slot": "out",
+    "target": "swi22",
+    "target_slot": "selector"
+   },
+   {
+    "source": "winOpe_2",
+    "source_slot": "out",
+    "target": "booToInt",
+    "target_slot": "selector"
+   },
+   {
+    "source": "winSta",
+    "source_slot": "out",
+    "target": "winOpe_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "and1_2",
+    "source_slot": "out",
+    "target": "and2",
+    "target_slot": "b"
+   },
+   {
+    "source": "and2_2",
+    "source_slot": "out",
+    "target": "and5",
+    "target_slot": "b"
+   },
+   {
+    "source": "and3_2",
+    "source_slot": "out",
+    "target": "colZon",
+    "target_slot": "selector"
+   },
+   {
+    "source": "and3_2",
+    "source_slot": "out",
+    "target": "or2",
+    "target_slot": "b"
+   },
+   {
+    "source": "and5_2",
+    "source_slot": "out",
+    "target": "hotZon",
+    "target_slot": "selector"
+   },
+   {
+    "source": "and5_2",
+    "source_slot": "out",
+    "target": "or7",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea_4",
+    "source_slot": "out",
+    "target": "pro_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToRea_4",
+    "source_slot": "out",
+    "target": "pro1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "con_2",
+    "source_slot": "out",
+    "target": "not1_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "con_2",
+    "source_slot": "out",
+    "target": "or1_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "con_2",
+    "source_slot": "out",
+    "target": "or2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "hys_2",
+    "source_slot": "out",
+    "target": "and2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys1_2",
+    "source_slot": "out",
+    "target": "and1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys2_3",
+    "source_slot": "out",
+    "target": "and3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys3_3",
+    "source_slot": "out",
+    "target": "or2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys4_2",
+    "source_slot": "out",
+    "target": "or1_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "hys5_2",
+    "source_slot": "out",
+    "target": "and5_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "not1_3",
+    "source_slot": "out",
+    "target": "and1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "not1_3",
+    "source_slot": "out",
+    "target": "and2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "not1_3",
+    "source_slot": "out",
+    "target": "and3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "not1_3",
+    "source_slot": "out",
+    "target": "and5_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "not1_3",
+    "source_slot": "out",
+    "target": "booToRea_4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "or1_3",
+    "source_slot": "out",
+    "target": "endSetUp",
+    "target_slot": "in"
+   },
+   {
+    "source": "or2_3",
+    "source_slot": "out",
+    "target": "endSetBac",
+    "target_slot": "in"
+   },
+   {
+    "source": "pro_2",
+    "source_slot": "out",
+    "target": "corCooDowTim",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "pro_2",
+    "source_slot": "out",
+    "target": "sub3",
+    "target_slot": "b"
+   },
+   {
+    "source": "pro1_2",
+    "source_slot": "out",
+    "target": "corWarUpTim",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "pro1_2",
+    "source_slot": "out",
+    "target": "sub4",
+    "target_slot": "b"
+   },
+   {
+    "source": "sub",
+    "source_slot": "out",
+    "target": "hys_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub1_2",
+    "source_slot": "out",
+    "target": "hys1_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub2_2",
+    "source_slot": "out",
+    "target": "hys2_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub3_2",
+    "source_slot": "out",
+    "target": "hys3_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub4_2",
+    "source_slot": "out",
+    "target": "hys4_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub5_2",
+    "source_slot": "out",
+    "target": "hys5_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "booToRea2_2",
+    "source_slot": "out",
+    "target": "mul2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToRea2_2",
+    "source_slot": "out",
+    "target": "mul3",
+    "target_slot": "a"
+   },
+   {
+    "source": "conPIDCoo",
+    "source_slot": "out",
+    "target": "swiCooCoi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "conPIDHea",
+    "source_slot": "out",
+    "target": "swiHeaCoi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "conTSupSet_max",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "conTSupSet_max",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "conTSupSet_min",
+    "source_slot": "out",
+    "target": "linTCooSupAir_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "conTSupSet_min",
+    "source_slot": "out",
+    "target": "linTCooSupAir_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "conUCoo_max",
+    "source_slot": "out",
+    "target": "linTCooSupAir_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "conUCoo_max",
+    "source_slot": "out",
+    "target": "linTCooSupAir_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "conUCoo_max",
+    "source_slot": "out",
+    "target": "linTCooSupAir_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "conUCoo_min",
+    "source_slot": "out",
+    "target": "linTCooSupAir_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "conUCoo_min",
+    "source_slot": "out",
+    "target": "linTCooSupAir_lower_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "conUHea_max",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "conUHea_max",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "conUHea_max",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "conUHea_min",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "conUHea_min",
+    "source_slot": "out",
+    "target": "linTHeaSupAir_lower_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "conZer",
+    "source_slot": "out",
+    "target": "swiCooCoi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "conZer",
+    "source_slot": "out",
+    "target": "swiHeaCoi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "hysDeaCoo_2",
+    "source_slot": "out",
+    "target": "swiCooCoi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hysDeaCoo_2",
+    "source_slot": "out",
+    "target": "swiDeaCoo_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hysDeaHea_2",
+    "source_slot": "out",
+    "target": "swiDeaHea_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "hysDeaHea_2",
+    "source_slot": "out",
+    "target": "swiHeaCoi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "linTCooSupAir_result",
+    "source_slot": "out",
+    "target": "swiDeaCoo_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "linTHeaSupAir_result",
+    "source_slot": "out",
+    "target": "swiDeaHea_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "mul2",
+    "source_slot": "out",
+    "target": "hys2",
+    "target_slot": "in"
+   },
+   {
+    "source": "mul2",
+    "source_slot": "out",
+    "target": "hys3",
+    "target_slot": "in"
+   },
+   {
+    "source": "mul2",
+    "source_slot": "out",
+    "target": "yHeaCoi",
+    "target_slot": "in"
+   },
+   {
+    "source": "mul3",
+    "source_slot": "out",
+    "target": "hys",
+    "target_slot": "in"
+   },
+   {
+    "source": "mul3",
+    "source_slot": "out",
+    "target": "hys1",
+    "target_slot": "in"
+   },
+   {
+    "source": "mul3",
+    "source_slot": "out",
+    "target": "yCooCoi",
+    "target_slot": "in"
+   },
+   {
+    "source": "swiCooCoi",
+    "source_slot": "out",
+    "target": "mul3",
+    "target_slot": "b"
+   },
+   {
+    "source": "swiDeaCoo_2",
+    "source_slot": "out",
+    "target": "conPIDCoo",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "swiDeaCoo_2",
+    "source_slot": "out",
+    "target": "conPIDHea",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "swiDeaCoo_2",
+    "source_slot": "out",
+    "target": "TSupSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "swiDeaCoo_2",
+    "source_slot": "out",
+    "target": "cooSupTemDif",
+    "target_slot": "b"
+   },
+   {
+    "source": "swiDeaCoo_2",
+    "source_slot": "out",
+    "target": "heaSupTemDif",
+    "target_slot": "a"
+   },
+   {
+    "source": "swiDeaHea_2",
+    "source_slot": "out",
+    "target": "swiDeaCoo_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swiHeaCoi",
+    "source_slot": "out",
+    "target": "mul2",
+    "target_slot": "b"
+   },
+   {
+    "source": "unOccMod_2",
+    "source_slot": "out",
+    "target": "isUnOcc_2",
+    "target_slot": "b"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "actFreProTem": "modSetPoi.opeModSel.actFreProTem",
+    "add1": "modSetPoi.TZonSet.add1",
+    "add2": "modSetPoi.TZonSet.add2",
+    "add3": "modSetPoi.TZonSet.add3",
+    "add4": "modSetPoi.TZonSet.add4",
+    "add5": "modSetPoi.TZonSet.add5",
+    "add6": "modSetPoi.TZonSet.add6",
+    "add7": "modSetPoi.TZonSet.add7",
+    "add8": "modSetPoi.TZonSet.add8",
+    "addInt": "modSetPoi.opeModSel.addInt",
+    "addInt1": "modSetPoi.opeModSel.addInt1",
+    "addInt2": "modSetPoi.opeModSel.addInt2",
+    "addInt3": "modSetPoi.opeModSel.addInt3",
+    "addInt4": "modSetPoi.opeModSel.addInt4",
+    "addInt5": "modSetPoi.opeModSel.addInt5",
+    "addInt6": "modSetPoi.opeModSel.addInt6",
+    "addInt7": "modSetPoi.opeModSel.addInt7",
+    "addPar": "modSetPoi.TZonSet.addPar",
+    "addPar1": "modSetPoi.TZonSet.addPar1",
+    "addPar1_parameter": "modSetPoi.TZonSet.addPar1",
+    "addPar2": "modSetPoi.TZonSet.addPar2",
+    "addPar2_parameter": "modSetPoi.TZonSet.addPar2",
+    "addPar3": "modSetPoi.TZonSet.addPar3",
+    "addPar3_parameter": "modSetPoi.TZonSet.addPar3",
+    "addPar4": "modSetPoi.TZonSet.addPar4",
+    "addPar4_parameter": "modSetPoi.TZonSet.addPar4",
+    "addPar5": "modSetPoi.TZonSet.addPar5",
+    "addPar5_parameter": "modSetPoi.TZonSet.addPar5",
+    "addPar6": "modSetPoi.TZonSet.addPar6",
+    "addPar6_parameter": "modSetPoi.TZonSet.addPar6",
+    "addPar_parameter": "modSetPoi.TZonSet.addPar",
+    "alaFou": "modSetPoi.TZonSet.alaFou",
+    "alaZer": "modSetPoi.TZonSet.alaZer",
+    "allCol": "modSetPoi.opeModSel.allCol",
+    "allHot": "modSetPoi.opeModSel.allHot",
+    "and1": "modSetPoi.opeModSel.and1",
+    "and10": "modSetPoi.TZonSet.and10",
+    "and11": "modSetPoi.TZonSet.and11",
+    "and1_2": "modSetPoi.zonSta.and1",
+    "and2": "modSetPoi.opeModSel.and2",
+    "and2_2": "modSetPoi.zonSta.and2",
+    "and3": "modSetPoi.opeModSel.and3",
+    "and3_2": "modSetPoi.zonSta.and3",
+    "and4": "modSetPoi.opeModSel.and4",
+    "and5": "modSetPoi.opeModSel.and5",
+    "and5_2": "modSetPoi.zonSta.and5",
+    "assMes": "modSetPoi.opeModSel.assMes",
+    "booToInt": "modSetPoi.booToInt",
+    "booToInt3": "modSetPoi.opeModSel.booToInt3",
+    "booToInt3_false": "modSetPoi.opeModSel.booToInt3",
+    "booToInt3_true": "modSetPoi.opeModSel.booToInt3",
+    "booToIntCoo": "fcuPlaReq.booToIntCoo",
+    "booToIntCoo_false": "fcuPlaReq.booToIntCoo",
+    "booToIntCoo_true": "fcuPlaReq.booToIntCoo",
+    "booToIntHea": "fcuPlaReq.booToIntHea",
+    "booToIntHea_false": "fcuPlaReq.booToIntHea",
+    "booToIntHea_true": "fcuPlaReq.booToIntHea",
+    "booToInt_false": "modSetPoi.booToInt",
+    "booToInt_true": "modSetPoi.booToInt",
+    "booToRea": "fanSpe.booToRea",
+    "booToRea1": "modSetPoi.opeModSel.booToRea1",
+    "booToRea1_2": "modSetPoi.TZonSet.booToRea1",
+    "booToRea1_2_false": "modSetPoi.TZonSet.booToRea1",
+    "booToRea1_2_true": "modSetPoi.TZonSet.booToRea1",
+    "booToRea1_false": "modSetPoi.opeModSel.booToRea1",
+    "booToRea1_true": "modSetPoi.opeModSel.booToRea1",
+    "booToRea2": "modSetPoi.TZonSet.booToRea2",
+    "booToRea2_2": "TSupAir.booToRea2",
+    "booToRea2_2_false": "TSupAir.booToRea2",
+    "booToRea2_2_true": "TSupAir.booToRea2",
+    "booToRea2_false": "modSetPoi.TZonSet.booToRea2",
+    "booToRea2_true": "modSetPoi.TZonSet.booToRea2",
+    "booToRea3": "modSetPoi.opeModSel.booToRea3",
+    "booToRea3_2": "modSetPoi.TZonSet.booToRea3",
+    "booToRea3_2_false": "modSetPoi.TZonSet.booToRea3",
+    "booToRea3_2_true": "modSetPoi.TZonSet.booToRea3",
+    "booToRea3_false": "modSetPoi.opeModSel.booToRea3",
+    "booToRea3_true": "modSetPoi.opeModSel.booToRea3",
+    "booToRea4": "modSetPoi.opeModSel.booToRea4",
+    "booToRea4_2": "modSetPoi.TZonSet.booToRea4",
+    "booToRea4_2_false": "modSetPoi.TZonSet.booToRea4",
+    "booToRea4_2_true": "modSetPoi.TZonSet.booToRea4",
+    "booToRea4_false": "modSetPoi.opeModSel.booToRea4",
+    "booToRea4_true": "modSetPoi.opeModSel.booToRea4",
+    "booToRea5": "modSetPoi.TZonSet.booToRea5",
+    "booToRea5_false": "modSetPoi.TZonSet.booToRea5",
+    "booToRea5_true": "modSetPoi.TZonSet.booToRea5",
+    "booToRea6": "modSetPoi.opeModSel.booToRea6",
+    "booToRea6_2": "modSetPoi.TZonSet.booToRea6",
+    "booToRea6_2_false": "modSetPoi.TZonSet.booToRea6",
+    "booToRea6_2_true": "modSetPoi.TZonSet.booToRea6",
+    "booToRea6_false": "modSetPoi.opeModSel.booToRea6",
+    "booToRea6_true": "modSetPoi.opeModSel.booToRea6",
+    "booToRea7": "modSetPoi.TZonSet.booToRea7",
+    "booToRea7_false": "modSetPoi.TZonSet.booToRea7",
+    "booToRea7_true": "modSetPoi.TZonSet.booToRea7",
+    "booToRea_2": "modSetPoi.opeModSel.booToRea",
+    "booToRea_2_false": "modSetPoi.opeModSel.booToRea",
+    "booToRea_2_true": "modSetPoi.opeModSel.booToRea",
+    "booToRea_3": "modSetPoi.TZonSet.booToRea",
+    "booToRea_3_false": "modSetPoi.TZonSet.booToRea",
+    "booToRea_3_true": "modSetPoi.TZonSet.booToRea",
+    "booToRea_4": "modSetPoi.zonSta.booToRea",
+    "booToRea_4_false": "modSetPoi.zonSta.booToRea",
+    "booToRea_4_true": "modSetPoi.zonSta.booToRea",
+    "booToRea_false": "fanSpe.booToRea",
+    "booToRea_true": "fanSpe.booToRea",
+    "chiWatRes1": "fcuPlaReq.chiWatRes1",
+    "chiWatRes2": "fcuPlaReq.chiWatRes2",
+    "chiWatRes3": "fcuPlaReq.chiWatRes3",
+    "colZon": "modSetPoi.colZon",
+    "colZon_false": "modSetPoi.colZon",
+    "colZon_true": "modSetPoi.colZon",
+    "con": "modSetPoi.TZonSet.con",
+    "con1": "modSetPoi.TZonSet.con1",
+    "con2": "modSetPoi.TZonSet.con2",
+    "conDeaFanSpe": "fanSpe.conDeaFanSpe",
+    "conFal": "modSetPoi.TZonSet.conFal",
+    "conInt": "modSetPoi.TZonSet.conInt",
+    "conInt1": "modSetPoi.TZonSet.conInt1",
+    "conInt2": "modSetPoi.TZonSet.conInt2",
+    "conInt3": "modSetPoi.TZonSet.conInt3",
+    "conInt4": "modSetPoi.TZonSet.conInt4",
+    "conInt5": "modSetPoi.TZonSet.conInt5",
+    "conInt6": "modSetPoi.TZonSet.conInt6",
+    "conInt7": "modSetPoi.TZonSet.conInt7",
+    "conInt8": "modSetPoi.TZonSet.conInt8",
+    "conPIDCoo": "TSupAir.conPIDCoo",
+    "conPIDCoo_reset_false": "TSupAir.conPIDCoo",
+    "conPIDHea": "TSupAir.conPIDHea",
+    "conPIDHea_reset_false": "TSupAir.conPIDHea",
+    "conTSupSet_max": "TSupAir.conTSupSet_max",
+    "conTSupSet_min": "TSupAir.conTSupSet_min",
+    "conTru": "modSetPoi.TZonSet.conTru",
+    "conUCoo_max": "TSupAir.conUCoo_max",
+    "conUCoo_min": "TSupAir.conUCoo_min",
+    "conUHea_max": "TSupAir.conUHea_max",
+    "conUHea_min": "TSupAir.conUHea_min",
+    "conZer": "TSupAir.conZer",
+    "con_2": "modSetPoi.zonSta.con",
+    "concooSpe_max": "fanSpe.concooSpe_max",
+    "concooSpe_min": "fanSpe.concooSpe_min",
+    "conheaSpe_max": "fanSpe.conheaSpe_max",
+    "conheaSpe_min": "fanSpe.conheaSpe_min",
+    "conuCoo_max": "fanSpe.conuCoo_max",
+    "conuCoo_min": "fanSpe.conuCoo_min",
+    "conuHea_max": "fanSpe.conuHea_max",
+    "conuHea_min": "fanSpe.conuHea_min",
+    "cooPI": "cooPI",
+    "cooSetAdjCon": "modSetPoi.TZonSet.cooSetAdjCon",
+    "cooSetFre": "modSetPoi.TZonSet.cooSetFre",
+    "cooSetInc": "modSetPoi.TZonSet.cooSetInc",
+    "cooSetInc_parameter": "modSetPoi.TZonSet.cooSetInc",
+    "cooSetLim_clamp": "modSetPoi.TZonSet.cooSetLim__lower",
+    "cooSetLim_clamp_2": "modSetPoi.TZonSet.cooSetLim__upper",
+    "cooSetLim_maximum": "modSetPoi.TZonSet.cooSetLim__maximum",
+    "cooSetLim_minimum": "modSetPoi.TZonSet.cooSetLim__minimum",
+    "cooSetSam": "modSetPoi.TZonSet.cooSetSam",
+    "cooSetWinOpe": "modSetPoi.TZonSet.cooSetWinOpe",
+    "cooSupTemDif": "fcuPlaReq.cooSupTemDif",
+    "corCooDowTim": "modSetPoi.opeModSel.corCooDowTim",
+    "corWarUpTim": "modSetPoi.opeModSel.corWarUpTim",
+    "edg": "modSetPoi.opeModSel.edg",
+    "edg1": "modSetPoi.opeModSel.edg1",
+    "edg1_2": "modSetPoi.TZonSet.edg1",
+    "edg_2": "modSetPoi.TZonSet.edg",
+    "endFreProTem": "modSetPoi.opeModSel.endFreProTem",
+    "endSetBac": "modSetPoi.opeModSel.endSetBac",
+    "endSetUp": "modSetPoi.opeModSel.endSetUp",
+    "freProSetBacMod": "modSetPoi.opeModSel.freProSetBacMod",
+    "gre": "modSetPoi.TZonSet.gre",
+    "gre2": "modSetPoi.TZonSet.gre2",
+    "greThr": "fcuPlaReq.greThr",
+    "greThr1": "fcuPlaReq.greThr1",
+    "greThr1_threshold": "fcuPlaReq.greThr1",
+    "greThr3": "fcuPlaReq.greThr3",
+    "greThr3_threshold": "fcuPlaReq.greThr3",
+    "greThr4": "fcuPlaReq.greThr4",
+    "greThr4_threshold": "fcuPlaReq.greThr4",
+    "greThr_threshold": "fcuPlaReq.greThr",
+    "have_occSenCon": "modSetPoi.TZonSet.have_occSenCon",
+    "heaPI": "heaPI",
+    "heaSetAdjCon": "modSetPoi.TZonSet.heaSetAdjCon",
+    "heaSetDec": "modSetPoi.TZonSet.heaSetDec",
+    "heaSetDec_parameter": "modSetPoi.TZonSet.heaSetDec",
+    "heaSetFre": "modSetPoi.TZonSet.heaSetFre",
+    "heaSetLim_clamp": "modSetPoi.TZonSet.heaSetLim__lower",
+    "heaSetLim_clamp_2": "modSetPoi.TZonSet.heaSetLim__upper",
+    "heaSetLim_maximum": "modSetPoi.TZonSet.heaSetLim__maximum",
+    "heaSetLim_minimum": "modSetPoi.TZonSet.heaSetLim__minimum",
+    "heaSetSam": "modSetPoi.TZonSet.heaSetSam",
+    "heaSetWinOpe": "modSetPoi.TZonSet.heaSetWinOpe",
+    "heaSupTemDif": "fcuPlaReq.heaSupTemDif",
+    "hotWatRes1": "fcuPlaReq.hotWatRes1",
+    "hotWatRes2": "fcuPlaReq.hotWatRes2",
+    "hotWatRes3": "fcuPlaReq.hotWatRes3",
+    "hotZon": "modSetPoi.hotZon",
+    "hotZon_false": "modSetPoi.hotZon",
+    "hotZon_true": "modSetPoi.hotZon",
+    "hys": "fcuPlaReq.hys",
+    "hys1": "fcuPlaReq.hys1",
+    "hys10": "modSetPoi.opeModSel.hys10",
+    "hys1_2": "modSetPoi.zonSta.hys1",
+    "hys2": "fcuPlaReq.hys2",
+    "hys2_2": "modSetPoi.opeModSel.hys2",
+    "hys2_3": "modSetPoi.zonSta.hys2",
+    "hys3": "fcuPlaReq.hys3",
+    "hys3_2": "modSetPoi.opeModSel.hys3",
+    "hys3_3": "modSetPoi.zonSta.hys3",
+    "hys4": "modSetPoi.opeModSel.hys4",
+    "hys4_2": "modSetPoi.zonSta.hys4",
+    "hys5": "modSetPoi.opeModSel.hys5",
+    "hys5_2": "modSetPoi.zonSta.hys5",
+    "hys9": "modSetPoi.opeModSel.hys9",
+    "hysDeaCoo": "fanSpe.hysDeaCoo",
+    "hysDeaCoo_2": "TSupAir.hysDeaCoo",
+    "hysDeaHea": "fanSpe.hysDeaHea",
+    "hysDeaHea_2": "TSupAir.hysDeaHea",
+    "hysFanCoo": "fcuPlaReq.hysFanCoo",
+    "hysFanHea": "fcuPlaReq.hysFanHea",
+    "hys_2": "modSetPoi.zonSta.hys",
+    "intEqu": "modSetPoi.TZonSet.intEqu",
+    "intEqu1": "modSetPoi.TZonSet.intEqu1",
+    "intEqu2": "modSetPoi.TZonSet.intEqu2",
+    "intEqu3": "modSetPoi.TZonSet.intEqu3",
+    "intEqu4": "modSetPoi.TZonSet.intEqu4",
+    "intEqu5": "modSetPoi.TZonSet.intEqu5",
+    "intEqu6": "modSetPoi.TZonSet.intEqu6",
+    "intEqu7": "modSetPoi.TZonSet.intEqu7",
+    "intEqu8": "modSetPoi.TZonSet.intEqu8",
+    "intGreThr": "modSetPoi.opeModSel.intGreThr",
+    "intGreThr1": "modSetPoi.opeModSel.intGreThr1",
+    "intGreThr1_2": "modSetPoi.TZonSet.intGreThr1",
+    "intGreThr1_2_threshold": "modSetPoi.TZonSet.intGreThr1",
+    "intGreThr1_threshold": "modSetPoi.opeModSel.intGreThr1",
+    "intGreThr2": "modSetPoi.opeModSel.intGreThr2",
+    "intGreThr2_threshold": "modSetPoi.opeModSel.intGreThr2",
+    "intGreThr_2": "modSetPoi.TZonSet.intGreThr",
+    "intGreThr_2_threshold": "modSetPoi.TZonSet.intGreThr",
+    "intGreThr_threshold": "modSetPoi.opeModSel.intGreThr",
+    "intSwi1": "fcuPlaReq.intSwi1",
+    "intSwi3": "fcuPlaReq.intSwi3",
+    "isOcc": "isOcc",
+    "isUnOcc": "fanSpe.isUnOcc",
+    "isUnOcc_2": "isUnOcc",
+    "lat": "modSetPoi.opeModSel.lat",
+    "lat1": "modSetPoi.opeModSel.lat1",
+    "lat2": "modSetPoi.opeModSel.lat2",
+    "les": "modSetPoi.TZonSet.les",
+    "linCooFanSpe": "fanSpe.linCooFanSpe",
+    "linCooFanSpe_delta_f": "fanSpe.linCooFanSpe",
+    "linCooFanSpe_delta_x": "fanSpe.linCooFanSpe",
+    "linCooFanSpe_intercept": "fanSpe.linCooFanSpe",
+    "linCooFanSpe_lower_limit": "fanSpe.linCooFanSpe",
+    "linCooFanSpe_result": "fanSpe.linCooFanSpe",
+    "linCooFanSpe_scaled": "fanSpe.linCooFanSpe",
+    "linCooFanSpe_slope": "fanSpe.linCooFanSpe",
+    "linCooFanSpe_slope_x2": "fanSpe.linCooFanSpe",
+    "linCooFanSpe_upper_limit": "fanSpe.linCooFanSpe",
+    "linHeaFanSpe": "fanSpe.linHeaFanSpe",
+    "linHeaFanSpe_delta_f": "fanSpe.linHeaFanSpe",
+    "linHeaFanSpe_delta_x": "fanSpe.linHeaFanSpe",
+    "linHeaFanSpe_intercept": "fanSpe.linHeaFanSpe",
+    "linHeaFanSpe_lower_limit": "fanSpe.linHeaFanSpe",
+    "linHeaFanSpe_result": "fanSpe.linHeaFanSpe",
+    "linHeaFanSpe_scaled": "fanSpe.linHeaFanSpe",
+    "linHeaFanSpe_slope": "fanSpe.linHeaFanSpe",
+    "linHeaFanSpe_slope_x2": "fanSpe.linHeaFanSpe",
+    "linHeaFanSpe_upper_limit": "fanSpe.linHeaFanSpe",
+    "linTCooSupAir": "TSupAir.linTCooSupAir",
+    "linTCooSupAir_delta_f": "TSupAir.linTCooSupAir",
+    "linTCooSupAir_delta_x": "TSupAir.linTCooSupAir",
+    "linTCooSupAir_intercept": "TSupAir.linTCooSupAir",
+    "linTCooSupAir_lower_limit": "TSupAir.linTCooSupAir",
+    "linTCooSupAir_result": "TSupAir.linTCooSupAir",
+    "linTCooSupAir_scaled": "TSupAir.linTCooSupAir",
+    "linTCooSupAir_slope": "TSupAir.linTCooSupAir",
+    "linTCooSupAir_slope_x2": "TSupAir.linTCooSupAir",
+    "linTCooSupAir_upper_limit": "TSupAir.linTCooSupAir",
+    "linTHeaSupAir": "TSupAir.linTHeaSupAir",
+    "linTHeaSupAir_delta_f": "TSupAir.linTHeaSupAir",
+    "linTHeaSupAir_delta_x": "TSupAir.linTHeaSupAir",
+    "linTHeaSupAir_intercept": "TSupAir.linTHeaSupAir",
+    "linTHeaSupAir_lower_limit": "TSupAir.linTHeaSupAir",
+    "linTHeaSupAir_result": "TSupAir.linTHeaSupAir",
+    "linTHeaSupAir_scaled": "TSupAir.linTHeaSupAir",
+    "linTHeaSupAir_slope": "TSupAir.linTHeaSupAir",
+    "linTHeaSupAir_slope_x2": "TSupAir.linTHeaSupAir",
+    "linTHeaSupAir_upper_limit": "TSupAir.linTHeaSupAir",
+    "maxWarCooTime": "modSetPoi.opeModSel.maxWarCooTime",
+    "mul2": "TSupAir.mul2",
+    "mul3": "TSupAir.mul3",
+    "mulDeaSpe": "fanSpe.mulDeaSpe",
+    "mulFanSpe": "fanSpe.mulFanSpe",
+    "mulIntCoo": "fcuPlaReq.mulIntCoo",
+    "mulIntHea": "fcuPlaReq.mulIntHea",
+    "not1": "modSetPoi.opeModSel.not1",
+    "not1_2": "modSetPoi.TZonSet.not1",
+    "not1_3": "modSetPoi.zonSta.not1",
+    "not2": "modSetPoi.opeModSel.not2",
+    "not2_2": "modSetPoi.TZonSet.not2",
+    "not3": "modSetPoi.TZonSet.not3",
+    "not4": "modSetPoi.TZonSet.not4",
+    "not5": "modSetPoi.opeModSel.not5",
+    "not5_2": "modSetPoi.TZonSet.not5",
+    "notOcc": "modSetPoi.opeModSel.notOcc",
+    "notOcc_threshold": "modSetPoi.opeModSel.notOcc",
+    "notUno": "fanSpe.notUno",
+    "occMod": "modSetPoi.opeModSel.occMod",
+    "occModInd": "modSetPoi.opeModSel.occModInd",
+    "occSta": "modSetPoi.occSta",
+    "one": "fcuPlaReq.one",
+    "or1": "modSetPoi.opeModSel.or1",
+    "or10": "modSetPoi.opeModSel.or10",
+    "or1_2": "modSetPoi.TZonSet.or1",
+    "or1_3": "modSetPoi.zonSta.or1",
+    "or2": "modSetPoi.opeModSel.or2",
+    "or2_2": "modSetPoi.TZonSet.or2",
+    "or2_3": "modSetPoi.zonSta.or2",
+    "or4": "modSetPoi.opeModSel.or4",
+    "or4_2": "modSetPoi.TZonSet.or4",
+    "or5": "modSetPoi.opeModSel.or5",
+    "or5_2": "modSetPoi.TZonSet.or5",
+    "or6": "modSetPoi.opeModSel.or6",
+    "or6_2": "modSetPoi.TZonSet.or6",
+    "or7": "modSetPoi.opeModSel.or7",
+    "or7_2": "modSetPoi.TZonSet.or7",
+    "or8": "modSetPoi.opeModSel.or8",
+    "or8_2": "modSetPoi.TZonSet.or8",
+    "or9": "modSetPoi.opeModSel.or9",
+    "or9_2": "modSetPoi.TZonSet.or9",
+    "pro": "modSetPoi.TZonSet.pro",
+    "pro1": "modSetPoi.TZonSet.pro1",
+    "pro1_2": "modSetPoi.zonSta.pro1",
+    "pro2": "modSetPoi.TZonSet.pro2",
+    "pro3": "modSetPoi.TZonSet.pro3",
+    "pro4": "modSetPoi.TZonSet.pro4",
+    "pro5": "modSetPoi.TZonSet.pro5",
+    "pro6": "modSetPoi.TZonSet.pro6",
+    "pro7": "modSetPoi.TZonSet.pro7",
+    "pro_2": "modSetPoi.zonSta.pro",
+    "reaToInt": "modSetPoi.TZonSet.reaToInt",
+    "setBacMod": "modSetPoi.opeModSel.setBacMod",
+    "setBacMod1": "modSetPoi.opeModSel.setBacMod1",
+    "setBacMod2": "modSetPoi.opeModSel.setBacMod2",
+    "setUpMod": "modSetPoi.opeModSel.setUpMod",
+    "sub": "modSetPoi.zonSta.sub",
+    "sub1": "modSetPoi.opeModSel.sub1",
+    "sub1_2": "modSetPoi.zonSta.sub1",
+    "sub2": "modSetPoi.opeModSel.sub2",
+    "sub2_2": "modSetPoi.zonSta.sub2",
+    "sub3": "modSetPoi.opeModSel.sub3",
+    "sub3_2": "modSetPoi.zonSta.sub3",
+    "sub4": "modSetPoi.opeModSel.sub4",
+    "sub4_2": "modSetPoi.zonSta.sub4",
+    "sub5": "modSetPoi.opeModSel.sub5",
+    "sub5_2": "modSetPoi.zonSta.sub5",
+    "sub6": "modSetPoi.opeModSel.sub6",
+    "swi": "modSetPoi.opeModSel.swi",
+    "swi1": "modSetPoi.opeModSel.swi1",
+    "swi10": "modSetPoi.TZonSet.swi10",
+    "swi11": "modSetPoi.TZonSet.swi11",
+    "swi12": "modSetPoi.TZonSet.swi12",
+    "swi13": "modSetPoi.TZonSet.swi13",
+    "swi14": "modSetPoi.TZonSet.swi14",
+    "swi15": "modSetPoi.TZonSet.swi15",
+    "swi16": "modSetPoi.TZonSet.swi16",
+    "swi17": "modSetPoi.TZonSet.swi17",
+    "swi18": "modSetPoi.TZonSet.swi18",
+    "swi19": "modSetPoi.TZonSet.swi19",
+    "swi1_2": "modSetPoi.TZonSet.swi1",
+    "swi2": "modSetPoi.opeModSel.swi2",
+    "swi20": "modSetPoi.TZonSet.swi20",
+    "swi21": "modSetPoi.TZonSet.swi21",
+    "swi22": "modSetPoi.TZonSet.swi22",
+    "swi2_2": "modSetPoi.TZonSet.swi2",
+    "swi3": "modSetPoi.opeModSel.swi3",
+    "swi3_2": "modSetPoi.TZonSet.swi3",
+    "swi4": "modSetPoi.opeModSel.swi4",
+    "swi4_2": "modSetPoi.TZonSet.swi4",
+    "swi5": "modSetPoi.opeModSel.swi5",
+    "swi6": "modSetPoi.TZonSet.swi6",
+    "swi7": "modSetPoi.TZonSet.swi7",
+    "swi8": "modSetPoi.TZonSet.swi8",
+    "swi9": "modSetPoi.TZonSet.swi9",
+    "swiCooCoi": "TSupAir.swiCooCoi",
+    "swiDeaCoo": "fanSpe.swiDeaCoo",
+    "swiDeaCoo_2": "TSupAir.swiDeaCoo",
+    "swiDeaHea": "fanSpe.swiDeaHea",
+    "swiDeaHea_2": "TSupAir.swiDeaHea",
+    "swiFanPro": "fanSpe.swiFanPro",
+    "swiHeaCoi": "TSupAir.swiHeaCoi",
+    "swi_2": "modSetPoi.TZonSet.swi",
+    "thr": "fcuPlaReq.thr",
+    "tim": "modSetPoi.TZonSet.tim",
+    "totZon": "modSetPoi.opeModSel.totZon",
+    "truDel": "fcuPlaReq.truDel",
+    "truDel1": "fcuPlaReq.truDel1",
+    "truDel2": "fcuPlaReq.truDel2",
+    "truDel3": "fcuPlaReq.truDel3",
+    "truFalHol": "modSetPoi.opeModSel.truFalHol",
+    "truFalHol1": "modSetPoi.opeModSel.truFalHol1",
+    "truHol": "modSetPoi.TZonSet.truHol",
+    "two": "fcuPlaReq.two",
+    "unOccMod": "fanSpe.unOccMod",
+    "unOccMod_2": "unOccMod",
+    "unoPerInd": "modSetPoi.opeModSel.unoPerInd",
+    "win": "win",
+    "winOpe": "modSetPoi.opeModSel.winOpe",
+    "winOpe_2": "modSetPoi.winOpe",
+    "winSenCon": "modSetPoi.TZonSet.winSenCon",
+    "winSta": "modSetPoi.winSta",
+    "zer": "fcuPlaReq.zer"
+   },
+   "coverage": {
+    "boundary_inputs": 14,
+    "boundary_outputs": 11,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger": 6,
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal": 16,
+     "Buildings.Controls.OBC.CDL.Conversions.RealToInteger": 7,
+     "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler": 4,
+     "Buildings.Controls.OBC.CDL.Integers.Add": 8,
+     "Buildings.Controls.OBC.CDL.Integers.Equal": 13,
+     "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold": 6,
+     "Buildings.Controls.OBC.CDL.Integers.Multiply": 2,
+     "Buildings.Controls.OBC.CDL.Integers.Sources.Constant": 16,
+     "Buildings.Controls.OBC.CDL.Integers.Switch": 8,
+     "Buildings.Controls.OBC.CDL.Logical.And": 11,
+     "Buildings.Controls.OBC.CDL.Logical.Edge": 6,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 12,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 19,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 11,
+     "Buildings.Controls.OBC.CDL.Logical.Timer": 1,
+     "Buildings.Controls.OBC.CDL.Logical.TrueDelay": 4,
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 8,
+     "Buildings.Controls.OBC.CDL.Reals.AddParameter": 9,
+     "Buildings.Controls.OBC.CDL.Reals.Greater": 2,
+     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 4,
+     "Buildings.Controls.OBC.CDL.Reals.Hysteresis": 22,
+     "Buildings.Controls.OBC.CDL.Reals.Less": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Line": 4,
+     "Buildings.Controls.OBC.CDL.Reals.Max": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Min": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Multiply": 14,
+     "Buildings.Controls.OBC.CDL.Reals.PID": 2,
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 31,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 14,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 37,
+     "Buildings.Controls.OBC.CDL.Utilities.Assert": 2
+    },
+    "component_count": 312,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [
+     "truDel: delayOnInit=false is not equivalent to the Niagara BooleanDelay initialization used by this lowering",
+     "truDel1: delayOnInit=false is not equivalent to the Niagara BooleanDelay initialization used by this lowering",
+     "truDel2: delayOnInit=false is not equivalent to the Niagara BooleanDelay initialization used by this lowering",
+     "truDel3: delayOnInit=false is not equivalent to the Niagara BooleanDelay initialization used by this lowering"
+    ],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler",
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Timer",
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold",
+     "Buildings.Controls.OBC.CDL.Reals.Hysteresis",
+     "Buildings.Controls.OBC.CDL.Reals.PID",
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset",
+     "Buildings.Controls.OBC.CDL.Utilities.Assert"
+    ],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller",
+    "root_label": "Controller",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "33836355aabbcac72d0e31604f042cfc67f704ba141092ea9886135fe8a6bee9",
+    "supported_class_count": 312,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "33836355aabbcac72d0e31604f042cfc67f704ba141092ea9886135fe8a6bee9"
+  },
+  "name": "Controller"
+ }
+}

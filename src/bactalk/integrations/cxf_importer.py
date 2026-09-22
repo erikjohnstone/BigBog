@@ -26,6 +26,8 @@ _BINARY: dict[str, BlockKind] = {
     "Buildings.Controls.OBC.CDL.Reals.Min": BlockKind.MINIMUM,
     "Buildings.Controls.OBC.CDL.Reals.Max": BlockKind.MAXIMUM,
     "Buildings.Controls.OBC.CDL.Reals.Greater": BlockKind.GREATER_THAN,
+    "Buildings.Controls.OBC.CDL.Reals.Average": BlockKind.AVERAGE,
+    "Buildings.Controls.OBC.CDL.Integers.LessEqual": BlockKind.LESS_THAN_OR_EQUAL,
     "Buildings.Controls.OBC.CDL.Reals.Less": BlockKind.LESS_THAN,
     "Buildings.Controls.OBC.CDL.Logical.And": BlockKind.AND,
     "Buildings.Controls.OBC.CDL.Logical.Or": BlockKind.OR,
@@ -122,6 +124,7 @@ PLANT_INTEGER_REDUCTION_CLASSES = frozenset(
 )
 SUPPORTED_CLASSES = frozenset(
     {
+        "Buildings.Controls.OBC.CDL.Reals.LimitSlewRate",
         *_BINARY,
         *_UNARY,
         *_THRESHOLD,
@@ -264,6 +267,9 @@ INSTANCE_SCHEMAS: dict[str, dict[str, tuple[str, ...]]] = {
     TRUE_FALSE_HOLD_CLASS: _schema(("u",), parameters=("trueHoldDuration", "falseHoldDuration")),
     ASSERT_WARNING_CLASS: _schema(("u",), outputs=(), parameters=("message",)),
     "Buildings.Controls.OBC.CDL.Reals.MovingAverage": _schema(("u",), parameters=("delta",)),
+    "Buildings.Controls.OBC.CDL.Reals.LimitSlewRate": _schema(
+        ("u",), parameters=("raisingSlewRate", "fallingSlewRate", "Td", "enable")
+    ),
     "Buildings.Controls.OBC.CDL.Discrete.Sampler": _schema(("u",), parameters=("samplePeriod",)),
     "Buildings.Controls.OBC.CDL.Discrete.FirstOrderHold": _schema(
         ("u",), parameters=("samplePeriod",)
@@ -1302,6 +1308,28 @@ class CxfImporter:
                         "falseHoldDuration",
                         true_hold,
                     ),
+                }
+            elif class_name == "Buildings.Controls.OBC.CDL.Reals.LimitSlewRate":
+                kind = BlockKind.NUMERIC_LIMIT_SLEW_RATE
+                slot_map = {"u": "in"}
+                raising = parameters.get("raisingSlewRate")
+                if isinstance(raising, bool) or not isinstance(raising, (int, float)):
+                    raise CxfImportError(f"{label} requires numeric raisingSlewRate")
+                falling = parameters.get("fallingSlewRate", -float(raising))
+                td = parameters.get("Td", float(raising) * 10.0)
+                enable = parameters.get("enable", True)
+                if isinstance(falling, bool) or not isinstance(falling, (int, float)):
+                    raise CxfImportError(f"{label} fallingSlewRate must be numeric")
+                if isinstance(td, bool) or not isinstance(td, (int, float)):
+                    raise CxfImportError(f"{label} Td must be numeric")
+                if not isinstance(enable, bool):
+                    raise CxfImportError(f"{label} enable must be Boolean")
+                config = {
+                    "raising_slew_rate": float(raising),
+                    "falling_slew_rate": float(falling),
+                    "td_seconds": float(td),
+                    "enable": enable,
+                    "semantic_contract": "CDL.Reals.LimitSlewRate",
                 }
             elif class_name == "Buildings.Controls.OBC.CDL.Reals.MovingAverage":
                 kind = BlockKind.MOVING_AVERAGE

@@ -847,6 +847,7 @@ def _scalarize_filter_reduction_network(
             new_component_ids.append(scalar_id)
             expanded_component_count += 1
 
+    external_edges: list[tuple[str, str]] = []
     for node in graph:
         source = node.get("@id")
         if not isinstance(source, str):
@@ -863,6 +864,22 @@ def _scalarize_filter_reduction_network(
             )
             if target_selection is None:
                 if isinstance(target, str) and target in inactive_endpoints:
+                    continue
+                if (
+                    isinstance(target, str)
+                    and target not in by_id
+                    and not target.startswith(str(root["@id"]) + ".")
+                ):
+                    # An edge leaving this composite (a boundary port wired to its
+                    # parent's connector) belongs to the parent's document; the
+                    # composite assembler splices it. It is carried through unchanged;
+                    # only a scalar port can carry it.
+                    source_shape, source_map = source_selection
+                    if source_shape:
+                        raise CxfArrayScalarizationError(
+                            f"array port {source} is wired outside its composite to {target}"
+                        )
+                    external_edges.append((source_map[()], target))
                     continue
                 raise CxfArrayScalarizationError(
                     f"connection from {source} references unsupported array endpoint {target}"
@@ -892,6 +909,9 @@ def _scalarize_filter_reduction_network(
             )
         _set_refs(node_by_id[sources[0]], "S231:isConnectedTo", sinks)
         connected_set_count += 1
+    for source_id, target in external_edges:
+        node = node_by_id[source_id]
+        _set_refs(node, "S231:isConnectedTo", [*_refs(node, "S231:isConnectedTo"), target])
 
     scalar_root = copy.deepcopy(root)
     scalar_root.pop("S231:isConnectedTo", None)

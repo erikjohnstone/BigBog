@@ -1,0 +1,1368 @@
+{
+ "configuration_id": "chw-plant-reset",
+ "controller_id": "Plants.Chillers.SetPoints.ChilledWaterPlantReset",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterPlantReset",
+  "inputs": [
+   {
+    "description": "Chilled water supply temperature setpoint reset request",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterPlantReset.TChiWatSupResReq",
+    "label": "TChiWatSupResReq",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "Plant staging status that indicates if the plant is in the staging process",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterPlantReset.chaPro",
+    "label": "chaPro",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Chilled water pump status",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterPlantReset.uChiWatPum__1",
+    "label": "uChiWatPum__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Chilled water pump status",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterPlantReset.uChiWatPum__2",
+    "label": "uChiWatPum__2",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Chilled water plant reset",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterPlantReset.yChiWatPlaRes",
+    "label": "yChiWatPlaRes",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 8
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {},
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TChiWatSupResReq",
+   "name": "TChiWatSupResReq",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterPlantReset.TChiWatSupResReq",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "chaPro",
+   "name": "chaPro",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterPlantReset.chaPro",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uChiWatPum__1",
+   "name": "uChiWatPum__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterPlantReset.uChiWatPum__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uChiWatPum__2",
+   "name": "uChiWatPum__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterPlantReset.uChiWatPum__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yChiWatPlaRes",
+   "name": "yChiWatPlaRes",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterPlantReset.yChiWatPlaRes",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Plants/Chillers/SetPoints/ChilledWaterPlantReset.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "a3cfdde4e2fa1605f351875c2199b6aafaee7fe0",
+  "source_sha256": "8e031ddbe369d748bf5913543002c783636c64d0d1b41e6f184c98a93a418397",
+  "tag": "master after v13.0.0 (2026-09-16)"
+ },
+ "translator": {
+  "cxf_source_sha256": "844ea1517e4cbe7fffc6a7e54ded3e64f8710e9342219bdae3ec336de7183230",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "chaPro",
+    "kind": "boolean_input",
+    "label": "chaPro",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TChiWatSupResReq",
+    "kind": "numeric_input",
+    "label": "TChiWatSupResReq",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uChiWatPum__1",
+    "kind": "boolean_input",
+    "label": "uChiWatPum__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uChiWatPum__2",
+    "kind": "boolean_input",
+    "label": "uChiWatPum__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yChiWatPlaRes",
+    "kind": "numeric_output",
+    "label": "yChiWatPlaRes",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "con1",
+    "kind": "numeric_const",
+    "label": "con1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "mulAnd_fold_2",
+    "kind": "and",
+    "label": "mulAnd fold 2",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "not1__1",
+    "kind": "not",
+    "label": "not1__1",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "not1__2",
+    "kind": "not",
+    "label": "not1__2",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "not2",
+    "kind": "not",
+    "label": "not2",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "swi1",
+    "kind": "numeric_switch",
+    "label": "swi1",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "abs_zero",
+    "kind": "numeric_const",
+    "label": "abs zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "abs_nonnegative",
+    "kind": "greater_than_or_equal",
+    "label": "abs nonnegative",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "abs_negate",
+    "kind": "subtract",
+    "label": "abs negate",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "abs_select",
+    "kind": "numeric_switch",
+    "label": "abs",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "abs1_zero",
+    "kind": "numeric_const",
+    "label": "abs1 zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "abs1_nonnegative",
+    "kind": "greater_than_or_equal",
+    "label": "abs1 nonnegative",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "abs1_negate",
+    "kind": "subtract",
+    "label": "abs1 negate",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "abs1_select",
+    "kind": "numeric_switch",
+    "label": "abs1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "add1",
+    "kind": "add",
+    "label": "add1",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "add2",
+    "kind": "add",
+    "label": "add2",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "and2",
+    "kind": "and",
+    "label": "and2",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {
+     "message": "Trim amount triAmo and respond amount resAmo must have opposite signs.",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "assMes",
+    "kind": "boolean_assert_warning",
+    "label": "assMes",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "message": "Respond amount resAmo and maximum respond amount maxRes must have same sign.",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "assMes2",
+    "kind": "boolean_assert_warning",
+    "label": "assMes2",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "difReqIgnReq",
+    "kind": "subtract",
+    "label": "difReqIgnReq",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": -1.0
+    },
+    "id": "gai_parameter",
+    "kind": "numeric_const",
+    "label": "gai parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "gai",
+    "kind": "multiply",
+    "label": "gai",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "greThr_threshold",
+    "kind": "numeric_const",
+    "label": "greThr threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greThr",
+    "kind": "greater_than",
+    "label": "greThr",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "greThr1_threshold",
+    "kind": "numeric_const",
+    "label": "greThr1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greThr1",
+    "kind": "greater_than",
+    "label": "greThr1",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "greThr2_threshold",
+    "kind": "numeric_const",
+    "label": "greThr2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greThr2",
+    "kind": "greater_than",
+    "label": "greThr2",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "iniSetCon",
+    "kind": "numeric_const",
+    "label": "iniSetCon",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intToRea_zero",
+    "kind": "numeric_const",
+    "label": "intToRea zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intToRea",
+    "kind": "add",
+    "label": "intToRea",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat",
+    "kind": "boolean_set_reset",
+    "label": "lat",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "lesThr1_threshold",
+    "kind": "numeric_const",
+    "label": "lesThr1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lesThr1",
+    "kind": "less_than",
+    "label": "lesThr1",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "maxInp",
+    "kind": "maximum",
+    "label": "maxInp",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 0.07
+    },
+    "id": "maxResCon",
+    "kind": "numeric_const",
+    "label": "maxResCon",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "maxSetCon",
+    "kind": "numeric_const",
+    "label": "maxSetCon",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "min1",
+    "kind": "minimum",
+    "label": "min1",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "minInp",
+    "kind": "minimum",
+    "label": "minInp",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "minSetCon",
+    "kind": "numeric_const",
+    "label": "minSetCon",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "netRes",
+    "kind": "numeric_switch",
+    "label": "netRes",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "not1",
+    "kind": "not",
+    "label": "not1",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "notHol",
+    "kind": "not",
+    "label": "notHol",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "notHolAndTic",
+    "kind": "and",
+    "label": "notHolAndTic",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "numIgnReqCon",
+    "kind": "numeric_const",
+    "label": "numIgnReqCon",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "pro",
+    "kind": "multiply",
+    "label": "pro",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "pro1",
+    "kind": "multiply",
+    "label": "pro1",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "pro2",
+    "kind": "multiply",
+    "label": "pro2",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.03
+    },
+    "id": "resAmoCon",
+    "kind": "numeric_const",
+    "label": "resAmoCon",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {
+     "sample_period_seconds": 300.0,
+     "semantic_contract": "CDL.Discrete.Sampler"
+    },
+    "id": "sampler",
+    "kind": "numeric_sampler",
+    "label": "sampler",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {
+     "period_seconds": 300.0,
+     "semantic_contract": "CDL.Logical.Sources.SampleTrigger",
+     "shift_seconds": 0.0
+    },
+    "id": "samTri",
+    "kind": "boolean_sample_trigger",
+    "label": "samTri",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "numeric_switch",
+    "label": "swi",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "swi1_2",
+    "kind": "numeric_switch",
+    "label": "swi1",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "swi2",
+    "kind": "numeric_switch",
+    "label": "swi2",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "swi3",
+    "kind": "numeric_switch",
+    "label": "swi3",
+    "x": 0,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "swiHol",
+    "kind": "numeric_switch",
+    "label": "swiHol",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {
+     "delay_on_init": true,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 1200.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "tim",
+    "kind": "boolean_delay",
+    "label": "tim",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": -0.02
+    },
+    "id": "triAmoCon",
+    "kind": "numeric_const",
+    "label": "triAmoCon",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {
+     "false_hold_seconds": 0.0,
+     "true_hold_seconds": 900.0
+    },
+    "id": "truHol",
+    "kind": "boolean_true_false_hold",
+    "label": "truHol",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {
+     "initial": 1.0,
+     "sample_period_seconds": 300.0,
+     "semantic_contract": "CDL.Discrete.UnitDelay"
+    },
+    "id": "uniDel",
+    "kind": "numeric_unit_delay",
+    "label": "uniDel",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zerTri",
+    "kind": "numeric_const",
+    "label": "zerTri",
+    "x": 180,
+    "y": 960
+   }
+  ],
+  "links": [
+   {
+    "source": "abs_zero",
+    "source_slot": "out",
+    "target": "abs_nonnegative",
+    "target_slot": "b"
+   },
+   {
+    "source": "abs_zero",
+    "source_slot": "out",
+    "target": "abs_negate",
+    "target_slot": "a"
+   },
+   {
+    "source": "abs_nonnegative",
+    "source_slot": "out",
+    "target": "abs_select",
+    "target_slot": "selector"
+   },
+   {
+    "source": "abs_negate",
+    "source_slot": "out",
+    "target": "abs_select",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "abs1_zero",
+    "source_slot": "out",
+    "target": "abs1_nonnegative",
+    "target_slot": "b"
+   },
+   {
+    "source": "abs1_zero",
+    "source_slot": "out",
+    "target": "abs1_negate",
+    "target_slot": "a"
+   },
+   {
+    "source": "abs1_nonnegative",
+    "source_slot": "out",
+    "target": "abs1_select",
+    "target_slot": "selector"
+   },
+   {
+    "source": "abs1_negate",
+    "source_slot": "out",
+    "target": "abs1_select",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "gai_parameter",
+    "source_slot": "out",
+    "target": "gai",
+    "target_slot": "b"
+   },
+   {
+    "source": "greThr_threshold",
+    "source_slot": "out",
+    "target": "greThr",
+    "target_slot": "b"
+   },
+   {
+    "source": "greThr1_threshold",
+    "source_slot": "out",
+    "target": "greThr1",
+    "target_slot": "b"
+   },
+   {
+    "source": "greThr2_threshold",
+    "source_slot": "out",
+    "target": "greThr2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intToRea_zero",
+    "source_slot": "out",
+    "target": "intToRea",
+    "target_slot": "b"
+   },
+   {
+    "source": "lesThr1_threshold",
+    "source_slot": "out",
+    "target": "lesThr1",
+    "target_slot": "b"
+   },
+   {
+    "source": "chaPro",
+    "source_slot": "out",
+    "target": "truHol",
+    "target_slot": "in"
+   },
+   {
+    "source": "TChiWatSupResReq",
+    "source_slot": "out",
+    "target": "intToRea",
+    "target_slot": "a"
+   },
+   {
+    "source": "uChiWatPum__1",
+    "source_slot": "out",
+    "target": "not1__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "uChiWatPum__2",
+    "source_slot": "out",
+    "target": "not1__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "con1",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "mulAnd_fold_2",
+    "source_slot": "out",
+    "target": "not2",
+    "target_slot": "in"
+   },
+   {
+    "source": "not1__1",
+    "source_slot": "out",
+    "target": "mulAnd_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "not1__2",
+    "source_slot": "out",
+    "target": "mulAnd_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "not2",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "not2",
+    "source_slot": "out",
+    "target": "not1",
+    "target_slot": "in"
+   },
+   {
+    "source": "not2",
+    "source_slot": "out",
+    "target": "tim",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi1",
+    "source_slot": "out",
+    "target": "yChiWatPlaRes",
+    "target_slot": "in"
+   },
+   {
+    "source": "abs_select",
+    "source_slot": "out",
+    "target": "pro",
+    "target_slot": "b"
+   },
+   {
+    "source": "abs1_select",
+    "source_slot": "out",
+    "target": "minInp",
+    "target_slot": "b"
+   },
+   {
+    "source": "add1",
+    "source_slot": "out",
+    "target": "min1",
+    "target_slot": "a"
+   },
+   {
+    "source": "add2",
+    "source_slot": "out",
+    "target": "netRes",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "and2",
+    "source_slot": "out",
+    "target": "netRes",
+    "target_slot": "selector"
+   },
+   {
+    "source": "difReqIgnReq",
+    "source_slot": "out",
+    "target": "greThr",
+    "target_slot": "a"
+   },
+   {
+    "source": "difReqIgnReq",
+    "source_slot": "out",
+    "target": "pro",
+    "target_slot": "a"
+   },
+   {
+    "source": "gai",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "greThr",
+    "source_slot": "out",
+    "target": "and2",
+    "target_slot": "b"
+   },
+   {
+    "source": "greThr1",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "greThr2",
+    "source_slot": "out",
+    "target": "assMes2",
+    "target_slot": "condition"
+   },
+   {
+    "source": "iniSetCon",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "iniSetCon",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "intToRea",
+    "source_slot": "out",
+    "target": "sampler",
+    "target_slot": "in"
+   },
+   {
+    "source": "lat",
+    "source_slot": "out",
+    "target": "swiHol",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lesThr1",
+    "source_slot": "out",
+    "target": "assMes",
+    "target_slot": "condition"
+   },
+   {
+    "source": "maxInp",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "maxResCon",
+    "source_slot": "out",
+    "target": "abs1_nonnegative",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxResCon",
+    "source_slot": "out",
+    "target": "abs1_negate",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxResCon",
+    "source_slot": "out",
+    "target": "abs1_select",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "maxResCon",
+    "source_slot": "out",
+    "target": "pro2",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxSetCon",
+    "source_slot": "out",
+    "target": "min1",
+    "target_slot": "b"
+   },
+   {
+    "source": "min1",
+    "source_slot": "out",
+    "target": "maxInp",
+    "target_slot": "a"
+   },
+   {
+    "source": "minInp",
+    "source_slot": "out",
+    "target": "gai",
+    "target_slot": "a"
+   },
+   {
+    "source": "minInp",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "minSetCon",
+    "source_slot": "out",
+    "target": "maxInp",
+    "target_slot": "b"
+   },
+   {
+    "source": "netRes",
+    "source_slot": "out",
+    "target": "swiHol",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "not1",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "notHol",
+    "source_slot": "out",
+    "target": "notHolAndTic",
+    "target_slot": "a"
+   },
+   {
+    "source": "notHolAndTic",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "clear"
+   },
+   {
+    "source": "numIgnReqCon",
+    "source_slot": "out",
+    "target": "difReqIgnReq",
+    "target_slot": "b"
+   },
+   {
+    "source": "pro",
+    "source_slot": "out",
+    "target": "minInp",
+    "target_slot": "a"
+   },
+   {
+    "source": "pro1",
+    "source_slot": "out",
+    "target": "lesThr1",
+    "target_slot": "a"
+   },
+   {
+    "source": "pro2",
+    "source_slot": "out",
+    "target": "greThr2",
+    "target_slot": "a"
+   },
+   {
+    "source": "resAmoCon",
+    "source_slot": "out",
+    "target": "abs_nonnegative",
+    "target_slot": "a"
+   },
+   {
+    "source": "resAmoCon",
+    "source_slot": "out",
+    "target": "abs_negate",
+    "target_slot": "b"
+   },
+   {
+    "source": "resAmoCon",
+    "source_slot": "out",
+    "target": "abs_select",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "resAmoCon",
+    "source_slot": "out",
+    "target": "greThr1",
+    "target_slot": "a"
+   },
+   {
+    "source": "resAmoCon",
+    "source_slot": "out",
+    "target": "pro1",
+    "target_slot": "b"
+   },
+   {
+    "source": "resAmoCon",
+    "source_slot": "out",
+    "target": "pro2",
+    "target_slot": "a"
+   },
+   {
+    "source": "sampler",
+    "source_slot": "out",
+    "target": "difReqIgnReq",
+    "target_slot": "a"
+   },
+   {
+    "source": "samTri",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "set"
+   },
+   {
+    "source": "samTri",
+    "source_slot": "out",
+    "target": "notHolAndTic",
+    "target_slot": "b"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi1_2",
+    "source_slot": "out",
+    "target": "netRes",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi2",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi2",
+    "source_slot": "out",
+    "target": "uniDel",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi3",
+    "source_slot": "out",
+    "target": "add2",
+    "target_slot": "b"
+   },
+   {
+    "source": "swiHol",
+    "source_slot": "out",
+    "target": "add1",
+    "target_slot": "b"
+   },
+   {
+    "source": "tim",
+    "source_slot": "out",
+    "target": "and2",
+    "target_slot": "a"
+   },
+   {
+    "source": "tim",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tim",
+    "source_slot": "out",
+    "target": "swi1_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "triAmoCon",
+    "source_slot": "out",
+    "target": "add2",
+    "target_slot": "a"
+   },
+   {
+    "source": "triAmoCon",
+    "source_slot": "out",
+    "target": "pro1",
+    "target_slot": "a"
+   },
+   {
+    "source": "triAmoCon",
+    "source_slot": "out",
+    "target": "swi1_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "truHol",
+    "source_slot": "out",
+    "target": "notHol",
+    "target_slot": "in"
+   },
+   {
+    "source": "uniDel",
+    "source_slot": "out",
+    "target": "add1",
+    "target_slot": "a"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "swiHol",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "zerTri",
+    "source_slot": "out",
+    "target": "swi1_2",
+    "target_slot": "when_false"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "abs": "triRes.abs",
+    "abs1": "triRes.abs1",
+    "abs1_negate": "triRes.abs1",
+    "abs1_nonnegative": "triRes.abs1",
+    "abs1_select": "triRes.abs1",
+    "abs1_zero": "triRes.abs1",
+    "abs_negate": "triRes.abs",
+    "abs_nonnegative": "triRes.abs",
+    "abs_select": "triRes.abs",
+    "abs_zero": "triRes.abs",
+    "add1": "triRes.add1",
+    "add2": "triRes.add2",
+    "and2": "triRes.and2",
+    "assMes": "triRes.assMes",
+    "assMes2": "triRes.assMes2",
+    "con1": "con1",
+    "difReqIgnReq": "triRes.difReqIgnReq",
+    "gai": "triRes.gai",
+    "gai_parameter": "triRes.gai",
+    "greThr": "triRes.greThr",
+    "greThr1": "triRes.greThr1",
+    "greThr1_threshold": "triRes.greThr1",
+    "greThr2": "triRes.greThr2",
+    "greThr2_threshold": "triRes.greThr2",
+    "greThr_threshold": "triRes.greThr",
+    "iniSetCon": "triRes.iniSetCon",
+    "intToRea": "triRes.intToRea",
+    "intToRea_zero": "triRes.intToRea",
+    "lat": "triRes.lat",
+    "lesThr1": "triRes.lesThr1",
+    "lesThr1_threshold": "triRes.lesThr1",
+    "maxInp": "triRes.maxInp",
+    "maxResCon": "triRes.maxResCon",
+    "maxSetCon": "triRes.maxSetCon",
+    "min1": "triRes.min1",
+    "minInp": "triRes.minInp",
+    "minSetCon": "triRes.minSetCon",
+    "mulAnd_fold_2": "mulAnd__fold_2",
+    "netRes": "triRes.netRes",
+    "not1": "triRes.not1",
+    "not1__1": "not1__1",
+    "not1__2": "not1__2",
+    "not2": "not2",
+    "notHol": "triRes.notHol",
+    "notHolAndTic": "triRes.notHolAndTic",
+    "numIgnReqCon": "triRes.numIgnReqCon",
+    "pro": "triRes.pro",
+    "pro1": "triRes.pro1",
+    "pro2": "triRes.pro2",
+    "resAmoCon": "triRes.resAmoCon",
+    "samTri": "triRes.samTri",
+    "sampler": "triRes.sampler",
+    "swi": "triRes.swi",
+    "swi1": "swi1",
+    "swi1_2": "triRes.swi1",
+    "swi2": "triRes.swi2",
+    "swi3": "triRes.swi3",
+    "swiHol": "triRes.swiHol",
+    "tim": "triRes.tim",
+    "triAmoCon": "triRes.triAmoCon",
+    "truHol": "triRes.truHol",
+    "uniDel": "triRes.uniDel",
+    "zer": "triRes.zer",
+    "zerTri": "triRes.zerTri"
+   },
+   "coverage": {
+    "boundary_inputs": 4,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal": 1,
+     "Buildings.Controls.OBC.CDL.Discrete.Sampler": 1,
+     "Buildings.Controls.OBC.CDL.Discrete.UnitDelay": 1,
+     "Buildings.Controls.OBC.CDL.Logical.And": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 5,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.SampleTrigger": 1,
+     "Buildings.Controls.OBC.CDL.Logical.TrueDelay": 1,
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Abs": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 2,
+     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 3,
+     "Buildings.Controls.OBC.CDL.Reals.LessThreshold": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Max": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Min": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Multiply": 3,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 10,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 7,
+     "Buildings.Controls.OBC.CDL.Utilities.Assert": 2
+    },
+    "component_count": 50,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Discrete.Sampler",
+     "Buildings.Controls.OBC.CDL.Discrete.UnitDelay",
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Sources.SampleTrigger",
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold",
+     "Buildings.Controls.OBC.CDL.Utilities.Assert"
+    ],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.SetPoints.ChilledWaterPlantReset",
+    "root_label": "ChilledWaterPlantReset",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "844ea1517e4cbe7fffc6a7e54ded3e64f8710e9342219bdae3ec336de7183230",
+    "supported_class_count": 50,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "844ea1517e4cbe7fffc6a7e54ded3e64f8710e9342219bdae3ec336de7183230"
+  },
+  "name": "ChilledWaterPlantReset"
+ }
+}

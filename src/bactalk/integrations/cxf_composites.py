@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import re
 from collections import deque
 from typing import Any
 
@@ -144,6 +145,34 @@ def _ground_member_values(
         if not changed:
             break
     return resolved_count
+
+
+_ICON_BASE = re.compile(r"^(?:[A-Za-z_][A-Za-z0-9_]*\.)*Icons\.[A-Za-z_][A-Za-z0-9_]*$")
+
+
+def _drop_icon_only_extends(graph: list[Any]) -> list[dict[str, Any]]:
+    """Remove ``extends`` clauses whose every base is an icon class.
+
+    An icon base (``Modelica.Blocks.Icons.Block``) carries annotations only, no
+    variables and no equations, so dropping it cannot change behaviour; the engine
+    rejects any surviving ``extends``. Any other base stays and fails closed.
+    """
+
+    removed: list[dict[str, Any]] = []
+    for node in graph:
+        if not isinstance(node, dict) or "S231:extends" not in node:
+            continue
+        raw = node["S231:extends"]
+        values = raw if isinstance(raw, list) else [raw]
+        names = [
+            value.get("@id", "") if isinstance(value, dict) else str(value) for value in values
+        ]
+        if names and all(
+            _ICON_BASE.fullmatch(name.split("#")[-1].removeprefix("ex:")) for name in names
+        ):
+            node.pop("S231:extends")
+            removed.append({"component": node.get("@id"), "extends": names})
+    return removed
 
 
 def assemble_cxf_composites(
@@ -346,9 +375,11 @@ def assemble_cxf_composites(
             else:
                 node["S231:isConnectedTo"] = retained[0] if len(retained) == 1 else retained
 
+    icon_extends = _drop_icon_only_extends(assembled["@graph"])
     serialized = json.dumps(assembled, sort_keys=True, separators=(",", ":")).encode()
     return assembled, {
         "schema": "bactalk.cxf-composite-assembly/v1",
+        "icon_only_extends_removed": icon_extends,
         "root_id": root_id,
         "available_class_count": len(class_documents),
         "expanded_instance_count": len(expanded_instances),

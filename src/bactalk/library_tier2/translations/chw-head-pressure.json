@@ -1,0 +1,1445 @@
+{
+ "configuration_id": "chw-head-pressure",
+ "controller_id": "Plants.Chillers.HeadPressure.Controller",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller",
+  "inputs": [
+   {
+    "description": "Measured chilled water supply temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.TChiWatSup",
+    "label": "TChiWatSup",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Measured condenser water return temperature (condenser leaving)",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.TConWatRet",
+    "label": "TConWatRet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Design condenser water pump speed for current stage",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.desConWatPumSpe",
+    "label": "desConWatPumSpe",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Enabling chillers head pressure control: true = ON, false = OFF",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.uChiHeaCon",
+    "label": "uChiHeaCon",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Status of water side economizer: true = ON, false = OFF",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.uWSE",
+    "label": "uWSE",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Condenser water pump speed setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.yConWatPumSpeSet",
+    "label": "yConWatPumSpeSet",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Head pressure control valve position",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.yHeaPreConVal",
+    "label": "yHeaPreConVal",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Maximum cooling tower speed setpoint",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.yMaxTowSpeSet",
+    "label": "yMaxTowSpeSet",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 3
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "Ti": 120.0
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TChiWatSup",
+   "name": "TChiWatSup",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.TChiWatSup",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TConWatRet",
+   "name": "TConWatRet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.TConWatRet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "desConWatPumSpe",
+   "name": "desConWatPumSpe",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.desConWatPumSpe",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uChiHeaCon",
+   "name": "uChiHeaCon",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.uChiHeaCon",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uWSE",
+   "name": "uWSE",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.uWSE",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yConWatPumSpeSet",
+   "name": "yConWatPumSpeSet",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.yConWatPumSpeSet",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yHeaPreConVal",
+   "name": "yHeaPreConVal",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.yHeaPreConVal",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "yMaxTowSpeSet",
+   "name": "yMaxTowSpeSet",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller.yMaxTowSpeSet",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Plants/Chillers/HeadPressure/Controller.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "a3cfdde4e2fa1605f351875c2199b6aafaee7fe0",
+  "source_sha256": "2f149fc9336739280b88838c54b15b5deb32b75564d25b6eb2a15266f2ef3dad",
+  "tag": "master after v13.0.0 (2026-09-16)"
+ },
+ "translator": {
+  "cxf_source_sha256": "6f48a3932f38303628386dc0f53bdb1b15965f162b728d9099c784db9182509f",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "desConWatPumSpe",
+    "kind": "numeric_input",
+    "label": "desConWatPumSpe",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TChiWatSup",
+    "kind": "numeric_input",
+    "label": "TChiWatSup",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TConWatRet",
+    "kind": "numeric_input",
+    "label": "TConWatRet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uChiHeaCon",
+    "kind": "boolean_input",
+    "label": "uChiHeaCon",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uWSE",
+    "kind": "boolean_input",
+    "label": "uWSE",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yConWatPumSpeSet",
+    "kind": "numeric_output",
+    "label": "yConWatPumSpeSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yHeaPreConVal",
+    "kind": "numeric_output",
+    "label": "yHeaPreConVal",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yMaxTowSpeSet",
+    "kind": "numeric_output",
+    "label": "yMaxTowSpeSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "message": "If the plant has waterside economizer, the condenser water pump cannot be fix speed.",
+     "repeat_while_false": true,
+     "semantic_contract": "CDL.Utilities.Assert",
+     "severity": "warning"
+    },
+    "id": "assMes1",
+    "kind": "boolean_assert_warning",
+    "label": "assMes1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "con",
+    "kind": "numeric_const",
+    "label": "con",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "controller_type": "PI",
+     "k": 1.0,
+     "nd": 10.0,
+     "ni": 0.9,
+     "r": 1.0,
+     "reverse_acting": true,
+     "td": 0.5,
+     "ti": 120.0,
+     "xi_start": 0.0,
+     "y_max": 1.0,
+     "y_min": 0.0,
+     "y_reset": 0.0,
+     "yd_start": 0.0
+    },
+    "id": "conPID",
+    "kind": "pid_with_reset",
+    "label": "conPID",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "swiInp",
+    "kind": "numeric_switch",
+    "label": "swiInp",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "swiOut",
+    "kind": "numeric_switch",
+    "label": "swiOut",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "valDis",
+    "kind": "numeric_const",
+    "label": "valDis",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.1
+    },
+    "id": "gai_parameter",
+    "kind": "numeric_const",
+    "label": "gai parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "gai",
+    "kind": "multiply",
+    "label": "gai",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "lif",
+    "kind": "subtract",
+    "label": "lif",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fixSpe",
+    "kind": "boolean_const",
+    "label": "fixSpe",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "fixSpeWSE",
+    "kind": "and",
+    "label": "fixSpeWSE",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "havWSE",
+    "kind": "boolean_const",
+    "label": "havWSE",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "not1",
+    "kind": "not",
+    "label": "not1",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "pre",
+    "kind": "boolean_pre_host_tick",
+    "label": "pre",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.1
+    },
+    "id": "con_2",
+    "kind": "numeric_const",
+    "label": "con",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.1
+    },
+    "id": "con1",
+    "kind": "numeric_const",
+    "label": "con1",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_delta_f",
+    "kind": "subtract",
+    "label": "conWatPumSpe \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_delta_x",
+    "kind": "subtract",
+    "label": "conWatPumSpe \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_slope",
+    "kind": "divide",
+    "label": "conWatPumSpe slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_slope_x2",
+    "kind": "multiply",
+    "label": "conWatPumSpe slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_intercept",
+    "kind": "subtract",
+    "label": "conWatPumSpe intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_scaled",
+    "kind": "multiply",
+    "label": "conWatPumSpe b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_result",
+    "kind": "add",
+    "label": "conWatPumSpe",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_lower_limit",
+    "kind": "maximum",
+    "label": "conWatPumSpe lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "conWatPumSpe_upper_limit",
+    "kind": "minimum",
+    "label": "conWatPumSpe upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "hal",
+    "kind": "numeric_const",
+    "label": "hal",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "hal1",
+    "kind": "numeric_const",
+    "label": "hal1",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "heaPreConVal_delta_f",
+    "kind": "subtract",
+    "label": "heaPreConVal \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "heaPreConVal_delta_x",
+    "kind": "subtract",
+    "label": "heaPreConVal \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "heaPreConVal_slope",
+    "kind": "divide",
+    "label": "heaPreConVal slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "heaPreConVal_slope_x2",
+    "kind": "multiply",
+    "label": "heaPreConVal slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "heaPreConVal_intercept",
+    "kind": "subtract",
+    "label": "heaPreConVal intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "heaPreConVal_scaled",
+    "kind": "multiply",
+    "label": "heaPreConVal b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "heaPreConVal_result",
+    "kind": "add",
+    "label": "heaPreConVal",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "heaPreConVal_lower_limit",
+    "kind": "maximum",
+    "label": "heaPreConVal lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "heaPreConVal_upper_limit",
+    "kind": "minimum",
+    "label": "heaPreConVal upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.1
+    },
+    "id": "hpTowMaxSpe",
+    "kind": "numeric_const",
+    "label": "hpTowMaxSpe",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "maxCooTowSpeSet_delta_f",
+    "kind": "subtract",
+    "label": "maxCooTowSpeSet \u0394f",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "maxCooTowSpeSet_delta_x",
+    "kind": "subtract",
+    "label": "maxCooTowSpeSet \u0394x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "maxCooTowSpeSet_slope",
+    "kind": "divide",
+    "label": "maxCooTowSpeSet slope",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "maxCooTowSpeSet_slope_x2",
+    "kind": "multiply",
+    "label": "maxCooTowSpeSet slope\u00b7x2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "maxCooTowSpeSet_intercept",
+    "kind": "subtract",
+    "label": "maxCooTowSpeSet intercept",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "maxCooTowSpeSet_scaled",
+    "kind": "multiply",
+    "label": "maxCooTowSpeSet b\u00b7x",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "maxCooTowSpeSet_result",
+    "kind": "add",
+    "label": "maxCooTowSpeSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "maxCooTowSpeSet_lower_limit",
+    "kind": "maximum",
+    "label": "maxCooTowSpeSet lower limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "maxCooTowSpeSet_upper_limit",
+    "kind": "minimum",
+    "label": "maxCooTowSpeSet upper limit",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "one",
+    "kind": "numeric_const",
+    "label": "one",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "one2",
+    "kind": "numeric_const",
+    "label": "one2",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "one3",
+    "kind": "numeric_const",
+    "label": "one3",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "one4",
+    "kind": "numeric_const",
+    "label": "one4",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "numeric_switch",
+    "label": "swi",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "swi1",
+    "kind": "numeric_switch",
+    "label": "swi1",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "swi2",
+    "kind": "numeric_switch",
+    "label": "swi2",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "swi3",
+    "kind": "numeric_switch",
+    "label": "swi3",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "swi4",
+    "kind": "numeric_switch",
+    "label": "swi4",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "swi5",
+    "kind": "numeric_switch",
+    "label": "swi5",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer1",
+    "kind": "numeric_const",
+    "label": "zer1",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer2",
+    "kind": "numeric_const",
+    "label": "zer2",
+    "x": 540,
+    "y": 600
+   }
+  ],
+  "links": [
+   {
+    "source": "gai_parameter",
+    "source_slot": "out",
+    "target": "gai",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumSpe_delta_f",
+    "source_slot": "out",
+    "target": "conWatPumSpe_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "conWatPumSpe_delta_x",
+    "source_slot": "out",
+    "target": "conWatPumSpe_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumSpe_slope",
+    "source_slot": "out",
+    "target": "conWatPumSpe_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "conWatPumSpe_slope",
+    "source_slot": "out",
+    "target": "conWatPumSpe_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "conWatPumSpe_slope_x2",
+    "source_slot": "out",
+    "target": "conWatPumSpe_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumSpe_intercept",
+    "source_slot": "out",
+    "target": "conWatPumSpe_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "conWatPumSpe_scaled",
+    "source_slot": "out",
+    "target": "conWatPumSpe_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumSpe_lower_limit",
+    "source_slot": "out",
+    "target": "conWatPumSpe_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "conWatPumSpe_upper_limit",
+    "source_slot": "out",
+    "target": "conWatPumSpe_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaPreConVal_delta_f",
+    "source_slot": "out",
+    "target": "heaPreConVal_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaPreConVal_delta_x",
+    "source_slot": "out",
+    "target": "heaPreConVal_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaPreConVal_slope",
+    "source_slot": "out",
+    "target": "heaPreConVal_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaPreConVal_slope",
+    "source_slot": "out",
+    "target": "heaPreConVal_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaPreConVal_slope_x2",
+    "source_slot": "out",
+    "target": "heaPreConVal_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaPreConVal_intercept",
+    "source_slot": "out",
+    "target": "heaPreConVal_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaPreConVal_scaled",
+    "source_slot": "out",
+    "target": "heaPreConVal_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaPreConVal_lower_limit",
+    "source_slot": "out",
+    "target": "heaPreConVal_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "heaPreConVal_upper_limit",
+    "source_slot": "out",
+    "target": "heaPreConVal_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxCooTowSpeSet_delta_f",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_slope",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxCooTowSpeSet_delta_x",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_slope",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxCooTowSpeSet_slope",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_slope_x2",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxCooTowSpeSet_slope",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_scaled",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxCooTowSpeSet_slope_x2",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_intercept",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxCooTowSpeSet_intercept",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_result",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxCooTowSpeSet_scaled",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_result",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxCooTowSpeSet_lower_limit",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_upper_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxCooTowSpeSet_upper_limit",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "desConWatPumSpe",
+    "source_slot": "out",
+    "target": "conWatPumSpe_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "desConWatPumSpe",
+    "source_slot": "out",
+    "target": "swi4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "TChiWatSup",
+    "source_slot": "out",
+    "target": "lif",
+    "target_slot": "b"
+   },
+   {
+    "source": "TConWatRet",
+    "source_slot": "out",
+    "target": "lif",
+    "target_slot": "a"
+   },
+   {
+    "source": "uChiHeaCon",
+    "source_slot": "out",
+    "target": "pre",
+    "target_slot": "in"
+   },
+   {
+    "source": "uWSE",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "uWSE",
+    "source_slot": "out",
+    "target": "swi4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "uWSE",
+    "source_slot": "out",
+    "target": "swi5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "con",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "conPID",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swiInp",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "setpoint"
+   },
+   {
+    "source": "swiOut",
+    "source_slot": "out",
+    "target": "conWatPumSpe_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "swiOut",
+    "source_slot": "out",
+    "target": "heaPreConVal_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "swiOut",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_lower_limit",
+    "target_slot": "b"
+   },
+   {
+    "source": "valDis",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "gai",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "measurement"
+   },
+   {
+    "source": "gai",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "lif",
+    "source_slot": "out",
+    "target": "gai",
+    "target_slot": "a"
+   },
+   {
+    "source": "fixSpe",
+    "source_slot": "out",
+    "target": "fixSpeWSE",
+    "target_slot": "b"
+   },
+   {
+    "source": "fixSpeWSE",
+    "source_slot": "out",
+    "target": "not1",
+    "target_slot": "in"
+   },
+   {
+    "source": "havWSE",
+    "source_slot": "out",
+    "target": "fixSpeWSE",
+    "target_slot": "a"
+   },
+   {
+    "source": "not1",
+    "source_slot": "out",
+    "target": "assMes1",
+    "target_slot": "condition"
+   },
+   {
+    "source": "pre",
+    "source_slot": "out",
+    "target": "conPID",
+    "target_slot": "trigger"
+   },
+   {
+    "source": "pre",
+    "source_slot": "out",
+    "target": "swiInp",
+    "target_slot": "selector"
+   },
+   {
+    "source": "pre",
+    "source_slot": "out",
+    "target": "swiOut",
+    "target_slot": "selector"
+   },
+   {
+    "source": "pre",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "pre",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "pre",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "con_2",
+    "source_slot": "out",
+    "target": "conWatPumSpe_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "con_2",
+    "source_slot": "out",
+    "target": "conWatPumSpe_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "con1",
+    "source_slot": "out",
+    "target": "heaPreConVal_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "con1",
+    "source_slot": "out",
+    "target": "heaPreConVal_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "conWatPumSpe_result",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "hal",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "hal",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "hal",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "hal1",
+    "source_slot": "out",
+    "target": "conWatPumSpe_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "hal1",
+    "source_slot": "out",
+    "target": "conWatPumSpe_lower_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "heaPreConVal_result",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "hpTowMaxSpe",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_delta_f",
+    "target_slot": "a"
+   },
+   {
+    "source": "hpTowMaxSpe",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_intercept",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxCooTowSpeSet_result",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "swi5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "one2",
+    "source_slot": "out",
+    "target": "conWatPumSpe_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "one2",
+    "source_slot": "out",
+    "target": "conWatPumSpe_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "one2",
+    "source_slot": "out",
+    "target": "conWatPumSpe_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "one3",
+    "source_slot": "out",
+    "target": "heaPreConVal_delta_f",
+    "target_slot": "b"
+   },
+   {
+    "source": "one4",
+    "source_slot": "out",
+    "target": "heaPreConVal_delta_x",
+    "target_slot": "a"
+   },
+   {
+    "source": "one4",
+    "source_slot": "out",
+    "target": "heaPreConVal_slope_x2",
+    "target_slot": "b"
+   },
+   {
+    "source": "one4",
+    "source_slot": "out",
+    "target": "heaPreConVal_upper_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "one4",
+    "source_slot": "out",
+    "target": "swi2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "swi5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi1",
+    "source_slot": "out",
+    "target": "swi4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "swi2",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "swi3",
+    "source_slot": "out",
+    "target": "yHeaPreConVal",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi4",
+    "source_slot": "out",
+    "target": "yConWatPumSpeSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi5",
+    "source_slot": "out",
+    "target": "yMaxTowSpeSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "maxCooTowSpeSet_lower_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "zer1",
+    "source_slot": "out",
+    "target": "heaPreConVal_delta_x",
+    "target_slot": "b"
+   },
+   {
+    "source": "zer1",
+    "source_slot": "out",
+    "target": "heaPreConVal_lower_limit",
+    "target_slot": "a"
+   },
+   {
+    "source": "zer2",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zer2",
+    "source_slot": "out",
+    "target": "swi1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "zer2",
+    "source_slot": "out",
+    "target": "swi3",
+    "target_slot": "when_false"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "assMes1": "assMes1",
+    "con": "chiHeaPreLoo.con",
+    "con1": "withWSE.con1",
+    "conPID": "chiHeaPreLoo.conPID.conPID",
+    "conWatPumSpe": "withWSE.conWatPumSpe",
+    "conWatPumSpe_delta_f": "withWSE.conWatPumSpe",
+    "conWatPumSpe_delta_x": "withWSE.conWatPumSpe",
+    "conWatPumSpe_intercept": "withWSE.conWatPumSpe",
+    "conWatPumSpe_lower_limit": "withWSE.conWatPumSpe",
+    "conWatPumSpe_result": "withWSE.conWatPumSpe",
+    "conWatPumSpe_scaled": "withWSE.conWatPumSpe",
+    "conWatPumSpe_slope": "withWSE.conWatPumSpe",
+    "conWatPumSpe_slope_x2": "withWSE.conWatPumSpe",
+    "conWatPumSpe_upper_limit": "withWSE.conWatPumSpe",
+    "con_2": "withWSE.con",
+    "fixSpe": "fixSpe",
+    "fixSpeWSE": "fixSpeWSE",
+    "gai": "chiHeaPreLoo.gai",
+    "gai_parameter": "chiHeaPreLoo.gai",
+    "hal": "withWSE.hal",
+    "hal1": "withWSE.hal1",
+    "havWSE": "havWSE",
+    "heaPreConVal": "withWSE.heaPreConVal",
+    "heaPreConVal_delta_f": "withWSE.heaPreConVal",
+    "heaPreConVal_delta_x": "withWSE.heaPreConVal",
+    "heaPreConVal_intercept": "withWSE.heaPreConVal",
+    "heaPreConVal_lower_limit": "withWSE.heaPreConVal",
+    "heaPreConVal_result": "withWSE.heaPreConVal",
+    "heaPreConVal_scaled": "withWSE.heaPreConVal",
+    "heaPreConVal_slope": "withWSE.heaPreConVal",
+    "heaPreConVal_slope_x2": "withWSE.heaPreConVal",
+    "heaPreConVal_upper_limit": "withWSE.heaPreConVal",
+    "hpTowMaxSpe": "withWSE.hpTowMaxSpe",
+    "lif": "chiHeaPreLoo.lif",
+    "maxCooTowSpeSet": "withWSE.maxCooTowSpeSet",
+    "maxCooTowSpeSet_delta_f": "withWSE.maxCooTowSpeSet",
+    "maxCooTowSpeSet_delta_x": "withWSE.maxCooTowSpeSet",
+    "maxCooTowSpeSet_intercept": "withWSE.maxCooTowSpeSet",
+    "maxCooTowSpeSet_lower_limit": "withWSE.maxCooTowSpeSet",
+    "maxCooTowSpeSet_result": "withWSE.maxCooTowSpeSet",
+    "maxCooTowSpeSet_scaled": "withWSE.maxCooTowSpeSet",
+    "maxCooTowSpeSet_slope": "withWSE.maxCooTowSpeSet",
+    "maxCooTowSpeSet_slope_x2": "withWSE.maxCooTowSpeSet",
+    "maxCooTowSpeSet_upper_limit": "withWSE.maxCooTowSpeSet",
+    "not1": "not1",
+    "one": "withWSE.one",
+    "one2": "withWSE.one2",
+    "one3": "withWSE.one3",
+    "one4": "withWSE.one4",
+    "pre": "pre",
+    "swi": "withWSE.swi",
+    "swi1": "withWSE.swi1",
+    "swi2": "withWSE.swi2",
+    "swi3": "withWSE.swi3",
+    "swi4": "withWSE.swi4",
+    "swi5": "withWSE.swi5",
+    "swiInp": "chiHeaPreLoo.conPID.swiInp",
+    "swiOut": "chiHeaPreLoo.conPID.swiOut",
+    "valDis": "chiHeaPreLoo.conPID.valDis",
+    "zer": "withWSE.zer",
+    "zer1": "withWSE.zer1",
+    "zer2": "withWSE.zer2"
+   },
+   "coverage": {
+    "boundary_inputs": 5,
+    "boundary_outputs": 3,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Logical.And": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Line": 3,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 1,
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 14,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 8,
+     "Buildings.Controls.OBC.CDL.Utilities.Assert": 1
+    },
+    "component_count": 34,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.Pre",
+     "Buildings.Controls.OBC.CDL.Reals.PIDWithReset",
+     "Buildings.Controls.OBC.CDL.Utilities.Assert"
+    ],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.HeadPressure.Controller",
+    "root_label": "Controller",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "6f48a3932f38303628386dc0f53bdb1b15965f162b728d9099c784db9182509f",
+    "supported_class_count": 34,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "6f48a3932f38303628386dc0f53bdb1b15965f162b728d9099c784db9182509f"
+  },
+  "name": "Controller"
+ }
+}

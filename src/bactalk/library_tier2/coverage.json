@@ -368,26 +368,196 @@
    "variant": "LBNL validation configuration"
   },
   {
-   "blocker": {
-    "reason": "RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
-    "stage": "translation"
-   },
    "controller": "AHUs.SingleZone.VAV.Controller",
    "d1": {
-    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
-    "passed": false
+    "components": 824,
+    "errors": [],
+    "links": 1104,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 112.4
    },
    "d4": {
-    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
-    "passed": false
+    "band_set": "scan",
+    "by_catcher": {
+     "suite": 6,
+     "survived": 21,
+     "validator": 13
+    },
+    "catch_rate": 0.475,
+    "caught": 19,
+    "mutants_generated": 2683,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 40,
+    "seconds": 839.4,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 2267,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoiVAV_2/heaSupTemDif__x/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 2676,
+      "operator": "invert_parameter",
+      "path": "/Controller/PlaReq/truDel1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1814,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_3/booToRea1/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1866,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_4/intEqu7/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1920,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_4/not3/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1153,
+      "operator": "change_block_type",
+      "path": "/Controller/OutAirSetPoi/popBreOutAir__x"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 2007,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_5/and5/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1146,
+      "operator": "change_block_type",
+      "path": "/Controller/ModSetPoi_5/pro"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1668,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_1/hotZon/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1521,
+      "operator": "delete_link",
+      "path": "/Controller/CooCoiVal/and2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1379,
+      "operator": "delete_link",
+      "path": "/Controller/ConEco_2/or23/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1145,
+      "operator": "change_block_type",
+      "path": "/Controller/ModSetPoi_5/or1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1956,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_5/sub2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1899,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_4/not5/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1024,
+      "operator": "change_block_type",
+      "path": "/Controller/FrePro_2/tim"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 2210,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoiVAV_1/medFanSpe_slope/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1411,
+      "operator": "delete_link",
+      "path": "/Controller/ConEco_3/swi14/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 917,
+      "operator": "change_block_type",
+      "path": "/Controller/ConEco_1/yDam_VOutMin_curSpe__x"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1615,
+      "operator": "delete_link",
+      "path": "/Controller/FrePro_1/hotWatPlaReq3/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1378,
+      "operator": "delete_link",
+      "path": "/Controller/ConEco_2/or23/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1399,
+      "operator": "delete_link",
+      "path": "/Controller/ConEco_2/or3/Link"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "AHUs",
@@ -396,31 +566,196 @@
     "eneStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
     "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
    },
+   "scenarios": 35,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2",
    "variant": "ASHRAE90_1+ASHRAE62_1"
   },
   {
-   "blocker": {
-    "reason": "RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
-    "stage": "translation"
-   },
    "controller": "AHUs.SingleZone.VAV.Controller",
    "d1": {
-    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
-    "passed": false
+    "components": 821,
+    "errors": [],
+    "links": 1105,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 111.2
    },
    "d4": {
-    "blocker": "translation: RuntimeError: Open Control Engine rejected request: CXF validation failed: CXF ingest error: CXF validation failed with 2 diagnostic(s)\nerror|single-assignment|http://example.org#Buildings.Controls.OBC.ASHRAE.G36.AHUs.SingleZone.VAV.Controller.conEco.enaDis.sub1.u1|input is undriven (in-degree 0)\nerror|direction-mismatch|<none>|boundary connection has contradictory endpoint directions",
-    "passed": false
+    "band_set": "scan",
+    "by_catcher": {
+     "differential": 1,
+     "suite": 7,
+     "survived": 20,
+     "validator": 12
+    },
+    "catch_rate": 0.5,
+    "caught": 20,
+    "mutants_generated": 2673,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 40,
+    "seconds": 799.1,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1829,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_2/or4/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1954,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_4/swi15/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1029,
+      "operator": "change_block_type",
+      "path": "/Controller/MinFlo/lin_b_x"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1605,
+      "operator": "delete_link",
+      "path": "/Controller/FrePro_1/outDam2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 2634,
+      "operator": "change_priority_level",
+      "path": "/Controller/Outputs/ySupFan/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 2427,
+      "operator": "alter_constant",
+      "path": "/Controller/FrePro_1/greThr_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1306,
+      "operator": "delete_link",
+      "path": "/Controller/ConEco_1/yDam_VOutMin_curSpe_slope_x2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 947,
+      "operator": "change_block_type",
+      "path": "/Controller/ConEco_2/or16"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1420,
+      "operator": "delete_link",
+      "path": "/Controller/ConEco_2/swi6/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1686,
+      "operator": "delete_link",
+      "path": "/Controller/MinFlo/zonOccMin4_intercept/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 2406,
+      "operator": "alter_constant",
+      "path": "/Controller/ConEco_3/heaCoiMinLimSig"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 2557,
+      "operator": "alter_constant",
+      "path": "/Controller/ZonSta/booToIntCoo_false"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1619,
+      "operator": "delete_link",
+      "path": "/Controller/FrePro_2/tim/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 2187,
+      "operator": "delete_link",
+      "path": "/Controller/SetPoiVAV_1/heaFanSpe_upper_limit/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 2538,
+      "operator": "alter_constant",
+      "path": "/Controller/SetPoiVAV_1/maxDewPoi"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 998,
+      "operator": "change_block_type",
+      "path": "/Controller/FrePro_1/endStaOne"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1832,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_2/setBacMod1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1548,
+      "operator": "delete_link",
+      "path": "/Controller/FrePro_1/heaCoiCon1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1057,
+      "operator": "change_block_type",
+      "path": "/Controller/ModSetPoi_1/allHot"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1364,
+      "operator": "delete_link",
+      "path": "/Controller/ConEco_2/or16/Link"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "AHUs",
@@ -429,31 +764,146 @@
     "eneStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.California_Title_24",
     "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
    },
+   "scenarios": 35,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2",
    "variant": "Title24"
   },
   {
-   "blocker": {
-    "reason": "CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj",
-    "stage": "translation"
-   },
    "controller": "FanCoilUnits.Controller",
    "d1": {
-    "blocker": "translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj",
-    "passed": false
+    "components": 448,
+    "errors": [],
+    "links": 595,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 50.9
    },
    "d4": {
-    "blocker": "translation: CxfArrayScalarizationError: connection from ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.TZonSet.setAdj references unsupported array endpoint ex:Buildings.Controls.OBC.ASHRAE.G36.FanCoilUnits.Controller.modSetPoi.setAdj",
-    "passed": false
+    "band_set": "scan",
+    "by_catcher": {
+     "suite": 16,
+     "survived": 13,
+     "validator": 11
+    },
+    "catch_rate": 0.675,
+    "caught": 27,
+    "mutants_generated": 1415,
+    "passed": false,
+    "policy": "scan-module-tick",
+    "sample": 40,
+    "seconds": 227.7,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 860,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_2/sub4/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 763,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_1/booToRea4/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 874,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_2/swi2/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 754,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_1/booToInt3/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 892,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_2/lat/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 804,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_1/allCol/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1007,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_4/or1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 840,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_2/truFalHol1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 714,
+      "operator": "delete_link",
+      "path": "/Controller/FcuPlaReq/hotWatRes1/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1134,
+      "operator": "delete_link",
+      "path": "/Controller/ModSetPoi_5/swi7/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 596,
+      "operator": "change_block_type",
+      "path": "/Controller/ModSetPoi_5/pro"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1337,
+      "operator": "alter_constant",
+      "path": "/Controller/Outputs/yChiWatResReq"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1240,
+      "operator": "alter_constant",
+      "path": "/Controller/FcuPlaReq/greThr1_threshold"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "FanCoilUnits",
@@ -462,6 +912,7 @@
     "TSupSet_max": 303.15,
     "TSupSet_min": 285.15
    },
+   "scenarios": 24,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2",
    "variant": "default"
@@ -629,26 +1080,189 @@
    "variant": "ASHRAE62_1"
   },
   {
-   "blocker": {
-    "reason": "ValueError: first sample must initialize every public controller input; missing: TDis",
-    "stage": "reference"
-   },
    "controller": "TerminalUnits.CoolingOnly.Controller",
    "d1": {
-    "blocker": "reference: ValueError: first sample must initialize every public controller input; missing: TDis",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "reference: ValueError: first sample must initialize every public controller input; missing: TDis",
-    "passed": false
+    "components": 331,
+    "errors": [],
+    "links": 411,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "reference: ValueError: first sample must initialize every public controller input; missing: TDis",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 30.6
    },
    "d4": {
-    "blocker": "reference: ValueError: first sample must initialize every public controller input; missing: TDis",
-    "passed": false
+    "band_set": "default",
+    "by_catcher": {
+     "suite": 10,
+     "survived": 20,
+     "validator": 10
+    },
+    "catch_rate": 0.5,
+    "caught": 20,
+    "mutants_generated": 1024,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 560.7,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 551,
+      "operator": "delete_link",
+      "path": "/Controller/ConLoo/disHea/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 933,
+      "operator": "alter_constant",
+      "path": "/Controller/SysReq/gai1_parameter"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 856,
+      "operator": "alter_constant",
+      "path": "/Controller/Inputs/TDis"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1019,
+      "operator": "invert_parameter",
+      "path": "/Controller/TimSup/truDel"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 855,
+      "operator": "alter_constant",
+      "path": "/Controller/Inputs/TCooSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 938,
+      "operator": "alter_constant",
+      "path": "/Controller/SysReq/greThr4_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 739,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq/booToInt1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 979,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/uOpeMod"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 985,
+      "operator": "drop_facets",
+      "path": "/Controller/Outputs/yFloSenAla"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 445,
+      "operator": "delete_link",
+      "path": "/Controller/ActAirSet/intEqu1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 664,
+      "operator": "delete_link",
+      "path": "/Controller/MinFlo/booToRea/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 731,
+      "operator": "delete_link",
+      "path": "/Controller/SysReq/greThr/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 785,
+      "operator": "delete_link",
+      "path": "/Controller/TimSup/abs2_negate/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 990,
+      "operator": "change_priority_level",
+      "path": "/Controller/Outputs/VSet_flow/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 995,
+      "operator": "change_priority_level",
+      "path": "/Controller/Outputs/yFloSenAla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 793,
+      "operator": "delete_link",
+      "path": "/Controller/TimSup/abs2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 391,
+      "operator": "change_block_type",
+      "path": "/Controller/MinFlo/lin__f"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 886,
+      "operator": "alter_constant",
+      "path": "/Controller/Ala_1/gai2_parameter"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 607,
+      "operator": "delete_link",
+      "path": "/Controller/Dam/opeDam/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 978,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/ppmCO2Set"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "TerminalUnits",
@@ -662,6 +1276,7 @@
     "VPopBreZon_flow": 0.024,
     "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.California_Title_24"
    },
+   "scenarios": 19,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2",
    "variant": "Title24"
@@ -3705,6 +4320,671 @@
    "variant": "one zone"
   },
   {
+   "controller": "Plants.Chillers.Generic.PlantEnable.Enable",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 30,
+    "errors": [],
+    "links": 28,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 1.5
+   },
+   "d4": {
+    "band_set": "default",
+    "by_catcher": {
+     "differential": 7,
+     "loader": 1,
+     "suite": 12,
+     "survived": 10,
+     "validator": 10
+    },
+    "catch_rate": 0.75,
+    "caught": 30,
+    "mutants_generated": 73,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 18.4,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 42,
+      "operator": "delete_link",
+      "path": "/Enable/Enable/lesReq/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 67,
+      "operator": "drop_facets",
+      "path": "/Enable/Parameters/hasReq_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 33,
+      "operator": "delete_link",
+      "path": "/Enable/Enable/enaTim/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 28,
+      "operator": "change_block_type",
+      "path": "/Enable/Enable/or1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 30,
+      "operator": "change_block_type",
+      "path": "/Enable/Enable/disPlaCon"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 44,
+      "operator": "delete_link",
+      "path": "/Enable/Enable/enaTim1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 72,
+      "operator": "invert_parameter",
+      "path": "/Enable/Enable/enaTim1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 70,
+      "operator": "invert_parameter",
+      "path": "/Enable/Enable/enaTim"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 68,
+      "operator": "change_priority_level",
+      "path": "/Enable/Outputs/yPla/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 55,
+      "operator": "delete_link",
+      "path": "/Enable/Enable/disPla/Link1"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "Plants.Chillers",
+   "id": "chw-plant-enable",
+   "parameters": {},
+   "scenarios": 6,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "default"
+  },
+  {
+   "controller": "Plants.Chillers.SetPoints.ChilledWaterPlantReset",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 74,
+    "errors": [],
+    "links": 83,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 1.6
+   },
+   "d4": {
+    "band_set": "default",
+    "by_catcher": {
+     "suite": 13,
+     "survived": 14,
+     "validator": 13
+    },
+    "catch_rate": 0.65,
+    "caught": 26,
+    "mutants_generated": 203,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 18.1,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 135,
+      "operator": "delete_link",
+      "path": "/ChilledWaterPlantReset/TriRes/greThr2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 201,
+      "operator": "invert_parameter",
+      "path": "/ChilledWaterPlantReset/TriRes/sampler"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 83,
+      "operator": "change_block_type",
+      "path": "/ChilledWaterPlantReset/TriRes/pro"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 120,
+      "operator": "delete_link",
+      "path": "/ChilledWaterPlantReset/TriRes/pro2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 181,
+      "operator": "alter_constant",
+      "path": "/ChilledWaterPlantReset/TriRes/greThr_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 131,
+      "operator": "delete_link",
+      "path": "/ChilledWaterPlantReset/TriRes/abs/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 102,
+      "operator": "delete_link",
+      "path": "/ChilledWaterPlantReset/TriRes/abs1_negate/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 110,
+      "operator": "delete_link",
+      "path": "/ChilledWaterPlantReset/TriRes/intToRea/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 184,
+      "operator": "alter_constant",
+      "path": "/ChilledWaterPlantReset/TriRes/lesThr1_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 94,
+      "operator": "delete_link",
+      "path": "/ChilledWaterPlantReset/ChilledWaterPlantReset/mulAnd_fold_2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 133,
+      "operator": "delete_link",
+      "path": "/ChilledWaterPlantReset/TriRes/abs/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 183,
+      "operator": "alter_constant",
+      "path": "/ChilledWaterPlantReset/TriRes/intToRea_zero"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 168,
+      "operator": "delete_link",
+      "path": "/ChilledWaterPlantReset/TriRes/swiHol/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 152,
+      "operator": "delete_link",
+      "path": "/ChilledWaterPlantReset/TriRes/minInp/Link"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "Plants.Chillers",
+   "id": "chw-plant-reset",
+   "parameters": {},
+   "scenarios": 6,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "default"
+  },
+  {
+   "controller": "Plants.Chillers.SetPoints.ChilledWaterSupply",
+   "d1": {
+    "blockers": [],
+    "lane": "native_stock",
+    "passed": true
+   },
+   "d2": {
+    "components": 34,
+    "errors": [],
+    "links": 38,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 0.0
+   },
+   "d4": {
+    "band_set": "default",
+    "by_catcher": {
+     "suite": 18,
+     "survived": 10,
+     "validator": 12
+    },
+    "catch_rate": 0.75,
+    "caught": 30,
+    "mutants_generated": 112,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 0.8,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 57,
+      "operator": "delete_link",
+      "path": "/ChilledWaterSupply/ChilledWaterSupply/chiWatPumPre__1_lower_limit/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 103,
+      "operator": "drop_facets",
+      "path": "/ChilledWaterSupply/Parameters/maxChiWatTem"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 52,
+      "operator": "delete_link",
+      "path": "/ChilledWaterSupply/ChilledWaterSupply/chiWatPumPre__1__f/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 106,
+      "operator": "drop_facets",
+      "path": "/ChilledWaterSupply/Parameters/oneRes"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 63,
+      "operator": "delete_link",
+      "path": "/ChilledWaterSupply/ChilledWaterSupply/chiWatTem_lower_limit/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 108,
+      "operator": "drop_facets",
+      "path": "/ChilledWaterSupply/Outputs/TChiWatSupSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 102,
+      "operator": "drop_facets",
+      "path": "/ChilledWaterSupply/Parameters/maxChiWatPumPre__1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 111,
+      "operator": "change_priority_level",
+      "path": "/ChilledWaterSupply/Outputs/dpChiWatSet__1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 99,
+      "operator": "alter_constant",
+      "path": "/ChilledWaterSupply/Outputs/dpChiWatSet__1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 90,
+      "operator": "alter_constant",
+      "path": "/ChilledWaterSupply/Inputs/uChiWatPlaRes"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "Plants.Chillers",
+   "id": "chw-supply-setpoints",
+   "parameters": {
+    "TChiWatSupMin": 278.15,
+    "dpChiWatMax": [
+     68947.6
+    ]
+   },
+   "scenarios": 2,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "one remote dp sensor"
+  },
+  {
+   "controller": "Plants.Chillers.HeadPressure.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 75,
+    "errors": [],
+    "links": 92,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 1.5
+   },
+   "d4": {
+    "band_set": "default",
+    "by_catcher": {
+     "suite": 21,
+     "survived": 7,
+     "validator": 12
+    },
+    "catch_rate": 0.825,
+    "caught": 33,
+    "mutants_generated": 230,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 12.7,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 223,
+      "operator": "drop_facets",
+      "path": "/Controller/Outputs/yConWatPumSpeSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 88,
+      "operator": "change_block_type",
+      "path": "/Controller/WithWSE/heaPreConVal__x"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 182,
+      "operator": "delete_link",
+      "path": "/Controller/WithWSE/swi1/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 106,
+      "operator": "delete_link",
+      "path": "/Controller/Controller/fixSpeWSE/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 139,
+      "operator": "delete_link",
+      "path": "/Controller/WithWSE/heaPreConVal_lower_limit/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 217,
+      "operator": "alter_constant",
+      "path": "/Controller/Outputs/yHeaPreConVal"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 96,
+      "operator": "change_block_type",
+      "path": "/Controller/WithWSE/conWatPumSpe_slope_x2"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "Plants.Chillers",
+   "id": "chw-head-pressure",
+   "parameters": {
+    "Ti": 120.0
+   },
+   "scenarios": 9,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "Ti 120 s"
+  },
+  {
+   "controller": "Plants.Chillers.MinimumFlowBypass.Controller",
+   "d1": {
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
+   },
+   "d2": {
+    "components": 22,
+    "errors": [],
+    "links": 19,
+    "passed": true,
+    "warnings": 0
+   },
+   "d3": {
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 0.5
+   },
+   "d4": {
+    "band_set": "default",
+    "by_catcher": {
+     "differential": 2,
+     "suite": 15,
+     "survived": 13,
+     "validator": 10
+    },
+    "catch_rate": 0.675,
+    "caught": 27,
+    "mutants_generated": 50,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 5.8,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 35,
+      "operator": "alter_constant",
+      "path": "/Controller/Inputs/VChiWat_flow"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 48,
+      "operator": "change_priority_level",
+      "path": "/Controller/Outputs/yValPos/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 42,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/VChiWatSet_flow"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 46,
+      "operator": "drop_facets",
+      "path": "/Controller/Parameters/opeVal"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 43,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/VChiWat_flow"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 47,
+      "operator": "drop_facets",
+      "path": "/Controller/Outputs/yValPos"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 39,
+      "operator": "alter_constant",
+      "path": "/Controller/ValPos/valDis"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 40,
+      "operator": "alter_constant",
+      "path": "/Controller/Outputs/yValPos"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 36,
+      "operator": "alter_constant",
+      "path": "/Controller/Parameters/minFlo__1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 44,
+      "operator": "drop_facets",
+      "path": "/Controller/Parameters/minFlo__1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 26,
+      "operator": "delete_link",
+      "path": "/Controller/ValPos/swiInp/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 32,
+      "operator": "delete_link",
+      "path": "/Controller/ValPos/swiOut/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 45,
+      "operator": "drop_facets",
+      "path": "/Controller/Parameters/minFlo__2"
+     }
+    ]
+   },
+   "expectations": "reference-derived (docs/decisions/010)",
+   "family": "Plants.Chillers",
+   "id": "chw-minimum-flow-bypass",
+   "parameters": {
+    "Td": 0.1,
+    "Ti": 120.0,
+    "minFloSet": [
+     0.0089,
+     0.0089
+    ]
+   },
+   "scenarios": 6,
+   "source_of_truth": "Open Control Engine (retained reference)",
+   "tier": "2",
+   "variant": "two chillers"
+  },
+  {
    "adequacy": {
     "accepted": false,
     "decisions_percent": 100.0,
@@ -5664,11 +6944,11 @@
  "schema": "bactalk.native-bog-coverage/v1",
  "summary": {
   "all_four": 0,
-  "blocked": 4,
-  "configurations": 36,
-  "d1": 32,
-  "d2": 32,
-  "d3": 30,
+  "blocked": 0,
+  "configurations": 41,
+  "d1": 41,
+  "d2": 41,
+  "d3": 39,
   "d4": 0
  }
 }

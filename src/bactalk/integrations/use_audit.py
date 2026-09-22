@@ -56,6 +56,19 @@ _BINDINGS: dict[str, dict[str, str]] = {
             "make cdl-oce-contract && make plant-controls-contract && make plant-job-contract"
         ),
     },
+    "modelica-buildings-plants": {
+        "mode": "isolated-build-input",
+        "product_path": (
+            "Tier 2 chiller-plant configurations (bactalk.library_tier2, source 'plants'): "
+            "G36 Plants.Chillers CDL from LBNL master -> modelica-json CXF -> OCE reference "
+            "-> typed IR -> native .bog graded in docs/coverage.md; the tagged release "
+            "still translates every airside row"
+        ),
+        "proof": (
+            "scripts/retain_tier2.py --check && scripts/coverage_report.py --check "
+            "&& pytest -q tests/test_native_bog_tier2.py"
+        ),
+    },
     "modelica-json": {
         "mode": "isolated-build-tool",
         "product_path": (

@@ -1,0 +1,567 @@
+{
+ "configuration_id": "chw-plant-enable",
+ "controller_id": "Plants.Chillers.Generic.PlantEnable.Enable",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Generic.PlantEnable.Enable",
+  "inputs": [
+   {
+    "description": "Outdoor air temperature",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Generic.PlantEnable.Enable.TOut",
+    "label": "TOut",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Number of chiller plant cooling requests",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Generic.PlantEnable.Enable.chiPlaReq",
+    "label": "chiPlaReq",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "Plant schedule enable: true=Enable",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Generic.PlantEnable.Enable.uPlaSchEna",
+    "label": "uPlaSchEna",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Chiller plant enabling status",
+    "id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Generic.PlantEnable.Enable.yPla",
+    "label": "yPla",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "g36",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 6
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {},
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TOut",
+   "name": "TOut",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Generic.PlantEnable.Enable.TOut",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "chiPlaReq",
+   "name": "chiPlaReq",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Generic.PlantEnable.Enable.chiPlaReq",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "uPlaSchEna",
+   "name": "uPlaSchEna",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Generic.PlantEnable.Enable.uPlaSchEna",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "yPla",
+   "name": "yPla",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Generic.PlantEnable.Enable.yPla",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Plants/Chillers/Generic/PlantEnable/Enable.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "a3cfdde4e2fa1605f351875c2199b6aafaee7fe0",
+  "source_sha256": "4baa149bbac45c82edbe4fd8d913be5657d9b20d2d37a495408f07ef47a76c50",
+  "tag": "master after v13.0.0 (2026-09-16)"
+ },
+ "translator": {
+  "cxf_source_sha256": "a4687e9761961525ef0c5e2625524fa608ec892c0fbc66239c80779b5bcc69bf",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "chiPlaReq",
+    "kind": "numeric_input",
+    "label": "chiPlaReq",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TOut",
+    "kind": "numeric_input",
+    "label": "TOut",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "uPlaSchEna",
+    "kind": "boolean_input",
+    "label": "uPlaSchEna",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "yPla",
+    "kind": "boolean_output",
+    "label": "yPla",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 277.5
+    },
+    "id": "chiLocOutTem",
+    "kind": "numeric_const",
+    "label": "chiLocOutTem",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "disPla",
+    "kind": "and",
+    "label": "disPla",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "disPlaCon",
+    "kind": "or",
+    "label": "disPlaCon",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 900.0
+    },
+    "id": "disTim",
+    "kind": "timer",
+    "label": "disTim",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "enaPla_fold_2",
+    "kind": "and",
+    "label": "enaPla fold 2",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "enaPla_fold_3",
+    "kind": "and",
+    "label": "enaPla fold 3",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "enaPla_fold_4",
+    "kind": "and",
+    "label": "enaPla fold 4",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 900.0
+    },
+    "id": "enaTim",
+    "kind": "timer",
+    "label": "enaTim",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "delay_on_init": false,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 180.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "enaTim1",
+    "kind": "boolean_delay",
+    "label": "enaTim1",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "hasReq_threshold",
+    "kind": "numeric_const",
+    "label": "hasReq threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "hasReq",
+    "kind": "greater_than",
+    "label": "hasReq",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "initial": false,
+     "u_high": 0.5555555555555556,
+     "u_low": 0.0
+    },
+    "id": "hys",
+    "kind": "hysteresis",
+    "label": "hys",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "lesReq",
+    "kind": "not",
+    "label": "lesReq",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "not1",
+    "kind": "not",
+    "label": "not1",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "not2",
+    "kind": "not",
+    "label": "not2",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "notLoc",
+    "kind": "not",
+    "label": "notLoc",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "or1",
+    "kind": "or",
+    "label": "or1",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "plaSta",
+    "kind": "boolean_set_reset",
+    "label": "plaSta",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "pre1",
+    "kind": "boolean_pre_host_tick",
+    "label": "pre1",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "sub1",
+    "kind": "subtract",
+    "label": "sub1",
+    "x": 0,
+    "y": 360
+   }
+  ],
+  "links": [
+   {
+    "source": "hasReq_threshold",
+    "source_slot": "out",
+    "target": "hasReq",
+    "target_slot": "b"
+   },
+   {
+    "source": "chiPlaReq",
+    "source_slot": "out",
+    "target": "hasReq",
+    "target_slot": "a"
+   },
+   {
+    "source": "TOut",
+    "source_slot": "out",
+    "target": "sub1",
+    "target_slot": "b"
+   },
+   {
+    "source": "uPlaSchEna",
+    "source_slot": "out",
+    "target": "enaPla_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "uPlaSchEna",
+    "source_slot": "out",
+    "target": "not2",
+    "target_slot": "in"
+   },
+   {
+    "source": "chiLocOutTem",
+    "source_slot": "out",
+    "target": "sub1",
+    "target_slot": "a"
+   },
+   {
+    "source": "disPla",
+    "source_slot": "out",
+    "target": "plaSta",
+    "target_slot": "clear"
+   },
+   {
+    "source": "disPlaCon",
+    "source_slot": "out",
+    "target": "disPla",
+    "target_slot": "b"
+   },
+   {
+    "source": "disTim",
+    "source_slot": "passed",
+    "target": "enaPla_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "enaPla_fold_2",
+    "source_slot": "out",
+    "target": "enaPla_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "enaPla_fold_3",
+    "source_slot": "out",
+    "target": "enaPla_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "enaPla_fold_4",
+    "source_slot": "out",
+    "target": "plaSta",
+    "target_slot": "set"
+   },
+   {
+    "source": "enaTim",
+    "source_slot": "passed",
+    "target": "disPla",
+    "target_slot": "a"
+   },
+   {
+    "source": "enaTim1",
+    "source_slot": "out",
+    "target": "or1",
+    "target_slot": "a"
+   },
+   {
+    "source": "hasReq",
+    "source_slot": "out",
+    "target": "enaPla_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "hasReq",
+    "source_slot": "out",
+    "target": "lesReq",
+    "target_slot": "in"
+   },
+   {
+    "source": "hys",
+    "source_slot": "out",
+    "target": "notLoc",
+    "target_slot": "in"
+   },
+   {
+    "source": "hys",
+    "source_slot": "out",
+    "target": "or1",
+    "target_slot": "b"
+   },
+   {
+    "source": "lesReq",
+    "source_slot": "out",
+    "target": "enaTim1",
+    "target_slot": "in"
+   },
+   {
+    "source": "not1",
+    "source_slot": "out",
+    "target": "disTim",
+    "target_slot": "in"
+   },
+   {
+    "source": "not2",
+    "source_slot": "out",
+    "target": "disPlaCon",
+    "target_slot": "a"
+   },
+   {
+    "source": "notLoc",
+    "source_slot": "out",
+    "target": "enaPla_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "or1",
+    "source_slot": "out",
+    "target": "disPlaCon",
+    "target_slot": "b"
+   },
+   {
+    "source": "plaSta",
+    "source_slot": "out",
+    "target": "pre1",
+    "target_slot": "in"
+   },
+   {
+    "source": "plaSta",
+    "source_slot": "out",
+    "target": "yPla",
+    "target_slot": "in"
+   },
+   {
+    "source": "pre1",
+    "source_slot": "out",
+    "target": "enaTim",
+    "target_slot": "in"
+   },
+   {
+    "source": "pre1",
+    "source_slot": "out",
+    "target": "not1",
+    "target_slot": "in"
+   },
+   {
+    "source": "sub1",
+    "source_slot": "out",
+    "target": "hys",
+    "target_slot": "in"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "chiLocOutTem": "chiLocOutTem",
+    "disPla": "disPla",
+    "disPlaCon": "disPlaCon",
+    "disTim": "disTim",
+    "enaPla_fold_2": "enaPla__fold_2",
+    "enaPla_fold_3": "enaPla__fold_3",
+    "enaPla_fold_4": "enaPla__fold_4",
+    "enaTim": "enaTim",
+    "enaTim1": "enaTim1",
+    "hasReq": "hasReq",
+    "hasReq_threshold": "hasReq",
+    "hys": "hys",
+    "lesReq": "lesReq",
+    "not1": "not1",
+    "not2": "not2",
+    "notLoc": "notLoc",
+    "or1": "or1",
+    "plaSta": "plaSta",
+    "pre1": "pre1",
+    "sub1": "sub1"
+   },
+   "coverage": {
+    "boundary_inputs": 3,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold": 1,
+     "Buildings.Controls.OBC.CDL.Logical.And": 4,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 4,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Timer": 2,
+     "Buildings.Controls.OBC.CDL.Logical.TrueDelay": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Hysteresis": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 1
+    },
+    "component_count": 19,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [
+     "enaTim1: delayOnInit=false is not equivalent to the Niagara BooleanDelay initialization used by this lowering"
+    ],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Pre",
+     "Buildings.Controls.OBC.CDL.Logical.Timer",
+     "Buildings.Controls.OBC.CDL.Reals.Hysteresis"
+    ],
+    "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Generic.PlantEnable.Enable",
+    "root_label": "Enable",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "a4687e9761961525ef0c5e2625524fa608ec892c0fbc66239c80779b5bcc69bf",
+    "supported_class_count": 19,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "a4687e9761961525ef0c5e2625524fa608ec892c0fbc66239c80779b5bcc69bf"
+  },
+  "name": "Enable"
+ }
+}

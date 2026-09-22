@@ -238,6 +238,27 @@ COMPONENTS: tuple[ComponentSpec, ...] = (
         _map(out="out"),
     ),
     ComponentSpec(
+        "LimitSlewRate",
+        "com/bactalk/g36/BLimitSlewRate",
+        (BlockKind.NUMERIC_LIMIT_SLEW_RATE,),
+        (
+            ("in", _STATUS_NUMERIC, "input"),
+            ("out", _STATUS_NUMERIC, "output"),
+            ("raisingSlewRate", _DOUBLE, "parameter"),
+            ("fallingSlewRate", _DOUBLE, "parameter"),
+            ("derivativeTime", _REL_TIME, "parameter"),
+            ("enable", _BOOLEAN, "parameter"),
+        ),
+        (
+            _double("raisingSlewRate", "raising_slew_rate"),
+            _double("fallingSlewRate", "falling_slew_rate"),
+            _seconds("derivativeTime", "td_seconds"),
+            _boolean("enable", "enable", True),
+        ),
+        _map(**{"in": "in"}),
+        _map(out="out"),
+    ),
+    ComponentSpec(
         "PIDWithReset",
         "com/bactalk/g36/BPidWithReset",
         (BlockKind.PID_WITH_RESET,),

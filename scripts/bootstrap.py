@@ -376,6 +376,23 @@ def step_modelica_buildings(lock: StackLock) -> None:
     )
 
 
+def step_modelica_buildings_plants(lock: StackLock) -> None:
+    """LBNL master for the G36 plant controllers only (no tagged release carries them yet).
+
+    A separate checkout so the release-pinned controllers keep translating from the
+    release; ``bactalk.library_tier2`` selects this tree only for plant configurations.
+    """
+    component = lock.get("modelica-buildings-plants")
+    sparse_paths, no_cone = locked_sparse(component)
+    clone_at_revision(
+        component.require_repository(),
+        VENDOR / "modelica-buildings-plants",
+        component.require_revision(),
+        sparse_paths=sparse_paths,
+        no_cone=no_cone,
+    )
+
+
 def step_modelica_standard_library(lock: StackLock) -> None:
     component = lock.get("modelica-standard-library")
     clone_at_revision(
@@ -789,6 +806,14 @@ def build_steps() -> list[Step]:
             step_modelica_standard_library,
             group="sources",
             check=lambda: (VENDOR / "modelica-standard-library" / ".git").exists(),
+            requires_tools=("git",),
+        ),
+        Step(
+            "modelica-buildings-plants",
+            "LBNL Modelica Buildings master for the G36 chiller-plant controllers",
+            step_modelica_buildings_plants,
+            group="sources",
+            check=lambda: (VENDOR / "modelica-buildings-plants" / "Buildings").is_dir(),
             requires_tools=("git",),
         ),
         Step(
