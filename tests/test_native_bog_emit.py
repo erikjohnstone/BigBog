@@ -71,7 +71,13 @@ def test_folders_follow_the_cdl_composites_and_stay_readable(build) -> None:
         assert all(name.isidentifier() for name in names), folder.path
         placements = [Placement(n, 0, 0, x, y, w) for n, _, x, y, w in folder.components]
         assert overlaps(placements) == [], folder.path
-    assert report.link_count >= len(job.control_graph.links)
+    # Links into an assert note are pass-through aliases, not Niagara links.
+    by_id = {block.id: block for block in job.control_graph.blocks}
+    pass_through = sum(
+        by_id[link.target].kind is BlockKind.BOOLEAN_ASSERT_WARNING
+        for link in job.control_graph.links
+    )
+    assert report.link_count >= len(job.control_graph.links) - pass_through
 
 
 @pytest.mark.parametrize("build", TIER_ONE)
@@ -80,7 +86,12 @@ def test_every_ir_link_is_a_resolved_niagara_link(build) -> None:
     root = _xml(emit_bog(job.control_graph, points=job.points).content)
     handles = {element.get("h") for element in root.iter("p") if element.get("h")}
     links = [element for element in root.iter("p") if element.get("t") == "b:Link"]
-    assert len(links) >= len(job.control_graph.links)
+    by_id = {block.id: block for block in job.control_graph.blocks}
+    pass_through = sum(
+        by_id[link.target].kind is BlockKind.BOOLEAN_ASSERT_WARNING
+        for link in job.control_graph.links
+    )
+    assert len(links) >= len(job.control_graph.links) - pass_through
     for link in links:
         fields = {child.get("n"): child.get("v") for child in link}
         assert fields["sourceOrd"].startswith("h:")
@@ -111,7 +122,11 @@ def test_points_carry_units_and_module_blocks_carry_parameters() -> None:
     assert props["delayOnInit"] == ("b:Boolean", "false")
 
 
-def test_composites_expand_per_the_matrix() -> None:
+def test_edge_latch_sampler_and_hysteresis_lower_to_host_tick_components() -> None:
+    """Since N7 these kinds are ``bactalkG36`` components with host-tick semantics: a
+    stock OneShot/Or/And latch or a MultiVibrator-clocked sampler reacts to transient
+    values inside one link propagation (docs/niagara-semantics.md, S-LINK-4)."""
+
     graph = ControlGraph(
         name="COMPOSITES",
         blocks=[
@@ -120,11 +135,18 @@ def test_composites_expand_per_the_matrix() -> None:
             Block(id="v", kind=BlockKind.NUMERIC_INPUT, label="value", config={"default": 1.0}),
             Block(id="latch", kind=BlockKind.BOOLEAN_SET_RESET, label="latch"),
             Block(id="fall", kind=BlockKind.BOOLEAN_FALLING_EDGE, label="fall"),
+            Block(id="rise", kind=BlockKind.ONE_SHOT, label="rise"),
             Block(
                 id="samp",
                 kind=BlockKind.NUMERIC_SAMPLER,
                 label="samp",
                 config={"sample_period_seconds": 120.0},
+            ),
+            Block(
+                id="trig",
+                kind=BlockKind.BOOLEAN_SAMPLE_TRIGGER,
+                label="trig",
+                config={"period_seconds": 120.0, "shift_seconds": 30.0},
             ),
             Block(
                 id="hys",
@@ -136,35 +158,51 @@ def test_composites_expand_per_the_matrix() -> None:
             Block(id="o2", kind=BlockKind.BOOLEAN_OUTPUT, label="o2"),
             Block(id="o3", kind=BlockKind.NUMERIC_OUTPUT, label="o3"),
             Block(id="o4", kind=BlockKind.BOOLEAN_OUTPUT, label="o4"),
+            Block(id="o5", kind=BlockKind.BOOLEAN_OUTPUT, label="o5"),
+            Block(id="o6", kind=BlockKind.BOOLEAN_OUTPUT, label="o6"),
         ],
         links=[
             Link(source="s", target="latch", target_slot="set"),
             Link(source="c", target="latch", target_slot="clear"),
             Link(source="s", target="fall", target_slot="in"),
+            Link(source="s", target="rise", target_slot="in"),
             Link(source="v", target="samp", target_slot="in"),
             Link(source="v", target="hys", target_slot="in"),
             Link(source="latch", target="o1", target_slot="in"),
             Link(source="fall", target="o2", target_slot="in"),
             Link(source="samp", target="o3", target_slot="in"),
             Link(source="hys", target="o4", target_slot="in"),
+            Link(source="rise", target="o5", target_slot="in"),
+            Link(source="trig", target="o6", target_slot="in"),
         ],
     )
     result = emit_bog(graph)
-    assert result.plan.lane == "native_stock"
+    assert result.plan.lane == "native_with_module"
     root = _xml(result.content)
     types = sorted(element.get("t") for element in root.iter("p") if element.get("h"))
-    assert types.count("kitControl:OneShot") == 2  # set pulse + falling edge
-    assert "kitControl:MultiVibrator" in types and "kitControl:NumericLatch" in types
-    assert "kitControl:Tstat" in types
-    tstat = next(e for e in root.iter("p") if e.get("t") == "kitControl:Tstat")
-    values = {
-        child.get("n"): next(v.get("v") for v in child if v.get("n") == "value")
-        for child in tstat
-        if child.get("n") in {"sp", "diff"}
-    }
-    assert values == {"sp": "2.0", "diff": "2.0"}
-    report = validate_bog(result.content)
-    assert report.ok, [str(issue) for issue in report.errors]
+    for expected in (
+        "bactalkG36:SetReset",
+        "bactalkG36:FallingEdge",
+        "bactalkG36:RisingEdge",
+        "bactalkG36:Sampler",
+        "bactalkG36:SampleTrigger",
+        "bactalkG36:Hysteresis",
+    ):
+        assert types.count(expected) == 1, expected
+    assert not any(
+        t.startswith("kitControl:OneShot")
+        or t == "kitControl:MultiVibrator"
+        or t == "kitControl:Tstat"
+        for t in types
+    )
+    hysteresis = next(e for e in root.iter("p") if e.get("t") == "bactalkG36:Hysteresis")
+    values = {child.get("n"): child.get("v") for child in hysteresis if child.tag == "p"}
+    assert values["uLow"] == "1.0" and values["uHigh"] == "3.0"
+    trigger = next(e for e in root.iter("p") if e.get("t") == "bactalkG36:SampleTrigger")
+    values = {child.get("n"): child.get("v") for child in trigger if child.tag == "p"}
+    assert values["period"] == "120000" and values["shift"] == "30000"
+    report = validate_bog(result.content, declared_types=declared_types())
+    assert report.ok and not report.warnings, [str(i) for i in report.issues]
 
 
 def test_blocked_graphs_are_refused_not_emitted() -> None:

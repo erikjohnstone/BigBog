@@ -1,0 +1,13 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-RESET-2",
+  "title": "Reset with equal input limits gives outputLowLimit with the fault bit",
+  "station_testable": true,
+  "duration_seconds": 10.0,
+  "history_interval_seconds": 1.0,
+  "steps": [],
+  "observe": [
+    "rescaled"
+  ],
+  "what_to_look_for": "rescaled reads 30 and its history status shows fault."
+}

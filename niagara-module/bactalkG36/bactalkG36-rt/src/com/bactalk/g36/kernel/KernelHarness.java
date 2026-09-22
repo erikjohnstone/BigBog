@@ -226,6 +226,30 @@ public final class KernelHarness {
         BooleanInitialization k = new BooleanInitialization(bool(params, "initial", false));
         return row -> Boolean.toString(k.step(b(row[1])));
       }
+      case "RisingEdge": {
+        RisingEdge k = new RisingEdge(bool(params, "initial", false));
+        return row -> Boolean.toString(k.step(b(row[1])));
+      }
+      case "FallingEdge": {
+        FallingEdge k = new FallingEdge(bool(params, "initial", false));
+        return row -> Boolean.toString(k.step(b(row[1])));
+      }
+      case "SetReset": {
+        SetReset k = new SetReset();
+        return row -> Boolean.toString(k.step(b(row[1]), b(row[2])));
+      }
+      case "Sampler": {
+        Sampler k = new Sampler(num(params, "samplePeriodSeconds"));
+        return row -> Double.toString(k.step(row[0], row[1]));
+      }
+      case "SampleTrigger": {
+        SampleTrigger k = new SampleTrigger(num(params, "periodSeconds"), num(params, "shiftSeconds", 0.0));
+        return row -> Boolean.toString(k.step(row[0]));
+      }
+      case "Hysteresis": {
+        Hysteresis k = new Hysteresis(num(params, "uLow"), num(params, "uHigh"), bool(params, "initial", false));
+        return row -> Boolean.toString(k.step(row[1]));
+      }
       case "NumericChange": {
         NumericChange k = new NumericChange(
             NumericChange.Mode.valueOf(

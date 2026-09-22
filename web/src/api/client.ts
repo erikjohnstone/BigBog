@@ -14,6 +14,7 @@ const runSchema = z.object({
   bacnet_lab_manifest_path: z.string().nullable().optional(),
   boptest_verification_path: z.string().nullable().optional(),
   alfalfa_verification_path: z.string().nullable().optional(),
+  shadow_verification_path: z.string().nullable().optional(),
   environment_manifest_path: z.string().nullable().optional(),
   deliverable_manifest_path: z.string().nullable().optional(),
   job: z.object({
@@ -666,8 +667,8 @@ const qualificationJobSchema = z.object({
   broker_job_id: z.string(),
   run_id: z.string(),
   candidate_artifact_sha256: z.string().nullable(),
-  kind: z.enum(['alfalfa', 'boptest']),
-  transport: z.enum(['direct', 'bacnet_ip_loopback', 'boptest_rest']),
+  kind: z.enum(['alfalfa', 'boptest', 'shadow']),
+  transport: z.enum(['direct', 'bacnet_ip_loopback', 'boptest_rest', 'shadow_runtime']),
   status: z.enum(['queued', 'running', 'cancel_requested', 'canceled', 'succeeded', 'failed']),
   model_filename: z.string().nullable(),
   model_sha256: z.string().nullable(),
@@ -796,6 +797,100 @@ const releaseSummarySchema = z.object({
     live_writes_enabled: z.literal(false),
     approval_authorizes_live_deployment: z.literal(false),
   }),
+  shadow: z.object({
+    available: z.boolean(),
+    passed: z.boolean().nullable(),
+    tier: z.string(),
+    failing_cases: z.array(z.string()).default([]),
+  }).passthrough().optional(),
+}).passthrough();
+
+/* ------------------------------------------------------------------ */
+/* Niagara Shadow Runtime: a Python model that executes the exported    */
+/* .bog. Its tier is `bog-simulated`; it is never a Niagara runtime      */
+/* qualification.                                                        */
+/* ------------------------------------------------------------------ */
+
+const shadowBandSchema = z.object({
+  kind: z.enum(['numeric', 'boolean', 'integer']).or(z.string()),
+  atolx: z.number().nullable().optional(),
+  atoly: z.number().nullable().optional(),
+  rationale: z.string().nullable().optional(),
+  source: z.string().nullable().optional(),
+}).passthrough();
+
+const shadowLegSchema = z.object({
+  leg: z.string(),
+  passed: z.boolean(),
+  max_error: z.number().nullable().optional(),
+  first_violation_time: z.number().nullable().optional(),
+  engine: z.string().nullable().optional(),
+}).passthrough();
+
+const shadowSignalComparisonSchema = z.object({
+  signal: z.string(),
+  passed: z.boolean(),
+  band: shadowBandSchema,
+  legs: z.record(z.string(), shadowLegSchema).default({}),
+}).passthrough();
+
+const shadowDivergenceSchema = z.object({
+  time_seconds: z.number(),
+  block: z.string(),
+  slot: z.string().default('out'),
+  shadow: z.union([z.number(), z.boolean(), z.string(), z.null()]).optional(),
+  interpreter: z.union([z.number(), z.boolean(), z.string(), z.null()]).optional(),
+  band: z.number().nullable().optional(),
+}).passthrough();
+
+const shadowCaseSchema = z.object({
+  name: z.string(),
+  passed: z.boolean(),
+  legs_available: z.array(z.string()).default([]),
+  signals: z.array(shadowSignalComparisonSchema).default([]),
+  first_divergence: shadowDivergenceSchema.nullable().optional(),
+}).passthrough();
+
+const shadowDifferentialSchema = z.object({
+  schema: z.literal('bactalk.three-way-differential/v1'),
+  controller_id: z.string().nullable(),
+  passed: z.boolean(),
+  reference_available: z.boolean(),
+  engines: z.object({
+    shadow: z.string().nullable().optional(),
+    interpreter: z.string().nullable().optional(),
+    reference: z.string().nullable().optional(),
+  }).passthrough(),
+  cases: z.array(shadowCaseSchema).default([]),
+  failing_cases: z.array(z.string()).default([]),
+}).passthrough();
+
+const shadowReferenceSchema = z.record(
+  z.string(),
+  z.record(z.string(), z.object({ times: z.array(z.number()), values: z.array(z.number()) }).passthrough()),
+);
+
+export const shadowEvidenceSchema = z.object({
+  schema: z.literal('bactalk.shadow-qualification/v1'),
+  status: z.enum(['pass', 'fail']),
+  run_id: z.string(),
+  tier: z.literal('bog-simulated'),
+  engine: z.string(),
+  policy: z.string(),
+  kernel_backend: z.string(),
+  band_set: z.string(),
+  bog_sha256: z.string(),
+  artifact_sha256_before_qualification: z.string(),
+  approval_allowed: z.boolean(),
+  live_building_writes: z.literal(false),
+  report: reportSchema,
+  differential: shadowDifferentialSchema,
+  reference: shadowReferenceSchema.optional(),
+}).passthrough();
+
+const niagaraPreviewsSchema = z.object({
+  schema: z.literal('bactalk.niagara-previews/v1'),
+  folders: z.array(z.object({ name: z.string(), svg: z.string() }).passthrough()),
 }).passthrough();
 
 const catalogSchema = z.object({
@@ -1274,6 +1369,11 @@ export type BoptestSignal = z.infer<typeof boptestSignalSchema>;
 export type BoptestTestCaseContract = z.infer<typeof boptestTestCaseContractSchema>;
 export type AlfalfaEvidence = z.infer<typeof alfalfaEvidenceSchema>;
 export type QualificationJob = z.infer<typeof qualificationJobSchema>;
+export type ShadowEvidence = z.infer<typeof shadowEvidenceSchema>;
+export type ShadowDifferentialCase = ShadowEvidence['differential']['cases'][number];
+export type ShadowDivergence = NonNullable<ShadowDifferentialCase['first_divergence']>;
+export type NiagaraPreviews = z.infer<typeof niagaraPreviewsSchema>;
+export type ShadowQualificationRequest = { policy: string; kernel_backend: 'auto' | 'python' | 'jvm'; band_set: 'default' | 'coarse' };
 export type FmiVariable = z.infer<typeof fmiVariableSchema>;
 export type FmiModel = z.infer<typeof fmiModelSchema>;
 export type Deliverables = z.infer<typeof deliverablesSchema>;
@@ -1508,6 +1608,17 @@ export const api = {
   async enqueueBoptestQualification(runId: string, qualification: { mapping: unknown; cases?: unknown[]; oracles?: unknown[]; steps?: number; step_seconds?: number; start_time?: number; warmup_period?: number; scenario?: Record<string, unknown> }) {
     return qualificationJobSchema.parse(
       await postJson(`/api/runs/${runId}/qualification-jobs/boptest`, qualification),
+    );
+  },
+  async shadow(runId: string) {
+    return getArtifact(`/api/runs/${runId}/verify/shadow`, shadowEvidenceSchema);
+  },
+  async niagaraPreviews(runId: string) {
+    return getArtifact(`/api/runs/${runId}/niagara-previews`, niagaraPreviewsSchema);
+  },
+  async enqueueShadowQualification(runId: string, body: ShadowQualificationRequest) {
+    return qualificationJobSchema.parse(
+      await postJson(`/api/runs/${runId}/qualification-jobs/shadow`, body),
     );
   },
   async latestQualificationJob(runId: string) {

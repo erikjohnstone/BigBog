@@ -98,6 +98,12 @@ KERNEL_CASES: tuple[tuple[str, dict[str, object], tuple[str, ...]], ...] = (
     ("NumericChange", {"mode": "changed", "initial": 0.0}, ("n",)),
     ("NumericChange", {"mode": "increased", "initial": 0.0}, ("n",)),
     ("NumericChange", {"mode": "decreased", "initial": 0.0}, ("n",)),
+    ("RisingEdge", {"initial": False}, ("b",)),
+    ("FallingEdge", {"initial": True}, ("b",)),
+    ("SetReset", {}, ("b", "b")),
+    ("Sampler", {"samplePeriodSeconds": 4.0}, ("n",)),
+    ("SampleTrigger", {"periodSeconds": 4.0, "shiftSeconds": 1.0}, ()),
+    ("Hysteresis", {"uLow": -1.0, "uHigh": 1.0, "initial": False}, ("n",)),
 )
 
 

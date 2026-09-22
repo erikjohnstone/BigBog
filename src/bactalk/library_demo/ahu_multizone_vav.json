@@ -219,6 +219,10 @@
  },
  "note": "Retained so a base install can build the demo without the vendored translation toolchain. tests/test_lbnl_demo.py re-translates on the integration tier and fails if this drifts.",
  "parameters": {
+  "VAbsOutAir_flow": 1.2,
+  "VDesOutAir_flow": 1.5,
+  "VDesTotOutAir_flow": 1.5,
+  "VUncDesOutAir_flow": 1.6,
   "eneStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.EnergyStandard.ASHRAE90_1",
   "venStd": "Buildings.Controls.OBC.ASHRAE.G36.Types.VentilationStandard.ASHRAE62_1"
  },
@@ -607,7 +611,7 @@
   "tag": "v13.0.0"
  },
  "translator": {
-  "cxf_source_sha256": "45ee4273e65124e7900c7934e4ffb65c0f78a361917fb154836f323fff2ac73a",
+  "cxf_source_sha256": "02ffcabae021cf9cde12a2fc0077a737523bc2b52a75eedc370396fe240cde76",
   "lowering_schema": "bactalk-cxf-lowering/v4",
   "name": "LBNL modelica-json",
   "runtime": "Open Control Engine"
@@ -944,7 +948,7 @@
    },
    {
     "config": {
-     "value": 0.0
+     "value": 1.5
     },
     "id": "desOutAir",
     "kind": "numeric_const",
@@ -1054,7 +1058,7 @@
    },
    {
     "config": {
-     "value": 0.0
+     "value": 1.6
     },
     "id": "uncDesOutAir",
     "kind": "numeric_const",
@@ -10904,14 +10908,14 @@
     "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.AHUs.MultiZone.VAV.Controller",
     "root_label": "Controller",
     "schema": "bactalk-cxf-lowering/v4",
-    "source_sha256": "45ee4273e65124e7900c7934e4ffb65c0f78a361917fb154836f323fff2ac73a",
+    "source_sha256": "02ffcabae021cf9cde12a2fc0077a737523bc2b52a75eedc370396fe240cde76",
     "supported_class_count": 407,
     "translatable": true,
     "unsupported_classes": []
    },
    "lowering": "bactalk-cxf-lowering/v4",
    "source": "ASHRAE-231P-CXF",
-   "source_sha256": "45ee4273e65124e7900c7934e4ffb65c0f78a361917fb154836f323fff2ac73a"
+   "source_sha256": "02ffcabae021cf9cde12a2fc0077a737523bc2b52a75eedc370396fe240cde76"
   },
   "name": "Controller"
  }

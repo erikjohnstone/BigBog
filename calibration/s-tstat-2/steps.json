@@ -1,0 +1,26 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-TSTAT-2",
+  "title": "Tstat with a null cv is null; it starts false (also S-TSTAT-3)",
+  "station_testable": true,
+  "duration_seconds": 20.0,
+  "history_interval_seconds": 1.0,
+  "steps": [
+    {
+      "time_seconds": 0.0,
+      "action": "override",
+      "point": "cv",
+      "value": 25.0
+    },
+    {
+      "time_seconds": 10.0,
+      "action": "auto",
+      "point": "cv",
+      "value": null
+    }
+  ],
+  "observe": [
+    "call"
+  ],
+  "what_to_look_for": "call starts true (cv above the band), then after t=10 shows the fallback true with in16 null."
+}

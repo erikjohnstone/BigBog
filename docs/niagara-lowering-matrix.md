@@ -12,8 +12,8 @@ claim of runtime qualification.
 | Class | Kinds |
 |---|---|
 | `STOCK_EXACT` | 28 |
-| `STOCK_WITHIN_BANDS` | 9 |
-| `MODULE` | 15 |
+| `STOCK_WITHIN_BANDS` | 3 |
+| `MODULE` | 21 |
 | `UNSUPPORTED` | 6 |
 
 ## Matrix
@@ -47,22 +47,22 @@ claim of runtime qualification.
 | `boolean_switch` | `STOCK_EXACT` | `kitControl:BooleanSwitch` | selector→inSwitch, when_true→inTrue, when_false→inFalse, out→out | — |
 | `numeric_latch` | `STOCK_EXACT` | `kitControl:NumericLatch` | in→in, clock→clock, out→out | Samples in on the rising edge of clock, as the IR does. |
 | `boolean_latch` | `STOCK_EXACT` | `kitControl:BooleanLatch` | in→in, clock→clock, out→out | — |
-| `boolean_set_reset` | `STOCK_WITHIN_BANDS` | composite: kitControl:OneShot(set) -> kitControl:Or -> kitControl:And(Not clear) with a feedback link from out | — | — |
-| `one_shot` | `STOCK_WITHIN_BANDS` | `kitControl:OneShot` | in→in, out→out | — |
-| `boolean_falling_edge` | `STOCK_WITHIN_BANDS` | composite: kitControl:Not -> kitControl:OneShot | — | — |
+| `boolean_set_reset` | `MODULE` | `bactalkG36:SetReset` | — | Clear-dominant latch with host-tick semantics; the stock OneShot/Or/And composite latched on transient values inside one link propagation (N7, D3). |
+| `one_shot` | `MODULE` | `bactalkG36:RisingEdge` | — | One execution true per rising edge, judged between execution periods; kitControl:OneShot fires on transient values inside one link propagation (N7, D3). |
+| `boolean_falling_edge` | `MODULE` | `bactalkG36:FallingEdge` | — | One execution true per falling edge, judged between execution periods. |
 | `boolean_delay` | `STOCK_WITHIN_BANDS` | `kitControl:BooleanDelay` | in→in, out→out | — |
 | `boolean_true_false_hold` | `MODULE` | `bactalkG36:TrueFalseHold` | — | No stock block holds both states for a minimum time. |
 | `boolean_pre_host_tick` | `MODULE` | `bactalkG36:Pre` | — | One-tick delay with host-tick semantics. |
 | `boolean_initialization` | `MODULE` | `bactalkG36:BooleanInitialization` | — | True (or the configured value) on the first execution cycle only. |
-| `numeric_sampler` | `STOCK_WITHIN_BANDS` | composite: kitControl:MultiVibrator(period) -> kitControl:NumericLatch.clock | — | — |
-| `boolean_sample_trigger` | `STOCK_WITHIN_BANDS` | composite: kitControl:MultiVibrator(period) -> kitControl:OneShot | — | — |
+| `numeric_sampler` | `MODULE` | `bactalkG36:Sampler` | — | Period-aligned sampling with host-tick semantics; the stock MultiVibrator/Latch composite captured whatever value its input held mid-propagation (N7, D3). |
+| `boolean_sample_trigger` | `MODULE` | `bactalkG36:SampleTrigger` | — | One execution true per period boundary, aligned to time zero plus shift. |
 | `numeric_first_order_hold` | `MODULE` | `bactalkG36:FirstOrderHold` | — | Linear extrapolation between samples has no stock equivalent. |
 | `numeric_unit_delay` | `MODULE` | `bactalkG36:UnitDelay` | — | kitControl:NumericDelay is a rate limiter, not a one-period delay. |
 | `moving_average` | `MODULE` | `bactalkG36:MovingAverage` | — | Time-window average over a ring buffer. |
 | `numeric_changed` | `MODULE` | `bactalkG36:NumericChange` | — | mode=changed. |
 | `numeric_increased` | `MODULE` | `bactalkG36:NumericChange` | — | mode=increased. |
 | `numeric_decreased` | `MODULE` | `bactalkG36:NumericChange` | — | mode=decreased. |
-| `hysteresis` | `STOCK_WITHIN_BANDS` | `kitControl:Tstat` | in→cv, out→out | — |
+| `hysteresis` | `MODULE` | `bactalkG36:Hysteresis` | — | CDL thresholds (on above u_high, off below u_low) with host-tick semantics; kitControl:Tstat executes on change and can latch on a transient value (N7, D3). |
 | `timer` | `MODULE` | `bactalkG36:Timer` | — | Elapsed time and passed flag while in is true. |
 | `timer_with_reset` | `MODULE` | `bactalkG36:TimerWithReset` | — | — |
 | `timer_accumulating` | `MODULE` | `bactalkG36:TimerAccumulating` | — | — |
@@ -87,37 +87,6 @@ Each deviation is bounded by the scenarios listed; the Shadow Runtime (N6) and
 the three-way differential (N7) must pass every one of them within tolerance
 before the row is anything more than provisional.
 
-### `boolean_set_reset` → composite: kitControl:OneShot(set) -> kitControl:Or -> kitControl:And(Not clear) with a feedback link from out
-
-Deviation: The feedback link settles one execution cycle after set or clear changes; clear keeps priority over set, and set is edge-sensitive through the OneShot.
-
-Bounding scenarios:
-
-- set and clear true in the same cycle
-- set held true across several cycles
-- single-cycle clear pulse while set is held
-- start-up with set already true
-
-### `one_shot` → kitControl:OneShot
-
-Deviation: kitControl:OneShot emits a pulse of configured width (at least one execution cycle), while the IR pulse lasts exactly one host tick.
-
-Bounding scenarios:
-
-- single rising edge feeding a latch or set input
-- two edges closer together than the pulse width
-- edge on the first execution cycle
-
-### `boolean_falling_edge` → composite: kitControl:Not -> kitControl:OneShot
-
-Deviation: kitControl:OneShot emits a pulse of configured width (at least one execution cycle), while the IR pulse lasts exactly one host tick.
-
-Bounding scenarios:
-
-- single rising edge feeding a latch or set input
-- two edges closer together than the pulse width
-- edge on the first execution cycle
-
 ### `boolean_delay` → kitControl:BooleanDelay
 
 Deviation: BooleanDelay always delays a true input from start-up; the IR passes an initially true input through when delay_on_init is false. This row applies only when delay_on_init is true; otherwise the block is lowered to bactalkG36:TrueDelay (see classify_block).
@@ -128,38 +97,6 @@ Bounding scenarios:
 - input pulse shorter than the delay
 - input held true past the delay
 - input dropping exactly at the delay
-
-### `numeric_sampler` → composite: kitControl:MultiVibrator(period) -> kitControl:NumericLatch.clock
-
-Deviation: kitControl:MultiVibrator clocks from station start, while the IR aligns sample instants to multiples of the period from time zero; the sampled value is the same, its phase may differ by up to one period.
-
-Bounding scenarios:
-
-- input changes mid-period
-- first sample after start-up
-- period equal to the execution cycle
-
-### `boolean_sample_trigger` → composite: kitControl:MultiVibrator(period) -> kitControl:OneShot
-
-Deviation: kitControl:MultiVibrator clocks from station start, while the IR aligns sample instants to multiples of the period from time zero; the sampled value is the same, its phase may differ by up to one period. kitControl:OneShot emits a pulse of configured width (at least one execution cycle), while the IR pulse lasts exactly one host tick.
-
-Bounding scenarios:
-
-- input changes mid-period
-- first sample after start-up
-- period equal to the execution cycle
-- trigger feeding a latch clock
-
-### `hysteresis` → kitControl:Tstat
-
-Deviation: Tstat switches on at cv >= sp + diff/2 and off at cv <= sp - diff/2 with sp = (u_low + u_high)/2 and diff = u_high - u_low; the IR switches on at in > u_high and off at in < u_low, so only values exactly on a threshold differ.
-
-Bounding scenarios:
-
-- value exactly at u_high
-- value exactly at u_low
-- start-up with the value inside the band
-- value crossing both thresholds in one cycle
 
 ### `boolean_assert_warning` → composite: pass-through link for ok, baja:WsTextBlock carrying the message
 
@@ -184,11 +121,17 @@ Bounding scenarios:
 ## MODULE components required (N3)
 
 - `bactalkG36:BooleanInitialization`: `boolean_initialization`
+- `bactalkG36:FallingEdge`: `boolean_falling_edge`
 - `bactalkG36:FirstOrderHold`: `numeric_first_order_hold`
+- `bactalkG36:Hysteresis`: `hysteresis`
 - `bactalkG36:MovingAverage`: `moving_average`
 - `bactalkG36:NumericChange`: `numeric_changed`, `numeric_increased`, `numeric_decreased`
 - `bactalkG36:PIDWithReset`: `pid_with_reset`
 - `bactalkG36:Pre`: `boolean_pre_host_tick`
+- `bactalkG36:RisingEdge`: `one_shot`
+- `bactalkG36:SampleTrigger`: `boolean_sample_trigger`
+- `bactalkG36:Sampler`: `numeric_sampler`
+- `bactalkG36:SetReset`: `boolean_set_reset`
 - `bactalkG36:Timer`: `timer`
 - `bactalkG36:TimerAccumulating`: `timer_accumulating`
 - `bactalkG36:TimerWithReset`: `timer_with_reset`

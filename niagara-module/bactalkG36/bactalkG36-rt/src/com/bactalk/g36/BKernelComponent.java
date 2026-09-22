@@ -22,8 +22,8 @@ import javax.baja.sys.Property;
  * <p>Time base: seconds since the component started, from the station clock, so
  * every kernel sees monotonic absolute time regardless of the execution period.
  *
- * <p>Execution: every executionPeriod, and on each input change unless the kernel
- * is tick-semantic (see {@link #stepsOnInputChange()}).
+ * <p>Execution: every executionPeriod only (see {@link #stepsOnInputChange()}); a
+ * parameter change rebuilds the kernel and steps it at once.
  */
 public abstract class BKernelComponent extends BComponent {
   /** How often the kernel is stepped even when no input changes. */
@@ -33,8 +33,18 @@ public abstract class BKernelComponent extends BComponent {
   /** Steps the kernel; scheduled by the ticket and fired by input changes. */
   public static final Action execute = newAction(Flags.HIDDEN, null);
 
+  /**
+   * Re-steps a sampling kernel at the instant of its last tick once the rest of the
+   * station has settled (a zero-delay ticket runs after the engine queue drains), so
+   * the value it samples at a period boundary is the settled one, as a CDL solver
+   * samples after event iteration. Only kernels with {@link #resamplesAtInstantEnd()}.
+   */
+  public static final Action resample = newAction(Flags.HIDDEN, null);
+
   private Clock.Ticket ticket;
   private long startedMillis;
+  private double lastTickSeconds = Double.NaN;
+  private boolean resamplePending;
 
   public BRelTime getExecutionPeriod() {
     return (BRelTime) get(executionPeriod);
@@ -69,12 +79,13 @@ public abstract class BKernelComponent extends BComponent {
   }
 
   /**
-   * Whether an input change steps the kernel at once. Kernels whose state advances
-   * per execution rather than per unit of time (Pre, NumericChange) step only on the
-   * execution period, so "the previous execution" means the previous host tick.
+   * Whether an input change steps the kernel at once. Since N7 no component does: every
+   * kernel samples its inputs on the execution period only (host-tick semantics), so a
+   * transient value inside one link propagation can never restart a delay, latch an
+   * edge or advance a per-execution state. Latency is bounded by executionPeriod.
    */
   protected boolean stepsOnInputChange() {
-    return true;
+    return false;
   }
 
   public void doExecute() {
@@ -87,10 +98,28 @@ public abstract class BKernelComponent extends BComponent {
         return;
       }
       double timeSeconds = Math.max(0.0, (Clock.millis() - startedMillis) / 1000.0);
+      lastTickSeconds = timeSeconds;
       step(timeSeconds);
+      if (resamplesAtInstantEnd() && !resamplePending) {
+        resamplePending = true;
+        Clock.schedule(this, BRelTime.make(0), resample, null);
+      }
     } finally {
       schedule();
     }
+  }
+
+  public void doResample() {
+    resamplePending = false;
+    if (!isRunning() || Double.isNaN(lastTickSeconds) || !inputsValid()) {
+      return;
+    }
+    step(lastTickSeconds);
+  }
+
+  /** Whether the kernel samples its input at period boundaries and needs the settled value. */
+  protected boolean resamplesAtInstantEnd() {
+    return false;
   }
 
   protected static boolean valid(BStatusValue value) {

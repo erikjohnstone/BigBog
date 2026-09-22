@@ -22,7 +22,7 @@ export function Home() {
   const approved = all.filter((run) => run.status === 'approved');
   const selected = (readiness.data?.components ?? []).filter((component) => component.selected);
   const productWired = selected.filter((component) =>
-    ['product-wired', 'target-compiled', 'verified', 'field-qualified', 'production-supported'].includes(component.stage),
+    ['product-wired', 'target-compiled', 'bog-simulated', 'verified', 'field-qualified', 'production-supported'].includes(component.stage),
   );
 
   return (

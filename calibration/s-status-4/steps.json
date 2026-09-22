@@ -1,0 +1,26 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-STATUS-4",
+  "title": "propagateFlags default: a null input is ignored, no bit propagates",
+  "station_testable": true,
+  "duration_seconds": 20.0,
+  "history_interval_seconds": 1.0,
+  "steps": [
+    {
+      "time_seconds": 0.0,
+      "action": "override",
+      "point": "a",
+      "value": 3.0
+    },
+    {
+      "time_seconds": 10.0,
+      "action": "auto",
+      "point": "a",
+      "value": null
+    }
+  ],
+  "observe": [
+    "sum"
+  ],
+  "what_to_look_for": "sum reads 5 with ok status, then 2 (b alone) with ok status after a goes null at t=10."
+}

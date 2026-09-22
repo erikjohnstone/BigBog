@@ -1,0 +1,13 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-STATUS-6",
+  "title": "start-up: outputs start at zero/ok, links push before the first execution (also S-LINK-2)",
+  "station_testable": true,
+  "duration_seconds": 10.0,
+  "history_interval_seconds": 1.0,
+  "steps": [],
+  "observe": [
+    "latched"
+  ],
+  "what_to_look_for": "latched reads 3 from the first history record: the latch clocked at start saw the settled sum."
+}

@@ -695,7 +695,7 @@ def test_timers_fire_in_due_order_with_policy_ties() -> None:
     builder.link("Inputs/a", "out", "Logic/clock", "in")
     builder.link("Logic/feed", "out", "Logic/latch", "in")
     builder.link("Logic/clock", "out", "Logic/latch", "clock")
-    document = _runtime(builder)
+    document = _runtime(builder, DEFAULT_POLICY.variant("doc", tick_order="document"))
     document.write_point("/P/Inputs/a", True)
     document.advance(2.0)
     assert _value(document, "/P/Logic/latch") is True, "feed fired first in document order"
@@ -703,6 +703,12 @@ def test_timers_fire_in_due_order_with_policy_ties() -> None:
     reverse.write_point("/P/Inputs/a", True)
     reverse.advance(2.0)
     assert _value(reverse, "/P/Logic/latch") is False, "clock fired first in reverse order"
+    # The default topological order is deterministic: siblings keep the DFS order,
+    # which visits `clock` before `feed` here, so the latch clocks before it is fed.
+    topological = _runtime(builder)
+    topological.write_point("/P/Inputs/a", True)
+    topological.advance(2.0)
+    assert _value(topological, "/P/Logic/latch") is False
 
 
 # --- module components -------------------------------------------------------------------
@@ -784,10 +790,38 @@ def test_invalid_inputs_null_the_outputs_without_stepping() -> None:
     )
     assert runtime.read("/P/Logic/timer", "passed").is_null
     runtime.write_point("/P/Inputs/a", True, status=Status.OK)
-    assert (
-        _value(runtime, "/P/Logic/timer", "elapsed") == 6.0
-        and _value(runtime, "/P/Logic/timer", "passed") is True
+    runtime.advance(1.0)  # sampled at the next tick
+    assert _value(runtime, "/P/Logic/timer", "elapsed") == 7.0
+    assert _value(runtime, "/P/Logic/timer", "passed") is True
+
+
+def test_sampling_kernels_take_the_settled_value_of_a_boundary_instant() -> None:
+    """S-MODULE-6."""
+
+    # y(k+1) = y(k) + 1 through a UnitDelay: the value sampled at a boundary must be the
+    # one settled after the delay's own output changed at that instant.
+    builder = BogBuilder("P")
+    builder.add("Logic", "one", "kitControl:NumericConst", [status_numeric("out", 1.0)])
+    builder.add("Logic", "next", "kitControl:Add")
+    builder.add(
+        "Logic",
+        "delay",
+        "bactalkG36:UnitDelay",
+        [
+            rel_time("samplePeriod", 2.0),
+            double("initialValue", 0.0),
+            rel_time("executionPeriod", 1.0),
+        ],
     )
+    builder.link("Logic/delay", "out", "Logic/next", "inA")
+    builder.link("Logic/one", "out", "Logic/next", "inB")
+    builder.link("Logic/next", "out", "Logic/delay", "in")
+    runtime = _runtime(builder)
+    seen = [_value(runtime, "/P/Logic/delay")]
+    for _ in range(6):
+        runtime.advance(1.0)
+        seen.append(_value(runtime, "/P/Logic/delay"))
+    assert seen == [0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0]
 
 
 def test_module_component_missing_required_property_is_a_load_error() -> None:
@@ -882,7 +916,7 @@ def test_interval_history_records_the_parent_out() -> None:
         "historyConfig",
         "history:HistoryConfig",
         [raw("interval", "false:60000", "history:CollectionInterval")],
-        parent="Pts/NumericInterval",
+        parent="Pts/t/NumericInterval",
     )
     runtime = _runtime(builder)
     runtime.advance(60.0)

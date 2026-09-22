@@ -673,10 +673,10 @@ test('review acknowledges every surface, binds approval to the digest, and can r
   await expect(page.getByRole('heading', { name: 'Decision', exact: true })).toBeVisible();
   const approve = page.getByRole('button', { name: 'Approve' });
   await expect(approve).toBeDisabled();
-  for (const surface of ['Tests', 'Decision coverage', 'Qualification matrix', 'Deliverables', 'Release summary', 'Blockers']) {
+  for (const surface of ['Tests', 'Decision coverage', 'Qualification matrix', 'Deliverables', 'Release summary', 'Shadow Runtime', 'Blockers']) {
     await page.getByRole('checkbox', { name: `Acknowledge ${surface}` }).check();
   }
-  await expect(page.getByText('6/6 surfaces')).toBeVisible();
+  await expect(page.getByText('7/7 surfaces')).toBeVisible();
   await expect(approve).toBeEnabled();
   await axe(page);
 

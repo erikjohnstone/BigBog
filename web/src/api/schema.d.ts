@@ -1262,6 +1262,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/runs/{run_id}/niagara-previews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Niagara Previews
+         * @description The native lane's per-folder wiresheet SVG previews (N4).
+         */
+        get: operations["get_niagara_previews_api_runs__run_id__niagara_previews_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/runs/{run_id}/qualification-jobs/alfalfa": {
         parameters: {
             query?: never;
@@ -1307,6 +1327,26 @@ export interface paths {
         get: operations["latest_qualification_job_api_runs__run_id__qualification_jobs_latest_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/runs/{run_id}/qualification-jobs/shadow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Enqueue Shadow Qualification
+         * @description Queue the candidate's .bog for the Niagara Shadow Runtime (N7, D5).
+         */
+        post: operations["enqueue_shadow_qualification_api_runs__run_id__qualification_jobs_shadow_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1448,6 +1488,27 @@ export interface paths {
         put?: never;
         /** Qualify Run With Boptest */
         post: operations["qualify_run_with_boptest_api_runs__run_id__verify_boptest_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/runs/{run_id}/verify/shadow": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Shadow Qualification */
+        get: operations["get_shadow_qualification_api_runs__run_id__verify_shadow_get"];
+        put?: never;
+        /**
+         * Qualify Run With Shadow
+         * @description Run the Shadow Runtime qualification synchronously (small suites).
+         */
+        post: operations["qualify_run_with_shadow_api_runs__run_id__verify_shadow_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -3010,6 +3071,26 @@ export interface components {
              * @default ASHRAE Guideline 36-2021 inspired MVP
              */
             version: string;
+        };
+        /** ShadowQualificationRequest */
+        ShadowQualificationRequest: {
+            /**
+             * Band Set
+             * @default default
+             * @enum {string}
+             */
+            band_set: "default" | "coarse";
+            /**
+             * Kernel Backend
+             * @default auto
+             * @enum {string}
+             */
+            kernel_backend: "auto" | "python" | "jvm";
+            /**
+             * Policy
+             * @default default
+             */
+            policy: string;
         };
         /** ShopProfile */
         ShopProfile: {
@@ -5438,6 +5519,39 @@ export interface operations {
             };
         };
     };
+    get_niagara_previews_api_runs__run_id__niagara_previews_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     enqueue_alfalfa_qualification_api_runs__run_id__qualification_jobs_alfalfa_post: {
         parameters: {
             query?: never;
@@ -5525,6 +5639,43 @@ export interface operations {
         responses: {
             /** @description Successful Response */
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    enqueue_shadow_qualification_api_runs__run_id__qualification_jobs_shadow_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShadowQualificationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -5854,6 +6005,76 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["BoptestQualificationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_shadow_qualification_api_runs__run_id__verify_shadow_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    qualify_run_with_shadow_api_runs__run_id__verify_shadow_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShadowQualificationRequest"];
             };
         };
         responses: {

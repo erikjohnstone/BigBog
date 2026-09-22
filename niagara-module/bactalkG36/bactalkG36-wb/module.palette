@@ -12,6 +12,9 @@
   <p n="TimerAccumulating" t="bactalkG36:TimerAccumulating"/>
   <p n="TrueFalseHold" t="bactalkG36:TrueFalseHold"/>
   <p n="Pre" t="bactalkG36:Pre"/>
+  <p n="RisingEdge" t="bactalkG36:RisingEdge"/>
+  <p n="FallingEdge" t="bactalkG36:FallingEdge"/>
+  <p n="SetReset" t="bactalkG36:SetReset"/>
  </p>
  <p n="Discrete" t="b:Folder">
   <p n="UnitDelay" t="bactalkG36:UnitDelay"/>
@@ -19,6 +22,9 @@
   <p n="MovingAverage" t="bactalkG36:MovingAverage"/>
   <p n="NumericChange" t="bactalkG36:NumericChange"/>
   <p n="BooleanInitialization" t="bactalkG36:BooleanInitialization"/>
+  <p n="Sampler" t="bactalkG36:Sampler"/>
+  <p n="SampleTrigger" t="bactalkG36:SampleTrigger"/>
+  <p n="Hysteresis" t="bactalkG36:Hysteresis"/>
  </p>
  <p n="Loops" t="b:Folder">
   <p n="PIDWithReset" t="bactalkG36:PIDWithReset"/>

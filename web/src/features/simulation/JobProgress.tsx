@@ -6,7 +6,7 @@ import { api } from '../../api/client';
 import { keys, useLatestQualificationJob } from '../../api/queries';
 import { Button, StatusPill } from '../../design-system/primitives';
 import { MissingEvidence } from '../../design-system/states';
-import { HEARTBEAT_WARN_SECONDS, heartbeatAgeSeconds, isTerminal, jobTone, useJobProgress } from './job-progress';
+import { HEARTBEAT_WARN_SECONDS, heartbeatAgeSeconds, isTerminal, jobKindLabel, jobTone, useJobProgress } from './job-progress';
 
 /** A clock that ticks only while something is worth timing. */
 function useNow(active: boolean, everyMs = 1000): number {
@@ -39,6 +39,9 @@ export function JobProgress({ runId }: { runId: string }) {
     if (!settledKey) return;
     void queryClient.invalidateQueries({ queryKey: keys.boptest(runId) });
     void queryClient.invalidateQueries({ queryKey: keys.alfalfa(runId) });
+    void queryClient.invalidateQueries({ queryKey: keys.shadow(runId) });
+    void queryClient.invalidateQueries({ queryKey: keys.niagaraPreviews(runId) });
+    void queryClient.invalidateQueries({ queryKey: keys.releaseSummary(runId) });
     void queryClient.invalidateQueries({ queryKey: keys.report(runId) });
     void queryClient.invalidateQueries({ queryKey: keys.run(runId) });
   }, [settledKey, queryClient, runId]);
@@ -54,7 +57,7 @@ export function JobProgress({ runId }: { runId: string }) {
     return (
       <div className="px-4 py-4 text-sm text-fg-1">
         <p>No qualification job has been queued for this candidate.</p>
-        <p className="mt-1 text-xs text-fg-2">Start one with a BOPTEST case or an FMU; progress streams here while it runs.</p>
+        <p className="mt-1 text-xs text-fg-2">Start one with a BOPTEST case, an FMU, or the Shadow Runtime; progress streams here while it runs.</p>
       </div>
     );
   }
@@ -69,7 +72,7 @@ export function JobProgress({ runId }: { runId: string }) {
     <div className="px-4 py-3 flex flex-col gap-3" data-testid="job-progress" data-status={job.status}>
       <div className="flex items-center gap-2 flex-wrap">
         <StatusPill tone={tone}>{label}</StatusPill>
-        <StatusPill tone="sim">{job.kind === 'boptest' ? 'BOPTEST' : 'Alfalfa'} · {job.transport.replaceAll('_', ' ')}</StatusPill>
+        <StatusPill tone="sim">{jobKindLabel(job.kind)} · {job.transport.replaceAll('_', ' ')}</StatusPill>
         {job.cancellation_requested && job.status !== 'canceled' && <StatusPill tone="warn">Cancel requested</StatusPill>}
         <span className="flex-1" />
         <span className="inline-flex items-center gap-1 text-2xs text-fg-2" title="How progress reaches this page">

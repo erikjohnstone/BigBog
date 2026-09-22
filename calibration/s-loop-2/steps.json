@@ -1,0 +1,50 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-LOOP-2",
+  "title": "LoopPoint executes on its executeTime clock only (also S-LOOP-4, S-LOOP-5, S-LOOP-6)",
+  "station_testable": true,
+  "duration_seconds": 130.0,
+  "history_interval_seconds": 1.0,
+  "steps": [
+    {
+      "time_seconds": 0.0,
+      "action": "override",
+      "point": "cv",
+      "value": 20.0
+    },
+    {
+      "time_seconds": 13.0,
+      "action": "override",
+      "point": "cv",
+      "value": 25.0
+    },
+    {
+      "time_seconds": 43.0,
+      "action": "override",
+      "point": "cv",
+      "value": 200.0
+    },
+    {
+      "time_seconds": 73.0,
+      "action": "override",
+      "point": "cv",
+      "value": 20.0
+    },
+    {
+      "time_seconds": 93.0,
+      "action": "override",
+      "point": "enable",
+      "value": false
+    },
+    {
+      "time_seconds": 113.0,
+      "action": "auto",
+      "point": "cv",
+      "value": null
+    }
+  ],
+  "observe": [
+    "loopOut"
+  ],
+  "what_to_look_for": "loopOut changes only at multiples of 10 s (S-LOOP-2), clamps at 100 without winding up (S-LOOP-4), holds when enable drops at t=93 (S-LOOP-5) and shows the fallback -1 once cv is null at t=113 (S-LOOP-6)."
+}

@@ -26,7 +26,7 @@ function matchesFacet(run: RunSummary, facet: Facet): boolean {
     case 'ai_proposal':
       return run.origin === 'ai_proposal';
     case 'qualification':
-      return Boolean(run.boptest_verification_path || run.alfalfa_verification_path);
+      return Boolean(run.boptest_verification_path || run.alfalfa_verification_path || run.shadow_verification_path);
     default:
       return run.status === facet;
   }
@@ -139,6 +139,7 @@ function JobRow({ run }: { run: RunSummary }) {
   if (run.bacnet_lab_manifest_path) evidence.push('BACnet lab');
   if (run.boptest_verification_path) evidence.push('BOPTEST');
   if (run.alfalfa_verification_path) evidence.push('Alfalfa');
+  if (run.shadow_verification_path) evidence.push('Shadow Runtime');
   return (
     <tr className="hover:bg-bg-2 transition-colors">
       <td className="px-4 h-12">

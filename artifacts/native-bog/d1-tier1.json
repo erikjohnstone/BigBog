@@ -1,0 +1,53 @@
+{
+  "items": [
+    {
+      "component_count": 485,
+      "controller": "TerminalUnits.Reheat.Controller",
+      "deterministic": true,
+      "equipment": "VAV_21",
+      "lane": "native_with_module",
+      "link_count": 637,
+      "module_types": [
+        "bactalkG36:PIDWithReset",
+        "bactalkG36:Pre",
+        "bactalkG36:RisingEdge",
+        "bactalkG36:Sampler",
+        "bactalkG36:SetReset",
+        "bactalkG36:Timer",
+        "bactalkG36:TrueDelay",
+        "bactalkG36:TrueFalseHold",
+        "bactalkG36:UnitDelay"
+      ],
+      "program_objects": false,
+      "sha256": "3ef3436b5a957cf652fd0a099399692cdad39d52c31c9037a138194210f432b1",
+      "stock_only_plus_module": true
+    },
+    {
+      "component_count": 566,
+      "controller": "AHUs.MultiZone.VAV.Controller",
+      "deterministic": true,
+      "equipment": "AHU_1",
+      "lane": "native_with_module",
+      "link_count": 740,
+      "module_types": [
+        "bactalkG36:FirstOrderHold",
+        "bactalkG36:Hysteresis",
+        "bactalkG36:MovingAverage",
+        "bactalkG36:PIDWithReset",
+        "bactalkG36:RisingEdge",
+        "bactalkG36:SampleTrigger",
+        "bactalkG36:Sampler",
+        "bactalkG36:SetReset",
+        "bactalkG36:Timer",
+        "bactalkG36:TrueDelay",
+        "bactalkG36:TrueFalseHold",
+        "bactalkG36:UnitDelay"
+      ],
+      "program_objects": false,
+      "sha256": "03a872aab6dd6d7cff3b251a64eb56ae89841652ab11617a6ed7fe0cbbd0f33b",
+      "stock_only_plus_module": true
+    }
+  ],
+  "passed": true,
+  "schema": "bactalk.native-bog-proof/d1/v1"
+}

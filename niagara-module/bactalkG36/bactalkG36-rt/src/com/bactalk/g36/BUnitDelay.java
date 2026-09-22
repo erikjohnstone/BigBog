@@ -58,6 +58,11 @@ public final class BUnitDelay extends BKernelComponent {
   }
 
   @Override
+  protected boolean resamplesAtInstantEnd() {
+    return true; // samples at period boundaries take the settled value of the instant
+  }
+
+  @Override
   protected boolean inputsValid() {
     return valid(getIn());
   }

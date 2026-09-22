@@ -1,0 +1,13 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-ONESHOT-3",
+  "title": "a rising edge during a pulse restarts it",
+  "station_testable": true,
+  "duration_seconds": 20.0,
+  "history_interval_seconds": 1.0,
+  "steps": [],
+  "observe": [
+    "retriggered"
+  ],
+  "what_to_look_for": "retriggered stays true throughout: the 0.6 s clock keeps restarting the 2 s pulse."
+}

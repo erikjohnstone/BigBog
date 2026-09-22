@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import type { ReleaseSummary, RunDetail, TestReport } from '../../api/client';
-import { blockersFor, readAcks, writeAcks } from './acks';
+import type { ReleaseSummary, RunDetail, ShadowEvidence, TestReport } from '../../api/client';
+import { SURFACES, blockersFor, readAcks, writeAcks } from './acks';
 
 const run = { id: 'r1', status: 'ready_for_review', artifact_sha256: 'a'.repeat(64) } as unknown as RunDetail;
 
@@ -28,5 +28,33 @@ describe('blockersFor', () => {
     const summary = { integrity: { verified: false }, deliverables: { blocking_gates: ['whole-system coverage'] } } as unknown as ReleaseSummary;
     const blockers = blockersFor({ ...run, status: 'failed' } as RunDetail, report, summary);
     expect(blockers.map((item) => item.id)).toEqual(['status-failed', 'assertion:cooling: damper opens', 'integrity', 'gate:whole-system coverage']);
+  });
+
+  it('names every failing Shadow Runtime case with its first divergence', () => {
+    const report = { passed: true, scenarios: [] } as unknown as TestReport;
+    const summary = { integrity: { verified: true }, deliverables: { blocking_gates: [] } } as unknown as ReleaseSummary;
+    const shadow = {
+      status: 'fail',
+      differential: {
+        cases: [
+          { name: 'cooling', passed: false, first_divergence: { time_seconds: 90, block: 'yDam', slot: 'out', shadow: 0.5, interpreter: 0.7, band: 0.02 } },
+          { name: 'heating', passed: false, first_divergence: null },
+          { name: 'idle', passed: true, first_divergence: null },
+        ],
+      },
+    } as unknown as ShadowEvidence;
+    const blockers = blockersFor(run, report, summary, shadow);
+    expect(blockers).toEqual([
+      { id: 'shadow:cooling', label: 'Shadow Runtime — cooling: first divergence at t=90 s in yDam.out', kind: 'approval', stage: 'test' },
+      { id: 'shadow:heating', label: 'Shadow Runtime — heating failed', kind: 'approval', stage: 'test' },
+    ]);
+    expect(blockersFor(run, report, summary, undefined)).toEqual([]);
+  });
+});
+
+describe('SURFACES', () => {
+  it('includes the Shadow Runtime surface the reviewer must acknowledge', () => {
+    expect(SURFACES.map((surface) => surface.id)).toContain('shadow');
+    expect(SURFACES.find((surface) => surface.id === 'shadow')?.label).toBe('Shadow Runtime');
   });
 });

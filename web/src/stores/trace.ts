@@ -104,7 +104,7 @@ export interface OracleBand {
   window: { startIdx: number; endIdx: number; peakIdx: number; peakError: number } | null;
 }
 
-export type TraceEngine = 'generic' | 'g36-legacy' | 'boptest' | 'alfalfa' | 'project' | 'bacnet-lab';
+export type TraceEngine = 'generic' | 'g36-legacy' | 'boptest' | 'alfalfa' | 'shadow' | 'project' | 'bacnet-lab';
 
 export interface Trace {
   id: string;

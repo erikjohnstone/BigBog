@@ -374,6 +374,54 @@ _CASES: list[Case] = [
         {"mode": "decreased", "initial": 0.0},
         ("out",),
     ),
+    (
+        BlockKind.ONE_SHOT,
+        {"initial": False},
+        {"in": BlockKind.BOOLEAN_INPUT},
+        "RisingEdge",
+        {"initial": False},
+        ("out",),
+    ),
+    (
+        BlockKind.BOOLEAN_FALLING_EDGE,
+        {"pre_u_start": True},
+        {"in": BlockKind.BOOLEAN_INPUT},
+        "FallingEdge",
+        {"initial": True},
+        ("out",),
+    ),
+    (
+        BlockKind.BOOLEAN_SET_RESET,
+        {},
+        {"set": BlockKind.BOOLEAN_INPUT, "clear": BlockKind.BOOLEAN_INPUT},
+        "SetReset",
+        {},
+        ("out",),
+    ),
+    (
+        BlockKind.NUMERIC_SAMPLER,
+        {"sample_period_seconds": 4.0},
+        {"in": BlockKind.NUMERIC_INPUT},
+        "Sampler",
+        {"samplePeriodSeconds": 4.0},
+        ("out",),
+    ),
+    (
+        BlockKind.BOOLEAN_SAMPLE_TRIGGER,
+        {"period_seconds": 4.0, "shift_seconds": 1.0},
+        {},
+        "SampleTrigger",
+        {"periodSeconds": 4.0, "shiftSeconds": 1.0},
+        ("out",),
+    ),
+    (
+        BlockKind.HYSTERESIS,
+        {"u_low": -1.0, "u_high": 1.0, "initial": False},
+        {"in": BlockKind.NUMERIC_INPUT},
+        "Hysteresis",
+        {"uLow": -1.0, "uHigh": 1.0, "initial": False},
+        ("out",),
+    ),
 ]
 
 
@@ -458,10 +506,7 @@ def test_registry_slots_match_the_java_wrappers() -> None:
 
 def test_module_include_lists_exactly_the_registry() -> None:
     root = ElementTree.parse(MODULE_ROOT / "bactalkG36-rt" / "module-include.xml").getroot()
-    listed = {
-        element.get("name"): element.get("class")
-        for element in root.iter("type")
-    }
+    listed = {element.get("name"): element.get("class") for element in root.iter("type")}
     assert listed == {
         component.name: component.java_class.replace("/", ".") for component in COMPONENTS
     }
@@ -495,4 +540,3 @@ def test_declared_types_are_accepted_by_the_validator() -> None:
     assert report.ok, [str(issue) for issue in report.errors]
     rejected = validate_bog(buffer.getvalue(), label="palette-without-module")
     assert "type.known" in rejected.rules("error")
-

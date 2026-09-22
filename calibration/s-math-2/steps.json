@@ -1,0 +1,38 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-MATH-2",
+  "title": "Subtract anchors on inA; a null inB is ignored, a null inA gives null",
+  "station_testable": true,
+  "duration_seconds": 30.0,
+  "history_interval_seconds": 1.0,
+  "steps": [
+    {
+      "time_seconds": 0.0,
+      "action": "override",
+      "point": "a",
+      "value": 10.0
+    },
+    {
+      "time_seconds": 0.0,
+      "action": "override",
+      "point": "b",
+      "value": 4.0
+    },
+    {
+      "time_seconds": 10.0,
+      "action": "auto",
+      "point": "b",
+      "value": null
+    },
+    {
+      "time_seconds": 20.0,
+      "action": "auto",
+      "point": "a",
+      "value": null
+    }
+  ],
+  "observe": [
+    "difference"
+  ],
+  "what_to_look_for": "difference reads 6, then 10 (b null ignored), then the fallback 99 when a is null."
+}

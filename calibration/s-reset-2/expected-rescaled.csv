@@ -1,0 +1,11 @@
+time_seconds,value,status_bits,status
+1,30.0,2,{fault}
+2,30.0,2,{fault}
+3,30.0,2,{fault}
+4,30.0,2,{fault}
+5,30.0,2,{fault}
+6,30.0,2,{fault}
+7,30.0,2,{fault}
+8,30.0,2,{fault}
+9,30.0,2,{fault}
+10,30.0,2,{fault}

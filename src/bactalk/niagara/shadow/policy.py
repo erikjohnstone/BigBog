@@ -18,8 +18,8 @@ class ExecutionPolicy:
     link_order: str = "document"
     """Order in which one changed output fires its links: document, reverse or shuffle."""
 
-    tick_order: str = "document"
-    """Order of timers due at the same instant: document, reverse or shuffle."""
+    tick_order: str = "topological"
+    """Order of timers due at the same instant: topological, document, reverse or shuffle."""
 
     propagation: str = "depth"
     """depth: a fired link's consequences run before the next link; breadth: after."""
@@ -70,6 +70,7 @@ PLAUSIBLE_POLICIES: tuple[ExecutionPolicy, ...] = (
     DEFAULT_POLICY.variant("coarse-module-tick", module_period_seconds=60.0),
     DEFAULT_POLICY.variant("long-pulses", one_shot_pulse_seconds=2.0, loop_execute_seconds=1.0),
     DEFAULT_POLICY.variant("document-start", start_order="document"),
+    DEFAULT_POLICY.variant("document-ticks", tick_order="document"),
     DEFAULT_POLICY.variant("multivibrator-low", multivibrator_initial=False),
 )
 

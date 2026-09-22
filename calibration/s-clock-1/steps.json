@@ -1,0 +1,20 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-CLOCK-1",
+  "title": "order of two timers due at the same instant",
+  "station_testable": true,
+  "duration_seconds": 20.0,
+  "history_interval_seconds": 1.0,
+  "steps": [
+    {
+      "time_seconds": 5.0,
+      "action": "override",
+      "point": "a",
+      "value": true
+    }
+  ],
+  "observe": [
+    "tieOrder"
+  ],
+  "what_to_look_for": "Both delays expire at t=10. tieOrder true means the feed delay fired before the clock delay."
+}

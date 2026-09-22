@@ -119,6 +119,11 @@ TEST_REQUIREMENTS: dict[str, tuple[str, ...]] = {
         "tool:javac",
         "tool:java",
     ),
+    # The third leg of the differential is retained; only its drift check needs OCE.
+    "test_native_bog_differential::test_retained_reference_traces_match_a_fresh_oce_run": (
+        "vendor:modelica-buildings",
+        "file:ops/open-control-engine-runner/target/release/bactalk-oce-runner",
+    ),
 }
 
 # Modules that exercise only the base install and must run everywhere.

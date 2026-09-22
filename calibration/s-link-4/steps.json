@@ -1,0 +1,20 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-LINK-4",
+  "title": "synchronous depth-first propagation makes intermediate values visible",
+  "station_testable": true,
+  "duration_seconds": 20.0,
+  "history_interval_seconds": 1.0,
+  "steps": [
+    {
+      "time_seconds": 10.0,
+      "action": "override",
+      "point": "a",
+      "value": 5.0
+    }
+  ],
+  "observe": [
+    "glitchLatched"
+  ],
+  "what_to_look_for": "glitchLatched becomes true at t=10 if the station propagates each link to completion before the next; it stays false if both links settle before anything downstream runs."
+}

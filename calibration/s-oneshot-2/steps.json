@@ -1,0 +1,26 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-ONESHOT-2",
+  "title": "default OneShot pulse width",
+  "station_testable": true,
+  "duration_seconds": 20.0,
+  "history_interval_seconds": 1.0,
+  "steps": [
+    {
+      "time_seconds": 5.0,
+      "action": "override",
+      "point": "trigger",
+      "value": true
+    },
+    {
+      "time_seconds": 15.0,
+      "action": "override",
+      "point": "trigger",
+      "value": false
+    }
+  ],
+  "observe": [
+    "pulse"
+  ],
+  "what_to_look_for": "The runtime assumes 0.5 s: no one-second history sample should catch the pulse true."
+}

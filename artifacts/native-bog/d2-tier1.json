@@ -1,0 +1,38 @@
+{
+  "items": [
+    {
+      "component_count": 501,
+      "equipment": "VAV_21",
+      "errors": 0,
+      "ok": true,
+      "warnings": 0
+    },
+    {
+      "component_count": 586,
+      "equipment": "AHU_1",
+      "errors": 0,
+      "ok": true,
+      "warnings": 0
+    }
+  ],
+  "known_bad_fixtures": [
+    "archive.structure",
+    "facets.parse",
+    "facets.unit_known",
+    "handle.unique",
+    "handle.well_formed",
+    "link.double_driven",
+    "link.fields",
+    "link.kind_match",
+    "link.source_resolves",
+    "link.source_slot",
+    "link.target_slot",
+    "module.consistent",
+    "module.declared",
+    "type.known",
+    "xml.root",
+    "xml.well_formed"
+  ],
+  "passed": true,
+  "schema": "bactalk.native-bog-proof/d2/v1"
+}

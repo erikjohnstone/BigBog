@@ -1,0 +1,13 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-MV-2",
+  "title": "MultiVibrator starts true at station start",
+  "station_testable": true,
+  "duration_seconds": 40.0,
+  "history_interval_seconds": 1.0,
+  "steps": [],
+  "observe": [
+    "clock"
+  ],
+  "what_to_look_for": "clock is true for the first 10 s, false for the next 10 s, and so on."
+}

@@ -17,12 +17,14 @@ import { Transport } from '../timeline/Transport';
 import { computeDiff, unexplainedChanges } from './diff/compute-diff';
 import { buildFlow, feedbackKinds } from './graph-model';
 import { Inspector } from './Inspector';
+import { NiagaraFolders } from './NiagaraFolders';
 import { needsLayout, tidy } from './layout/tidy';
 import { Outline } from './Outline';
 import { Wiresheet } from './Wiresheet';
 
 const LAYOUT_KEY = 'build';
 const defaultLayout = { outline: 18, canvas: 58, inspector: 24 };
+const defaultInspectorLayout = { inspector: 62, folders: 38 };
 
 /** Build stage: outline · animated wiresheet · inspector, on the shared clock. */
 export function BuildStage({ run }: { run: RunDetail }) {
@@ -53,6 +55,7 @@ function BuildBody({
   const clear = useSelection((state) => state.clear);
   const savePanelSizes = useUi((state) => state.savePanelSizes);
   const [initialLayout] = useState(() => useUi.getState().panelSizes[LAYOUT_KEY] ?? defaultLayout);
+  const [inspectorLayout] = useState(() => useUi.getState().panelSizes[`${LAYOUT_KEY}:inspector`] ?? defaultInspectorLayout);
   const traceId = traceIdForRun(run.id);
   const trace = useTrace(traceId);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -182,7 +185,15 @@ function BuildBody({
       </Panel>
       <Separator className="w-px bg-line-1 hover:bg-accent transition-colors data-[resize-handle-active]:bg-accent" />
       <Panel id="inspector" minSize="16" defaultSize={defaultLayout.inspector} className="bg-bg-1 hairline-r">
-        <Inspector graph={graph} nodes={nodes} trace={trace} report={report ?? undefined} run={run} />
+        <Group orientation="vertical" className="h-full" defaultLayout={inspectorLayout} onLayoutChanged={(layout) => savePanelSizes(`${LAYOUT_KEY}:inspector`, layout)}>
+          <Panel id="inspector" minSize="30" defaultSize={defaultInspectorLayout.inspector} className="min-h-0 overflow-auto">
+            <Inspector graph={graph} nodes={nodes} trace={trace} report={report ?? undefined} run={run} />
+          </Panel>
+          <Separator className="h-px bg-line-1 hover:bg-accent transition-colors data-[resize-handle-active]:bg-accent" />
+          <Panel id="folders" minSize="10" defaultSize={defaultInspectorLayout.folders} className="min-h-0 flex flex-col">
+            <NiagaraFolders runId={run.id} />
+          </Panel>
+        </Group>
       </Panel>
     </Group>
   );

@@ -25,10 +25,17 @@ public final class PidWithReset {
   private final double ydStart;
   private final double yReset;
 
-  private double integral;
-  private double derivativeState = 0.0;
-  private boolean previousTrigger = false;
-  private double previousTimeSeconds = Double.NaN;
+  // State is committed only when time advances: several executions at one instant
+  // (an input change and the period tick) all see the state of the previous instant
+  // and the last one wins, so a step is idempotent within an instant.
+  private double baseIntegral;
+  private double baseDerivativeState = 0.0;
+  private boolean basePreviousTrigger = false;
+  private double baseTimeSeconds = Double.NaN;
+  private double pendingIntegral;
+  private double pendingDerivativeState = 0.0;
+  private boolean pendingPreviousTrigger = false;
+  private double lastTimeSeconds = Double.NaN;
 
   public PidWithReset(
       ControllerType controllerType,
@@ -58,59 +65,86 @@ public final class PidWithReset {
     this.xiStart = xiStart;
     this.ydStart = ydStart;
     this.yReset = yReset;
-    this.integral = xiStart;
+    this.baseIntegral = xiStart;
+    this.pendingIntegral = xiStart;
   }
 
   public void reset() {
-    integral = xiStart;
-    derivativeState = 0.0;
-    previousTrigger = false;
-    previousTimeSeconds = Double.NaN;
+    firstInstantSeconds = Double.NaN;
+    baseIntegral = xiStart;
+    baseDerivativeState = 0.0;
+    basePreviousTrigger = false;
+    baseTimeSeconds = Double.NaN;
+    pendingIntegral = xiStart;
+    pendingDerivativeState = 0.0;
+    pendingPreviousTrigger = false;
+    lastTimeSeconds = Double.NaN;
   }
 
   public double step(double timeSeconds, double setpoint, double measurement, boolean trigger) {
     if (!Double.isFinite(timeSeconds) || !Double.isFinite(setpoint) || !Double.isFinite(measurement)) {
       throw new IllegalArgumentException("PIDWithReset inputs must be finite");
     }
-    boolean firstTick = Double.isNaN(previousTimeSeconds);
-    if (!firstTick && timeSeconds < previousTimeSeconds) {
+    boolean firstTick = Double.isNaN(lastTimeSeconds);
+    if (!firstTick && timeSeconds < lastTimeSeconds) {
       throw new IllegalArgumentException("PIDWithReset time must be monotonic");
     }
-    double dt = firstTick ? 0.0 : timeSeconds - previousTimeSeconds;
+    if (firstTick) {
+      baseTimeSeconds = timeSeconds;
+    } else if (timeSeconds > lastTimeSeconds) {
+      baseIntegral = pendingIntegral;
+      baseDerivativeState = pendingDerivativeState;
+      basePreviousTrigger = pendingPreviousTrigger;
+      baseTimeSeconds = lastTimeSeconds;
+    }
+    boolean initial = firstTick || Double.isNaN(baseTimeSeconds);
+    double dt = timeSeconds - baseTimeSeconds;
+    boolean atStart = firstTick || (timeSeconds == baseTimeSeconds && initialInstant(timeSeconds));
     double reverseSign = reverseActing ? 1.0 : -1.0;
     double error = reverseSign * (setpoint - measurement) / r;
     double proportional = k * error;
     double derivativeGain = k * td;
     double derivativeTime = td / nd;
     double derivative = withDerivative
-        ? (firstTick ? ydStart : (derivativeGain / derivativeTime) * (error - derivativeState))
+        ? (atStart ? ydStart : (derivativeGain / derivativeTime) * (error - baseDerivativeState))
         : 0.0;
-    double integralOutput = withIntegral ? integral : 0.0;
+    double integralOutput = withIntegral ? baseIntegral : 0.0;
     double proportionalDerivative = proportional + derivative;
     double unlimited = proportionalDerivative + integralOutput;
     double output = unlimited > yMax ? yMax : (unlimited < yMin ? yMin : unlimited);
 
     if (withIntegral) {
-      boolean risingReset = trigger && !previousTrigger;
+      boolean risingReset = trigger && !basePreviousTrigger;
       if (risingReset) {
-        integral = yReset - proportionalDerivative;
+        pendingIntegral = yReset - proportionalDerivative;
       } else {
         double antiWindup = (unlimited - output) / (k * ni);
         double correctedError = error - antiWindup;
-        integral = integralOutput + (k / ti) * correctedError * dt;
+        pendingIntegral = integralOutput + (k / ti) * correctedError * dt;
       }
-      previousTrigger = trigger;
+      pendingPreviousTrigger = trigger;
     }
     if (withDerivative) {
-      double initialDerivativeState = firstTick
+      double initialDerivativeState = atStart
           ? (Math.abs(derivativeGain) < 1.0e-15
               ? error
               : error - derivativeTime * ydStart / derivativeGain)
-          : derivativeState;
+          : baseDerivativeState;
       double ratio = dt / derivativeTime;
-      derivativeState = (initialDerivativeState + ratio * error) / (1.0 + ratio);
+      pendingDerivativeState = (initialDerivativeState + ratio * error) / (1.0 + ratio);
     }
-    previousTimeSeconds = timeSeconds;
+    if (!initial && !withDerivative) {
+      pendingDerivativeState = baseDerivativeState;
+    }
+    firstInstantSeconds = firstTick ? timeSeconds : firstInstantSeconds;
+    lastTimeSeconds = timeSeconds;
     return output;
+  }
+
+  private double firstInstantSeconds = Double.NaN;
+
+  /** True while every execution so far happened at the first instant. */
+  private boolean initialInstant(double timeSeconds) {
+    return !Double.isNaN(firstInstantSeconds) && timeSeconds == firstInstantSeconds;
   }
 }

@@ -1,0 +1,26 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-STATUS-5",
+  "title": "a null input gives a null output; the fed point falls back (also S-LOGIC-2)",
+  "station_testable": true,
+  "duration_seconds": 20.0,
+  "history_interval_seconds": 1.0,
+  "steps": [
+    {
+      "time_seconds": 0.0,
+      "action": "override",
+      "point": "b",
+      "value": false
+    },
+    {
+      "time_seconds": 10.0,
+      "action": "auto",
+      "point": "b",
+      "value": null
+    }
+  ],
+  "observe": [
+    "notOut"
+  ],
+  "what_to_look_for": "notOut is true (not false), then after t=10 the writable shows its own fallback true with the in16 null."
+}

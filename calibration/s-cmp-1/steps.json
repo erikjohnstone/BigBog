@@ -1,0 +1,26 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-CMP-1",
+  "title": "a comparison with a null input is null",
+  "station_testable": true,
+  "duration_seconds": 20.0,
+  "history_interval_seconds": 1.0,
+  "steps": [
+    {
+      "time_seconds": 0.0,
+      "action": "override",
+      "point": "b",
+      "value": 1.0
+    },
+    {
+      "time_seconds": 10.0,
+      "action": "auto",
+      "point": "b",
+      "value": null
+    }
+  ],
+  "observe": [
+    "greater"
+  ],
+  "what_to_look_for": "greater is true, then after t=10 the writable shows its fallback true with in16 null."
+}

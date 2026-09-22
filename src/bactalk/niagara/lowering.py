@@ -106,26 +106,6 @@ def _unsupported(kind: BlockKind, note: str) -> LoweringDecision:
 
 
 _AB = {"a": "inA", "b": "inB", "out": "out"}
-_EDGE_DEVIATION = (
-    "kitControl:OneShot emits a pulse of configured width (at least one execution "
-    "cycle), while the IR pulse lasts exactly one host tick."
-)
-_EDGE_SCENARIOS = (
-    "single rising edge feeding a latch or set input",
-    "two edges closer together than the pulse width",
-    "edge on the first execution cycle",
-)
-_SAMPLER_DEVIATION = (
-    "kitControl:MultiVibrator clocks from station start, while the IR aligns sample "
-    "instants to multiples of the period from time zero; the sampled value is the "
-    "same, its phase may differ by up to one period."
-)
-_SAMPLER_SCENARIOS = (
-    "input changes mid-period",
-    "first sample after start-up",
-    "period equal to the execution cycle",
-)
-
 _ROWS: tuple[LoweringDecision, ...] = (
     # --- boundary points --------------------------------------------------
     _exact(BlockKind.NUMERIC_INPUT, "control:NumericWritable", out="out"),
@@ -193,32 +173,23 @@ _ROWS: tuple[LoweringDecision, ...] = (
         "kitControl:BooleanLatch",
         **{"in": "in", "clock": "clock", "out": "out"},
     ),
-    _bands(
+    _module(
         BlockKind.BOOLEAN_SET_RESET,
-        "composite: kitControl:OneShot(set) -> kitControl:Or -> kitControl:And(Not clear) "
-        "with a feedback link from out",
-        "The feedback link settles one execution cycle after set or clear changes; "
-        "clear keeps priority over set, and set is edge-sensitive through the OneShot.",
-        (
-            "set and clear true in the same cycle",
-            "set held true across several cycles",
-            "single-cycle clear pulse while set is held",
-            "start-up with set already true",
-        ),
+        "SetReset",
+        "Clear-dominant latch with host-tick semantics; the stock OneShot/Or/And composite "
+        "latched on transient values inside one link propagation (N7, D3).",
     ),
     # --- edges and delays -------------------------------------------------
-    _bands(
+    _module(
         BlockKind.ONE_SHOT,
-        "kitControl:OneShot",
-        _EDGE_DEVIATION,
-        _EDGE_SCENARIOS,
-        **{"in": "in", "out": "out"},
+        "RisingEdge",
+        "One execution true per rising edge, judged between execution periods; "
+        "kitControl:OneShot fires on transient values inside one link propagation (N7, D3).",
     ),
-    _bands(
+    _module(
         BlockKind.BOOLEAN_FALLING_EDGE,
-        "composite: kitControl:Not -> kitControl:OneShot",
-        _EDGE_DEVIATION,
-        _EDGE_SCENARIOS,
+        "FallingEdge",
+        "One execution true per falling edge, judged between execution periods.",
     ),
     _bands(
         BlockKind.BOOLEAN_DELAY,
@@ -247,17 +218,16 @@ _ROWS: tuple[LoweringDecision, ...] = (
         "True (or the configured value) on the first execution cycle only.",
     ),
     # --- sampling ---------------------------------------------------------
-    _bands(
+    _module(
         BlockKind.NUMERIC_SAMPLER,
-        "composite: kitControl:MultiVibrator(period) -> kitControl:NumericLatch.clock",
-        _SAMPLER_DEVIATION,
-        _SAMPLER_SCENARIOS,
+        "Sampler",
+        "Period-aligned sampling with host-tick semantics; the stock MultiVibrator/Latch "
+        "composite captured whatever value its input held mid-propagation (N7, D3).",
     ),
-    _bands(
+    _module(
         BlockKind.BOOLEAN_SAMPLE_TRIGGER,
-        "composite: kitControl:MultiVibrator(period) -> kitControl:OneShot",
-        _SAMPLER_DEVIATION + " " + _EDGE_DEVIATION,
-        _SAMPLER_SCENARIOS + ("trigger feeding a latch clock",),
+        "SampleTrigger",
+        "One execution true per period boundary, aligned to time zero plus shift.",
     ),
     _module(
         BlockKind.NUMERIC_FIRST_ORDER_HOLD,
@@ -274,20 +244,11 @@ _ROWS: tuple[LoweringDecision, ...] = (
     _module(BlockKind.NUMERIC_INCREASED, "NumericChange", "mode=increased."),
     _module(BlockKind.NUMERIC_DECREASED, "NumericChange", "mode=decreased."),
     # --- thresholds and timers --------------------------------------------
-    _bands(
+    _module(
         BlockKind.HYSTERESIS,
-        "kitControl:Tstat",
-        "Tstat switches on at cv >= sp + diff/2 and off at cv <= sp - diff/2 with "
-        "sp = (u_low + u_high)/2 and diff = u_high - u_low; the IR switches on at "
-        "in > u_high and off at in < u_low, so only values exactly on a threshold "
-        "differ.",
-        (
-            "value exactly at u_high",
-            "value exactly at u_low",
-            "start-up with the value inside the band",
-            "value crossing both thresholds in one cycle",
-        ),
-        **{"in": "cv", "out": "out"},
+        "Hysteresis",
+        "CDL thresholds (on above u_high, off below u_low) with host-tick semantics; "
+        "kitControl:Tstat executes on change and can latch on a transient value (N7, D3).",
     ),
     _module(BlockKind.TIMER, "Timer", "Elapsed time and passed flag while in is true."),
     _module(BlockKind.TIMER_WITH_RESET, "TimerWithReset"),

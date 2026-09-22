@@ -1,0 +1,317 @@
+{
+  "bands": "src/bactalk/niagara/bands.json (docs/decisions/008)",
+  "items": [
+    {
+      "coarse_module_tick": {
+        "cases": [
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "occupied deadband holds minimum airflow",
+            "passed": true,
+            "signals": 15,
+            "worst_excess": 0.0,
+            "worst_signal": "yZonTemResReq"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "occupied cooling ramps to cooling maximum",
+            "passed": true,
+            "signals": 15,
+            "worst_excess": 0.0,
+            "worst_signal": "yZonTemResReq"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "occupied heating opens the reheat valve",
+            "passed": true,
+            "signals": 15,
+            "worst_excess": 0.0,
+            "worst_signal": "yZonTemResReq"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "unoccupied closes the box",
+            "passed": true,
+            "signals": 15,
+            "worst_excess": 0.0,
+            "worst_signal": "yZonTemResReq"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "open window shuts airflow",
+            "passed": true,
+            "signals": 15,
+            "worst_excess": 0.0,
+            "worst_signal": "yZonTemResReq"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "fan off suppresses alarms",
+            "passed": true,
+            "signals": 15,
+            "worst_excess": 0.0,
+            "worst_signal": "yZonTemResReq"
+          }
+        ],
+        "engines": {
+          "interpreter": "BACTalk equipment-neutral stateful and fault-injection simulator (Tier 1)",
+          "reference": "Open Control Engine",
+          "shadow": "Niagara Shadow Runtime (bog-simulated, policy coarse-module-tick, kernels python)"
+        },
+        "passed": true
+      },
+      "controller": "TerminalUnits.Reheat.Controller",
+      "default_policy": {
+        "cases": [
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "occupied deadband holds minimum airflow",
+            "passed": true,
+            "signals": 15,
+            "worst_excess": 0.0,
+            "worst_signal": "yZonTemResReq"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "occupied cooling ramps to cooling maximum",
+            "passed": true,
+            "signals": 15,
+            "worst_excess": 0.0,
+            "worst_signal": "yZonTemResReq"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "occupied heating opens the reheat valve",
+            "passed": true,
+            "signals": 15,
+            "worst_excess": 0.0,
+            "worst_signal": "yZonTemResReq"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "unoccupied closes the box",
+            "passed": true,
+            "signals": 15,
+            "worst_excess": 0.0,
+            "worst_signal": "yZonTemResReq"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "open window shuts airflow",
+            "passed": true,
+            "signals": 15,
+            "worst_excess": 0.0,
+            "worst_signal": "yZonTemResReq"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "fan off suppresses alarms",
+            "passed": true,
+            "signals": 15,
+            "worst_excess": 0.0,
+            "worst_signal": "yZonTemResReq"
+          }
+        ],
+        "engines": {
+          "interpreter": "BACTalk equipment-neutral stateful and fault-injection simulator (Tier 1)",
+          "reference": "Open Control Engine",
+          "shadow": "Niagara Shadow Runtime (bog-simulated, policy default, kernels python)"
+        },
+        "passed": true
+      },
+      "equipment": "VAV_21",
+      "reference": "Open Control Engine"
+    },
+    {
+      "coarse_module_tick": {
+        "cases": [
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "zone requests pull the supply temperature down and open cooling",
+            "passed": true,
+            "signals": 19,
+            "worst_excess": 0.0,
+            "worst_signal": "ySupFan"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "cold supply air opens heating",
+            "passed": true,
+            "signals": 19,
+            "worst_excess": 0.0,
+            "worst_signal": "ySupFan"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "unoccupied stops the fan",
+            "passed": true,
+            "signals": 19,
+            "worst_excess": 0.0,
+            "worst_signal": "ySupFan"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "freezing mixed air trips freeze protection",
+            "passed": true,
+            "signals": 19,
+            "worst_excess": 0.0,
+            "worst_signal": "ySupFan"
+          }
+        ],
+        "engines": {
+          "interpreter": "BACTalk equipment-neutral stateful and fault-injection simulator (Tier 1)",
+          "reference": "Open Control Engine",
+          "shadow": "Niagara Shadow Runtime (bog-simulated, policy coarse-module-tick, kernels python)"
+        },
+        "passed": true
+      },
+      "controller": "AHUs.MultiZone.VAV.Controller",
+      "default_policy": {
+        "cases": [
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "zone requests pull the supply temperature down and open cooling",
+            "passed": true,
+            "signals": 19,
+            "worst_excess": 0.0,
+            "worst_signal": "ySupFan"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "cold supply air opens heating",
+            "passed": true,
+            "signals": 19,
+            "worst_excess": 0.0,
+            "worst_signal": "ySupFan"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "unoccupied stops the fan",
+            "passed": true,
+            "signals": 19,
+            "worst_excess": 0.0,
+            "worst_signal": "ySupFan"
+          },
+          {
+            "first_divergence": null,
+            "legs": [
+              "interpreter",
+              "reference",
+              "shadow"
+            ],
+            "name": "freezing mixed air trips freeze protection",
+            "passed": true,
+            "signals": 19,
+            "worst_excess": 0.0,
+            "worst_signal": "ySupFan"
+          }
+        ],
+        "engines": {
+          "interpreter": "BACTalk equipment-neutral stateful and fault-injection simulator (Tier 1)",
+          "reference": "Open Control Engine",
+          "shadow": "Niagara Shadow Runtime (bog-simulated, policy default, kernels python)"
+        },
+        "passed": true
+      },
+      "equipment": "AHU_1",
+      "reference": "Open Control Engine"
+    }
+  ],
+  "passed": true,
+  "schema": "bactalk.native-bog-proof/d3/v1"
+}

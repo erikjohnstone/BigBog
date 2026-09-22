@@ -1,0 +1,13 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-SCHED-3",
+  "title": "runtime convention: simulated time zero is Monday 00:00",
+  "station_testable": false,
+  "duration_seconds": 5.0,
+  "history_interval_seconds": 1.0,
+  "steps": [],
+  "observe": [
+    "echo"
+  ],
+  "what_to_look_for": "A convention of the runtime, not a Niagara behaviour: no station test."
+}

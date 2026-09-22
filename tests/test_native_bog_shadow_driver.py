@@ -90,11 +90,13 @@ def test_reports_name_the_first_diverging_block_against_the_interpreter(exports)
     job, content = exports["VAV_21"]
     case = job.acceptance_tests[0]
     divergences = compare_case(job, case, content=content)
-    # Every output point agrees on this scenario; the internal divergences are the
-    # documented event-ordering finding in TimSup (docs/niagara-semantics.md).
+    # Since N7 the edge, latch and sampler kinds are tick-semantic module components,
+    # so the deadband scenario agrees block for block; a tight tolerance still
+    # names the first PID whose 1 s integration leads the interpreter's scan.
     assert not [d for d in divergences if d.kind.endswith("_output")]
-    lines = summarize(divergences, limit=3)
-    assert lines and "TimSup/" in lines[0]
+    tight = compare_case(job, job.acceptance_tests[1], content=content, tolerance=1e-12)
+    lines = summarize(tight, limit=3)
+    assert lines and "pid_with_reset" in lines[0]
 
 
 def test_faults_apply_to_input_values_and_optionally_flag_status(exports) -> None:

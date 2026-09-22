@@ -8,7 +8,8 @@
   component that executes more than ``policy.loop_limit`` times inside one
   propagation raises :class:`PropagationLoopError` naming it.
 - **Clock** (S-CLOCK-1): simulated seconds; timers fire in due order, ties in
-  policy order, and each timer's effects propagate before the next fires.
+  policy order (topological by default, so a host tick runs sources before the
+  blocks they feed), and each timer's effects propagate before the next fires.
 """
 
 from __future__ import annotations
@@ -132,6 +133,11 @@ class ShadowRuntime:
             self.out_links.setdefault((source.path, link.source_slot), []).append(wire)
         for wires in self.out_links.values():
             self._order(wires, self.policy.link_order)
+        # Position of every block in the loop-opening topological order, for
+        # ``tick_order="topological"`` (timers due together fire sources first).
+        self._topological_rank = {
+            block.path: index for index, block in enumerate(self._topological_order())
+        }
 
     def _order(self, items: list, mode: str) -> None:
         if mode == "reverse":
@@ -143,10 +149,16 @@ class ShadowRuntime:
 
     # -- context API for blocks -------------------------------------------------------
 
-    def schedule(self, block: Block, delay_seconds: float, tag: str) -> int:
+    def schedule(self, block: Block, delay_seconds: float, tag: str, *, late: bool = False) -> int:
+        """Schedule a timer; a ``late`` timer fires after every ordinary timer due then."""
+
         self._timer_seq += 1
         due = self.now + max(0.0, delay_seconds)
-        if self.policy.tick_order == "document":
+        if late:
+            tie = float("inf")
+        elif self.policy.tick_order == "topological":
+            tie = float(self._topological_rank.get(block.path, block.node.order))
+        elif self.policy.tick_order == "document":
             tie = float(block.node.order)
         elif self.policy.tick_order == "reverse":
             tie = -float(block.node.order)
@@ -213,6 +225,9 @@ class ShadowRuntime:
             order = list(self.ordered)
             self._order(order, mode)
             return order
+        return self._topological_order()
+
+    def _topological_order(self) -> list[Block]:
         successors: dict[str, list[Block]] = {block.path: [] for block in self.ordered}
         indegree = {block.path: 0 for block in self.ordered}
         for wire in self.wires:

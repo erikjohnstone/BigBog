@@ -5,8 +5,8 @@ holding an ``Inputs`` folder, a ``Parameters`` folder (the controller-level
 constants, as writable points a contractor can adjust), one folder per
 originating CDL composite (or ``Logic`` when the graph carries no origins),
 and an ``Outputs`` folder. Every block is lowered per the matrix
-(``bactalk.niagara.lowering``): stock ``kitControl``/``control`` blocks, small
-stock composites, or ``bactalkG36`` components. Layout is deterministic and
+(``bactalk.niagara.lowering``): stock ``kitControl``/``control`` blocks, the
+assert note composite, or ``bactalkG36`` components. Layout is deterministic and
 byte-identical output follows from identical input.
 
 The emitter writes the XML directly (docs/decisions/005): pybog 0.1.6 has no
@@ -343,11 +343,6 @@ class _Emitter:
                     "L",
                 )
             )
-        elif kind == BlockKind.HYSTERESIS:
-            low = float(block.config["u_low"])
-            high = float(block.config["u_high"])
-            props.append(_status("sp", "b:StatusNumeric", _num((low + high) / 2.0)))
-            props.append(_status("diff", "b:StatusNumeric", _num(high - low)))
         elif kind == BlockKind.PI_LOOP:
             props.extend(
                 [
@@ -454,48 +449,7 @@ class _Emitter:
     def _composite(self, block: Block, folder: str) -> None:
         kind = block.kind
         base = block.label or block.id
-        if kind is BlockKind.BOOLEAN_FALLING_EDGE:
-            inverter = self._add_node(folder, f"{base}_not", "kitControl:Not", [])
-            pulse = self._add_node(folder, base, "kitControl:OneShot", [], block=block)
-            self._wire(inverter, "out", pulse, "in")
-            self.inputs[block.id] = {"in": (inverter, "in")}
-            self.outputs[block.id] = {"out": (pulse, "out")}
-        elif kind is BlockKind.BOOLEAN_SET_RESET:
-            set_pulse = self._add_node(folder, f"{base}_set", "kitControl:OneShot", [])
-            any_set = self._add_node(folder, f"{base}_any", "kitControl:Or", [])
-            not_clear = self._add_node(folder, f"{base}_notClear", "kitControl:Not", [])
-            hold = self._add_node(folder, base, "kitControl:And", [], block=block)
-            self._wire(set_pulse, "out", any_set, "inA")
-            self._wire(hold, "out", any_set, "inB")  # feedback: one-cycle settle
-            self._wire(any_set, "out", hold, "inA")
-            self._wire(not_clear, "out", hold, "inB")
-            self.inputs[block.id] = {"set": (set_pulse, "in"), "clear": (not_clear, "in")}
-            self.outputs[block.id] = {"out": (hold, "out")}
-        elif kind is BlockKind.NUMERIC_SAMPLER:
-            period = _millis(block.config["sample_period_seconds"])
-            clock = self._add_node(
-                folder,
-                f"{base}_clock",
-                "kitControl:MultiVibrator",
-                [_Prop("period", "b:RelTime", period, "L")],
-            )
-            latch = self._add_node(folder, base, "kitControl:NumericLatch", [], block=block)
-            self._wire(clock, "out", latch, "clock")
-            self.inputs[block.id] = {"in": (latch, "in")}
-            self.outputs[block.id] = {"out": (latch, "out")}
-        elif kind is BlockKind.BOOLEAN_SAMPLE_TRIGGER:
-            period = _millis(block.config["period_seconds"])
-            clock = self._add_node(
-                folder,
-                f"{base}_clock",
-                "kitControl:MultiVibrator",
-                [_Prop("period", "b:RelTime", period, "L")],
-            )
-            pulse = self._add_node(folder, base, "kitControl:OneShot", [], block=block)
-            self._wire(clock, "out", pulse, "in")
-            self.inputs[block.id] = {}
-            self.outputs[block.id] = {"out": (pulse, "out")}
-        elif kind is BlockKind.BOOLEAN_ASSERT_WARNING:
+        if kind is BlockKind.BOOLEAN_ASSERT_WARNING:
             message = str(block.config.get("message", ""))
             self._add_node(
                 folder,
@@ -662,12 +616,9 @@ def _folder_name(value: str) -> str:
     return name[:1].upper() + name[1:]
 
 
-_COMPOSITE_WEIGHT = {
-    BlockKind.BOOLEAN_SET_RESET: 4,
-    BlockKind.BOOLEAN_FALLING_EDGE: 2,
-    BlockKind.NUMERIC_SAMPLER: 2,
-    BlockKind.BOOLEAN_SAMPLE_TRIGGER: 2,
-}
+_COMPOSITE_WEIGHT: dict[BlockKind, int] = {}
+"""Composites that expand to more than one component (none since N7; the edge, latch
+and sampler kinds are ``bactalkG36`` components with host-tick semantics)."""
 
 
 def _component_weight(block: Block) -> int:

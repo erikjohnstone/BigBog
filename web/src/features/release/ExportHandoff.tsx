@@ -31,8 +31,15 @@ export function ExportHandoff({ summary }: { summary: ReleaseSummary }) {
     staleTime: 60_000,
   });
 
+  const shadowFailures = summary.shadow?.available && summary.shadow.passed === false ? Math.max(1, summary.shadow.failing_cases.length) : 0;
+
   return (
     <SectionCard title="Hand-off">
+      {shadowFailures > 0 && (
+        <p role="alert" className="px-4 py-3 text-sm text-fail hairline-b">
+          Export is blocked: the Shadow Runtime failed {shadowFailures} scenario{shadowFailures === 1 ? '' : 's'} (bog-simulated evidence). Fix the candidate and build a new run.
+        </p>
+      )}
       {!approved ? (
         <div className="px-4 py-3 text-sm flex flex-col gap-1">
           <p className="text-fg-1">Downloads unlock only after approval. The server enforces this.</p>

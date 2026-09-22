@@ -17,4 +17,10 @@
   <type class="com.bactalk.g36.BTrimAndRespond" name="TrimAndRespond"/>
   <type class="com.bactalk.g36.BBooleanInitialization" name="BooleanInitialization"/>
   <type class="com.bactalk.g36.BNumericChange" name="NumericChange"/>
+  <type class="com.bactalk.g36.BRisingEdge" name="RisingEdge"/>
+  <type class="com.bactalk.g36.BFallingEdge" name="FallingEdge"/>
+  <type class="com.bactalk.g36.BSetReset" name="SetReset"/>
+  <type class="com.bactalk.g36.BSampler" name="Sampler"/>
+  <type class="com.bactalk.g36.BSampleTrigger" name="SampleTrigger"/>
+  <type class="com.bactalk.g36.BHysteresis" name="Hysteresis"/>
 </types>

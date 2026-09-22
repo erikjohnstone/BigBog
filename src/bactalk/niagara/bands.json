@@ -1,0 +1,42 @@
+{
+  "schema": "bactalk.differential-bands/v1",
+  "note": "Tolerance bands for the three-way differential (GOAL-NATIVE-BOG.md D3). A band is a pyfunnel funnel: atolx seconds of time tolerance and atoly of value tolerance around the reference trajectory. Widening any value here needs a decision record under docs/decisions/ with an engineering rationale; the differential report names the band it applied. Because a trajectory may lead the reference by atolx, its last atolx seconds are not judged (the reference has no later point to match).",
+  "default": {
+    "numeric": {
+      "atolx_scans": 2,
+      "atoly_relative": 0.02,
+      "atoly_minimum": 1e-06,
+      "rationale": "Module PIDs and timers integrate every execution period (1 s) while the IR and the reference step once per scan, so a continuous output leads by up to one scan and carries up to one scan of integral action (1.1 % of range at the Tier 1 loop gains, measured); requests and alarms derived from thresholds then move by up to two scans. Two percent of the signal's range and two scans cover this; the coarse-module-tick leg must agree within one scan and 0.1 %. docs/decisions/008. The range is taken over the whole suite; for a dimensionless signal (a fraction or a count) the scale is max(range, |max|)."
+    },
+    "boolean": {
+      "atolx_scans": 2,
+      "atoly": 0.0,
+      "rationale": "Edges follow threshold crossings that may move by up to two scans under the execution-period difference; a boolean never differs in value once aligned. docs/decisions/008."
+    },
+    "integer": {
+      "atolx_scans": 2,
+      "atoly": 0.0,
+      "rationale": "Request counts and alarm levels are integers; only their timing may move, by up to two scans. docs/decisions/008."
+    }
+  },
+  "overrides": [],
+  "coarse": {
+    "note": "Bands for the coarse-module-tick leg, where every module component steps once per scan like the IR: values must agree to 0.1 % of range (1e-9 floor) and timing within one scan, the same one-scan ordering slack the IR and the Open Control Engine need between themselves.",
+    "numeric": {
+      "atolx_scans": 1,
+      "atoly_relative": 0.001,
+      "atoly_minimum": 1e-09,
+      "rationale": "Same discretisation as the IR; any difference is a semantic disagreement. Same scale rule as the default set."
+    },
+    "boolean": {
+      "atolx_scans": 1,
+      "atoly": 0.0,
+      "rationale": "Same discretisation as the IR."
+    },
+    "integer": {
+      "atolx_scans": 1,
+      "atoly": 0.0,
+      "rationale": "Same discretisation as the IR."
+    }
+  }
+}

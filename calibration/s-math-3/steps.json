@@ -1,0 +1,21 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-MATH-3",
+  "title": "division by zero gives an IEEE result with the fault bit (also S-WRITABLE-5)",
+  "station_testable": true,
+  "duration_seconds": 20.0,
+  "history_interval_seconds": 1.0,
+  "steps": [
+    {
+      "time_seconds": 10.0,
+      "action": "override",
+      "point": "b",
+      "value": 0.0
+    }
+  ],
+  "observe": [
+    "quotient",
+    "quotientStatus"
+  ],
+  "what_to_look_for": "quotient reads 5 then 1e6 (infinity clamped); quotientStatus's history status shows fault after t=10."
+}

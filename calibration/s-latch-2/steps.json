@@ -1,0 +1,20 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-LATCH-2",
+  "title": "a latch holds the type's zero with ok status before its first clock edge",
+  "station_testable": true,
+  "duration_seconds": 20.0,
+  "history_interval_seconds": 1.0,
+  "steps": [
+    {
+      "time_seconds": 10.0,
+      "action": "override",
+      "point": "clock",
+      "value": true
+    }
+  ],
+  "observe": [
+    "latched"
+  ],
+  "what_to_look_for": "latched reads 0 with ok status until t=10, then 7."
+}

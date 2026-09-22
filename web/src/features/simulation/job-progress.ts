@@ -43,6 +43,18 @@ export interface TrackerTransports {
 
 export const HEARTBEAT_WARN_SECONDS = 30;
 
+/** Human label for a job's qualification tier; the Shadow Runtime is bog-simulated, never a Niagara runtime. */
+export function jobKindLabel(kind: QualificationJob['kind']): string {
+  switch (kind) {
+    case 'boptest':
+      return 'BOPTEST';
+    case 'alfalfa':
+      return 'Alfalfa';
+    case 'shadow':
+      return 'Shadow Runtime';
+  }
+}
+
 export function jobTone(job: QualificationJob): { tone: Tone; label: string } {
   switch (job.status) {
     case 'queued':

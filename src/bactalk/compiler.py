@@ -74,7 +74,6 @@ class NiagaraCompiler:
             "out": "out",
         },
         BlockKind.BOOLEAN_DELAY: {"in": "in", "out": "out"},
-        BlockKind.ONE_SHOT: {"in": "in", "out": "out"},
         BlockKind.NUMERIC_LATCH: {"in": "in", "clock": "clock", "out": "out"},
         BlockKind.BOOLEAN_LATCH: {"in": "in", "clock": "clock", "out": "out"},
         BlockKind.RESET: {
@@ -498,8 +497,6 @@ class NiagaraCompiler:
                 on_delay=round(float(block.config.get("on_delay_seconds", 0.0)) * 1000),
                 off_delay=round(float(block.config.get("off_delay_seconds", 0.0)) * 1000),
             )
-        elif kind == BlockKind.ONE_SHOT:
-            builder.add_one_shot(block.id)
         elif kind == BlockKind.NUMERIC_LATCH:
             builder.add_numeric_latch(block.id)
         elif kind == BlockKind.BOOLEAN_LATCH:

@@ -50,7 +50,9 @@ class Context(Protocol):
     policy: ExecutionPolicy
     kernels: KernelBackend
 
-    def schedule(self, block: Block, delay_seconds: float, tag: str) -> int: ...
+    def schedule(
+        self, block: Block, delay_seconds: float, tag: str, *, late: bool = False
+    ) -> int: ...
 
     def cancel(self, handle: int) -> None: ...
 
@@ -1057,11 +1059,14 @@ class KernelBinding:
     params: tuple[tuple[str, str, str, object], ...]
     """(harness parameter, component property, encoding, default or None when required)."""
 
-    period_only: bool = False
-    """Steps only on the executionPeriod tick, never on an input change (S-MODULE-2)."""
+    period_only: bool = True
+    """Kept for the record: since N7 every component steps only on the tick (S-MODULE-1)."""
 
     source_at_start: bool = False
     """The first output is the configured initial value, independent of the input."""
+
+    resample: bool = False
+    """Re-steps at the end of each tick's instant so a boundary sample is the settled value."""
 
 
 _S = "seconds"
@@ -1124,6 +1129,7 @@ KERNEL_BINDINGS: tuple[KernelBinding, ...] = (
         (("out", NUMERIC),),
         (("samplePeriodSeconds", "samplePeriod", _S, None), ("initial", "initialValue", _D, 0.0)),
         source_at_start=True,
+        resample=True,
     ),
     KernelBinding(
         "FirstOrderHold",
@@ -1131,6 +1137,7 @@ KERNEL_BINDINGS: tuple[KernelBinding, ...] = (
         (("in", NUMERIC),),
         (("out", NUMERIC),),
         (("samplePeriodSeconds", "samplePeriod", _S, None),),
+        resample=True,
     ),
     KernelBinding(
         "MovingAverage",
@@ -1178,6 +1185,7 @@ KERNEL_BINDINGS: tuple[KernelBinding, ...] = (
             ("holdEnabled", "holdEnabled", _B, False),
             ("holdDurationSeconds", "holdDuration", _S, 0.0),
         ),
+        resample=True,
     ),
     KernelBinding(
         "BooleanInitialization",
@@ -1195,6 +1203,60 @@ KERNEL_BINDINGS: tuple[KernelBinding, ...] = (
         (("mode", "mode", _T, "changed"), ("initial", "initialValue", _D, 0.0)),
         period_only=True,
     ),
+    KernelBinding(
+        "RisingEdge",
+        "RisingEdge",
+        (("in", BOOLEAN),),
+        (("out", BOOLEAN),),
+        (("initial", "initialValue", _B, False),),
+        period_only=True,
+    ),
+    KernelBinding(
+        "FallingEdge",
+        "FallingEdge",
+        (("in", BOOLEAN),),
+        (("out", BOOLEAN),),
+        (("initial", "initialValue", _B, False),),
+        period_only=True,
+    ),
+    KernelBinding(
+        "SetReset",
+        "SetReset",
+        (("set", BOOLEAN), ("clear", BOOLEAN)),
+        (("out", BOOLEAN),),
+        (),
+        period_only=True,
+    ),
+    KernelBinding(
+        "Sampler",
+        "Sampler",
+        (("in", NUMERIC),),
+        (("out", NUMERIC),),
+        (("samplePeriodSeconds", "samplePeriod", _S, None),),
+        period_only=True,
+        resample=True,
+    ),
+    KernelBinding(
+        "SampleTrigger",
+        "SampleTrigger",
+        (),
+        (("out", BOOLEAN),),
+        (("periodSeconds", "period", _S, None), ("shiftSeconds", "shift", _S, 0.0)),
+        period_only=True,
+        source_at_start=True,
+    ),
+    KernelBinding(
+        "Hysteresis",
+        "Hysteresis",
+        (("in", NUMERIC),),
+        (("out", BOOLEAN),),
+        (
+            ("uLow", "uLow", _D, None),
+            ("uHigh", "uHigh", _D, None),
+            ("initial", "initialValue", _B, False),
+        ),
+        period_only=True,
+    ),
 )
 
 KERNEL_BINDINGS_BY_COMPONENT: Mapping[str, KernelBinding] = {
@@ -1203,7 +1265,7 @@ KERNEL_BINDINGS_BY_COMPONENT: Mapping[str, KernelBinding] = {
 
 
 class ModuleBlock(Block):
-    """One ``bactalkG36`` component: a kernel stepped every executionPeriod and on input change."""
+    """One ``bactalkG36`` component: a kernel stepped every executionPeriod (tick only)."""
 
     BINDING: KernelBinding
 
@@ -1242,17 +1304,24 @@ class ModuleBlock(Block):
             self.outputs[slot] = StatusValue(0.0 if kind == NUMERIC else False, Status.OK)
 
     def executes_on_input_change(self) -> bool:
-        return not self.BINDING.period_only
+        return False  # S-MODULE-1: every module component samples its inputs on the tick only
 
     def start(self) -> None:
         self.started_at = self.ctx.now
         if self.period > 0.0:
             self.ctx.schedule(self, self.period, "tick")
+        if self.BINDING.resample:
+            self.ctx.schedule(self, 0.0, "resample", late=True)
 
     def on_timer(self, tag: str) -> None:
         self.execute()
+        if tag == "resample":
+            return
         if self.period > 0.0:
             self.ctx.schedule(self, self.period, "tick")
+        if self.BINDING.resample:
+            # S-MODULE-6: sample again once everything due at this instant has run.
+            self.ctx.schedule(self, 0.0, "resample", late=True)
 
     def execute(self) -> None:
         if any(not self.inputs[slot].valid for slot in self._valid_inputs):

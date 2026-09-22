@@ -347,6 +347,96 @@ COMPONENTS: tuple[ComponentSpec, ...] = (
     ),
 )
 
+_TICK_NOTE = "steps only on the execution period (host-tick semantics)"
+
+COMPONENTS = (
+    *COMPONENTS,
+    ComponentSpec(
+        "RisingEdge",
+        "com/bactalk/g36/BRisingEdge",
+        (BlockKind.ONE_SHOT,),
+        (
+            ("in", _STATUS_BOOLEAN, "input"),
+            ("out", _STATUS_BOOLEAN, "output"),
+            ("initialValue", _BOOLEAN, "parameter"),
+        ),
+        (_boolean("initialValue", "initial", False),),
+        _map(**{"in": "in"}),
+        _map(out="out"),
+    ),
+    ComponentSpec(
+        "FallingEdge",
+        "com/bactalk/g36/BFallingEdge",
+        (BlockKind.BOOLEAN_FALLING_EDGE,),
+        (
+            ("in", _STATUS_BOOLEAN, "input"),
+            ("out", _STATUS_BOOLEAN, "output"),
+            ("initialValue", _BOOLEAN, "parameter"),
+        ),
+        (_boolean("initialValue", "pre_u_start", False),),
+        _map(**{"in": "in"}),
+        _map(out="out"),
+    ),
+    ComponentSpec(
+        "SetReset",
+        "com/bactalk/g36/BSetReset",
+        (BlockKind.BOOLEAN_SET_RESET,),
+        (
+            ("set", _STATUS_BOOLEAN, "input"),
+            ("clear", _STATUS_BOOLEAN, "input"),
+            ("out", _STATUS_BOOLEAN, "output"),
+        ),
+        (),
+        _map(set="set", clear="clear"),
+        _map(out="out"),
+    ),
+    ComponentSpec(
+        "Sampler",
+        "com/bactalk/g36/BSampler",
+        (BlockKind.NUMERIC_SAMPLER,),
+        (
+            ("in", _STATUS_NUMERIC, "input"),
+            ("out", _STATUS_NUMERIC, "output"),
+            ("samplePeriod", _REL_TIME, "parameter"),
+        ),
+        (_seconds("samplePeriod", "sample_period_seconds"),),
+        _map(**{"in": "in"}),
+        _map(out="out"),
+    ),
+    ComponentSpec(
+        "SampleTrigger",
+        "com/bactalk/g36/BSampleTrigger",
+        (BlockKind.BOOLEAN_SAMPLE_TRIGGER,),
+        (
+            ("out", _STATUS_BOOLEAN, "output"),
+            ("period", _REL_TIME, "parameter"),
+            ("shift", _REL_TIME, "parameter"),
+        ),
+        (_seconds("period", "period_seconds"), _seconds("shift", "shift_seconds", 0.0)),
+        _map(),
+        _map(out="out"),
+    ),
+    ComponentSpec(
+        "Hysteresis",
+        "com/bactalk/g36/BHysteresis",
+        (BlockKind.HYSTERESIS,),
+        (
+            ("in", _STATUS_NUMERIC, "input"),
+            ("out", _STATUS_BOOLEAN, "output"),
+            ("uLow", _DOUBLE, "parameter"),
+            ("uHigh", _DOUBLE, "parameter"),
+            ("initialValue", _BOOLEAN, "parameter"),
+        ),
+        (
+            _double("uLow", "u_low"),
+            _double("uHigh", "u_high"),
+            _boolean("initialValue", "initial", False),
+        ),
+        _map(**{"in": "in"}),
+        _map(out="out"),
+    ),
+)
+
 COMPONENTS_BY_NAME: Mapping[str, ComponentSpec] = MappingProxyType(
     {component.name: component for component in COMPONENTS}
 )

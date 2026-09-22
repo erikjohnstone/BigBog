@@ -1687,6 +1687,8 @@ class RunRecord(BaseModel):
     source_artifact_paths: list[str] = Field(default_factory=list)
     boptest_verification_path: str | None = None
     alfalfa_verification_path: str | None = None
+    shadow_verification_path: str | None = None
+    """GOAL-NATIVE-BOG.md N7 (D5): the Niagara Shadow Runtime evidence, tier bog-simulated."""
     verification_artifact_paths: list[str] = Field(default_factory=list)
     artifact_sha256: str
     approval: Approval | None = None

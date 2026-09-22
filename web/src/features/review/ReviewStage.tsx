@@ -3,11 +3,12 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import type { RunDetail } from '../../api/client';
-import { useDeliverables, useReleaseSummary, useReport, useSecurityStatus } from '../../api/queries';
+import { useDeliverables, useReleaseSummary, useReport, useSecurityStatus, useShadowEvidence } from '../../api/queries';
 import { Button, StatusPill, runStatusTone } from '../../design-system/primitives';
 import { MissingEvidence } from '../../design-system/states';
 import { DecisionMatrix } from '../coverage/DecisionMatrix';
 import { QualificationMatrix } from '../coverage/QualificationMatrix';
+import { formatDivergence } from '../simulation/shadow-format';
 import { KeyValue, SectionCard, StageFrame } from '../shared/StageFrame';
 import { ApproveDialog, RejectDialog } from './DecisionDialogs';
 import { SurfaceAck } from './SurfaceAck';
@@ -29,6 +30,8 @@ export function ReviewStage({ run }: { run: RunDetail }) {
   const report = useReport(run.id);
   const deliverables = useDeliverables(run.id);
   const summary = useReleaseSummary(run.id);
+  const shadow = useShadowEvidence(run.id);
+  const shadowData = shadow.data?.state === 'available' ? shadow.data.data : undefined;
   const security = useSecurityStatus();
   const status = runStatusTone(run.status);
   // The digest the reviewer is looking at; approval is bound to this value.
@@ -44,7 +47,7 @@ export function ReviewStage({ run }: { run: RunDetail }) {
     writeAcks(run.id, inspectedDigest, next);
   };
 
-  const blockers = useMemo(() => blockersFor(run, report.data, summary.data), [run, report.data, summary.data]);
+  const blockers = useMemo(() => blockersFor(run, report.data, summary.data, shadowData), [run, report.data, summary.data, shadowData]);
   const approvalBlockers = blockers.filter((item) => item.kind === 'approval');
   const deploymentGates = blockers.filter((item) => item.kind === 'deployment');
   const allAcked = SURFACES.every((surface) => acks.has(surface.id));
@@ -234,6 +237,71 @@ export function ReviewStage({ run }: { run: RunDetail }) {
           />
         ) : (
           <p className="px-4 py-3 text-sm text-fg-2">{summary.isError ? 'Release summary unavailable.' : 'Loading release summary…'}</p>
+        )}
+      </SurfaceAck>
+
+      <SurfaceAck
+        id="shadow"
+        title="Shadow Runtime"
+        acked={acks.has('shadow')}
+        onAck={(value) => ack('shadow', value)}
+        aside={
+          shadowData && (
+            <span className="inline-flex items-center gap-1.5">
+              <StatusPill tone={shadowData.status === 'pass' ? 'ok' : 'fail'}>{shadowData.status === 'pass' ? 'passed' : 'failed'}</StatusPill>
+              <StatusPill tone="sim">bog-simulated</StatusPill>
+            </span>
+          )
+        }
+      >
+        {shadowData ? (
+          <div className="px-4 py-3 text-sm flex flex-col gap-2">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-left text-fg-2">
+                  <th scope="col" className="font-medium pb-1 pr-3">Scenario</th>
+                  <th scope="col" className="font-medium pb-1 pr-3">Shadow</th>
+                  <th scope="col" className="font-medium pb-1 pr-3">Differential</th>
+                  <th scope="col" className="font-medium pb-1">First divergence</th>
+                </tr>
+              </thead>
+              <tbody>
+                {shadowData.report.scenarios.map((scenario) => {
+                  const differential = shadowData.differential.cases.find((item) => item.name === scenario.name);
+                  return (
+                    <tr key={scenario.name} className="hairline-t">
+                      <td className="py-1 pr-3 text-fg-0 truncate max-w-64">{scenario.name}</td>
+                      <td className="py-1 pr-3">
+                        <StatusPill tone={scenario.passed ? 'ok' : 'fail'} icon={null}>
+                          {scenario.passed ? 'pass' : 'fail'}
+                        </StatusPill>
+                      </td>
+                      <td className="py-1 pr-3">
+                        {differential ? (
+                          <StatusPill tone={differential.passed ? 'ok' : 'fail'} icon={null}>
+                            {differential.passed ? 'pass' : 'fail'}
+                          </StatusPill>
+                        ) : (
+                          <span className="text-fg-2">not compared</span>
+                        )}
+                      </td>
+                      <td className="py-1 num text-fg-1">{differential?.first_divergence ? formatDivergence(differential.first_divergence) : '—'}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+            <p className="text-2xs text-fg-2">
+              {shadowData.engine}. The tier is bog-simulated: a model of the exported .bog, not a licensed Niagara runtime qualification.
+            </p>
+            <Link to={`/jobs/${run.id}/test`} className="inline-block text-xs text-accent">
+              Open the Test stage to put it on the clock
+            </Link>
+          </div>
+        ) : shadow.isLoading ? (
+          <p className="px-4 py-3 text-sm text-fg-2">Loading Shadow Runtime evidence…</p>
+        ) : (
+          <p className="px-4 py-3 text-sm text-fg-2">No Shadow Runtime evidence retained for this candidate; enqueue it on the Test stage's Simulation tab.</p>
         )}
       </SurfaceAck>
 

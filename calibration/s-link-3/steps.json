@@ -1,0 +1,32 @@
+{
+  "schema": "bactalk.calibration-steps/v1",
+  "assumption": "S-LINK-3",
+  "title": "a converging feedback loop settles without error",
+  "station_testable": true,
+  "duration_seconds": 30.0,
+  "history_interval_seconds": 1.0,
+  "steps": [
+    {
+      "time_seconds": 10.0,
+      "action": "override",
+      "point": "set",
+      "value": true
+    },
+    {
+      "time_seconds": 15.0,
+      "action": "override",
+      "point": "set",
+      "value": false
+    },
+    {
+      "time_seconds": 25.0,
+      "action": "override",
+      "point": "notClear",
+      "value": false
+    }
+  ],
+  "observe": [
+    "latched"
+  ],
+  "what_to_look_for": "latched rises at t=10, holds through t=15 and clears at t=25; the station log shows no error."
+}

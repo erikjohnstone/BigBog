@@ -50,6 +50,7 @@ suite = [
 ]
 test = [
   "hypothesis>=6.138,<7",
+  "pyfunnel==2.0.2",
   "pytest>=9,<10",
   "pytest-cov>=6.2,<7",
   "pyyaml>=6,<7",

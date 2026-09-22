@@ -71,6 +71,7 @@ class _Node:
     props: list[Prop]
     handle: int
     folder: str
+    key: str
     children: list[_Node] = field(default_factory=list)
 
 
@@ -99,13 +100,14 @@ class BogBuilder:
     ) -> str:
         """Add a component and return its key ``folder/name``.
 
-        ``parent`` nests it under another component instead of the folder.
+        ``parent`` nests it under another component instead of the folder; the key is
+        then ``<parent key>/name`` so two parents may each hold a child of one name.
         """
 
-        key = f"{folder}/{name}"
+        key = f"{parent}/{name}" if parent is not None else f"{folder}/{name}"
         if key in self.nodes:
             raise ValueError(f"duplicate component {key}")
-        node = _Node(name, type_spec, list(props or []), self._next(), folder)
+        node = _Node(name, type_spec, list(props or []), self._next(), folder, key)
         self.nodes[key] = node
         if parent is not None:
             self.nodes[parent].children.append(node)
@@ -143,7 +145,9 @@ class BogBuilder:
         )
         buffer = io.BytesIO()
         with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
-            archive.writestr("file.xml", xml)
+            info = zipfile.ZipInfo("file.xml", date_time=(1980, 1, 1, 0, 0, 0))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            archive.writestr(info, xml)  # fixed timestamp: the same program gives the same bytes
         return buffer.getvalue()
 
     def _render(self, parent: ElementTree.Element, node: _Node, by_target: dict) -> None:
@@ -154,8 +158,7 @@ class BogBuilder:
             _render_prop(element, prop)
         for child in node.children:
             self._render(element, child, by_target)
-        key = f"{node.folder}/{node.name}"
-        for index, (source, source_slot, _, target_slot) in enumerate(by_target.get(key, [])):
+        for index, (source, source_slot, _, target_slot) in enumerate(by_target.get(node.key, [])):
             link = ElementTree.SubElement(
                 element, "p", {"n": "Link" if index == 0 else f"Link{index}", "t": "b:Link"}
             )

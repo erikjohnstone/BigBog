@@ -14,6 +14,11 @@ STAGES = (
     "executable",
     "product-wired",
     "target-compiled",
+    # Evidence produced by executing the exported .bog in the Niagara Shadow Runtime
+    # (GOAL-NATIVE-BOG.md D6). Above target-compiled because the file itself has run
+    # against its source of truth; below verified because every Niagara semantic the
+    # runtime assumes is unconfirmed until Gate G-WB runs the calibration kit.
+    "bog-simulated",
     "verified",
     "field-qualified",
     "production-supported",

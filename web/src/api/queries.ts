@@ -31,6 +31,8 @@ export const keys = {
   bacnetLab: (id: string) => ['run', id, 'bacnet-lab'] as const,
   boptest: (id: string) => ['run', id, 'boptest'] as const,
   alfalfa: (id: string) => ['run', id, 'alfalfa'] as const,
+  shadow: (id: string) => ['run', id, 'shadow'] as const,
+  niagaraPreviews: (id: string) => ['run', id, 'niagara-previews'] as const,
   environment: (id: string) => ['run', id, 'environment'] as const,
   latestJob: (id: string) => ['run', id, 'qualification-job', 'latest'] as const,
   job: (id: string) => ['qualification-job', id] as const,
@@ -94,6 +96,12 @@ export function useBoptestEvidence(id: string | undefined) {
 }
 export function useAlfalfaEvidence(id: string | undefined) {
   return useQuery({ queryKey: keys.alfalfa(id ?? ''), queryFn: () => api.alfalfa(id!), enabled: Boolean(id) });
+}
+export function useShadowEvidence(id: string | undefined) {
+  return useQuery({ queryKey: keys.shadow(id ?? ''), queryFn: () => api.shadow(id!), enabled: Boolean(id) });
+}
+export function useNiagaraPreviews(id: string | undefined) {
+  return useQuery({ queryKey: keys.niagaraPreviews(id ?? ''), queryFn: () => api.niagaraPreviews(id!), enabled: Boolean(id), staleTime: 5 * 60_000 });
 }
 export function useAuditStatus() {
   return useQuery({ queryKey: keys.auditStatus, queryFn: api.securityAuditStatus, staleTime: 30_000 });

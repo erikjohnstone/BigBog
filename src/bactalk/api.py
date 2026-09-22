@@ -46,8 +46,10 @@ from bactalk.domain import (
     JobSpec,
     PointSpec,
     RunOrigin,
+    RunRecord,
     RunStatus,
     SequenceSpec,
+    TargetArtifactKind,
     canonical_json,
 )
 from bactalk.intake import (
@@ -118,6 +120,7 @@ from bactalk.qualification_jobs import (
     QualificationJobIntegrityError,
     QualificationJobRepository,
     RqQualificationDispatcher,
+    ShadowQualificationPayload,
 )
 from bactalk.repository import RunRepository
 from bactalk.security import AuditLog, Principal, SecurityConfig, required_role
@@ -186,6 +189,10 @@ class BoptestQualificationRequest(BoptestQualificationPayload):
 
 
 class AlfalfaQualificationRequest(AlfalfaQualificationPayload):
+    pass
+
+
+class ShadowQualificationRequest(ShadowQualificationPayload):
     pass
 
 
@@ -292,6 +299,33 @@ def _form_acceptance_tests(value: str) -> list[AcceptanceCase]:
         raise IntakeError(f"acceptance tests are invalid: {exc}") from exc
 
 
+def _shadow_summary(record: RunRecord) -> dict[str, Any]:
+    """Release-summary view of the Shadow Runtime evidence (tier bog-simulated)."""
+
+    path = Path(record.shadow_verification_path) if record.shadow_verification_path else None
+    if path is None or not path.is_file():
+        return {
+            "available": False,
+            "passed": None,
+            "tier": "bog-simulated",
+            "failing_cases": [],
+        }
+    evidence = json.loads(path.read_text(encoding="utf-8"))
+    differential = evidence.get("differential") or {}
+    failing = list(differential.get("failing_cases", []))
+    report = evidence.get("report") or {}
+    for scenario in report.get("scenarios", []):
+        if scenario.get("passed") is False and scenario.get("name") not in failing:
+            failing.append(scenario.get("name"))
+    return {
+        "available": True,
+        "passed": evidence.get("status") == "pass",
+        "tier": "bog-simulated",
+        "engine": evidence.get("engine"),
+        "failing_cases": failing,
+    }
+
+
 def create_app(
     run_root: Path | None = None,
     *,
@@ -365,16 +399,16 @@ def create_app(
     niagara_program_library = NiagaraProgramLibrary()
     security = security_config or SecurityConfig.from_environment()
     security_audit = AuditLog(root.parent / "audit" / "events.jsonl")
+
     def configured_boptest_client() -> BoptestClient:
         return BoptestClient(
             os.getenv("BACTALK_BOPTEST_URL", "http://127.0.0.1:8000"),
-            scenario_timeout=float(
-                os.getenv("BACTALK_BOPTEST_SCENARIO_TIMEOUT_SECONDS", "900")
-            ),
+            scenario_timeout=float(os.getenv("BACTALK_BOPTEST_SCENARIO_TIMEOUT_SECONDS", "900")),
         )
 
     make_boptest_client = boptest_client_factory or configured_boptest_client
     alfalfa_base_url = os.getenv("BACTALK_ALFALFA_URL", "http://127.0.0.1:8088")
+
     def _default_alfalfa_client() -> AlfalfaClientLike:
         # Imported on demand: a minimal install without the Alfalfa extra must
         # still start the API and serve every other capability.
@@ -474,22 +508,14 @@ def create_app(
     ]:
         oracle_record = sequence_oracle_repository.get(approval_id)
         if not retained_oracle_visible(http_request, oracle_record):
-            raise HTTPException(
-                status_code=404, detail="sequence oracle approval not found"
-            )
+            raise HTTPException(status_code=404, detail="sequence oracle approval not found")
         review_record = sequence_review_repository.get(oracle_record.review_id)
         if not retained_review_visible(http_request, review_record):
-            raise HTTPException(
-                status_code=404, detail="sequence requirement review not found"
-            )
-        point_evidence = review_record.result.get(
-            "contractor_point_reconciliation", {}
-        )
+            raise HTTPException(status_code=404, detail="sequence requirement review not found")
+        point_evidence = review_record.result.get("contractor_point_reconciliation", {})
         point_record = ctrl_flow_point_repository.get(str(point_evidence.get("id", "")))
         if not retained_point_reconciliation_visible(http_request, point_record):
-            raise HTTPException(
-                status_code=404, detail="ctrl-flow point reconciliation not found"
-            )
+            raise HTTPException(status_code=404, detail="ctrl-flow point reconciliation not found")
         brief = ctrl_flow.programming_brief(
             review_record.template_id,
             review_record.selections,
@@ -1123,8 +1149,8 @@ def create_app(
         http_request: Request,
     ) -> dict:
         try:
-            oracle_record, review_record, point_record, brief = (
-                load_sequence_candidate_evidence(approval_id, http_request)
+            oracle_record, review_record, point_record, brief = load_sequence_candidate_evidence(
+                approval_id, http_request
             )
             return compile_sequence_candidate_preflight(
                 oracle_record=oracle_record.model_dump(mode="json", by_alias=True),
@@ -1159,8 +1185,8 @@ def create_app(
         http_request: Request,
     ) -> Response:
         try:
-            oracle_record, review_record, point_record, brief = (
-                load_sequence_candidate_evidence(approval_id, http_request)
+            oracle_record, review_record, point_record, brief = load_sequence_candidate_evidence(
+                approval_id, http_request
             )
             preflight, job = build_sequence_candidate_job(
                 oracle_record=oracle_record.model_dump(mode="json", by_alias=True),
@@ -1827,6 +1853,68 @@ def create_app(
             ) from exc
         return record.model_dump(mode="json")
 
+    @app.post("/api/runs/{run_id}/qualification-jobs/shadow", status_code=202)
+    def enqueue_shadow_qualification(
+        run_id: str,
+        request: ShadowQualificationRequest,
+        http_request: Request,
+    ) -> dict:
+        """Queue the candidate's .bog for the Niagara Shadow Runtime (N7, D5)."""
+
+        try:
+            candidate = repository.get(run_id)
+            if candidate.status != RunStatus.READY_FOR_REVIEW:
+                raise HTTPException(
+                    status_code=409,
+                    detail="qualification requires a passing candidate awaiting review",
+                )
+            if candidate.shadow_verification_path is not None:
+                raise HTTPException(
+                    status_code=409,
+                    detail=(
+                        "Shadow Runtime qualification is append-once; "
+                        "create a new candidate to retest"
+                    ),
+                )
+            if candidate.target_artifact_kind != TargetArtifactKind.NIAGARA_BOG:
+                raise HTTPException(
+                    status_code=409,
+                    detail="Shadow Runtime qualification needs a native .bog target",
+                )
+            total_steps = sum(
+                sum(phase.repeat for phase in case.timeline) if case.timeline else case.repeat
+                for case in candidate.job.acceptance_tests
+            )
+            principal: Principal | None = getattr(http_request.state, "principal", None)
+            record = qualification_jobs.create_shadow(
+                run_id=run_id,
+                candidate_artifact_sha256=candidate.artifact_sha256,
+                payload=request,
+                total_steps=total_steps + 1,
+                actor_id=principal.subject if principal is not None else None,
+                tenant_id=principal.tenant_id if principal is not None else None,
+            )
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="run not found") from exc
+        except HTTPException:
+            raise
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        try:
+            dispatch_qualification.enqueue(record)
+        except Exception as exc:
+            failed = qualification_jobs.mark_failed(
+                record.id, f"Qualification queue dispatch failed: {type(exc).__name__}: {exc}"
+            )
+            raise HTTPException(
+                status_code=503,
+                detail={
+                    "message": "qualification queue is unavailable",
+                    "job": failed.model_dump(mode="json"),
+                },
+            ) from exc
+        return record.model_dump(mode="json")
+
     @app.get("/api/runs/{run_id}/qualification-jobs/latest")
     def latest_qualification_job(run_id: str, http_request: Request) -> dict:
         try:
@@ -1895,9 +1983,7 @@ def create_app(
                 "id": record.id,
                 "status": record.status.value,
                 "progress": record.progress.model_dump(mode="json"),
-                "heartbeat_at": (
-                    record.heartbeat_at.isoformat() if record.heartbeat_at else None
-                ),
+                "heartbeat_at": (record.heartbeat_at.isoformat() if record.heartbeat_at else None),
                 "updated_at": record.updated_at.isoformat(),
                 "error": record.error,
                 "qualification_passed": record.qualification_passed,
@@ -1985,6 +2071,40 @@ def create_app(
             raise HTTPException(
                 status_code=404,
                 detail="run or BOPTEST qualification evidence not found",
+            ) from exc
+        except ArtifactChangedError as exc:
+            raise HTTPException(status_code=412, detail=str(exc)) from exc
+
+    @app.post("/api/runs/{run_id}/verify/shadow")
+    def qualify_run_with_shadow(run_id: str, request: ShadowQualificationRequest) -> dict:
+        """Run the Shadow Runtime qualification synchronously (small suites)."""
+
+        try:
+            record = service.qualify_with_shadow(
+                run_id,
+                policy=request.policy,
+                kernel_backend=request.kernel_backend,
+                band_set=request.band_set,
+            )
+            evidence = json.loads(service.shadow_verification_path(run_id).read_text())
+            return {"run": record.model_dump(mode="json"), "evidence": evidence}
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="run not found") from exc
+        except ApprovalRequiredError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except ArtifactChangedError as exc:
+            raise HTTPException(status_code=412, detail=str(exc)) from exc
+        except (ValueError, RuntimeError) as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.get("/api/runs/{run_id}/verify/shadow")
+    def get_shadow_qualification(run_id: str) -> dict:
+        try:
+            return json.loads(service.shadow_verification_path(run_id).read_text())
+        except KeyError as exc:
+            raise HTTPException(
+                status_code=404,
+                detail="run or Shadow Runtime qualification evidence not found",
             ) from exc
         except ArtifactChangedError as exc:
             raise HTTPException(status_code=412, detail=str(exc)) from exc
@@ -2568,6 +2688,7 @@ def create_app(
                 "coverage": deliverables.get("coverage", {}) if deliverables else {},
                 "blocking_gates": (deliverables.get("blocking_gates", []) if deliverables else []),
             },
+            "shadow": _shadow_summary(record),
             "approval": (record.approval.model_dump(mode="json") if record.approval else None),
             "downloads": {
                 "available": approved,
@@ -2615,6 +2736,21 @@ def create_app(
         if path is None:
             raise HTTPException(status_code=404, detail="run has no graphics model")
         return JSONResponse(json.loads(path.read_text(encoding="utf-8")))
+
+    @app.get("/api/runs/{run_id}/niagara-previews")
+    def get_niagara_previews(run_id: str) -> dict:
+        """The native lane's per-folder wiresheet SVG previews (N4)."""
+
+        try:
+            folders = service.niagara_previews(run_id)
+        except KeyError as exc:
+            raise HTTPException(status_code=404, detail="run not found") from exc
+        if not folders:
+            raise HTTPException(status_code=404, detail="run has no Niagara folder previews")
+        return {
+            "schema": "bactalk.niagara-previews/v1",
+            "folders": [{"name": name, "svg": svg} for name, svg in folders],
+        }
 
     @app.get("/api/runs/{run_id}/niagara-graphics-plan")
     def get_niagara_graphics_plan(run_id: str) -> JSONResponse:
@@ -2664,17 +2800,14 @@ def create_app(
                 case_directory = artifact_path.parent.parent.name
                 case_id = (
                     case_directory.split("-", 2)[2]
-                    if case_directory.startswith("case-")
-                    and len(case_directory.split("-", 2)) == 3
+                    if case_directory.startswith("case-") and len(case_directory.split("-", 2)) == 3
                     else "single-run"
                 )
                 context_id = f"{lane}/{case_id}/{artifact_path.parent.name}"
                 counterexample_artifacts[context_id] = json.loads(
                     artifact_path.read_text(encoding="utf-8")
                 )
-            verification_failures = summarize_verification_failures(
-                counterexample_artifacts
-            )
+            verification_failures = summarize_verification_failures(counterexample_artifacts)
             chat_agent = ControlsChatAgent(chat_provider, coding_provider)
             if source_record.job.sequence.library in {"plant_controls", "g36"}:
                 controller_id = source_record.job.sequence.controller_id

@@ -7,9 +7,10 @@ import re
 import shutil
 import tempfile
 import zipfile
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 from bactalk.agent import ControlsPlanner, ProgrammingAgent, SequencePackPlanner
 from bactalk.compiler import NiagaraCompiler
@@ -63,10 +64,18 @@ from bactalk.integrations.niagara_station import assemble_station_bog, point_bin
 from bactalk.integrations.niagara_template import NiagaraTemplateAnalyzer
 from bactalk.integrations.plant_controls_library import PlantControlsLibrary
 from bactalk.integrations.volttron import build_readonly_volttron_export
+from bactalk.library_demo import reference_trace
+from bactalk.niagara.differential import three_way_differential
 from bactalk.niagara.lowering import LoweringPolicy, plan_lowering
 from bactalk.niagara.module import declared_types
+from bactalk.niagara.shadow.driver import ShadowRunOptions, run_shadow_suite
+from bactalk.niagara.shadow.policy import DEFAULT_POLICY, PLAUSIBLE_POLICIES
 from bactalk.niagara.validate import validate_bog
 from bactalk.repository import RunRepository
+
+
+class ShadowQualificationCancelled(RuntimeError):
+    """Raised inside a Shadow Runtime qualification when the job asked to stop."""
 
 
 class ApprovalRequiredError(RuntimeError):
@@ -540,16 +549,12 @@ class WorkbenchService:
                 "target_artifact_path": final_path(target_artifact_path),
                 "bog_path": final_path(bog_path) if bog_path is not None else None,
                 "program_package_path": (
-                    final_path(program_package_path)
-                    if program_package_path is not None
-                    else None
+                    final_path(program_package_path) if program_package_path is not None else None
                 ),
                 "report_path": final_path(report_path),
                 "manifest_path": final_path(manifest_path),
                 "job_path": final_path(job_path),
-                "template_bog_path": (
-                    final_path(template_bog_path) if template_bog_path else None
-                ),
+                "template_bog_path": (final_path(template_bog_path) if template_bog_path else None),
                 "template_analysis_path": (
                     final_path(template_analysis_path) if template_analysis_path else None
                 ),
@@ -570,13 +575,9 @@ class WorkbenchService:
                 "volttron_manifest_path": (
                     final_path(volttron_manifest_path) if volttron_manifest_path else None
                 ),
-                "volttron_artifact_paths": [
-                    final_path(path) for path in volttron_artifact_paths
-                ],
+                "volttron_artifact_paths": [final_path(path) for path in volttron_artifact_paths],
                 "nhaystack_manifest_path": final_path(nhaystack_manifest_path),
-                "nhaystack_artifact_paths": [
-                    final_path(path) for path in nhaystack_artifact_paths
-                ],
+                "nhaystack_artifact_paths": [final_path(path) for path in nhaystack_artifact_paths],
                 "bacnet_lab_manifest_path": (
                     final_path(bacnet_lab_manifest_path) if bacnet_lab_manifest_path else None
                 ),
@@ -622,16 +623,12 @@ class WorkbenchService:
         if not isinstance(raw_trajectory, list) or not raw_trajectory:
             raise ValueError("BOPTEST runtime evidence has no valid trajectory clock")
         first = raw_trajectory[0]
-        if not isinstance(first, dict) or not isinstance(
-            first.get("start_time"), (int, float)
-        ):
+        if not isinstance(first, dict) or not isinstance(first.get("start_time"), (int, float)):
             raise ValueError("BOPTEST runtime trajectory has an invalid start clock")
         oracle_time_origin = float(first["start_time"])
         test_times: list[float] = []
         for sample in raw_trajectory:
-            if not isinstance(sample, dict) or not isinstance(
-                sample.get("end_time"), (int, float)
-            ):
+            if not isinstance(sample, dict) or not isinstance(sample.get("end_time"), (int, float)):
                 raise ValueError("BOPTEST runtime trajectory has an invalid sample clock")
             test_times.append(float(sample["end_time"]) - oracle_time_origin)
 
@@ -640,9 +637,7 @@ class WorkbenchService:
         for index, oracle in enumerate(oracles, start=1):
             test_values: list[float] = []
             section = (
-                "controller_outputs"
-                if oracle.signal_kind == "graph_output"
-                else "measurements"
+                "controller_outputs" if oracle.signal_kind == "graph_output" else "measurements"
             )
             for sample in raw_trajectory:
                 if not isinstance(sample, dict) or not isinstance(sample.get(section), dict):
@@ -659,13 +654,9 @@ class WorkbenchService:
                 elif isinstance(raw, (int, float)):
                     value = float(raw)
                 else:
-                    raise ValueError(
-                        f"BOPTEST oracle signal {oracle.signal!r} is not numeric"
-                    )
+                    raise ValueError(f"BOPTEST oracle signal {oracle.signal!r} is not numeric")
                 if not math.isfinite(value):
-                    raise ValueError(
-                        f"BOPTEST oracle signal {oracle.signal!r} is not finite"
-                    )
+                    raise ValueError(f"BOPTEST oracle signal {oracle.signal!r} is not finite")
                 test_values.append(value)
             output_directory = output_root / f"oracle-{index:03d}-{oracle.id}"
             result = scorer.compare(
@@ -763,18 +754,12 @@ class WorkbenchService:
                 or warmup_period != 0.0
                 or scenario is not None
             ):
-                raise ValueError(
-                    "BOPTEST suite cases cannot be combined with single-run fields"
-                )
+                raise ValueError("BOPTEST suite cases cannot be combined with single-run fields")
             assert cases is not None
             if len(cases) > 50:
-                raise ValueError(
-                    "BOPTEST qualification suites cannot exceed 50 cases"
-                )
+                raise ValueError("BOPTEST qualification suites cannot exceed 50 cases")
             if sum(case.steps for case in cases) > 1_000_000:
-                raise ValueError(
-                    "BOPTEST qualification suites cannot exceed 1000000 steps"
-                )
+                raise ValueError("BOPTEST qualification suites cannot exceed 1000000 steps")
             case_ids = [case.id for case in cases]
             if len(case_ids) != len(set(case_ids)):
                 raise ValueError("BOPTEST qualification case ids must be unique")
@@ -782,9 +767,7 @@ class WorkbenchService:
             if cases is not None:
                 raise ValueError("BOPTEST qualification cases cannot be empty")
             if oracles is None or steps is None or step_seconds is None:
-                raise ValueError(
-                    "BOPTEST qualification requires oracles, steps, and step_seconds"
-                )
+                raise ValueError("BOPTEST qualification requires oracles, steps, and step_seconds")
             self._validate_boptest_oracles(oracles)
 
         graph = ControlGraph.model_validate_json(
@@ -844,21 +827,17 @@ class WorkbenchService:
                             total_steps,
                         )
                     case_directory = staging / f"case-{index:03d}-{case.id}"
-                    oracle_results, oracle_clock, case_passed = (
-                        self._score_boptest_oracles(
-                            runtime_evidence,
-                            case.oracles,
-                            case_directory,
-                            scorer=scorer,
-                        )
+                    oracle_results, oracle_clock, case_passed = self._score_boptest_oracles(
+                        runtime_evidence,
+                        case.oracles,
+                        case_directory,
+                        scorer=scorer,
                     )
                     case_results.append(
                         {
                             "id": case.id,
                             "status": "pass" if case_passed else "fail",
-                            "request": case.model_dump(
-                                mode="json", exclude={"oracles"}
-                            ),
+                            "request": case.model_dump(mode="json", exclude={"oracles"}),
                             "runtime": runtime_evidence,
                             "oracle_clock": oracle_clock,
                             "oracles": oracle_results,
@@ -1001,13 +980,9 @@ class WorkbenchService:
                 elif isinstance(raw, (int, float)):
                     value = float(raw)
                 else:
-                    raise ValueError(
-                        f"Alfalfa oracle signal {oracle.signal!r} is not numeric"
-                    )
+                    raise ValueError(f"Alfalfa oracle signal {oracle.signal!r} is not numeric")
                 if not math.isfinite(value):
-                    raise ValueError(
-                        f"Alfalfa oracle signal {oracle.signal!r} is not finite"
-                    )
+                    raise ValueError(f"Alfalfa oracle signal {oracle.signal!r} is not finite")
                 test_values.append(value)
             output_directory = output_root / f"oracle-{index:03d}-{oracle.id}"
             comparison = scorer.compare(
@@ -1086,9 +1061,7 @@ class WorkbenchService:
             )
         self._verify_integrity(record)
         if record.alfalfa_verification_path:
-            raise ValueError(
-                "Alfalfa qualification is append-once; create a new run to retest"
-            )
+            raise ValueError("Alfalfa qualification is append-once; create a new run to retest")
         self._validate_alfalfa_oracles(oracles)
         if not model_bytes:
             raise ValueError("Alfalfa FMU is empty")
@@ -1209,13 +1182,9 @@ class WorkbenchService:
             )
         self._verify_integrity(record)
         if record.alfalfa_verification_path:
-            raise ValueError(
-                "Alfalfa qualification is append-once; create a new run to retest"
-            )
+            raise ValueError("Alfalfa qualification is append-once; create a new run to retest")
         if record.bacnet_lab_manifest_path is None:
-            raise ValueError(
-                "BACnet-coupled Alfalfa qualification requires a mapped BACnet scan"
-            )
+            raise ValueError("BACnet-coupled Alfalfa qualification requires a mapped BACnet scan")
         self._validate_alfalfa_oracles(oracles)
         if not model_bytes:
             raise ValueError("Alfalfa FMU is empty")
@@ -1409,6 +1378,187 @@ class WorkbenchService:
                 info.external_attr = 0o644 << 16
                 archive.writestr(info, entries[name])
         return destination
+
+    def qualify_with_shadow(
+        self,
+        run_id: str,
+        *,
+        policy: str = "default",
+        kernel_backend: str = "auto",
+        band_set: str = "default",
+        reference: Mapping[str, Any] | None = None,
+        progress_callback: Callable[[str, int, int], None] | None = None,
+        cancellation_requested: Callable[[], bool] | None = None,
+        expected_artifact_sha256: str | None = None,
+    ) -> RunRecord:
+        """Attach Niagara Shadow Runtime evidence to an undecided run (N7, D5).
+
+        The exact ``.bog`` signed on the run executes in the Shadow Runtime against the
+        job's acceptance suite; the three-way differential then compares that
+        trajectory with the IR interpreter's and, when one is retained, the
+        controller's reference within the documented bands. Append-once: the evidence
+        joins the artifact digest a later approval signs. A failing scenario or a
+        divergence marks the run FAILED, which blocks approval and therefore export.
+        The evidence tier is ``bog-simulated``: it is not a Niagara runtime result.
+        """
+
+        record = self.repository.get(run_id)
+        if (
+            expected_artifact_sha256 is not None
+            and record.artifact_sha256 != expected_artifact_sha256
+        ):
+            raise ArtifactChangedError(
+                "candidate changed after Shadow Runtime qualification was submitted"
+            )
+        if record.status != RunStatus.READY_FOR_REVIEW:
+            raise ApprovalRequiredError(
+                "Shadow Runtime qualification requires a passing candidate awaiting review"
+            )
+        self._verify_integrity(record)
+        if record.shadow_verification_path:
+            raise ValueError(
+                "Shadow Runtime qualification is append-once; create a new run to retest"
+            )
+        if record.target_artifact_kind != TargetArtifactKind.NIAGARA_BOG:
+            raise ValueError("Shadow Runtime qualification needs a native .bog target")
+        bog_path = record.target_artifact_path or record.bog_path
+        if bog_path is None:
+            raise ValueError("run has no signed .bog artifact")
+        policies = {item.name: item for item in PLAUSIBLE_POLICIES}
+        policies.setdefault("default", DEFAULT_POLICY)
+        if policy not in policies:
+            raise ValueError(f"unknown Shadow Runtime policy {policy!r}")
+        if band_set not in {"default", "coarse"}:
+            raise ValueError(f"unknown band set {band_set!r}")
+        job = record.job
+        graph = ControlGraph.model_validate_json(
+            Path(record.graph_path).read_text(encoding="utf-8")
+        )
+        job = job.model_copy(update={"control_graph": graph})
+        content = Path(bog_path).read_bytes()
+        cases = job.acceptance_tests
+        total = sum(
+            sum(phase.repeat for phase in case.timeline) if case.timeline else case.repeat
+            for case in cases
+        )
+        done = {"scans": 0}
+
+        def on_progress(completed: int, _total: int) -> None:
+            done["scans"] = completed
+            if cancellation_requested is not None and cancellation_requested():
+                raise ShadowQualificationCancelled("Shadow Runtime qualification canceled")
+            if progress_callback is not None:
+                progress_callback("shadow_runtime", min(completed, total), total + 1)
+
+        options = ShadowRunOptions(
+            policy=policies[policy],
+            kernel_backend=kernel_backend,
+            sequence_family=job.sequence.family,
+            progress=on_progress,
+        )
+        shadow_report = run_shadow_suite(content, cases, options=options)
+        if progress_callback is not None:
+            progress_callback("differential", total, total + 1)
+        controller_id = job.sequence.controller_id
+        if reference is None and controller_id is not None:
+            reference = reference_trace(controller_id)
+        interpreter_report = TestReport.model_validate_json(
+            Path(record.report_path).read_text(encoding="utf-8")
+        )
+        differential = three_way_differential(
+            job,
+            bog=content,
+            reference=reference,
+            policy=policies[policy],
+            kernel_backend=kernel_backend,
+            shadow_report=shadow_report,
+            interpreter_report=interpreter_report,
+            band_set=band_set,
+        )
+        passed = shadow_report.passed and differential.passed
+        reference_trajectories: dict[str, dict[str, dict[str, list[float]]]] = {}
+        if reference is not None:
+            for entry in reference.get("cases", []):
+                name = entry.get("name")
+                if not isinstance(name, str):
+                    continue
+                times = [float(value) for value in entry.get("times", [])]
+                reference_trajectories[name] = {
+                    signal: {"times": times, "values": [float(v) for v in values]}
+                    for signal, values in entry.get("outputs", {}).items()
+                }
+        evidence = {
+            "schema": "bactalk.shadow-qualification/v1",
+            "status": "pass" if passed else "fail",
+            "run_id": record.id,
+            "tier": "bog-simulated",
+            "engine": shadow_report.engine,
+            "policy": policy,
+            "kernel_backend": kernel_backend,
+            "band_set": band_set,
+            "bog_sha256": hashlib.sha256(content).hexdigest(),
+            "artifact_sha256_before_qualification": record.artifact_sha256,
+            "approval_allowed": passed,
+            "live_building_writes": False,
+            "report": shadow_report.model_dump(mode="json"),
+            "differential": differential.to_dict(),
+            "reference": reference_trajectories or None,
+        }
+        run_dir = self.repository.run_directory(record.id)
+        destination = run_dir / "shadow-verification"
+        if destination.exists():
+            raise ValueError("Shadow Runtime verification directory already exists")
+        staging = Path(tempfile.mkdtemp(prefix=".shadow-verification.", dir=run_dir))
+        try:
+            (staging / "evidence.json").write_text(canonical_json(evidence), encoding="utf-8")
+            staged_paths = sorted(path for path in staging.rglob("*") if path.is_file())
+            os.replace(staging, destination)
+        except BaseException:
+            if staging.exists():
+                shutil.rmtree(staging)
+            raise
+        final_paths = [destination / path.relative_to(staging) for path in staged_paths]
+        digest = artifact_hash(*self._record_artifact_paths(record), *final_paths)
+        updated = record.model_copy(
+            update={
+                "status": RunStatus.READY_FOR_REVIEW if passed else RunStatus.FAILED,
+                "shadow_verification_path": str(destination / "evidence.json"),
+                "verification_artifact_paths": [
+                    *record.verification_artifact_paths,
+                    *(str(path) for path in final_paths),
+                ],
+                "artifact_sha256": digest,
+            }
+        )
+        try:
+            self.repository.save(updated)
+        except BaseException:
+            shutil.rmtree(destination)
+            raise
+        if progress_callback is not None:
+            progress_callback("completed", total + 1, total + 1)
+        return updated
+
+    def shadow_verification_path(self, run_id: str) -> Path:
+        record = self.repository.get(run_id)
+        self._verify_integrity(record)
+        if record.shadow_verification_path is None:
+            raise KeyError("run has no Shadow Runtime qualification evidence")
+        path = Path(record.shadow_verification_path)
+        if not path.is_file():
+            raise ArtifactChangedError("Shadow Runtime qualification evidence is missing")
+        return path
+
+    def niagara_previews(self, run_id: str) -> list[tuple[str, str]]:
+        """(folder, svg) wiresheet previews the native lane rendered for the run."""
+
+        record = self.repository.get(run_id)
+        previews = self.repository.run_directory(record.id) / "previews"
+        if not previews.is_dir():
+            return []
+        return [
+            (path.stem, path.read_text(encoding="utf-8")) for path in sorted(previews.glob("*.svg"))
+        ]
 
     def boptest_verification_path(self, run_id: str) -> Path:
         record = self.repository.get(run_id)

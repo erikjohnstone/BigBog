@@ -348,7 +348,7 @@ class CapabilityRegistry:
                     "zone.fan-coil",
                 ],
                 sequence_families=["LBNL_G36_CONTROLLER"],
-                stage="product-wired",
+                stage="bog-simulated",
                 status=PackStatus.QUALIFYING,
                 supported_blocks=SUPPORTED_BLOCKS,
                 artifact_coverage=ArtifactCoverage(

@@ -221,10 +221,15 @@ def _score(
     elif wants_writable and not candidate.writable:
         score -= 0.25
         reasons.append("command needs a writable object")
-    elif not wants_writable and candidate.writable and candidate.object_type in {
-        "analogOutput",
-        "binaryOutput",
-    }:
+    elif (
+        not wants_writable
+        and candidate.writable
+        and candidate.object_type
+        in {
+            "analogOutput",
+            "binaryOutput",
+        }
+    ):
         score -= 0.1
         reasons.append("sensor mapped to an output object")
     if point.units and candidate.units:
@@ -324,9 +329,7 @@ def apply_bindings(
         else:
             priority = None
         updated.append(
-            point.model_copy(
-                update={"niagara_ord": ord_value, "niagara_write_priority": priority}
-            )
+            point.model_copy(update={"niagara_ord": ord_value, "niagara_write_priority": priority})
         )
     return updated
 

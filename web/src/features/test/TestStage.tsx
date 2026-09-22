@@ -14,6 +14,7 @@ import { useTrends } from '../../stores/trends';
 import { useUi } from '../../stores/ui';
 import { buildTrace, traceIdForRun } from '../../trace/build-trace';
 import { alfalfaTraceId, boptestTraceId } from '../../trace/evidence-trace';
+import { shadowTraceId } from '../../trace/shadow-trace';
 import { DecisionMatrix } from '../coverage/DecisionMatrix';
 import { FaultMatrix } from '../coverage/FaultMatrix';
 import { QualificationMatrix } from '../coverage/QualificationMatrix';
@@ -33,8 +34,8 @@ const LAYOUT_KEY = 'test';
 const defaultOuter = { top: 64, evidence: 36 };
 const defaultInner = { rail: 18, trends: 52, schematic: 30 };
 
-type ClockSource = 'run' | 'boptest' | 'alfalfa';
-const SOURCE_LABELS: Record<ClockSource, string> = { run: 'Acceptance tests', boptest: 'BOPTEST evidence', alfalfa: 'Alfalfa evidence' };
+type ClockSource = 'run' | 'boptest' | 'alfalfa' | 'shadow';
+const SOURCE_LABELS: Record<ClockSource, string> = { run: 'Acceptance tests', boptest: 'BOPTEST evidence', alfalfa: 'Alfalfa evidence', shadow: 'Shadow Runtime (bog-simulated)' };
 
 /**
  * Test stage: master timeline, trend panes, and boolean lanes on the shared
@@ -62,16 +63,19 @@ function TestBody({
   catalog: ReturnType<typeof useBlockCatalog>['data'];
 }) {
   const runTraceId = traceIdForRun(run.id);
-  const sourceIds: Record<ClockSource, string> = { run: runTraceId, boptest: boptestTraceId(run.id), alfalfa: alfalfaTraceId(run.id) };
+  const sourceIds: Record<ClockSource, string> = { run: runTraceId, boptest: boptestTraceId(run.id), alfalfa: alfalfaTraceId(run.id), shadow: shadowTraceId(run.id) };
   const [requestedSource, setSource] = useState<ClockSource>('run');
   const runTrace = useTrace(runTraceId);
   const boptestTrace = useTrace(sourceIds.boptest);
   const alfalfaTrace = useTrace(sourceIds.alfalfa);
-  const loaded: Record<ClockSource, boolean> = { run: Boolean(runTrace), boptest: Boolean(boptestTrace), alfalfa: Boolean(alfalfaTrace) };
+  const shadowTrace = useTrace(sourceIds.shadow);
+  const loaded: Record<ClockSource, boolean> = { run: Boolean(runTrace), boptest: Boolean(boptestTrace), alfalfa: Boolean(alfalfaTrace), shadow: Boolean(shadowTrace) };
   // An evidence trace that has not been loaded falls back to the run's own trace.
   const source: ClockSource = loaded[requestedSource] ? requestedSource : 'run';
   const traceId = sourceIds[source];
-  const trace = source === 'run' ? runTrace : source === 'boptest' ? boptestTrace : alfalfaTrace;
+  const traces: Record<ClockSource, typeof runTrace> = { run: runTrace, boptest: boptestTrace, alfalfa: alfalfaTrace, shadow: shadowTrace };
+  const trace = traces[source];
+  const anyEvidenceLoaded = loaded.boptest || loaded.alfalfa || loaded.shadow;
   const savePanelSizes = useUi((state) => state.savePanelSizes);
   const schematicOpen = useUi((state) => state.schematicOpen);
   const [outerLayout] = useState(() => useUi.getState().panelSizes[`${LAYOUT_KEY}:outer`] ?? defaultOuter);
@@ -114,7 +118,7 @@ function TestBody({
   );
 
   const summary = useMemo(() => {
-    if (source !== 'run' && trace) return { total: trace.assertions.length, passed: trace.assertions.filter((item) => item.passed).length, label: trace.assertions.length === 1 ? 'oracle' : 'oracles' };
+    if (source !== 'run' && trace) return { total: trace.assertions.length, passed: trace.assertions.filter((item) => item.passed).length, label: source === 'shadow' ? 'assertions' : trace.assertions.length === 1 ? 'oracle' : 'oracles' };
     const total = report.scenarios.reduce((sum, scenario) => sum + scenario.assertions.length, 0);
     const passed = report.scenarios.reduce((sum, scenario) => sum + scenario.assertions.filter((item) => item.passed).length, 0);
     return { total, passed, label: 'assertions' };
@@ -144,7 +148,7 @@ function TestBody({
                 </span>
                 <span className="text-xs text-fg-2 truncate max-w-48 hidden lg:inline">{source === 'run' ? report.engine : trace.label}</span>
                 <span className="flex-1" />
-                {(loaded.boptest || loaded.alfalfa) && (
+                {anyEvidenceLoaded && (
                   <NativeSelect size="sm" className="w-44" aria-label="Clock source" value={source} onChange={(event) => setSource(event.target.value as ClockSource)}>
                     {(Object.keys(SOURCE_LABELS) as ClockSource[]).filter((key) => loaded[key]).map((key) => (
                       <option key={key} value={key}>
@@ -219,7 +223,7 @@ function TestBody({
               <DataTable trace={trace} />
             </TabPanel>
             <TabPanel value="simulation" className="flex-1 min-h-0 overflow-auto">
-              <SimulationCenter runId={run.id} graph={graph} onLoadTrace={(kind) => setSource(kind)} />
+              <SimulationCenter run={run} graph={graph} onLoadTrace={(kind) => setSource(kind)} />
             </TabPanel>
           </Tabs>
         </Panel>

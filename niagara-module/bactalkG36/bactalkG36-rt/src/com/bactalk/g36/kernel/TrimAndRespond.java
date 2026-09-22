@@ -229,6 +229,8 @@ public final class TrimAndRespond {
       unitLastIndex = (long) Math.floor((timeSeconds - unitT0) / samplePeriodSeconds + 1.0e-9);
       unitHeld = unitStaged;
       unitStaged = output;
+    } else if (Math.abs(timeSeconds - (unitT0 + unitLastIndex * samplePeriodSeconds)) <= 1.0e-9) {
+      unitStaged = output; // still at the sample instant: the last execution wins
     }
     previousTimeSeconds = timeSeconds;
     return output;

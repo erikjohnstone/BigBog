@@ -31,6 +31,10 @@ class Kernel(Protocol):
 
 
 class PidWithReset:
+    """State commits only when time advances, so several executions at one instant
+    (an input change and the period tick) see the previous instant's state and the
+    last one wins."""
+
     def __init__(
         self,
         controller_type: str,
@@ -64,26 +68,41 @@ class PidWithReset:
         self.xi_start = xi_start
         self.yd_start = yd_start
         self.y_reset = y_reset
-        self.integral = xi_start
-        self.derivative_state = 0.0
-        self.previous_trigger = False
-        self.previous_time = math.nan
+        self.reset()
 
     def reset(self) -> None:
-        self.integral = self.xi_start
-        self.derivative_state = 0.0
-        self.previous_trigger = False
-        self.previous_time = math.nan
+        self.base_integral = self.xi_start
+        self.base_derivative = 0.0
+        self.base_previous_trigger = False
+        self.base_time = math.nan
+        self.pending_integral = self.xi_start
+        self.pending_derivative = 0.0
+        self.pending_previous_trigger = False
+        self.last_time = math.nan
+        self.first_instant = math.nan
 
     def step(
         self, time_seconds: float, setpoint: float, measurement: float, trigger: bool
     ) -> tuple[float]:
         if not _finite(time_seconds, setpoint, measurement):
             raise ValueError("PIDWithReset inputs must be finite")
-        first_tick = math.isnan(self.previous_time)
-        if not first_tick and time_seconds < self.previous_time:
+        first_tick = math.isnan(self.last_time)
+        if not first_tick and time_seconds < self.last_time:
             raise ValueError("PIDWithReset time must be monotonic")
-        dt = 0.0 if first_tick else time_seconds - self.previous_time
+        if first_tick:
+            self.base_time = time_seconds
+        elif time_seconds > self.last_time:
+            self.base_integral = self.pending_integral
+            self.base_derivative = self.pending_derivative
+            self.base_previous_trigger = self.pending_previous_trigger
+            self.base_time = self.last_time
+        initial = first_tick or math.isnan(self.base_time)
+        dt = time_seconds - self.base_time
+        at_start = first_tick or (
+            time_seconds == self.base_time
+            and not math.isnan(self.first_instant)
+            and time_seconds == self.first_instant
+        )
         reverse_sign = 1.0 if self.reverse_acting else -1.0
         error = reverse_sign * (setpoint - measurement) / self.r
         proportional = self.k * error
@@ -92,12 +111,12 @@ class PidWithReset:
         if self.with_derivative:
             derivative = (
                 self.yd_start
-                if first_tick
-                else (derivative_gain / derivative_time) * (error - self.derivative_state)
+                if at_start
+                else (derivative_gain / derivative_time) * (error - self.base_derivative)
             )
         else:
             derivative = 0.0
-        integral_output = self.integral if self.with_integral else 0.0
+        integral_output = self.base_integral if self.with_integral else 0.0
         proportional_derivative = proportional + derivative
         unlimited = proportional_derivative + integral_output
         output = (
@@ -106,26 +125,30 @@ class PidWithReset:
             else (self.y_min if unlimited < self.y_min else unlimited)
         )
         if self.with_integral:
-            rising_reset = trigger and not self.previous_trigger
+            rising_reset = trigger and not self.base_previous_trigger
             if rising_reset:
-                self.integral = self.y_reset - proportional_derivative
+                self.pending_integral = self.y_reset - proportional_derivative
             else:
                 anti_windup = (unlimited - output) / (self.k * self.ni)
                 corrected_error = error - anti_windup
-                self.integral = integral_output + (self.k / self.ti) * corrected_error * dt
-            self.previous_trigger = trigger
+                self.pending_integral = integral_output + (self.k / self.ti) * corrected_error * dt
+            self.pending_previous_trigger = trigger
         if self.with_derivative:
-            if first_tick:
-                initial = (
+            if at_start:
+                initial_state = (
                     error
                     if abs(derivative_gain) < 1.0e-15
                     else error - derivative_time * self.yd_start / derivative_gain
                 )
             else:
-                initial = self.derivative_state
+                initial_state = self.base_derivative
             ratio = dt / derivative_time
-            self.derivative_state = (initial + ratio * error) / (1.0 + ratio)
-        self.previous_time = time_seconds
+            self.pending_derivative = (initial_state + ratio * error) / (1.0 + ratio)
+        if not initial and not self.with_derivative:
+            self.pending_derivative = self.base_derivative
+        if first_tick:
+            self.first_instant = time_seconds
+        self.last_time = time_seconds
         return (output,)
 
 
@@ -677,6 +700,8 @@ class TrimAndRespond:
             self.unit_last_index = int(math.floor((time_seconds - self.unit_t0) / period + 1.0e-9))
             self.unit_held = self.unit_staged
             self.unit_staged = output
+        elif abs(time_seconds - (self.unit_t0 + self.unit_last_index * period)) <= 1.0e-9:
+            self.unit_staged = output  # still at the sample instant: the last execution wins
         self.previous_time = time_seconds
         return (output,)
 
@@ -719,6 +744,138 @@ class NumericChange:
             result = current != self.previous
         self.previous = current
         return (result,)
+
+
+class RisingEdge:
+    """``one_shot``: one execution true per rising edge, judged between executions."""
+
+    def __init__(self, initial: bool) -> None:
+        self.initial = initial
+        self.previous = initial
+
+    def reset(self) -> None:
+        self.previous = self.initial
+
+    def step(self, time_seconds: float, value: bool) -> tuple[bool]:
+        pulse = value and not self.previous
+        self.previous = value
+        return (pulse,)
+
+
+class FallingEdge:
+    def __init__(self, initial: bool) -> None:
+        self.initial = initial
+        self.previous = initial
+
+    def reset(self) -> None:
+        self.previous = self.initial
+
+    def step(self, time_seconds: float, value: bool) -> tuple[bool]:
+        pulse = self.previous and not value
+        self.previous = value
+        return (pulse,)
+
+
+class SetReset:
+    """Clear-dominant latch (``CDL.Logical.Latch``): set on a rising edge of ``set``."""
+
+    def __init__(self) -> None:
+        self.output = False
+        self.previous_set = False
+
+    def reset(self) -> None:
+        self.output = False
+        self.previous_set = False
+
+    def step(self, time_seconds: float, set_input: bool, clear: bool) -> tuple[bool]:
+        next_output = (not clear) and ((set_input and not self.previous_set) or self.output)
+        self.output = next_output
+        self.previous_set = set_input
+        return (next_output,)
+
+
+class Sampler:
+    def __init__(self, sample_period_seconds: float) -> None:
+        if not sample_period_seconds > 0.0:
+            raise ValueError("Sampler period must be positive")
+        self.sample_period_seconds = sample_period_seconds
+        self.reset()
+
+    def reset(self) -> None:
+        self.initialized = False
+        self.held = 0.0
+        self.t0 = 0.0
+        self.last_index = 0
+        self.previous_time = math.nan
+
+    def step(self, time_seconds: float, value: float) -> tuple[float]:
+        if not _finite(time_seconds, value):
+            raise ValueError("Sampler inputs must be finite")
+        if not math.isnan(self.previous_time) and time_seconds < self.previous_time:
+            raise ValueError("Sampler time must be monotonic")
+        period = self.sample_period_seconds
+        if not self.initialized:
+            self.t0 = math.floor(time_seconds / period) * period
+            self.last_index = int(math.floor((time_seconds - self.t0) / period + 1.0e-9))
+            self.held = value
+            self.initialized = True
+        else:
+            index = int(math.floor((time_seconds - self.t0) / period + 1.0e-9))
+            if index > self.last_index:
+                self.last_index = index
+                self.held = value
+            elif abs(time_seconds - (self.t0 + self.last_index * period)) <= 1.0e-9:
+                self.held = value  # still at the sample instant: the last input wins
+        self.previous_time = time_seconds
+        return (self.held,)
+
+
+class SampleTrigger:
+    def __init__(self, period_seconds: float, shift_seconds: float) -> None:
+        if not period_seconds > 0.0:
+            raise ValueError("SampleTrigger period must be positive")
+        self.period_seconds = period_seconds
+        self.phase_seconds = (
+            shift_seconds - math.floor(shift_seconds / period_seconds) * period_seconds
+        )
+        self.reset()
+
+    def reset(self) -> None:
+        self.last_index = -1
+        self.previous_time = math.nan
+
+    def step(self, time_seconds: float) -> tuple[bool]:
+        if not math.isfinite(time_seconds):
+            raise ValueError("SampleTrigger time must be finite")
+        if not math.isnan(self.previous_time) and time_seconds < self.previous_time:
+            raise ValueError("SampleTrigger time must be monotonic")
+        index = int(math.floor((time_seconds - self.phase_seconds) / self.period_seconds + 1.0e-9))
+        fired = index > self.last_index
+        if fired:
+            self.last_index = index
+        self.previous_time = time_seconds
+        return (fired,)
+
+
+class Hysteresis:
+    def __init__(self, u_low: float, u_high: float, initial: bool) -> None:
+        if not u_high > u_low:
+            raise ValueError("Hysteresis needs uHigh > uLow")
+        self.u_low = u_low
+        self.u_high = u_high
+        self.initial = initial
+        self.output = initial
+
+    def reset(self) -> None:
+        self.output = self.initial
+
+    def step(self, time_seconds: float, value: float) -> tuple[bool]:
+        if not math.isfinite(value):
+            raise ValueError("Hysteresis input must be finite")
+        self.output = (not self.output and value > self.u_high) or (
+            self.output and value >= self.u_low
+        )
+        return (self.output,)
 
 
 # --- harness-compatible construction ---------------------------------------------
@@ -797,6 +954,20 @@ def build_kernel(name: str, params: dict[str, object]) -> Kernel:
         return BooleanInitialization(_bool(params, "initial", False))
     if name == "NumericChange":
         return NumericChange(str(params.get("mode", "changed")), _num(params, "initial", 0.0))
+    if name == "RisingEdge":
+        return RisingEdge(_bool(params, "initial", False))
+    if name == "FallingEdge":
+        return FallingEdge(_bool(params, "initial", False))
+    if name == "SetReset":
+        return SetReset()
+    if name == "Sampler":
+        return Sampler(_num(params, "samplePeriodSeconds"))
+    if name == "SampleTrigger":
+        return SampleTrigger(_num(params, "periodSeconds"), _num(params, "shiftSeconds", 0.0))
+    if name == "Hysteresis":
+        return Hysteresis(
+            _num(params, "uLow"), _num(params, "uHigh"), _bool(params, "initial", False)
+        )
     raise ValueError(f"unknown kernel {name}")
 
 
@@ -814,6 +985,12 @@ KERNEL_NAMES: tuple[str, ...] = (
     "TrimAndRespond",
     "BooleanInitialization",
     "NumericChange",
+    "RisingEdge",
+    "FallingEdge",
+    "SetReset",
+    "Sampler",
+    "SampleTrigger",
+    "Hysteresis",
 )
 
 
@@ -828,12 +1005,18 @@ def format_row(values: tuple[float | bool, ...]) -> str:
 __all__ = [
     "KERNEL_NAMES",
     "BooleanInitialization",
+    "FallingEdge",
     "FirstOrderHold",
+    "Hysteresis",
     "Kernel",
     "MovingAverage",
     "NumericChange",
     "PidWithReset",
     "Pre",
+    "RisingEdge",
+    "SampleTrigger",
+    "Sampler",
+    "SetReset",
     "Timer",
     "TimerAccumulating",
     "TimerWithReset",

@@ -27,7 +27,7 @@ stack is present on the development box and the LBNL translation lane runs
 | N4 Native emitter | **done** | `make test-native-bog` (`tests/test_native_bog_emit.py`); both retained Tier 1 controllers export one validated `.bog` | descriptions and writable parameters wait on N5 (docs/decisions/005) |
 | N5 Point linking | **done** | `tests/test_native_bog_points.py` in `make test-native-bog`: one AHU + 25 VAVs linked in one station, validator clean | station structure is doc-only until Gate G-WB (docs/decisions/006) |
 | N6 Shadow Runtime | **done** | `make test-native-bog` (232 passed: `tests/test_native_bog_shadow_*.py` add the loader, block-semantics, kernel-equivalence and driver tests incl. both Tier 1 suites and the AHU + 25 VAVs fan-out); `make test-minimal` (408 passed, 1 skipped); `make shadow-check` | stock semantics are ASSUMED until Gate G-WB's calibration kit (N7); event-ordering hazard in the VAV time-suppression logic recorded for N7 (docs/niagara-semantics.md) |
-| N7 Prove it | not started | | Gate G-WB written |
+| N7 Prove it | **done (D4 target not met for VAV; recorded)** | `make test-native-bog` (calibration kit `--check` + 312 native_bog tests: differential, property, mutation, calibration, shadow qualification); `make test-minimal` (469 passed, 1 skipped); committed proofs `artifacts/native-bog/d1..d4-tier1.json`; web: `make web-lint`, `make web-build`, `make web-test`, Playwright `e2e/shadow.spec.ts` | D4 catch rate: AHU meets ≥ 95 %, VAV reheat does not (63.5 % on a 200-mutant sample; survivors listed, N8's first work list, docs/decisions/009); stock semantics stay ASSUMED until a human runs `calibration/` (Gate G-WB) |
 | N8–N11 Library tiers | not started | | |
 
 ## N0 results
@@ -256,6 +256,78 @@ stack is present on the development box and the LBNL translation lane runs
 - **Not claimed.** Every stock-block rule marked ASSUMED is exactly that until
   a human runs the calibration kit in Workbench (Gate G-WB). LoopPoint's
   execute period, disabled behaviour and integral form are the least certain.
+
+## N7 results
+
+- **D3 three-way differential passes for both Tier 1 controllers.** For every
+  acceptance scenario the exported `.bog` in the Shadow Runtime, the IR
+  interpreter and the retained Open Control Engine trajectory agree inside the
+  bands of `src/bactalk/niagara/bands.json` (docs/decisions/008: two scans in
+  time, 2 % of the suite-wide range in value; a coarse set for the
+  coarse-module-tick policy). References are retained under
+  `src/bactalk/library_demo/references/` by `scripts/retain_reference_traces.py`
+  and an integration test fails if a fresh OCE run drifts. Along the way the
+  runtime found and N7 fixed: `And` self-latching from null-initialised
+  outputs at start (S-STATUS-6), stale latch values from depth-first start,
+  a `TrueDelay` restarted by a false→true glitch inside one propagation, a
+  `UnitDelay` in a loop sampling the pre-update value (S-MODULE-6), the PID
+  integrating twice within one instant, and a divide-by-zero in the AHU
+  demo's design outdoor-air parameters. The glitch hazard recorded by N6 is
+  closed: `one_shot`, `falling_edge`, `boolean_set_reset`, `sampler`,
+  `sample_trigger` and `hysteresis` now lower to tick-semantic `bactalkG36`
+  components (matrix: STOCK_EXACT 28, MODULE 21, UNSUPPORTED 6,
+  STOCK_WITHIN_BANDS 3).
+- **Property-based testing.** `tests/test_native_bog_property.py` generates
+  random valid IR graphs over the supported block set with hypothesis, emits,
+  validates and runs them in the Shadow Runtime, and compares every observed
+  slot with the IR interpreter.
+- **D4 mutation testing, reported as measured.** `bactalk.niagara.mutate`
+  applies eight operators (VAV reheat: 1596 mutants; AHU: 1854) and
+  judges each by validator → loader → acceptance suite → three-way
+  differential. On the committed 200-mutant seeded samples
+  (`artifacts/native-bog/d4-tier1.json`): AHU 200 of 200 caught; VAV reheat
+  127 of 200 caught (63.5 %), target not met. Every VAV survivor sits in logic the six
+  scenarios never exercise (time suppression, CO2 demand control, the
+  heating-maximum branch, the flow-sensor alarm, override modes) or is
+  equivalent under the suite (an input point's fallback the scenarios
+  override; facets on a boolean point). That list is N8's first work list
+  (docs/decisions/009); nothing was weakened to raise the number.
+- **D5 in the web app.** A `shadow` qualification job kind
+  (`POST /api/runs/{id}/qualification-jobs/shadow`, the same queue, SSE
+  progress and cancel routes as BOPTEST and Alfalfa) runs the exact signed
+  `.bog` in the Shadow Runtime and the differential, writes
+  `shadow-verification/evidence.json` into the artifact digest and sets the run
+  to `ready_for_review` or `failed`, so a failing scenario blocks approval and
+  export (append-once). The Test stage gains a "Shadow Runtime (bog-simulated)"
+  clock source drawn against the reference with bands, first-divergence detail
+  per scenario, the Build stage shows the exported folders' SVG previews
+  (`GET /api/runs/{id}/niagara-previews`), the Review stage has a Shadow
+  Runtime surface and blockers, and the release summary carries
+  `shadow.passed`. Playwright `web/e2e/shadow.spec.ts` walks a mocked job cycle.
+- **D6 honest labelling.** `bog-simulated` sits between `target-compiled` and
+  `verified` in `readiness.py`, the Home ladder and the README; the LBNL G36
+  controller source capability now reports that stage.
+- **Calibration kit for Gate G-WB.** `calibration/` (generated by
+  `scripts/build_calibration_kit.py`, checked in `make test-native-bog`) holds
+  17 small `.bog` files covering all 24 ASSUMED rules of
+  `docs/niagara-semantics.md`, each with `steps.json`, the Shadow Runtime's
+  expected history per observed point and a README procedure (about two hours in
+  Workbench). `scripts/calibrate_shadow_runtime.py` aligns exported histories to
+  the expected traces, prints a verdict per rule and writes VERIFIED or
+  CONTRADICTED into the semantics document; a CONTRADICTED rule is a failing
+  test against the runtime, never a station defect.
+- **Open question for a human (protocol rule 6).** In the multizone AHU's
+  "unoccupied stops the fan" scenario the LBNL CDL leaves the minimum
+  outdoor-air PID integrating with the fan off (`yMinOutDam` climbs 0 → 0.048
+  in OCE, the interpreter and the Shadow Runtime alike), although the LBNL
+  documentation and G36 §5.16.4 say the loop is disabled with its output at
+  zero. The N0 expectation `yMinOutDam == 0` only held while the demo's design
+  outdoor-air parameters were zero. It is withdrawn from that scenario (the
+  occupied scenario asserts the loop opens the damper) and recorded here for an
+  engineer to classify as a library defect or an intended reading before N8
+  builds on this controller.
+- **Not claimed.** Nothing here is Niagara runtime qualification. The D4 target
+  is met for one of two Tier 1 controllers. The calibration kit has not been run.
 
 ## Gates
 
