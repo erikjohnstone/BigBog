@@ -63,4 +63,9 @@ public final class BBooleanInitialization extends BKernelComponent {
     output.setValue(kernel.step(getIn().getValue()));
     markOk(output);
   }
+
+  @Override
+  protected boolean latchesAtStart() {
+    return true;
+  }
 }

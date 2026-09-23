@@ -107,6 +107,13 @@ def translation_envelope(library: G36Library, config_id: str) -> dict[str, Any]:
         "execution_profile": config.execution_profile,
         "interface": fresh["interface"],
         "library": "plant_controls" if config.source == "templates" else "g36",
+        # BACTalk's CDL block diagrams standing in for LBNL equation utilities
+        # (docs/decisions/016); recorded only when a translation used one
+        **(
+            {"cdl_substitutes": list(fresh["cdl_substitutes"])}
+            if fresh.get("cdl_substitutes")
+            else {}
+        ),
         "niagara_target": {
             "complete": bool(assessment["complete"]),
             "generated_program_count": assessment.get("generated_program_count"),

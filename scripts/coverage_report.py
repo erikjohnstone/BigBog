@@ -40,6 +40,7 @@ from bactalk.library_tier2 import (
     CONFIGURATIONS,
     reference_trace,
     retained_ids,
+    retained_translation,
     tier2_job,
 )
 from bactalk.niagara.differential import three_way_differential
@@ -59,7 +60,7 @@ BLOCKERS = ROOT / "src" / "bactalk" / "library_tier2" / "blockers.json"
 MUTATION_TARGET = 0.95
 MUTATION_SEED = 7
 COARSE = next(policy for policy in PLAUSIBLE_POLICIES if policy.name == "coarse-module-tick")
-GRADING_VERSION = 3
+GRADING_VERSION = 4  # 4: S-MODULE-7, the module Pre latches the settled start input (decision 016)
 
 TIER_ONE = (
     ("tier1-vav-reheat", "TerminalUnits.Reheat.Controller", lbnl_vav_reheat_demo_job),
@@ -344,6 +345,11 @@ def build(only: set[str] | None, *, mutants: int, resume: bool = False) -> dict[
             "source_of_truth": "Open Control Engine (retained reference)",
             "expectations": "reference-derived (docs/decisions/010)",
         }
+        translation = retained_translation(config.id) if config.id not in blockers else None
+        if translation and translation.get("cdl_substitutes"):
+            # the engine ran BACTalk's CDL block diagram for these LBNL equation
+            # utilities, each checked against LBNL's source (docs/decisions/016)
+            row["cdl_substitutes"] = list(translation["cdl_substitutes"])
         if config.id in blockers:
             row["blocker"] = blockers[config.id]
             row["d1"] = row["d2"] = row["d3"] = row["d4"] = {
@@ -450,6 +456,9 @@ def render(report: dict[str, Any]) -> str:
         "rate). A configuration that fails or cannot be built is listed with its exact",
         "blocker. A row marked **pre-release** comes from an unreleased Modelica Buildings",
         "commit (the G36 chiller plant is on LBNL master, not yet in a tagged release).",
+        "A row marked **CDL substitute** has a reference in which the engine ran BACTalk's",
+        "CDL block diagram in place of an LBNL utility written as Modelica equations; each",
+        "substitute is checked tick by tick against LBNL's source (docs/decisions/016).",
         "",
         f"Summary: {summary['configurations']} configurations, "
         f"{summary['all_four']} pass all four; "
@@ -464,6 +473,12 @@ def render(report: dict[str, Any]) -> str:
             f"| `{item['id']}` | {item['controller']} | {item['variant']}"
             + (f" · Gate G-ENG {item['gate_g_eng']}" if "gate_g_eng" in item else "")
             + (" · **pre-release**" if item.get("release") == "pre-release" else "")
+            + (
+                " · CDL substitute: "
+                + ", ".join(name.rsplit(".", 1)[-1] for name in item["cdl_substitutes"])
+                if item.get("cdl_substitutes")
+                else ""
+            )
             + f" | {item['tier']} "
             f"| {item.get('scenarios', '—')} | {_mark(item['d1'])} | {_mark(item['d2'])} "
             f"| {_mark(item['d3'])} | {_mark(item['d4'])} |"

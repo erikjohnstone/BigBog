@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import copy
+import json
 import math
 from collections import Counter
 from pathlib import Path
@@ -9684,6 +9686,22 @@ class PlantControlsLibrary(G36Library):
         }
 
 
+_CDL_SUBSTITUTES = Path(__file__).with_name("cdl_substitutes")
+
+
+def cdl_substitute_documents() -> dict[str, dict[str, Any]]:
+    """BACTalk's CDL block diagrams for LBNL utilities written as equations, by the class
+    identifier they replace (docs/decisions/016; scripts/build_cdl_substitutes.py)."""
+
+    manifest = json.loads((_CDL_SUBSTITUTES / "manifest.json").read_text(encoding="utf-8"))
+    return {
+        "ex:" + entry["replaces"]: json.loads(
+            (_CDL_SUBSTITUTES / f"{name}.jsonld").read_text(encoding="utf-8")
+        )
+        for name, entry in sorted(manifest.items())
+    }
+
+
 class PlantControlsCdlLibrary(PlantControlsLibrary):
     """LBNL ``Templates.Plants.Controls`` through the plain CDL lane (Tier 2b).
 
@@ -9693,13 +9711,54 @@ class PlantControlsCdlLibrary(PlantControlsLibrary):
     complete CDL translated like every Tier 2 controller, and the Open Control Engine
     executing that same CDL as the reference. This adapter keeps every class document
     and always takes the CXF path.
+
+    LBNL writes five utilities as Modelica equations or an algorithm, which the engine
+    cannot execute. Their places are taken by BACTalk's CDL block diagrams with the same
+    interface and outputs (``cdl_substitutes``), so the engine runs the rest of the
+    controller as LBNL wrote it; every translation names the substitutes it used.
     """
 
     def _source_bundle(
         self,
         controller_id: str,
     ) -> tuple[dict[str, Any], dict[str, Any], dict[str, dict[str, Any]]]:
-        return G36Library._source_bundle(self, controller_id)
+        substitutes = cdl_substitute_documents()
+        root = "ex:Buildings.Templates.Plants.Controls." + controller_id
+        if root in substitutes:
+            controller = self._controllers().get(controller_id)
+            if controller is None:
+                raise KeyError(controller_id)
+            return controller, copy.deepcopy(substitutes[root]), {}
+        controller, document, class_documents = G36Library._source_bundle(self, controller_id)
+        # LBNL's equation classes emit no block diagram, so the bundle holds none of
+        # them; a substitute is offered only where some class instantiates it, so a
+        # controller without one translates exactly as before.
+        referenced = {
+            str(node.get("@type", "")).removeprefix("ex:")
+            for graph_document in (document, *class_documents.values(), *substitutes.values())
+            for node in graph_document.get("@graph", [])
+            if isinstance(node, dict)
+        }
+        used = {
+            class_id: substitute
+            for class_id, substitute in substitutes.items()
+            if any(
+                name
+                and (class_id.removeprefix("ex:") == name or class_id.endswith("." + name))
+                for name in referenced
+            )
+        }
+        return controller, document, {**class_documents, **used}
+
+    @staticmethod
+    def _substitutes_used(controller_id: str, result: dict[str, Any]) -> list[str]:
+        substitutes = set(cdl_substitute_documents())
+        root = "ex:Buildings.Templates.Plants.Controls." + controller_id
+        if root in substitutes:
+            return [root.removeprefix("ex:")]
+        assembly = (result.get("connection_normalization") or {}).get("composite_assembly") or {}
+        expanded = {str(item.get("class_id")) for item in assembly.get("instances", [])}
+        return sorted(item.removeprefix("ex:") for item in expanded & substitutes)
 
     def parameter_schema(self, controller_id: str) -> dict[str, Any]:
         result = G36Library.parameter_schema(self, controller_id)
@@ -9720,6 +9779,7 @@ class PlantControlsCdlLibrary(PlantControlsLibrary):
             parameters=parameters,
         )
         result["library"] = "LBNL Modelica Buildings Templates.Plants.Controls"
+        result["cdl_substitutes"] = self._substitutes_used(controller_id, result)
         return result
 
     def execute(
@@ -9740,4 +9800,5 @@ class PlantControlsCdlLibrary(PlantControlsLibrary):
             absent_inputs=absent_inputs,
         )
         result["library"] = "LBNL Modelica Buildings Templates.Plants.Controls"
+        result["cdl_substitutes"] = self._substitutes_used(controller_id, result)
         return result

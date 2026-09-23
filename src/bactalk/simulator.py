@@ -1066,7 +1066,8 @@ class GraphInterpreter:
             state = self.state.get(block.id)
             if state is None:
                 entry_time = self.time
-                passed = active and threshold <= 0.0
+                # LBNL's initial equation: passed = t <= 0, whatever u is
+                passed = threshold <= 0.0
                 state = {
                     "entry_time": entry_time,
                     "previous_in": active,

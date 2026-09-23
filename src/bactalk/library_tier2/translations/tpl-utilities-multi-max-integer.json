@@ -1,0 +1,346 @@
+{
+ "cdl_substitutes": [
+  "Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger"
+ ],
+ "configuration_id": "tpl-utilities-multi-max-integer",
+ "controller_id": "Utilities.MultiMaxInteger",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger",
+  "inputs": [
+   {
+    "description": "Integer input signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger.u__1",
+    "label": "u__1",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "Integer input signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger.u__2",
+    "label": "u__2",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "Integer input signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger.u__3",
+    "label": "u__3",
+    "type": "S231:IntegerInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Integer output signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger.y",
+    "label": "y",
+    "type": "S231:IntegerOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 1
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "nin": 3
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "u__1",
+   "name": "u__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger.u__1",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "u__2",
+   "name": "u__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger.u__2",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "u__3",
+   "name": "u__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger.u__3",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "y",
+   "name": "y",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger.y",
+   "source_interface_type": "S231:IntegerOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Utilities/MultiMaxInteger.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "b1230997beb00f4e808f6af5252fa54206de5ad529e7f268e61ff5d7a04c15aa",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "75ae0d145f8bf1fce9936b97d9e29d911ef3ef884a92d185a0a1089b8b3685cb",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "u__1",
+    "kind": "numeric_input",
+    "label": "u__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "u__2",
+    "kind": "numeric_input",
+    "label": "u__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "u__3",
+    "kind": "numeric_input",
+    "label": "u__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y",
+    "kind": "numeric_output",
+    "label": "y",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intToRea__1_zero",
+    "kind": "numeric_const",
+    "label": "intToRea__1 zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intToRea__1",
+    "kind": "add",
+    "label": "intToRea__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intToRea__2_zero",
+    "kind": "numeric_const",
+    "label": "intToRea__2 zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intToRea__2",
+    "kind": "add",
+    "label": "intToRea__2",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intToRea__3_zero",
+    "kind": "numeric_const",
+    "label": "intToRea__3 zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intToRea__3",
+    "kind": "add",
+    "label": "intToRea__3",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "maxRea_fold_2",
+    "kind": "maximum",
+    "label": "maxRea fold 2",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "maxRea_fold_3",
+    "kind": "maximum",
+    "label": "maxRea fold 3",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Conversions.RealToInteger"
+    },
+    "id": "reaToInt",
+    "kind": "numeric_round",
+    "label": "reaToInt",
+    "x": 900,
+    "y": 0
+   }
+  ],
+  "links": [
+   {
+    "source": "intToRea__1_zero",
+    "source_slot": "out",
+    "target": "intToRea__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "intToRea__2_zero",
+    "source_slot": "out",
+    "target": "intToRea__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intToRea__3_zero",
+    "source_slot": "out",
+    "target": "intToRea__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u__1",
+    "source_slot": "out",
+    "target": "intToRea__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "u__2",
+    "source_slot": "out",
+    "target": "intToRea__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "u__3",
+    "source_slot": "out",
+    "target": "intToRea__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "intToRea__1",
+    "source_slot": "out",
+    "target": "maxRea_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "intToRea__2",
+    "source_slot": "out",
+    "target": "maxRea_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "intToRea__3",
+    "source_slot": "out",
+    "target": "maxRea_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "maxRea_fold_2",
+    "source_slot": "out",
+    "target": "maxRea_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxRea_fold_3",
+    "source_slot": "out",
+    "target": "reaToInt",
+    "target_slot": "in"
+   },
+   {
+    "source": "reaToInt",
+    "source_slot": "out",
+    "target": "y",
+    "target_slot": "in"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "intToRea__1": "intToRea__1",
+    "intToRea__1_zero": "intToRea__1",
+    "intToRea__2": "intToRea__2",
+    "intToRea__2_zero": "intToRea__2",
+    "intToRea__3": "intToRea__3",
+    "intToRea__3_zero": "intToRea__3",
+    "maxRea_fold_2": "maxRea__fold_2",
+    "maxRea_fold_3": "maxRea__fold_3",
+    "reaToInt": "reaToInt"
+   },
+   "coverage": {
+    "boundary_inputs": 3,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal": 3,
+     "Buildings.Controls.OBC.CDL.Conversions.RealToInteger": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Max": 2
+    },
+    "component_count": 6,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Conversions.RealToInteger"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger",
+    "root_label": "MultiMaxInteger",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "75ae0d145f8bf1fce9936b97d9e29d911ef3ef884a92d185a0a1089b8b3685cb",
+    "supported_class_count": 6,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "75ae0d145f8bf1fce9936b97d9e29d911ef3ef884a92d185a0a1089b8b3685cb"
+  },
+  "name": "MultiMaxInteger"
+ }
+}

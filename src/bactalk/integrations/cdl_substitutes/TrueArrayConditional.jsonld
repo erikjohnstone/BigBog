@@ -1,0 +1,710 @@
+{
+ "@context": {
+  "S231": "http://data.ashrae.org/S231#",
+  "ex": "http://example.org#"
+ },
+ "@graph": [
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional",
+   "@type": "S231:Block",
+   "S231:containsBlock": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboMin"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboOut"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.anySel"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belMax"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belOut"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.cou"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.fit"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.isOut"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repIdx"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repTak"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repU"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repVal"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.sel"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.tak"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.upTo"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.val"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpTo"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpToInt"
+    }
+   ],
+   "S231:hasInput": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx"
+    }
+   ],
+   "S231:hasOutput": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.y1"
+   },
+   "S231:hasParameter": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.nin"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.nout"
+    }
+   ],
+   "S231:label": "TrueArrayConditional"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboMin",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Integers.GreaterEqualThreshold",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Index at least 1",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboMin.t"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboMin.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboMin.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "aboMin[nin]",
+   "S231:numberDimensions": 1,
+   "S231:sizeOfDimensions": "(nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboMin.t",
+   "S231:isFinal": true,
+   "S231:value": 1
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboMin.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.val.u1"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboOut",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Integers.GreaterEqualThreshold",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "uIdx[i] >= k",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboOut.t"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboOut.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboOut.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "aboOut[nout,nin]",
+   "S231:numberDimensions": 2,
+   "S231:sizeOfDimensions": "(nout,nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboOut.t",
+   "S231:isFinal": true,
+   "S231:value": "{k for i in 1:nin, k in 1:nout}"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboOut.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.isOut.u1"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.anySel",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.MultiOr",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Some position sets output k",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.anySel.nin"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.anySel.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.anySel.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "anySel[nout]",
+   "S231:numberDimensions": 1,
+   "S231:sizeOfDimensions": "(nout)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.anySel.nin",
+   "S231:isFinal": true,
+   "S231:value": "nin"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.anySel.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.y1"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belMax",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Integers.LessEqualThreshold",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Index at most nout",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belMax.t"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belMax.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belMax.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "belMax[nin]",
+   "S231:numberDimensions": 1,
+   "S231:sizeOfDimensions": "(nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belMax.t",
+   "S231:isFinal": true,
+   "S231:value": "nout"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belMax.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.val.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belOut",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Integers.LessEqualThreshold",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "uIdx[i] <= k",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belOut.t"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belOut.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belOut.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "belOut[nout,nin]",
+   "S231:numberDimensions": 2,
+   "S231:sizeOfDimensions": "(nout,nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belOut.t",
+   "S231:isFinal": true,
+   "S231:value": "{k for i in 1:nin, k in 1:nout}"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belOut.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.isOut.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.cou",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Integers.MultiSum",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Number of valid positions up to and including i (the loop's iTru after i)",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.cou.nin"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.cou.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.cou.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "cou[nin]",
+   "S231:numberDimensions": 1,
+   "S231:sizeOfDimensions": "(nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.cou.nin",
+   "S231:isFinal": true,
+   "S231:value": "nin"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.cou.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.fit.u1"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.fit",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Integers.LessEqual",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "The loop has not yet set u elements when it reaches position i",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.fit.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.fit.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.fit.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "fit[nin]",
+   "S231:numberDimensions": 1,
+   "S231:sizeOfDimensions": "(nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.fit.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.tak.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.isOut",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.And",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "uIdx[i] == k",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.isOut.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.isOut.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.isOut.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "isOut[nout,nin]",
+   "S231:numberDimensions": 2,
+   "S231:sizeOfDimensions": "(nout,nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.isOut.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.sel.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.nin",
+   "@type": "S231:Parameter",
+   "S231:accessSpecifier": "public",
+   "S231:description": "Size of input array",
+   "S231:isOfDataType": {
+    "@id": "S231:Integer"
+   },
+   "S231:label": "nin",
+   "S231:min": 0,
+   "S231:value": 0
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.nout",
+   "@type": "S231:Parameter",
+   "S231:accessSpecifier": "public",
+   "S231:description": "Size of output array",
+   "S231:isOfDataType": {
+    "@id": "S231:Integer"
+   },
+   "S231:label": "nout",
+   "S231:min": 0,
+   "S231:value": "nin"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repIdx",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Routing.IntegerVectorReplicator",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Indices, once per output",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repIdx.nin"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repIdx.nout"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repIdx.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repIdx.y"
+    }
+   ],
+   "S231:label": "repIdx"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repIdx.nin",
+   "S231:isFinal": true,
+   "S231:value": "nin"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repIdx.nout",
+   "S231:isFinal": true,
+   "S231:value": "nout"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repIdx.y",
+   "S231:isConnectedTo": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboOut.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belOut.u"
+    }
+   ]
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repTak",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Routing.BooleanVectorReplicator",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Taken positions, once per output",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repTak.nin"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repTak.nout"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repTak.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repTak.y"
+    }
+   ],
+   "S231:label": "repTak"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repTak.nin",
+   "S231:isFinal": true,
+   "S231:value": "nin"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repTak.nout",
+   "S231:isFinal": true,
+   "S231:value": "nout"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repTak.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.sel.u1"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repU",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Routing.IntegerScalarReplicator",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Number of true elements, once per position",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repU.nout"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repU.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repU.y"
+    }
+   ],
+   "S231:label": "repU"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repU.nout",
+   "S231:isFinal": true,
+   "S231:value": "nin"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repU.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.fit.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repVal",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Routing.BooleanVectorReplicator",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Validity of every position, once per position",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repVal.nin"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repVal.nout"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repVal.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repVal.y"
+    }
+   ],
+   "S231:label": "repVal"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repVal.nin",
+   "S231:isFinal": true,
+   "S231:value": "nin"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repVal.nout",
+   "S231:isFinal": true,
+   "S231:value": "nin"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repVal.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpTo.u1"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.sel",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.And",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Position i sets output k",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.sel.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.sel.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.sel.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "sel[nout,nin]",
+   "S231:numberDimensions": 2,
+   "S231:sizeOfDimensions": "(nout,nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.sel.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.anySel.u"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.tak",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.And",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Position i sets its index true",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.tak.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.tak.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.tak.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "tak[nin]",
+   "S231:numberDimensions": 1,
+   "S231:sizeOfDimensions": "(nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.tak.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repTak.u"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.u",
+   "@type": "S231:IntegerInput",
+   "S231:accessSpecifier": "public",
+   "S231:description": "Number of true elements",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repU.u"
+   },
+   "S231:label": "u"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx",
+   "@type": "S231:IntegerInput",
+   "S231:accessSpecifier": "public",
+   "S231:description": "Array of indices by order of priority to be true",
+   "S231:isArray": true,
+   "S231:isConnectedTo": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.aboMin.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.belMax.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repIdx.u"
+    }
+   ],
+   "S231:label": "uIdx[nin]",
+   "S231:numberDimensions": 1,
+   "S231:sizeOfDimensions": "(nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.upTo",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Row i keeps the positions up to i",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.upTo.k"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.upTo.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "upTo[nin,nin]",
+   "S231:numberDimensions": 2,
+   "S231:sizeOfDimensions": "(nin,nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.upTo.k",
+   "S231:isFinal": true,
+   "S231:value": "{j <= i for j in 1:nin, i in 1:nin}"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.upTo.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpTo.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.val",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.And",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Position holds a valid index",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.val.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.val.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.val.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "val[nin]",
+   "S231:numberDimensions": 1,
+   "S231:sizeOfDimensions": "(nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.val.y",
+   "S231:isConnectedTo": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.repVal.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.tak.u1"
+    }
+   ]
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpTo",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.And",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Valid positions up to i",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpTo.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpTo.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpTo.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "valUpTo[nin,nin]",
+   "S231:numberDimensions": 2,
+   "S231:sizeOfDimensions": "(nin,nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpTo.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpToInt.u"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpToInt",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Valid positions up to i, as 1 or 0",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpToInt.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpToInt.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "valUpToInt[nin,nin]",
+   "S231:numberDimensions": 2,
+   "S231:sizeOfDimensions": "(nin,nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.valUpToInt.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.cou.u"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.y1",
+   "@type": "S231:BooleanOutput",
+   "S231:accessSpecifier": "public",
+   "S231:description": "Output",
+   "S231:isArray": true,
+   "S231:label": "y1[nout]",
+   "S231:numberDimensions": 1,
+   "S231:sizeOfDimensions": "(nout)"
+  }
+ ]
+}

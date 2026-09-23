@@ -1,0 +1,563 @@
+{
+ "configuration_id": "tpl-enabling-enable",
+ "controller_id": "Enabling.Enable",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Enabling.Enable",
+  "inputs": [
+   {
+    "description": "Outdoor air temperature",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Enabling.Enable.TOut",
+    "label": "TOut",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Number of plant requests",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Enabling.Enable.nReqPla",
+    "label": "nReqPla",
+    "type": "S231:IntegerInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Enable command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Enabling.Enable.y1",
+    "label": "y1",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 5
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "nReqIgn": 1,
+  "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating"
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TOut",
+   "name": "TOut",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Enabling.Enable.TOut",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "nReqPla",
+   "name": "nReqPla",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Enabling.Enable.nReqPla",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1",
+   "name": "y1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Enabling.Enable.y1",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Enabling/Enable.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "7cc7611fbb42f7d630ba3c86f73ef24f54f5ac821003552527e154eb1105718a",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "50bf5579cb2503aade07f98a80eef186eae879af68224413181c5b69beac5564",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "nReqPla",
+    "kind": "numeric_input",
+    "label": "nReqPla",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TOut",
+    "kind": "numeric_input",
+    "label": "TOut",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1",
+    "kind": "boolean_output",
+    "label": "y1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "andRun",
+    "kind": "and",
+    "label": "andRun",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "dis",
+    "kind": "not",
+    "label": "dis",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "disSch",
+    "kind": "not",
+    "label": "disSch",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "greIgn_threshold",
+    "kind": "numeric_const",
+    "label": "greIgn threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greIgn",
+    "kind": "greater_than",
+    "label": "greIgn",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 291.65
+    },
+    "id": "greLckHys_threshold",
+    "kind": "numeric_const",
+    "label": "greLckHys threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "greLckHys",
+    "kind": "greater_than",
+    "label": "greLckHys",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat",
+    "kind": "boolean_set_reset",
+    "label": "lat",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 291.15
+    },
+    "id": "lesLck_threshold",
+    "kind": "numeric_const",
+    "label": "lesLck threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lesLck",
+    "kind": "less_than",
+    "label": "lesLck",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "lowIgn_threshold",
+    "kind": "numeric_const",
+    "label": "lowIgn threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lowIgn",
+    "kind": "less_than_or_equal",
+    "label": "lowIgn",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "mulAnd_fold_2",
+    "kind": "and",
+    "label": "mulAnd fold 2",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "mulAnd_fold_3",
+    "kind": "and",
+    "label": "mulAnd fold 3",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "mulAnd_fold_4",
+    "kind": "and",
+    "label": "mulAnd fold 4",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "mulOr_fold_2",
+    "kind": "or",
+    "label": "mulOr fold 2",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "mulOr_fold_3",
+    "kind": "or",
+    "label": "mulOr fold 3",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preEna",
+    "kind": "boolean_pre_host_tick",
+    "label": "preEna",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 900.0
+    },
+    "id": "runDis",
+    "kind": "timer",
+    "label": "runDis",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "schEna_column_1__constant_schedule",
+    "kind": "boolean_const",
+    "label": "schEna column 1 (constant schedule)",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 900.0
+    },
+    "id": "timEna",
+    "kind": "timer",
+    "label": "timEna",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 180.0
+    },
+    "id": "timLowReq",
+    "kind": "timer",
+    "label": "timLowReq",
+    "x": 900,
+    "y": 240
+   }
+  ],
+  "links": [
+   {
+    "source": "greIgn_threshold",
+    "source_slot": "out",
+    "target": "greIgn",
+    "target_slot": "b"
+   },
+   {
+    "source": "greLckHys_threshold",
+    "source_slot": "out",
+    "target": "greLckHys",
+    "target_slot": "b"
+   },
+   {
+    "source": "lesLck_threshold",
+    "source_slot": "out",
+    "target": "lesLck",
+    "target_slot": "b"
+   },
+   {
+    "source": "lowIgn_threshold",
+    "source_slot": "out",
+    "target": "lowIgn",
+    "target_slot": "b"
+   },
+   {
+    "source": "nReqPla",
+    "source_slot": "out",
+    "target": "greIgn",
+    "target_slot": "a"
+   },
+   {
+    "source": "nReqPla",
+    "source_slot": "out",
+    "target": "lowIgn",
+    "target_slot": "a"
+   },
+   {
+    "source": "TOut",
+    "source_slot": "out",
+    "target": "greLckHys",
+    "target_slot": "a"
+   },
+   {
+    "source": "TOut",
+    "source_slot": "out",
+    "target": "lesLck",
+    "target_slot": "a"
+   },
+   {
+    "source": "andRun",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "clear"
+   },
+   {
+    "source": "dis",
+    "source_slot": "out",
+    "target": "runDis",
+    "target_slot": "in"
+   },
+   {
+    "source": "disSch",
+    "source_slot": "out",
+    "target": "mulOr_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "greIgn",
+    "source_slot": "out",
+    "target": "mulAnd_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "greLckHys",
+    "source_slot": "out",
+    "target": "mulOr_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "lat",
+    "source_slot": "out",
+    "target": "preEna",
+    "target_slot": "in"
+   },
+   {
+    "source": "lat",
+    "source_slot": "out",
+    "target": "y1",
+    "target_slot": "in"
+   },
+   {
+    "source": "lesLck",
+    "source_slot": "out",
+    "target": "mulAnd_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "lowIgn",
+    "source_slot": "out",
+    "target": "timLowReq",
+    "target_slot": "in"
+   },
+   {
+    "source": "mulAnd_fold_2",
+    "source_slot": "out",
+    "target": "mulAnd_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulAnd_fold_3",
+    "source_slot": "out",
+    "target": "mulAnd_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulAnd_fold_4",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "set"
+   },
+   {
+    "source": "mulOr_fold_2",
+    "source_slot": "out",
+    "target": "mulOr_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulOr_fold_3",
+    "source_slot": "out",
+    "target": "andRun",
+    "target_slot": "b"
+   },
+   {
+    "source": "preEna",
+    "source_slot": "out",
+    "target": "dis",
+    "target_slot": "in"
+   },
+   {
+    "source": "preEna",
+    "source_slot": "out",
+    "target": "timEna",
+    "target_slot": "in"
+   },
+   {
+    "source": "runDis",
+    "source_slot": "passed",
+    "target": "mulAnd_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "schEna_column_1__constant_schedule",
+    "source_slot": "out",
+    "target": "disSch",
+    "target_slot": "in"
+   },
+   {
+    "source": "schEna_column_1__constant_schedule",
+    "source_slot": "out",
+    "target": "mulAnd_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "timEna",
+    "source_slot": "passed",
+    "target": "andRun",
+    "target_slot": "a"
+   },
+   {
+    "source": "timLowReq",
+    "source_slot": "passed",
+    "target": "mulOr_fold_2",
+    "target_slot": "b"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "andRun": "andRun",
+    "dis": "dis",
+    "disSch": "disSch",
+    "greIgn": "greIgn",
+    "greIgn_threshold": "greIgn",
+    "greLckHys": "greLckHys",
+    "greLckHys_threshold": "greLckHys",
+    "lat": "lat",
+    "lesLck": "lesLck",
+    "lesLck_threshold": "lesLck",
+    "lowIgn": "lowIgn",
+    "lowIgn_threshold": "lowIgn",
+    "mulAnd_fold_2": "mulAnd__fold_2",
+    "mulAnd_fold_3": "mulAnd__fold_3",
+    "mulAnd_fold_4": "mulAnd__fold_4",
+    "mulOr_fold_2": "mulOr__fold_2",
+    "mulOr_fold_3": "mulOr__fold_3",
+    "preEna": "preEna",
+    "runDis": "runDis",
+    "schEna_column_1__constant_schedule": "schEna__column_1",
+    "timEna": "timEna",
+    "timLowReq": "timLowReq"
+   },
+   "coverage": {
+    "boundary_inputs": 2,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Integers.GreaterThreshold": 1,
+     "Buildings.Controls.OBC.CDL.Integers.LessEqualThreshold": 1,
+     "Buildings.Controls.OBC.CDL.Logical.And": 4,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Timer": 3,
+     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 1,
+     "Buildings.Controls.OBC.CDL.Reals.LessThreshold": 1
+    },
+    "component_count": 18,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Pre",
+     "Buildings.Controls.OBC.CDL.Logical.Timer"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Enabling.Enable",
+    "root_label": "Enable",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "50bf5579cb2503aade07f98a80eef186eae879af68224413181c5b69beac5564",
+    "supported_class_count": 18,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "50bf5579cb2503aade07f98a80eef186eae879af68224413181c5b69beac5564"
+  },
+  "name": "Enable"
+ }
+}

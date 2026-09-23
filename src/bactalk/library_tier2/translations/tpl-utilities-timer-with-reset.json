@@ -1,0 +1,739 @@
+{
+ "cdl_substitutes": [
+  "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset"
+ ],
+ "configuration_id": "tpl-utilities-timer-with-reset",
+ "controller_id": "Utilities.TimerWithReset",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+  "inputs": [
+   {
+    "description": "Reset signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.reset",
+    "label": "reset",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Input that switches timer on if true, and off if false",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.u",
+    "label": "u",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "True if the elapsed time is greater than threshold",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.passed",
+    "label": "passed",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Elapsed time",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.y",
+    "label": "y",
+    "type": "S231:RealOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 6
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "t": 60.0
+ },
+ "points": [
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "reset",
+   "name": "reset",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.reset",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u",
+   "name": "u",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.u",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "passed",
+   "name": "passed",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.passed",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "y",
+   "name": "y",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.y",
+   "source_interface_type": "S231:RealOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Utilities/TimerWithReset.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "91ee8f597aa6349db7282b40ce4f370b77f64265b3356d93003f55255cbdd05f",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "a200fd6e30256b8cc9333aedbc3de526d8d23c842072d4e74125dcd7ec355984",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "reset",
+    "kind": "boolean_input",
+    "label": "reset",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u",
+    "kind": "boolean_input",
+    "label": "u",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "passed",
+    "kind": "boolean_output",
+    "label": "passed",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y",
+    "kind": "numeric_output",
+    "label": "y",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "anyEve",
+    "kind": "or",
+    "label": "anyEve",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "cur",
+    "kind": "numeric_switch",
+    "label": "cur",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "ela",
+    "kind": "numeric_switch",
+    "label": "ela",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "eveAftIni",
+    "kind": "and",
+    "label": "eveAftIni",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal",
+    "kind": "boolean_const",
+    "label": "fal",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
+    },
+    "id": "falU",
+    "kind": "boolean_falling_edge",
+    "label": "falU",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "noEve",
+    "kind": "not",
+    "label": "noEve",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "nonPos",
+    "kind": "not",
+    "label": "nonPos",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "notTog",
+    "kind": "not",
+    "label": "notTog",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 60.0
+    },
+    "id": "notYet_threshold",
+    "kind": "numeric_const",
+    "label": "notYet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notYet",
+    "kind": "less_than",
+    "label": "notYet",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "pas",
+    "kind": "or",
+    "label": "pas",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "pasIni",
+    "kind": "and",
+    "label": "pasIni",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "pasOn",
+    "kind": "and",
+    "label": "pasOn",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "pos_threshold",
+    "kind": "numeric_const",
+    "label": "pos threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pos",
+    "kind": "greater_than",
+    "label": "pos",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preTog",
+    "kind": "boolean_pre_host_tick",
+    "label": "preTog",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "rea",
+    "kind": "not",
+    "label": "rea",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "res",
+    "kind": "or",
+    "label": "res",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risRes",
+    "kind": "one_shot",
+    "label": "risRes",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risU",
+    "kind": "one_shot",
+    "label": "risU",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "see",
+    "kind": "boolean_set_reset",
+    "label": "see",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 60.0
+    },
+    "id": "thr",
+    "kind": "numeric_const",
+    "label": "thr",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timFal",
+    "kind": "timer_accumulating",
+    "label": "timFal",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRis",
+    "kind": "timer_accumulating",
+    "label": "timRis",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "tog",
+    "kind": "xor",
+    "label": "tog",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 360,
+    "y": 480
+   }
+  ],
+  "links": [
+   {
+    "source": "notYet_threshold",
+    "source_slot": "out",
+    "target": "notYet",
+    "target_slot": "b"
+   },
+   {
+    "source": "pos_threshold",
+    "source_slot": "out",
+    "target": "pos",
+    "target_slot": "b"
+   },
+   {
+    "source": "reset",
+    "source_slot": "out",
+    "target": "risRes",
+    "target_slot": "in"
+   },
+   {
+    "source": "u",
+    "source_slot": "out",
+    "target": "ela",
+    "target_slot": "selector"
+   },
+   {
+    "source": "u",
+    "source_slot": "out",
+    "target": "falU",
+    "target_slot": "in"
+   },
+   {
+    "source": "u",
+    "source_slot": "out",
+    "target": "pasOn",
+    "target_slot": "a"
+   },
+   {
+    "source": "u",
+    "source_slot": "out",
+    "target": "risU",
+    "target_slot": "in"
+   },
+   {
+    "source": "u",
+    "source_slot": "out",
+    "target": "timFal",
+    "target_slot": "in"
+   },
+   {
+    "source": "u",
+    "source_slot": "out",
+    "target": "timRis",
+    "target_slot": "in"
+   },
+   {
+    "source": "anyEve",
+    "source_slot": "out",
+    "target": "eveAftIni",
+    "target_slot": "b"
+   },
+   {
+    "source": "cur",
+    "source_slot": "out",
+    "target": "ela",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "ela",
+    "source_slot": "out",
+    "target": "notYet",
+    "target_slot": "a"
+   },
+   {
+    "source": "ela",
+    "source_slot": "out",
+    "target": "y",
+    "target_slot": "in"
+   },
+   {
+    "source": "eveAftIni",
+    "source_slot": "out",
+    "target": "see",
+    "target_slot": "set"
+   },
+   {
+    "source": "fal",
+    "source_slot": "out",
+    "target": "see",
+    "target_slot": "clear"
+   },
+   {
+    "source": "falU",
+    "source_slot": "out",
+    "target": "anyEve",
+    "target_slot": "b"
+   },
+   {
+    "source": "noEve",
+    "source_slot": "out",
+    "target": "pasIni",
+    "target_slot": "a"
+   },
+   {
+    "source": "nonPos",
+    "source_slot": "out",
+    "target": "pasIni",
+    "target_slot": "b"
+   },
+   {
+    "source": "notIni",
+    "source_slot": "out",
+    "target": "eveAftIni",
+    "target_slot": "a"
+   },
+   {
+    "source": "notTog",
+    "source_slot": "out",
+    "target": "timFal",
+    "target_slot": "reset"
+   },
+   {
+    "source": "notYet",
+    "source_slot": "out",
+    "target": "rea",
+    "target_slot": "in"
+   },
+   {
+    "source": "pas",
+    "source_slot": "out",
+    "target": "passed",
+    "target_slot": "in"
+   },
+   {
+    "source": "pasIni",
+    "source_slot": "out",
+    "target": "pas",
+    "target_slot": "b"
+   },
+   {
+    "source": "pasOn",
+    "source_slot": "out",
+    "target": "pas",
+    "target_slot": "a"
+   },
+   {
+    "source": "pos",
+    "source_slot": "out",
+    "target": "nonPos",
+    "target_slot": "in"
+   },
+   {
+    "source": "preTog",
+    "source_slot": "out",
+    "target": "tog",
+    "target_slot": "b"
+   },
+   {
+    "source": "rea",
+    "source_slot": "out",
+    "target": "pasOn",
+    "target_slot": "b"
+   },
+   {
+    "source": "res",
+    "source_slot": "out",
+    "target": "anyEve",
+    "target_slot": "a"
+   },
+   {
+    "source": "res",
+    "source_slot": "out",
+    "target": "tog",
+    "target_slot": "a"
+   },
+   {
+    "source": "risRes",
+    "source_slot": "out",
+    "target": "res",
+    "target_slot": "b"
+   },
+   {
+    "source": "risU",
+    "source_slot": "out",
+    "target": "res",
+    "target_slot": "a"
+   },
+   {
+    "source": "see",
+    "source_slot": "out",
+    "target": "noEve",
+    "target_slot": "in"
+   },
+   {
+    "source": "thr",
+    "source_slot": "out",
+    "target": "pos",
+    "target_slot": "a"
+   },
+   {
+    "source": "timFal",
+    "source_slot": "elapsed",
+    "target": "cur",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "timRis",
+    "source_slot": "elapsed",
+    "target": "cur",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "tog",
+    "source_slot": "out",
+    "target": "cur",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tog",
+    "source_slot": "out",
+    "target": "notTog",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog",
+    "source_slot": "out",
+    "target": "preTog",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog",
+    "source_slot": "out",
+    "target": "timRis",
+    "target_slot": "reset"
+   },
+   {
+    "source": "tru",
+    "source_slot": "out",
+    "target": "notIni",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "ela",
+    "target_slot": "when_false"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "anyEve": "anyEve",
+    "cur": "cur",
+    "ela": "ela",
+    "eveAftIni": "eveAftIni",
+    "fal": "fal",
+    "falU": "falU",
+    "noEve": "noEve",
+    "nonPos": "nonPos",
+    "notIni": "notIni",
+    "notTog": "notTog",
+    "notYet": "notYet",
+    "notYet_threshold": "notYet",
+    "pas": "pas",
+    "pasIni": "pasIni",
+    "pasOn": "pasOn",
+    "pos": "pos",
+    "pos_threshold": "pos",
+    "preTog": "preTog",
+    "rea": "rea",
+    "res": "res",
+    "risRes": "risRes",
+    "risU": "risU",
+    "see": "see",
+    "thr": "thr",
+    "timFal": "timFal",
+    "timRis": "timRis",
+    "tog": "tog",
+    "tru": "tru",
+    "zer": "zer"
+   },
+   "coverage": {
+    "boundary_inputs": 2,
+    "boundary_outputs": 2,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Logical.And": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Edge": 2,
+     "Buildings.Controls.OBC.CDL.Logical.FallingEdge": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 4,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 2,
+     "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Xor": 1,
+     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 1,
+     "Buildings.Controls.OBC.CDL.Reals.LessThreshold": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 2
+    },
+    "component_count": 27,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.FallingEdge",
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Pre",
+     "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+    "root_label": "TimerWithReset",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "a200fd6e30256b8cc9333aedbc3de526d8d23c842072d4e74125dcd7ec355984",
+    "supported_class_count": 27,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "a200fd6e30256b8cc9333aedbc3de526d8d23c842072d4e74125dcd7ec355984"
+  },
+  "name": "TimerWithReset"
+ }
+}

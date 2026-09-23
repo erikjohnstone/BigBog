@@ -216,7 +216,14 @@ must carry the names the parent uses.
 
 ### Grading
 
-23. **No end-of-scenario value inside a limit cycle.** The economizer's "wet bulb rises"
+23. **Corrected by decision 016.** The limit cycle described below was not LBNL's: the
+    scalariser dropped the gains of the economizer's tuning `MultiSum`, so BACTalk's
+    translation and the engine reference it produced were wrong in the same way.
+    With the gains applied the economizer settles, the alternation rule is removed,
+    and every output gets its end-of-scenario expectation again. The record below is
+    kept as written.
+
+    **No end-of-scenario value inside a limit cycle.** The economizer's "wet bulb rises"
     and "TChiWatRetDow hot" scenarios end with `TWsePre` and `yTunPar` alternating on
     every scan, in LBNL's reference as well. An end-of-scenario expectation on such an
     output depends only on which half of the cycle the last scan lands on. An output

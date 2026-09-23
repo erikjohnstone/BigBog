@@ -1,0 +1,139 @@
+{
+ "@context": {
+  "S231": "http://data.ashrae.org/S231#",
+  "ex": "http://example.org#"
+ },
+ "@graph": [
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger",
+   "@type": "S231:Block",
+   "S231:containsBlock": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.intToRea"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.minRea"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.reaToInt"
+    }
+   ],
+   "S231:hasInput": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.u"
+   },
+   "S231:hasOutput": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.y"
+   },
+   "S231:hasParameter": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.nin"
+   },
+   "S231:label": "MultiMinInteger"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.intToRea",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Conversions.IntegerToReal",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Exact: every Integer is a Real",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.intToRea.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.intToRea.y"
+    }
+   ],
+   "S231:isArray": true,
+   "S231:label": "intToRea[nin]",
+   "S231:numberDimensions": 1,
+   "S231:sizeOfDimensions": "(nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.intToRea.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.minRea.u"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.minRea",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Reals.MultiMin",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Minimum",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.minRea.nin"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.minRea.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.minRea.y"
+    }
+   ],
+   "S231:label": "minRea"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.minRea.nin",
+   "S231:isFinal": true,
+   "S231:value": "nin"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.minRea.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.reaToInt.u"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.nin",
+   "@type": "S231:Parameter",
+   "S231:accessSpecifier": "public",
+   "S231:description": "Size of input array",
+   "S231:isOfDataType": {
+    "@id": "S231:Integer"
+   },
+   "S231:label": "nin",
+   "S231:min": 0,
+   "S231:value": 0
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.reaToInt",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Conversions.RealToInteger",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Exact: the minimum is one of the Integer inputs",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.reaToInt.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.reaToInt.y"
+    }
+   ],
+   "S231:label": "reaToInt"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.reaToInt.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.y"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.u",
+   "@type": "S231:IntegerInput",
+   "S231:accessSpecifier": "public",
+   "S231:description": "Integer input signal",
+   "S231:isArray": true,
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.intToRea.u"
+   },
+   "S231:label": "u[nin]",
+   "S231:numberDimensions": 1,
+   "S231:sizeOfDimensions": "(nin)"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger.y",
+   "@type": "S231:IntegerOutput",
+   "S231:accessSpecifier": "public",
+   "S231:description": "Integer output signal",
+   "S231:label": "y"
+  }
+ ]
+}

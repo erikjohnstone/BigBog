@@ -39,7 +39,8 @@ public final class TimerWithReset {
     if (!initialized) {
       entryTimeSeconds = timeSeconds;
       elapsedOutput = 0.0;
-      passedOutput = input && thresholdSeconds <= 0.0;
+      // LBNL's initial equation: passed = t <= 0, whatever u is
+      passedOutput = thresholdSeconds <= 0.0;
       initialized = true;
     } else {
       boolean risingInput = input && !previousInput;

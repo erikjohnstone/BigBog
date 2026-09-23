@@ -1,4 +1,7 @@
 {
+ "cdl_substitutes": [
+  "Buildings.Templates.Plants.Controls.Utilities.Initialization"
+ ],
  "configuration_id": "tpl-pumps-primary-disable-dedicated",
  "controller_id": "Pumps.Primary.DisableDedicated",
  "execution_profile": "host_tick_v1",
@@ -95,7 +98,7 @@
   "tag": "v13.0.0"
  },
  "translator": {
-  "cxf_source_sha256": "244162739c769a73e82d7727e17d2c90d5775d885ddbdb1d159c93522bf6c8ad",
+  "cxf_source_sha256": "9578384bf0577afc2a48d5a6f0fa39891674930c4384cb82fdd46d96eaa497c7",
   "lowering_schema": "bactalk-cxf-lowering/v4",
   "name": "LBNL modelica-json",
   "runtime": "Open Control Engine"
@@ -178,14 +181,43 @@
    },
    {
     "config": {
-     "initial": false,
-     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.Initialization"
+     "value": false
     },
     "id": "ini",
-    "kind": "boolean_initialization",
+    "kind": "boolean_const",
     "label": "ini",
     "x": 720,
     "y": 0
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "boolean_switch",
+    "label": "swi",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 180,
+    "y": 120
    },
    {
     "config": {
@@ -194,15 +226,15 @@
     "id": "lat",
     "kind": "boolean_set_reset",
     "label": "lat",
-    "x": 900,
-    "y": 0
+    "x": 360,
+    "y": 120
    },
    {
     "config": {},
     "id": "off",
     "kind": "not",
     "label": "off",
-    "x": 0,
+    "x": 540,
     "y": 120
    },
    {
@@ -210,7 +242,7 @@
     "id": "offOrNotReq",
     "kind": "or",
     "label": "offOrNotReq",
-    "x": 180,
+    "x": 720,
     "y": 120
    },
    {
@@ -221,7 +253,7 @@
     "id": "timOff",
     "kind": "timer",
     "label": "timOff",
-    "x": 360,
+    "x": 900,
     "y": 120
    }
   ],
@@ -259,8 +291,8 @@
    {
     "source": "edg",
     "source_slot": "out",
-    "target": "ini",
-    "target_slot": "in"
+    "target": "swi",
+    "target_slot": "when_true"
    },
    {
     "source": "fal",
@@ -271,8 +303,26 @@
    {
     "source": "ini",
     "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "notIni",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
     "target": "lat",
     "target_slot": "clear"
+   },
+   {
+    "source": "tru",
+    "source_slot": "out",
+    "target": "notIni",
+    "target_slot": "in"
    },
    {
     "source": "lat",
@@ -305,11 +355,14 @@
     "disAndOffOrNotReq": "disAndOffOrNotReq",
     "edg": "edg",
     "fal": "fal",
-    "ini": "ini",
+    "ini": "ini.ini",
     "lat": "lat",
+    "notIni": "ini.notIni",
     "off": "off",
     "offOrNotReq": "offOrNotReq",
-    "timOff": "timOff"
+    "swi": "ini.swi",
+    "timOff": "timOff",
+    "tru": "ini.tru"
    },
    "coverage": {
     "boundary_inputs": 3,
@@ -320,11 +373,12 @@
      "Buildings.Controls.OBC.CDL.Logical.Latch": 1,
      "Buildings.Controls.OBC.CDL.Logical.Not": 2,
      "Buildings.Controls.OBC.CDL.Logical.Or": 1,
-     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 1,
-     "Buildings.Controls.OBC.CDL.Logical.Timer": 1,
-     "Utilities.Initialization": 1
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Switch": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Timer": 1
     },
-    "component_count": 9,
+    "component_count": 12,
     "exactness_blockers": [],
     "execution_profile": "host_tick_v1",
     "missing_components": [],
@@ -332,20 +386,20 @@
     "niagara_translatable": false,
     "niagara_unsupported_classes": [
      "Buildings.Controls.OBC.CDL.Logical.Latch",
-     "Buildings.Controls.OBC.CDL.Logical.Timer",
-     "Utilities.Initialization"
+     "Buildings.Controls.OBC.CDL.Logical.Pre",
+     "Buildings.Controls.OBC.CDL.Logical.Timer"
     ],
     "root_id": "ex:Buildings.Templates.Plants.Controls.Pumps.Primary.DisableDedicated",
     "root_label": "DisableDedicated",
     "schema": "bactalk-cxf-lowering/v4",
-    "source_sha256": "244162739c769a73e82d7727e17d2c90d5775d885ddbdb1d159c93522bf6c8ad",
-    "supported_class_count": 9,
+    "source_sha256": "9578384bf0577afc2a48d5a6f0fa39891674930c4384cb82fdd46d96eaa497c7",
+    "supported_class_count": 12,
     "translatable": true,
     "unsupported_classes": []
    },
    "lowering": "bactalk-cxf-lowering/v4",
    "source": "ASHRAE-231P-CXF",
-   "source_sha256": "244162739c769a73e82d7727e17d2c90d5775d885ddbdb1d159c93522bf6c8ad"
+   "source_sha256": "9578384bf0577afc2a48d5a6f0fa39891674930c4384cb82fdd46d96eaa497c7"
   },
   "name": "DisableDedicated"
  }

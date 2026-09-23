@@ -1,0 +1,858 @@
+{
+ "@context": {
+  "S231": "http://data.ashrae.org/S231#",
+  "ex": "http://example.org#",
+  "q": "http://qudt.org/vocab/quantitykind#",
+  "qudt": "http://qudt.org/schema/qudt#",
+  "unit": "http://qudt.org/vocab/unit#"
+ },
+ "@graph": [
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+   "@type": "S231:Block",
+   "S231:containsBlock": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.anyEve"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.cur"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.ela"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.eveAftIni"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.fal"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.falU"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.noEve"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.nonPos"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notIni"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notTog"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notYet"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pas"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasIni"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasOn"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pos"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.preTog"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.rea"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.res"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.risRes"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.risU"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.see"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.thr"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timFal"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timRis"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tog"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tru"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.zer"
+    }
+   ],
+   "S231:hasInput": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.reset"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.u"
+    }
+   ],
+   "S231:hasOutput": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.passed"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.y"
+    }
+   ],
+   "S231:hasParameter": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.t"
+   },
+   "S231:label": "TimerWithReset"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.anyEve",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Or",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Any when-clause event: u rises, reset rises or u falls",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.anyEve.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.anyEve.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.anyEve.y"
+    }
+   ],
+   "S231:label": "anyEve"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.anyEve.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.eveAftIni.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.cur",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Reals.Switch",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "The timer the last restart cleared",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.cur.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.cur.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.cur.u3"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.cur.y"
+    }
+   ],
+   "S231:label": "cur"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.cur.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.ela.u1"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.ela",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Reals.Switch",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "y = if u then time - entryTime else 0",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.ela.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.ela.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.ela.u3"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.ela.y"
+    }
+   ],
+   "S231:label": "ela"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.ela.y",
+   "S231:isConnectedTo": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notYet.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.y"
+    }
+   ]
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.eveAftIni",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.And",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "An event after initialization (a when-clause does not fire at initialization)",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.eveAftIni.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.eveAftIni.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.eveAftIni.y"
+    }
+   ],
+   "S231:label": "eveAftIni"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.eveAftIni.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.see.u"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.fal",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "False",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.fal.k"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.fal.y"
+    }
+   ],
+   "S231:label": "fal"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.fal.k",
+   "S231:isFinal": true,
+   "S231:value": false
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.fal.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.see.clr"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.falU",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.FallingEdge",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "u falls",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.falU.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.falU.y"
+    }
+   ],
+   "S231:label": "falU"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.falU.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.anyEve.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.noEve",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Not",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "No event yet",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.noEve.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.noEve.y"
+    }
+   ],
+   "S231:label": "noEve"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.noEve.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasIni.u1"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.nonPos",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Not",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Threshold at or below zero",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.nonPos.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.nonPos.y"
+    }
+   ],
+   "S231:label": "nonPos"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.nonPos.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasIni.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notIni",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Pre",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "False at initialization only",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notIni.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notIni.y"
+    }
+   ],
+   "S231:label": "notIni"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notIni.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.eveAftIni.u1"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notTog",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Not",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Inverted toggle",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notTog.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notTog.y"
+    }
+   ],
+   "S231:label": "notTog"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notTog.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timFal.reset"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notYet",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Reals.LessThreshold",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Elapsed time below the threshold",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notYet.t"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notYet.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notYet.y"
+    }
+   ],
+   "S231:label": "notYet"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notYet.t",
+   "S231:isFinal": true,
+   "S231:value": "t"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notYet.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.rea.u"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pas",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Or",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "passed",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pas.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pas.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pas.y"
+    }
+   ],
+   "S231:label": "pas"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pas.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.passed"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasIni",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.And",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "passed = t <= 0 from the initial equation until the first event",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasIni.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasIni.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasIni.y"
+    }
+   ],
+   "S231:label": "pasIni"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasIni.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pas.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasOn",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.And",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "passed while u: u and elapsed time >= t",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasOn.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasOn.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasOn.y"
+    }
+   ],
+   "S231:label": "pasOn"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasOn.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pas.u1"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.passed",
+   "@type": "S231:BooleanOutput",
+   "S231:accessSpecifier": "public",
+   "S231:description": "True if the elapsed time is greater than threshold",
+   "S231:label": "passed"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pos",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Reals.GreaterThreshold",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Threshold above zero",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pos.t"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pos.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pos.y"
+    }
+   ],
+   "S231:label": "pos"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pos.t",
+   "S231:isFinal": true,
+   "S231:value": 0
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pos.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.nonPos.u"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.preTog",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Pre",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Toggle at the previous evaluation",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.preTog.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.preTog.y"
+    }
+   ],
+   "S231:label": "preTog"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.preTog.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tog.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.rea",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Not",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Elapsed time at or above the threshold",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.rea.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.rea.y"
+    }
+   ],
+   "S231:label": "rea"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.rea.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasOn.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.res",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Or",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Restart: when {u, reset}",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.res.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.res.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.res.y"
+    }
+   ],
+   "S231:label": "res"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.res.y",
+   "S231:isConnectedTo": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.anyEve.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tog.u1"
+    }
+   ]
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.reset",
+   "@type": "S231:BooleanInput",
+   "S231:accessSpecifier": "public",
+   "S231:description": "Reset signal",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.risRes.u"
+   },
+   "S231:label": "reset"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.risRes",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Edge",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "reset rises",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.risRes.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.risRes.y"
+    }
+   ],
+   "S231:label": "risRes"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.risRes.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.res.u2"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.risU",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Edge",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "u rises",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.risU.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.risU.y"
+    }
+   ],
+   "S231:label": "risU"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.risU.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.res.u1"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.see",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Latch",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "True once any event has occurred",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.see.clr"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.see.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.see.y"
+    }
+   ],
+   "S231:label": "see"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.see.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.noEve.u"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.t",
+   "@type": "S231:Parameter",
+   "S231:accessSpecifier": "public",
+   "S231:description": "Threshold time for comparison",
+   "S231:isOfDataType": {
+    "@id": "S231:Real"
+   },
+   "S231:label": "t",
+   "S231:value": 0,
+   "qudt:hasQuantityKind": {
+    "@id": "q:Time"
+   },
+   "qudt:hasUnit": {
+    "@id": "unit:SEC"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.thr",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Reals.Sources.Constant",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Threshold",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.thr.k"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.thr.y"
+    }
+   ],
+   "S231:label": "thr"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.thr.k",
+   "S231:isFinal": true,
+   "S231:value": "t"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.thr.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pos.u"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timFal",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Time accumulated while u since the toggle last fell",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timFal.reset"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timFal.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timFal.y"
+    }
+   ],
+   "S231:label": "timFal"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timFal.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.cur.u3"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timRis",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Time accumulated while u since the toggle last rose",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timRis.reset"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timRis.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timRis.y"
+    }
+   ],
+   "S231:label": "timRis"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timRis.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.cur.u1"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tog",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Xor",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Flips on every restart, so two restarts on consecutive evaluations are both edges",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tog.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tog.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tog.y"
+    }
+   ],
+   "S231:label": "tog"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tog.y",
+   "S231:isConnectedTo": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.cur.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notTog.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.preTog.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timRis.reset"
+    }
+   ]
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tru",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Logical.Sources.Constant",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "True",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tru.k"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tru.y"
+    }
+   ],
+   "S231:label": "tru"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tru.k",
+   "S231:isFinal": true,
+   "S231:value": true
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.tru.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.notIni.u"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.u",
+   "@type": "S231:BooleanInput",
+   "S231:accessSpecifier": "public",
+   "S231:description": "Input that switches timer on if true, and off if false",
+   "S231:isConnectedTo": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.ela.u2"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.falU.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.pasOn.u1"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.risU.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timFal.u"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.timRis.u"
+    }
+   ],
+   "S231:label": "u"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.y",
+   "@type": "S231:RealOutput",
+   "S231:accessSpecifier": "public",
+   "S231:description": "Elapsed time",
+   "S231:label": "y",
+   "qudt:hasQuantityKind": {
+    "@id": "q:Time"
+   },
+   "qudt:hasUnit": {
+    "@id": "unit:SEC"
+   }
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.zer",
+   "@type": "ex:Buildings.Controls.OBC.CDL.Reals.Sources.Constant",
+   "S231:accessSpecifier": "protected",
+   "S231:description": "Zero",
+   "S231:hasInstance": [
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.zer.k"
+    },
+    {
+     "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.zer.y"
+    }
+   ],
+   "S231:label": "zer"
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.zer.k",
+   "S231:isFinal": true,
+   "S231:value": 0
+  },
+  {
+   "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.zer.y",
+   "S231:isConnectedTo": {
+    "@id": "ex:Buildings.Templates.Plants.Controls.Utilities.TimerWithReset.ela.u3"
+   }
+  }
+ ]
+}

@@ -1305,7 +1305,7 @@ def _timer_with_reset_kernel_members(config: dict[str, Any]) -> str:
     if (!initialized) {{
       entryTimeSeconds = timeSeconds;
       elapsedOutput = 0.0;
-      passedOutput = input && THRESHOLD_SECONDS <= 0.0;
+      passedOutput = THRESHOLD_SECONDS <= 0.0;
       initialized = true;
     }} else {{
       boolean risingInput = input && !previousInput;

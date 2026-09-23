@@ -265,7 +265,8 @@ class TimerWithReset:
         if not self.initialized:
             self.entry_time = time_seconds
             self.elapsed_output = 0.0
-            self.passed_output = value and self.threshold_seconds <= 0.0
+            # LBNL's initial equation: passed = t <= 0, whatever u is
+            self.passed_output = self.threshold_seconds <= 0.0
             self.initialized = True
         else:
             rising_input = value and not self.previous_input

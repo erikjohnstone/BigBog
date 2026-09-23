@@ -369,6 +369,61 @@ def _strip_compile_time_enum_parameters(graph: list[Any]) -> list[dict[str, Any]
     return removed
 
 
+def _read_outputs_from_their_drivers(nodes: dict[str, dict[str, Any]], instance_id: str) -> int:
+    """Blocks inside a child that read the child's own output read its driver instead.
+
+    ``connect(y1Coo, preMod.u)`` in ``ModeControl`` puts the output ``y1Coo``, its driver
+    ``setMod.y`` and the reader ``preMod.u`` in one connection set. The engine resolves
+    that at the root, but inside a nested composite it refuses a boundary output that
+    sources an internal input. Wiring the reader to the driver is the same connection set.
+    """
+
+    root = nodes.get(instance_id, {})
+    outputs = {
+        item["@id"]
+        for item in _items(root.get("S231:hasOutput"))
+        if isinstance(item.get("@id"), str)
+    }
+    inside = instance_id + "."
+    moved = 0
+    for output in outputs:
+        node = nodes.get(output)
+        if node is None:
+            continue
+        targets = _items(node.get("S231:isConnectedTo"))
+        readers = [
+            item["@id"]
+            for item in targets
+            if isinstance(item.get("@id"), str)
+            and item["@id"].startswith(inside)
+            and item["@id"] not in outputs
+            and item["@id"].rsplit(".", 1)[0] != instance_id
+        ]
+        drivers = [
+            identifier
+            for identifier, candidate in nodes.items()
+            if identifier.startswith(inside)
+            and identifier != output
+            and any(
+                item.get("@id") == output for item in _items(candidate.get("S231:isConnectedTo"))
+            )
+        ]
+        if not readers or len(drivers) != 1:
+            continue
+        kept = [item for item in targets if item.get("@id") not in readers]
+        if kept:
+            node["S231:isConnectedTo"] = kept[0] if len(kept) == 1 else kept
+        else:
+            node.pop("S231:isConnectedTo", None)
+        driver = nodes[drivers[0]]
+        existing = _items(driver.get("S231:isConnectedTo"))
+        known = {item.get("@id") for item in existing}
+        combined = existing + [{"@id": reader} for reader in readers if reader not in known]
+        driver["S231:isConnectedTo"] = combined[0] if len(combined) == 1 else combined
+        moved += len(readers)
+    return moved
+
+
 def _inline_empty_composites(graph: list[Any], expanded_ids: set[str], root_id: str) -> list[str]:
     """Replace composites left with no blocks by the wires they carry.
 
@@ -604,6 +659,7 @@ def assemble_cxf_composites(
             for node in normalized["@graph"]
             if isinstance(node, dict) and isinstance(node.get("@id"), str)
         }
+        _read_outputs_from_their_drivers(normalized_nodes, instance_id)
         pruned = set(clone_nodes) - set(normalized_nodes)
         removed_ids.update(pruned)
         for identifier in pruned:

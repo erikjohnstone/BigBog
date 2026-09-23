@@ -1,0 +1,2282 @@
+{
+ "cdl_substitutes": [
+  "Buildings.Templates.Plants.Controls.Utilities.Initialization"
+ ],
+ "configuration_id": "tpl-heat-recovery-chillers-controller",
+ "controller_id": "HeatRecoveryChillers.Controller",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller",
+  "inputs": [
+   {
+    "description": "HRC leaving CHW temperature",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.TChiWatHrcLvg",
+    "label": "TChiWatHrcLvg",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "CHW return temperature upstream of HRC",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.TChiWatRetUpsHrc",
+    "label": "TChiWatRetUpsHrc",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Active CHW supply temperature setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.TChiWatSupSet",
+    "label": "TChiWatSupSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "HRC leaving HW temperature",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.THeaWatHrcLvg",
+    "label": "THeaWatHrcLvg",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "HW return temperature upstream of HRC",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.THeaWatRetUpsHrc",
+    "label": "THeaWatRetUpsHrc",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Active HW supply temperature setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.THeaWatSupSet",
+    "label": "THeaWatSupSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "CHW volume flow rate distributed to the loads",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.VChiWatLoa_flow",
+    "label": "VChiWatLoa_flow",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "HW volume flow rate distributed to the loads",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.VHeaWatLoa_flow",
+    "label": "VHeaWatLoa_flow",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Cooling plant enable",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.u1Coo",
+    "label": "u1Coo",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Heating plant enable",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.u1Hea",
+    "label": "u1Hea",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "HRC status",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.u1Hrc_actual",
+    "label": "u1Hrc_actual",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Active supply temperature setpoint",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.TSupSet",
+    "label": "TSupSet",
+    "type": "S231:RealOutput"
+   },
+   {
+    "description": "Enable command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.y1",
+    "label": "y1",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Mode command: true for cooling, false for heating",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.y1Coo",
+    "label": "y1Coo",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "HRC CHW pump enable command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.y1PumChiWat",
+    "label": "y1PumChiWat",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "HRC HW pump enable command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.y1PumHeaWat",
+    "label": "y1PumHeaWat",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 23
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "COPHea_nominal": 2.8,
+  "TChiWatSup_min": 277.15,
+  "THeaWatSup_max": 328.15,
+  "capCoo_min": 192857.142857,
+  "capHea_min": 90000.0,
+  "cp_default": 4184.0,
+  "rho_default": 996.0
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TChiWatHrcLvg",
+   "name": "TChiWatHrcLvg",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.TChiWatHrcLvg",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TChiWatRetUpsHrc",
+   "name": "TChiWatRetUpsHrc",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.TChiWatRetUpsHrc",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TChiWatSupSet",
+   "name": "TChiWatSupSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.TChiWatSupSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "THeaWatHrcLvg",
+   "name": "THeaWatHrcLvg",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.THeaWatHrcLvg",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "THeaWatRetUpsHrc",
+   "name": "THeaWatRetUpsHrc",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.THeaWatRetUpsHrc",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "THeaWatSupSet",
+   "name": "THeaWatSupSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.THeaWatSupSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VChiWatLoa_flow",
+   "name": "VChiWatLoa_flow",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.VChiWatLoa_flow",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "VHeaWatLoa_flow",
+   "name": "VHeaWatLoa_flow",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.VHeaWatLoa_flow",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Coo",
+   "name": "u1Coo",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.u1Coo",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Hea",
+   "name": "u1Hea",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.u1Hea",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1Hrc_actual",
+   "name": "u1Hrc_actual",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.u1Hrc_actual",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TSupSet",
+   "name": "TSupSet",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.TSupSet",
+   "source_interface_type": "S231:RealOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1",
+   "name": "y1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.y1",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1Coo",
+   "name": "y1Coo",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.y1Coo",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1PumChiWat",
+   "name": "y1PumChiWat",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.y1PumChiWat",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1PumHeaWat",
+   "name": "y1PumHeaWat",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller.y1PumHeaWat",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "HeatRecoveryChillers/Controller.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "d8f66656cdbeb18512fb570c4f7759ed52123ffed3551ad9877770bcd033ebb7",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "e1f05c7dc404e3953a18e404c4b7304ea51160ec4b06e53f94e320c4f995bb61",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TChiWatHrcLvg",
+    "kind": "numeric_input",
+    "label": "TChiWatHrcLvg",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TChiWatRetUpsHrc",
+    "kind": "numeric_input",
+    "label": "TChiWatRetUpsHrc",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TChiWatSupSet",
+    "kind": "numeric_input",
+    "label": "TChiWatSupSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "THeaWatHrcLvg",
+    "kind": "numeric_input",
+    "label": "THeaWatHrcLvg",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "THeaWatRetUpsHrc",
+    "kind": "numeric_input",
+    "label": "THeaWatRetUpsHrc",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "THeaWatSupSet",
+    "kind": "numeric_input",
+    "label": "THeaWatSupSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Coo",
+    "kind": "boolean_input",
+    "label": "u1Coo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Hea",
+    "kind": "boolean_input",
+    "label": "u1Hea",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1Hrc_actual",
+    "kind": "boolean_input",
+    "label": "u1Hrc_actual",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "VChiWatLoa_flow",
+    "kind": "numeric_input",
+    "label": "VChiWatLoa_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "VHeaWatLoa_flow",
+    "kind": "numeric_input",
+    "label": "VHeaWatLoa_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "TSupSet",
+    "kind": "numeric_output",
+    "label": "TSupSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1",
+    "kind": "boolean_output",
+    "label": "y1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1Coo",
+    "kind": "boolean_output",
+    "label": "y1Coo",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1PumChiWat",
+    "kind": "boolean_output",
+    "label": "y1PumChiWat",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1PumHeaWat",
+    "kind": "boolean_output",
+    "label": "y1PumHeaWat",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "allEna_fold_2",
+    "kind": "and",
+    "label": "allEna fold 2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "allEna_fold_3",
+    "kind": "and",
+    "label": "allEna fold 3",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "allEna_fold_4",
+    "kind": "and",
+    "label": "allEna fold 4",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "allEna_fold_5",
+    "kind": "and",
+    "label": "allEna fold 5",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "anyDis_fold_2",
+    "kind": "or",
+    "label": "anyDis fold 2",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "anyDis_fold_3",
+    "kind": "or",
+    "label": "anyDis fold 3",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "anyDis_fold_4",
+    "kind": "or",
+    "label": "anyDis fold 4",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "anyDis_fold_5",
+    "kind": "or",
+    "label": "anyDis fold 5",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "anyLowLoa",
+    "kind": "or",
+    "label": "anyLowLoa",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "anyLowLoaAndOff",
+    "kind": "and",
+    "label": "anyLowLoaAndOff",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "anyTChiWatLvg",
+    "kind": "or",
+    "label": "anyTChiWatLvg",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "anyTChiWatLvgAndHea",
+    "kind": "and",
+    "label": "anyTChiWatLvgAndHea",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "anyTHeaWatLvg",
+    "kind": "or",
+    "label": "anyTHeaWatLvg",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "anyTHeaWatLvgAndCoo",
+    "kind": "and",
+    "label": "anyTHeaWatLvgAndCoo",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "dis",
+    "kind": "not",
+    "label": "dis",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "disCoo",
+    "kind": "not",
+    "label": "disCoo",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "disHea",
+    "kind": "not",
+    "label": "disHea",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg",
+    "kind": "one_shot",
+    "label": "edg",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "enaAndCoo",
+    "kind": "and",
+    "label": "enaAndCoo",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "enaAndHea",
+    "kind": "and",
+    "label": "enaAndHea",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "enaDis",
+    "kind": "boolean_set_reset",
+    "label": "enaDis",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "hea",
+    "kind": "not",
+    "label": "hea",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 192857.142857
+    },
+    "id": "higLoaCoo_threshold",
+    "kind": "numeric_const",
+    "label": "higLoaCoo threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "higLoaCoo",
+    "kind": "greater_than",
+    "label": "higLoaCoo",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 90000.0
+    },
+    "id": "higLoaHea_threshold",
+    "kind": "numeric_const",
+    "label": "higLoaHea threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "higLoaHea",
+    "kind": "greater_than",
+    "label": "higLoaHea",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": 326.65
+    },
+    "id": "higTHeaWatLvg1_threshold",
+    "kind": "numeric_const",
+    "label": "higTHeaWatLvg1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "higTHeaWatLvg1",
+    "kind": "greater_than",
+    "label": "higTHeaWatLvg1",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 328.15
+    },
+    "id": "higTHeaWatLvg2_threshold",
+    "kind": "numeric_const",
+    "label": "higTHeaWatLvg2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "higTHeaWatLvg2",
+    "kind": "greater_than",
+    "label": "higTHeaWatLvg2",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 192857.142857
+    },
+    "id": "lowLoaCoo_threshold",
+    "kind": "numeric_const",
+    "label": "lowLoaCoo threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lowLoaCoo",
+    "kind": "less_than",
+    "label": "lowLoaCoo",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 90000.0
+    },
+    "id": "lowLoaHea_threshold",
+    "kind": "numeric_const",
+    "label": "lowLoaHea threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lowLoaHea",
+    "kind": "less_than",
+    "label": "lowLoaHea",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 278.15
+    },
+    "id": "lowTChiWatLvg1_threshold",
+    "kind": "numeric_const",
+    "label": "lowTChiWatLvg1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lowTChiWatLvg1",
+    "kind": "less_than",
+    "label": "lowTChiWatLvg1",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 277.15
+    },
+    "id": "lowTChiWatLvg2_threshold",
+    "kind": "numeric_const",
+    "label": "lowTChiWatLvg2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lowTChiWatLvg2",
+    "kind": "less_than",
+    "label": "lowTChiWatLvg2",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
+    },
+    "id": "off",
+    "kind": "boolean_falling_edge",
+    "label": "off",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preEna",
+    "kind": "boolean_pre_host_tick",
+    "label": "preEna",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 900.0
+    },
+    "id": "runDis",
+    "kind": "timer",
+    "label": "runDis",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 900.0
+    },
+    "id": "timCooEna",
+    "kind": "timer",
+    "label": "timCooEna",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 900.0
+    },
+    "id": "timHeaEna",
+    "kind": "timer",
+    "label": "timHeaEna",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 600.0
+    },
+    "id": "timLoaCoo",
+    "kind": "timer",
+    "label": "timLoaCoo",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 600.0
+    },
+    "id": "timLoaHea",
+    "kind": "timer",
+    "label": "timLoaHea",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 180.0
+    },
+    "id": "timTChiWatLvg1",
+    "kind": "timer",
+    "label": "timTChiWatLvg1",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 60.0
+    },
+    "id": "timTChiWatLvg2",
+    "kind": "timer",
+    "label": "timTChiWatLvg2",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 180.0
+    },
+    "id": "timTHeaWatLvg1",
+    "kind": "timer",
+    "label": "timTHeaWatLvg1",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 60.0
+    },
+    "id": "timTHeaWatLvg2",
+    "kind": "timer",
+    "label": "timTHeaWatLvg2",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {
+     "delay_on_init": false,
+     "initial": false,
+     "off_delay_seconds": 0.0,
+     "on_delay_seconds": 5.0,
+     "semantic_contract": "CDL.Logical.TrueDelay"
+    },
+    "id": "truDel",
+    "kind": "boolean_delay",
+    "label": "truDel",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 4167264.0
+    },
+    "id": "capFlo_parameter",
+    "kind": "numeric_const",
+    "label": "capFlo parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "capFlo",
+    "kind": "multiply",
+    "label": "capFlo",
+    "x": 0,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "capReq",
+    "kind": "multiply",
+    "label": "capReq",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "delT",
+    "kind": "subtract",
+    "label": "delT",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Reals.MovingAverage",
+     "window_seconds": 300.0
+    },
+    "id": "movAve",
+    "kind": "moving_average",
+    "label": "movAve",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": -1.0
+    },
+    "id": "polHeaCoo_parameter",
+    "kind": "numeric_const",
+    "label": "polHeaCoo parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "polHeaCoo",
+    "kind": "multiply",
+    "label": "polHeaCoo",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 4167264.0
+    },
+    "id": "capFlo_2_parameter",
+    "kind": "numeric_const",
+    "label": "capFlo parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "capFlo_2",
+    "kind": "multiply",
+    "label": "capFlo",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "capReq_2",
+    "kind": "multiply",
+    "label": "capReq",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "delT_2",
+    "kind": "subtract",
+    "label": "delT",
+    "x": 180,
+    "y": 960
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Reals.MovingAverage",
+     "window_seconds": 300.0
+    },
+    "id": "movAve_2",
+    "kind": "moving_average",
+    "label": "movAve",
+    "x": 360,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "polHeaCoo_2_parameter",
+    "kind": "numeric_const",
+    "label": "polHeaCoo parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "polHeaCoo_2",
+    "kind": "multiply",
+    "label": "polHeaCoo",
+    "x": 540,
+    "y": 960
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preMod",
+    "kind": "boolean_pre_host_tick",
+    "label": "preMod",
+    "x": 720,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "dis_2",
+    "kind": "not",
+    "label": "dis",
+    "x": 900,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "disAndOffOrNotReq",
+    "kind": "and",
+    "label": "disAndOffOrNotReq",
+    "x": 0,
+    "y": 1080
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg_2",
+    "kind": "one_shot",
+    "label": "edg",
+    "x": 180,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal",
+    "kind": "boolean_const",
+    "label": "fal",
+    "x": 360,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "ini",
+    "kind": "boolean_const",
+    "label": "ini",
+    "x": 540,
+    "y": 1080
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 720,
+    "y": 1080
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "boolean_switch",
+    "label": "swi",
+    "x": 900,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 0,
+    "y": 1200
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat",
+    "kind": "boolean_set_reset",
+    "label": "lat",
+    "x": 180,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "off_2",
+    "kind": "not",
+    "label": "off",
+    "x": 360,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "offOrNotReq",
+    "kind": "or",
+    "label": "offOrNotReq",
+    "x": 540,
+    "y": 1200
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 180.0
+    },
+    "id": "timOff",
+    "kind": "timer",
+    "label": "timOff",
+    "x": 720,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "dis_3",
+    "kind": "not",
+    "label": "dis",
+    "x": 900,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "disAndOffOrNotReq_2",
+    "kind": "and",
+    "label": "disAndOffOrNotReq",
+    "x": 0,
+    "y": 1320
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "edg_3",
+    "kind": "one_shot",
+    "label": "edg",
+    "x": 180,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal_2",
+    "kind": "boolean_const",
+    "label": "fal",
+    "x": 360,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "ini_2",
+    "kind": "boolean_const",
+    "label": "ini",
+    "x": 540,
+    "y": 1320
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni_2",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 720,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "swi_2",
+    "kind": "boolean_switch",
+    "label": "swi",
+    "x": 900,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru_2",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 0,
+    "y": 1440
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "lat_2",
+    "kind": "boolean_set_reset",
+    "label": "lat",
+    "x": 180,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "off_3",
+    "kind": "not",
+    "label": "off",
+    "x": 360,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "offOrNotReq_2",
+    "kind": "or",
+    "label": "offOrNotReq",
+    "x": 540,
+    "y": 1440
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Timer",
+     "threshold_seconds": 180.0
+    },
+    "id": "timOff_2",
+    "kind": "timer",
+    "label": "timOff",
+    "x": 720,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "les",
+    "kind": "less_than",
+    "label": "les",
+    "x": 900,
+    "y": 1440
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preMod_2",
+    "kind": "boolean_pre_host_tick",
+    "label": "preMod",
+    "x": 0,
+    "y": 1560
+   },
+   {
+    "config": {
+     "value": 0.6428571428571428
+    },
+    "id": "QEvaHea_flow_parameter",
+    "kind": "numeric_const",
+    "label": "QEvaHea_flow parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "QEvaHea_flow",
+    "kind": "multiply",
+    "label": "QEvaHea_flow",
+    "x": 180,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "selTSupSet",
+    "kind": "numeric_switch",
+    "label": "selTSupSet",
+    "x": 360,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "setMod",
+    "kind": "boolean_switch",
+    "label": "setMod",
+    "x": 540,
+    "y": 1560
+   }
+  ],
+  "links": [
+   {
+    "source": "higLoaCoo_threshold",
+    "source_slot": "out",
+    "target": "higLoaCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "higLoaHea_threshold",
+    "source_slot": "out",
+    "target": "higLoaHea",
+    "target_slot": "b"
+   },
+   {
+    "source": "higTHeaWatLvg1_threshold",
+    "source_slot": "out",
+    "target": "higTHeaWatLvg1",
+    "target_slot": "b"
+   },
+   {
+    "source": "higTHeaWatLvg2_threshold",
+    "source_slot": "out",
+    "target": "higTHeaWatLvg2",
+    "target_slot": "b"
+   },
+   {
+    "source": "lowLoaCoo_threshold",
+    "source_slot": "out",
+    "target": "lowLoaCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "lowLoaHea_threshold",
+    "source_slot": "out",
+    "target": "lowLoaHea",
+    "target_slot": "b"
+   },
+   {
+    "source": "lowTChiWatLvg1_threshold",
+    "source_slot": "out",
+    "target": "lowTChiWatLvg1",
+    "target_slot": "b"
+   },
+   {
+    "source": "lowTChiWatLvg2_threshold",
+    "source_slot": "out",
+    "target": "lowTChiWatLvg2",
+    "target_slot": "b"
+   },
+   {
+    "source": "capFlo_parameter",
+    "source_slot": "out",
+    "target": "capFlo",
+    "target_slot": "b"
+   },
+   {
+    "source": "polHeaCoo_parameter",
+    "source_slot": "out",
+    "target": "polHeaCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "capFlo_2_parameter",
+    "source_slot": "out",
+    "target": "capFlo_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "polHeaCoo_2_parameter",
+    "source_slot": "out",
+    "target": "polHeaCoo_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "QEvaHea_flow_parameter",
+    "source_slot": "out",
+    "target": "QEvaHea_flow",
+    "target_slot": "b"
+   },
+   {
+    "source": "TChiWatHrcLvg",
+    "source_slot": "out",
+    "target": "lowTChiWatLvg1",
+    "target_slot": "a"
+   },
+   {
+    "source": "TChiWatHrcLvg",
+    "source_slot": "out",
+    "target": "lowTChiWatLvg2",
+    "target_slot": "a"
+   },
+   {
+    "source": "TChiWatRetUpsHrc",
+    "source_slot": "out",
+    "target": "delT",
+    "target_slot": "b"
+   },
+   {
+    "source": "TChiWatSupSet",
+    "source_slot": "out",
+    "target": "delT",
+    "target_slot": "a"
+   },
+   {
+    "source": "TChiWatSupSet",
+    "source_slot": "out",
+    "target": "selTSupSet",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "THeaWatHrcLvg",
+    "source_slot": "out",
+    "target": "higTHeaWatLvg1",
+    "target_slot": "a"
+   },
+   {
+    "source": "THeaWatHrcLvg",
+    "source_slot": "out",
+    "target": "higTHeaWatLvg2",
+    "target_slot": "a"
+   },
+   {
+    "source": "THeaWatRetUpsHrc",
+    "source_slot": "out",
+    "target": "delT_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "THeaWatSupSet",
+    "source_slot": "out",
+    "target": "delT_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "THeaWatSupSet",
+    "source_slot": "out",
+    "target": "selTSupSet",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "u1Coo",
+    "source_slot": "out",
+    "target": "disCoo",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Coo",
+    "source_slot": "out",
+    "target": "timCooEna",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Hea",
+    "source_slot": "out",
+    "target": "disHea",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Hea",
+    "source_slot": "out",
+    "target": "timHeaEna",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Hrc_actual",
+    "source_slot": "out",
+    "target": "off",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Hrc_actual",
+    "source_slot": "out",
+    "target": "off_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1Hrc_actual",
+    "source_slot": "out",
+    "target": "off_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "VChiWatLoa_flow",
+    "source_slot": "out",
+    "target": "capFlo",
+    "target_slot": "a"
+   },
+   {
+    "source": "VHeaWatLoa_flow",
+    "source_slot": "out",
+    "target": "capFlo_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "allEna_fold_2",
+    "source_slot": "out",
+    "target": "allEna_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "allEna_fold_3",
+    "source_slot": "out",
+    "target": "allEna_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "allEna_fold_4",
+    "source_slot": "out",
+    "target": "allEna_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "allEna_fold_5",
+    "source_slot": "out",
+    "target": "enaDis",
+    "target_slot": "set"
+   },
+   {
+    "source": "anyDis_fold_2",
+    "source_slot": "out",
+    "target": "anyDis_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "anyDis_fold_3",
+    "source_slot": "out",
+    "target": "anyDis_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "anyDis_fold_4",
+    "source_slot": "out",
+    "target": "anyDis_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "anyDis_fold_5",
+    "source_slot": "out",
+    "target": "enaDis",
+    "target_slot": "clear"
+   },
+   {
+    "source": "anyLowLoa",
+    "source_slot": "out",
+    "target": "anyLowLoaAndOff",
+    "target_slot": "b"
+   },
+   {
+    "source": "anyLowLoaAndOff",
+    "source_slot": "out",
+    "target": "anyDis_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "anyTChiWatLvg",
+    "source_slot": "out",
+    "target": "anyTChiWatLvgAndHea",
+    "target_slot": "b"
+   },
+   {
+    "source": "anyTChiWatLvgAndHea",
+    "source_slot": "out",
+    "target": "anyDis_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "anyTHeaWatLvg",
+    "source_slot": "out",
+    "target": "anyTHeaWatLvgAndCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "anyTHeaWatLvgAndCoo",
+    "source_slot": "out",
+    "target": "anyDis_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "dis",
+    "source_slot": "out",
+    "target": "runDis",
+    "target_slot": "in"
+   },
+   {
+    "source": "disCoo",
+    "source_slot": "out",
+    "target": "anyDis_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "disHea",
+    "source_slot": "out",
+    "target": "anyDis_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "edg",
+    "source_slot": "out",
+    "target": "setMod",
+    "target_slot": "selector"
+   },
+   {
+    "source": "enaAndCoo",
+    "source_slot": "out",
+    "target": "anyTHeaWatLvgAndCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "enaAndHea",
+    "source_slot": "out",
+    "target": "anyTChiWatLvgAndHea",
+    "target_slot": "a"
+   },
+   {
+    "source": "enaDis",
+    "source_slot": "out",
+    "target": "edg",
+    "target_slot": "in"
+   },
+   {
+    "source": "enaDis",
+    "source_slot": "out",
+    "target": "truDel",
+    "target_slot": "in"
+   },
+   {
+    "source": "hea",
+    "source_slot": "out",
+    "target": "enaAndHea",
+    "target_slot": "b"
+   },
+   {
+    "source": "higLoaCoo",
+    "source_slot": "out",
+    "target": "timLoaCoo",
+    "target_slot": "in"
+   },
+   {
+    "source": "higLoaHea",
+    "source_slot": "out",
+    "target": "timLoaHea",
+    "target_slot": "in"
+   },
+   {
+    "source": "higTHeaWatLvg1",
+    "source_slot": "out",
+    "target": "timTHeaWatLvg1",
+    "target_slot": "in"
+   },
+   {
+    "source": "higTHeaWatLvg2",
+    "source_slot": "out",
+    "target": "timTHeaWatLvg2",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowLoaCoo",
+    "source_slot": "out",
+    "target": "anyLowLoa",
+    "target_slot": "a"
+   },
+   {
+    "source": "lowLoaHea",
+    "source_slot": "out",
+    "target": "anyLowLoa",
+    "target_slot": "b"
+   },
+   {
+    "source": "lowTChiWatLvg1",
+    "source_slot": "out",
+    "target": "timTChiWatLvg1",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowTChiWatLvg2",
+    "source_slot": "out",
+    "target": "timTChiWatLvg2",
+    "target_slot": "in"
+   },
+   {
+    "source": "off",
+    "source_slot": "out",
+    "target": "anyLowLoaAndOff",
+    "target_slot": "a"
+   },
+   {
+    "source": "preEna",
+    "source_slot": "out",
+    "target": "dis",
+    "target_slot": "in"
+   },
+   {
+    "source": "preEna",
+    "source_slot": "out",
+    "target": "enaAndCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "preEna",
+    "source_slot": "out",
+    "target": "enaAndHea",
+    "target_slot": "a"
+   },
+   {
+    "source": "runDis",
+    "source_slot": "passed",
+    "target": "allEna_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "timCooEna",
+    "source_slot": "passed",
+    "target": "allEna_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "timHeaEna",
+    "source_slot": "passed",
+    "target": "allEna_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "timLoaCoo",
+    "source_slot": "passed",
+    "target": "allEna_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "timLoaHea",
+    "source_slot": "passed",
+    "target": "allEna_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "timTChiWatLvg1",
+    "source_slot": "passed",
+    "target": "anyTChiWatLvg",
+    "target_slot": "a"
+   },
+   {
+    "source": "timTChiWatLvg2",
+    "source_slot": "passed",
+    "target": "anyTChiWatLvg",
+    "target_slot": "b"
+   },
+   {
+    "source": "timTHeaWatLvg1",
+    "source_slot": "passed",
+    "target": "anyTHeaWatLvg",
+    "target_slot": "a"
+   },
+   {
+    "source": "timTHeaWatLvg2",
+    "source_slot": "passed",
+    "target": "anyTHeaWatLvg",
+    "target_slot": "b"
+   },
+   {
+    "source": "truDel",
+    "source_slot": "out",
+    "target": "preEna",
+    "target_slot": "in"
+   },
+   {
+    "source": "truDel",
+    "source_slot": "out",
+    "target": "dis_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "truDel",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "set"
+   },
+   {
+    "source": "truDel",
+    "source_slot": "out",
+    "target": "dis_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "truDel",
+    "source_slot": "out",
+    "target": "lat_2",
+    "target_slot": "set"
+   },
+   {
+    "source": "truDel",
+    "source_slot": "out",
+    "target": "y1",
+    "target_slot": "in"
+   },
+   {
+    "source": "capFlo",
+    "source_slot": "out",
+    "target": "capReq",
+    "target_slot": "b"
+   },
+   {
+    "source": "capReq",
+    "source_slot": "out",
+    "target": "polHeaCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "delT",
+    "source_slot": "out",
+    "target": "capReq",
+    "target_slot": "a"
+   },
+   {
+    "source": "movAve",
+    "source_slot": "out",
+    "target": "higLoaCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "movAve",
+    "source_slot": "out",
+    "target": "lowLoaCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "movAve",
+    "source_slot": "out",
+    "target": "lowLoaHea",
+    "target_slot": "a"
+   },
+   {
+    "source": "movAve",
+    "source_slot": "out",
+    "target": "les",
+    "target_slot": "a"
+   },
+   {
+    "source": "polHeaCoo",
+    "source_slot": "out",
+    "target": "movAve",
+    "target_slot": "in"
+   },
+   {
+    "source": "capFlo_2",
+    "source_slot": "out",
+    "target": "capReq_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "capReq_2",
+    "source_slot": "out",
+    "target": "polHeaCoo_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "delT_2",
+    "source_slot": "out",
+    "target": "capReq_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "movAve_2",
+    "source_slot": "out",
+    "target": "higLoaHea",
+    "target_slot": "a"
+   },
+   {
+    "source": "movAve_2",
+    "source_slot": "out",
+    "target": "QEvaHea_flow",
+    "target_slot": "a"
+   },
+   {
+    "source": "polHeaCoo_2",
+    "source_slot": "out",
+    "target": "movAve_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "preMod",
+    "source_slot": "out",
+    "target": "enaAndCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "preMod",
+    "source_slot": "out",
+    "target": "hea",
+    "target_slot": "in"
+   },
+   {
+    "source": "dis_2",
+    "source_slot": "out",
+    "target": "disAndOffOrNotReq",
+    "target_slot": "a"
+   },
+   {
+    "source": "disAndOffOrNotReq",
+    "source_slot": "out",
+    "target": "edg_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "edg_2",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "fal",
+    "source_slot": "out",
+    "target": "offOrNotReq",
+    "target_slot": "b"
+   },
+   {
+    "source": "ini",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "notIni",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "lat",
+    "target_slot": "clear"
+   },
+   {
+    "source": "tru",
+    "source_slot": "out",
+    "target": "notIni",
+    "target_slot": "in"
+   },
+   {
+    "source": "lat",
+    "source_slot": "out",
+    "target": "y1PumChiWat",
+    "target_slot": "in"
+   },
+   {
+    "source": "off_2",
+    "source_slot": "out",
+    "target": "timOff",
+    "target_slot": "in"
+   },
+   {
+    "source": "offOrNotReq",
+    "source_slot": "out",
+    "target": "disAndOffOrNotReq",
+    "target_slot": "b"
+   },
+   {
+    "source": "timOff",
+    "source_slot": "passed",
+    "target": "offOrNotReq",
+    "target_slot": "a"
+   },
+   {
+    "source": "dis_3",
+    "source_slot": "out",
+    "target": "disAndOffOrNotReq_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "disAndOffOrNotReq_2",
+    "source_slot": "out",
+    "target": "edg_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "edg_3",
+    "source_slot": "out",
+    "target": "swi_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "fal_2",
+    "source_slot": "out",
+    "target": "offOrNotReq_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "ini_2",
+    "source_slot": "out",
+    "target": "swi_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "notIni_2",
+    "source_slot": "out",
+    "target": "swi_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "swi_2",
+    "source_slot": "out",
+    "target": "lat_2",
+    "target_slot": "clear"
+   },
+   {
+    "source": "tru_2",
+    "source_slot": "out",
+    "target": "notIni_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "lat_2",
+    "source_slot": "out",
+    "target": "y1PumHeaWat",
+    "target_slot": "in"
+   },
+   {
+    "source": "off_3",
+    "source_slot": "out",
+    "target": "timOff_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "offOrNotReq_2",
+    "source_slot": "out",
+    "target": "disAndOffOrNotReq_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "timOff_2",
+    "source_slot": "passed",
+    "target": "offOrNotReq_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "les",
+    "source_slot": "out",
+    "target": "setMod",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "preMod_2",
+    "source_slot": "out",
+    "target": "setMod",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "QEvaHea_flow",
+    "source_slot": "out",
+    "target": "les",
+    "target_slot": "b"
+   },
+   {
+    "source": "selTSupSet",
+    "source_slot": "out",
+    "target": "TSupSet",
+    "target_slot": "in"
+   },
+   {
+    "source": "setMod",
+    "source_slot": "out",
+    "target": "preMod",
+    "target_slot": "in"
+   },
+   {
+    "source": "setMod",
+    "source_slot": "out",
+    "target": "preMod_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "setMod",
+    "source_slot": "out",
+    "target": "selTSupSet",
+    "target_slot": "selector"
+   },
+   {
+    "source": "setMod",
+    "source_slot": "out",
+    "target": "y1Coo",
+    "target_slot": "in"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "QEvaHea_flow": "setMod.QEvaHea_flow",
+    "QEvaHea_flow_parameter": "setMod.QEvaHea_flow",
+    "allEna_fold_2": "ena.allEna__fold_2",
+    "allEna_fold_3": "ena.allEna__fold_3",
+    "allEna_fold_4": "ena.allEna__fold_4",
+    "allEna_fold_5": "ena.allEna__fold_5",
+    "anyDis_fold_2": "ena.anyDis__fold_2",
+    "anyDis_fold_3": "ena.anyDis__fold_3",
+    "anyDis_fold_4": "ena.anyDis__fold_4",
+    "anyDis_fold_5": "ena.anyDis__fold_5",
+    "anyLowLoa": "ena.anyLowLoa",
+    "anyLowLoaAndOff": "ena.anyLowLoaAndOff",
+    "anyTChiWatLvg": "ena.anyTChiWatLvg",
+    "anyTChiWatLvgAndHea": "ena.anyTChiWatLvgAndHea",
+    "anyTHeaWatLvg": "ena.anyTHeaWatLvg",
+    "anyTHeaWatLvgAndCoo": "ena.anyTHeaWatLvgAndCoo",
+    "capFlo": "loaChiWat.capFlo",
+    "capFlo_2": "loaHeaWat.capFlo",
+    "capFlo_2_parameter": "loaHeaWat.capFlo",
+    "capFlo_parameter": "loaChiWat.capFlo",
+    "capReq": "loaChiWat.capReq",
+    "capReq_2": "loaHeaWat.capReq",
+    "delT": "loaChiWat.delT",
+    "delT_2": "loaHeaWat.delT",
+    "dis": "ena.dis",
+    "disAndOffOrNotReq": "pumChiWat.disAndOffOrNotReq",
+    "disAndOffOrNotReq_2": "pumHeaWat.disAndOffOrNotReq",
+    "disCoo": "ena.disCoo",
+    "disHea": "ena.disHea",
+    "dis_2": "pumChiWat.dis",
+    "dis_3": "pumHeaWat.dis",
+    "edg": "ena.edg",
+    "edg_2": "pumChiWat.edg",
+    "edg_3": "pumHeaWat.edg",
+    "enaAndCoo": "ena.enaAndCoo",
+    "enaAndHea": "ena.enaAndHea",
+    "enaDis": "ena.enaDis",
+    "fal": "pumChiWat.fal",
+    "fal_2": "pumHeaWat.fal",
+    "hea": "ena.hea",
+    "higLoaCoo": "ena.higLoaCoo",
+    "higLoaCoo_threshold": "ena.higLoaCoo",
+    "higLoaHea": "ena.higLoaHea",
+    "higLoaHea_threshold": "ena.higLoaHea",
+    "higTHeaWatLvg1": "ena.higTHeaWatLvg1",
+    "higTHeaWatLvg1_threshold": "ena.higTHeaWatLvg1",
+    "higTHeaWatLvg2": "ena.higTHeaWatLvg2",
+    "higTHeaWatLvg2_threshold": "ena.higTHeaWatLvg2",
+    "ini": "pumChiWat.ini.ini",
+    "ini_2": "pumHeaWat.ini.ini",
+    "lat": "pumChiWat.lat",
+    "lat_2": "pumHeaWat.lat",
+    "les": "setMod.les",
+    "lowLoaCoo": "ena.lowLoaCoo",
+    "lowLoaCoo_threshold": "ena.lowLoaCoo",
+    "lowLoaHea": "ena.lowLoaHea",
+    "lowLoaHea_threshold": "ena.lowLoaHea",
+    "lowTChiWatLvg1": "ena.lowTChiWatLvg1",
+    "lowTChiWatLvg1_threshold": "ena.lowTChiWatLvg1",
+    "lowTChiWatLvg2": "ena.lowTChiWatLvg2",
+    "lowTChiWatLvg2_threshold": "ena.lowTChiWatLvg2",
+    "movAve": "loaChiWat.movAve",
+    "movAve_2": "loaHeaWat.movAve",
+    "notIni": "pumChiWat.ini.notIni",
+    "notIni_2": "pumHeaWat.ini.notIni",
+    "off": "ena.off",
+    "offOrNotReq": "pumChiWat.offOrNotReq",
+    "offOrNotReq_2": "pumHeaWat.offOrNotReq",
+    "off_2": "pumChiWat.off",
+    "off_3": "pumHeaWat.off",
+    "polHeaCoo": "loaChiWat.polHeaCoo",
+    "polHeaCoo_2": "loaHeaWat.polHeaCoo",
+    "polHeaCoo_2_parameter": "loaHeaWat.polHeaCoo",
+    "polHeaCoo_parameter": "loaChiWat.polHeaCoo",
+    "preEna": "ena.preEna",
+    "preMod": "preMod",
+    "preMod_2": "setMod.preMod",
+    "runDis": "ena.runDis",
+    "selTSupSet": "setMod.selTSupSet",
+    "setMod": "setMod.setMod",
+    "swi": "pumChiWat.ini.swi",
+    "swi_2": "pumHeaWat.ini.swi",
+    "timCooEna": "ena.timCooEna",
+    "timHeaEna": "ena.timHeaEna",
+    "timLoaCoo": "ena.timLoaCoo",
+    "timLoaHea": "ena.timLoaHea",
+    "timOff": "pumChiWat.timOff",
+    "timOff_2": "pumHeaWat.timOff",
+    "timTChiWatLvg1": "ena.timTChiWatLvg1",
+    "timTChiWatLvg2": "ena.timTChiWatLvg2",
+    "timTHeaWatLvg1": "ena.timTHeaWatLvg1",
+    "timTHeaWatLvg2": "ena.timTHeaWatLvg2",
+    "tru": "pumChiWat.ini.tru",
+    "truDel": "ena.truDel",
+    "tru_2": "pumHeaWat.ini.tru"
+   },
+   "coverage": {
+    "boundary_inputs": 11,
+    "boundary_outputs": 5,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Logical.And": 11,
+     "Buildings.Controls.OBC.CDL.Logical.Edge": 3,
+     "Buildings.Controls.OBC.CDL.Logical.FallingEdge": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 8,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 9,
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 5,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 6,
+     "Buildings.Controls.OBC.CDL.Logical.Switch": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Timer": 11,
+     "Buildings.Controls.OBC.CDL.Logical.TrueDelay": 1,
+     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 4,
+     "Buildings.Controls.OBC.CDL.Reals.Less": 1,
+     "Buildings.Controls.OBC.CDL.Reals.LessThreshold": 4,
+     "Buildings.Controls.OBC.CDL.Reals.MovingAverage": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Multiply": 2,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 5,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 1
+    },
+    "component_count": 82,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [
+     "truDel: delayOnInit=false is not equivalent to the Niagara BooleanDelay initialization used by this lowering"
+    ],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.FallingEdge",
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Pre",
+     "Buildings.Controls.OBC.CDL.Logical.Timer",
+     "Buildings.Controls.OBC.CDL.Reals.MovingAverage"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Controller",
+    "root_label": "Controller",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "e1f05c7dc404e3953a18e404c4b7304ea51160ec4b06e53f94e320c4f995bb61",
+    "supported_class_count": 82,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "e1f05c7dc404e3953a18e404c4b7304ea51160ec4b06e53f94e320c4f995bb61"
+  },
+  "name": "Controller"
+ }
+}

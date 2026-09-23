@@ -1,0 +1,32 @@
+{
+ "Initialization": {
+  "cxf_sha256": "33c5a4e98d0500f6c40bd26e495e53b6c995ee6fce8bb8f24165959ea04958e1",
+  "replaces": "Buildings.Templates.Plants.Controls.Utilities.Initialization",
+  "source": "BACTalk/CdlSubstitutes/Initialization.mo",
+  "source_sha256": "980090ab27c7f4c7d4e840dcaac29759d0266a617968e522ef8f83b694435e34"
+ },
+ "MultiMaxInteger": {
+  "cxf_sha256": "02c790484f78b2ed5651dd79d97cb1ed035ca5b2ace0a921f23617a788f68e33",
+  "replaces": "Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger",
+  "source": "BACTalk/CdlSubstitutes/MultiMaxInteger.mo",
+  "source_sha256": "3878aa177d83e29dcdf294a072c74d4d79afbb0e21e7c0b070e0cac0079ac192"
+ },
+ "MultiMinInteger": {
+  "cxf_sha256": "52f68529c99a728441e5a9bc9a99fd02d1605f8345b03b51192091f129f016ba",
+  "replaces": "Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger",
+  "source": "BACTalk/CdlSubstitutes/MultiMinInteger.mo",
+  "source_sha256": "29a2f4c4038a1a0467f01f514381e017979db822826f8bf824ecacbebfe925df"
+ },
+ "TimerWithReset": {
+  "cxf_sha256": "3b103ad091bd76660dcac661e3b1894fa81ab398adc7568c1442842ce2362d37",
+  "replaces": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
+  "source": "BACTalk/CdlSubstitutes/TimerWithReset.mo",
+  "source_sha256": "2702c2216b7329bac39c60e2abe3551d7e3ebc437dcd404915f243fc66541c2e"
+ },
+ "TrueArrayConditional": {
+  "cxf_sha256": "cb0b81e35dd9557bd071b5016f8a2fee839bc8b0fb269e4af67da00f70b3725d",
+  "replaces": "Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional",
+  "source": "BACTalk/CdlSubstitutes/TrueArrayConditional.mo",
+  "source_sha256": "8bd4660d82c6046b285de7a71908325123a4a9693f84b5772ddcb18f551dc70d"
+ }
+}

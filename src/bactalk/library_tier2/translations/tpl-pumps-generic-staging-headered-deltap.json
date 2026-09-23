@@ -1,4 +1,7 @@
 {
+ "cdl_substitutes": [
+  "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset"
+ ],
  "configuration_id": "tpl-pumps-generic-staging-headered-deltap",
  "controller_id": "Pumps.Generic.StagingHeaderedDeltaP",
  "execution_profile": "host_tick_v1",
@@ -72,7 +75,7 @@
  "library": "plant_controls",
  "niagara_target": {
   "complete": true,
-  "generated_program_count": 10
+  "generated_program_count": 40
  },
  "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
  "parameters": {
@@ -201,7 +204,7 @@
   "tag": "v13.0.0"
  },
  "translator": {
-  "cxf_source_sha256": "e3efa9122951201fe7c422939aa018a9600c25f83265888ccd76ba0505b75673",
+  "cxf_source_sha256": "adf358056742b39f65500e2257a3d7b18b995f00f2487006271809a3c5013cb1",
   "lowering_schema": "bactalk-cxf-lowering/v4",
   "name": "LBNL modelica-json",
   "runtime": "Open Control Engine"
@@ -889,70 +892,1606 @@
     "y": 720
    },
    {
-    "config": {
-     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
-     "threshold_seconds": 300.0
-    },
-    "id": "timHigDp__1",
-    "kind": "timer_with_reset",
-    "label": "timHigDp__1",
+    "config": {},
+    "id": "anyEve",
+    "kind": "or",
+    "label": "anyEve",
     "x": 180,
     "y": 720
    },
    {
-    "config": {
-     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
-     "threshold_seconds": 600.0
-    },
-    "id": "timHigV",
-    "kind": "timer_with_reset",
-    "label": "timHigV",
+    "config": {},
+    "id": "cur",
+    "kind": "numeric_switch",
+    "label": "cur",
     "x": 360,
     "y": 720
    },
    {
-    "config": {
-     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
-     "threshold_seconds": 300.0
-    },
-    "id": "timHigY",
-    "kind": "timer_with_reset",
-    "label": "timHigY",
+    "config": {},
+    "id": "ela",
+    "kind": "numeric_switch",
+    "label": "ela",
     "x": 540,
     "y": 720
    },
    {
-    "config": {
-     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
-     "threshold_seconds": 300.0
-    },
-    "id": "timLowDp__1",
-    "kind": "timer_with_reset",
-    "label": "timLowDp__1",
+    "config": {},
+    "id": "eveAftIni",
+    "kind": "and",
+    "label": "eveAftIni",
     "x": 720,
     "y": 720
    },
    {
     "config": {
-     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
-     "threshold_seconds": 600.0
+     "value": false
     },
-    "id": "timLowV",
-    "kind": "timer_with_reset",
-    "label": "timLowV",
+    "id": "fal",
+    "kind": "boolean_const",
+    "label": "fal",
     "x": 900,
     "y": 720
    },
    {
     "config": {
-     "semantic_contract": "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
-     "threshold_seconds": 600.0
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
     },
-    "id": "timLowY",
-    "kind": "timer_with_reset",
-    "label": "timLowY",
+    "id": "falU",
+    "kind": "boolean_falling_edge",
+    "label": "falU",
     "x": 0,
     "y": 840
+   },
+   {
+    "config": {},
+    "id": "noEve",
+    "kind": "not",
+    "label": "noEve",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "nonPos",
+    "kind": "not",
+    "label": "nonPos",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "notTog",
+    "kind": "not",
+    "label": "notTog",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 300.0
+    },
+    "id": "notYet_threshold",
+    "kind": "numeric_const",
+    "label": "notYet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notYet",
+    "kind": "less_than",
+    "label": "notYet",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "pas",
+    "kind": "or",
+    "label": "pas",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "pasIni",
+    "kind": "and",
+    "label": "pasIni",
+    "x": 180,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "pasOn",
+    "kind": "and",
+    "label": "pasOn",
+    "x": 360,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "pos_threshold",
+    "kind": "numeric_const",
+    "label": "pos threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pos",
+    "kind": "greater_than",
+    "label": "pos",
+    "x": 540,
+    "y": 960
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preTog",
+    "kind": "boolean_pre_host_tick",
+    "label": "preTog",
+    "x": 720,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "rea",
+    "kind": "not",
+    "label": "rea",
+    "x": 900,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "res",
+    "kind": "or",
+    "label": "res",
+    "x": 0,
+    "y": 1080
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risRes",
+    "kind": "one_shot",
+    "label": "risRes",
+    "x": 180,
+    "y": 1080
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risU",
+    "kind": "one_shot",
+    "label": "risU",
+    "x": 360,
+    "y": 1080
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "see",
+    "kind": "boolean_set_reset",
+    "label": "see",
+    "x": 540,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": 300.0
+    },
+    "id": "thr",
+    "kind": "numeric_const",
+    "label": "thr",
+    "x": 720,
+    "y": 1080
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timFal",
+    "kind": "timer_accumulating",
+    "label": "timFal",
+    "x": 900,
+    "y": 1080
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRis",
+    "kind": "timer_accumulating",
+    "label": "timRis",
+    "x": 0,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "tog",
+    "kind": "xor",
+    "label": "tog",
+    "x": 180,
+    "y": 1200
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 360,
+    "y": 1200
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 540,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "anyEve_2",
+    "kind": "or",
+    "label": "anyEve",
+    "x": 720,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "cur_2",
+    "kind": "numeric_switch",
+    "label": "cur",
+    "x": 900,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "ela_2",
+    "kind": "numeric_switch",
+    "label": "ela",
+    "x": 0,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "eveAftIni_2",
+    "kind": "and",
+    "label": "eveAftIni",
+    "x": 180,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal_2",
+    "kind": "boolean_const",
+    "label": "fal",
+    "x": 360,
+    "y": 1320
+   },
+   {
+    "config": {
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
+    },
+    "id": "falU_2",
+    "kind": "boolean_falling_edge",
+    "label": "falU",
+    "x": 540,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "noEve_2",
+    "kind": "not",
+    "label": "noEve",
+    "x": 720,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "nonPos_2",
+    "kind": "not",
+    "label": "nonPos",
+    "x": 900,
+    "y": 1320
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni_2",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 0,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "notTog_2",
+    "kind": "not",
+    "label": "notTog",
+    "x": 180,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": 600.0
+    },
+    "id": "notYet_2_threshold",
+    "kind": "numeric_const",
+    "label": "notYet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notYet_2",
+    "kind": "less_than",
+    "label": "notYet",
+    "x": 360,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "pas_2",
+    "kind": "or",
+    "label": "pas",
+    "x": 540,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "pasIni_2",
+    "kind": "and",
+    "label": "pasIni",
+    "x": 720,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "pasOn_2",
+    "kind": "and",
+    "label": "pasOn",
+    "x": 900,
+    "y": 1440
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "pos_2_threshold",
+    "kind": "numeric_const",
+    "label": "pos threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pos_2",
+    "kind": "greater_than",
+    "label": "pos",
+    "x": 0,
+    "y": 1560
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preTog_2",
+    "kind": "boolean_pre_host_tick",
+    "label": "preTog",
+    "x": 180,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "rea_2",
+    "kind": "not",
+    "label": "rea",
+    "x": 360,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "res_2",
+    "kind": "or",
+    "label": "res",
+    "x": 540,
+    "y": 1560
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risRes_2",
+    "kind": "one_shot",
+    "label": "risRes",
+    "x": 720,
+    "y": 1560
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risU_2",
+    "kind": "one_shot",
+    "label": "risU",
+    "x": 900,
+    "y": 1560
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "see_2",
+    "kind": "boolean_set_reset",
+    "label": "see",
+    "x": 0,
+    "y": 1680
+   },
+   {
+    "config": {
+     "value": 600.0
+    },
+    "id": "thr_2",
+    "kind": "numeric_const",
+    "label": "thr",
+    "x": 180,
+    "y": 1680
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timFal_2",
+    "kind": "timer_accumulating",
+    "label": "timFal",
+    "x": 360,
+    "y": 1680
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRis_2",
+    "kind": "timer_accumulating",
+    "label": "timRis",
+    "x": 540,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "tog_2",
+    "kind": "xor",
+    "label": "tog",
+    "x": 720,
+    "y": 1680
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru_2",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 900,
+    "y": 1680
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer_2",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 0,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "anyEve_3",
+    "kind": "or",
+    "label": "anyEve",
+    "x": 180,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "cur_3",
+    "kind": "numeric_switch",
+    "label": "cur",
+    "x": 360,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "ela_3",
+    "kind": "numeric_switch",
+    "label": "ela",
+    "x": 540,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "eveAftIni_3",
+    "kind": "and",
+    "label": "eveAftIni",
+    "x": 720,
+    "y": 1800
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal_3",
+    "kind": "boolean_const",
+    "label": "fal",
+    "x": 900,
+    "y": 1800
+   },
+   {
+    "config": {
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
+    },
+    "id": "falU_3",
+    "kind": "boolean_falling_edge",
+    "label": "falU",
+    "x": 0,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "noEve_3",
+    "kind": "not",
+    "label": "noEve",
+    "x": 180,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "nonPos_3",
+    "kind": "not",
+    "label": "nonPos",
+    "x": 360,
+    "y": 1920
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni_3",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 540,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "notTog_3",
+    "kind": "not",
+    "label": "notTog",
+    "x": 720,
+    "y": 1920
+   },
+   {
+    "config": {
+     "value": 300.0
+    },
+    "id": "notYet_3_threshold",
+    "kind": "numeric_const",
+    "label": "notYet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notYet_3",
+    "kind": "less_than",
+    "label": "notYet",
+    "x": 900,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "pas_3",
+    "kind": "or",
+    "label": "pas",
+    "x": 0,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "pasIni_3",
+    "kind": "and",
+    "label": "pasIni",
+    "x": 180,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "pasOn_3",
+    "kind": "and",
+    "label": "pasOn",
+    "x": 360,
+    "y": 2040
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "pos_3_threshold",
+    "kind": "numeric_const",
+    "label": "pos threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pos_3",
+    "kind": "greater_than",
+    "label": "pos",
+    "x": 540,
+    "y": 2040
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preTog_3",
+    "kind": "boolean_pre_host_tick",
+    "label": "preTog",
+    "x": 720,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "rea_3",
+    "kind": "not",
+    "label": "rea",
+    "x": 900,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "res_3",
+    "kind": "or",
+    "label": "res",
+    "x": 0,
+    "y": 2160
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risRes_3",
+    "kind": "one_shot",
+    "label": "risRes",
+    "x": 180,
+    "y": 2160
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risU_3",
+    "kind": "one_shot",
+    "label": "risU",
+    "x": 360,
+    "y": 2160
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "see_3",
+    "kind": "boolean_set_reset",
+    "label": "see",
+    "x": 540,
+    "y": 2160
+   },
+   {
+    "config": {
+     "value": 300.0
+    },
+    "id": "thr_3",
+    "kind": "numeric_const",
+    "label": "thr",
+    "x": 720,
+    "y": 2160
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timFal_3",
+    "kind": "timer_accumulating",
+    "label": "timFal",
+    "x": 900,
+    "y": 2160
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRis_3",
+    "kind": "timer_accumulating",
+    "label": "timRis",
+    "x": 0,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "tog_3",
+    "kind": "xor",
+    "label": "tog",
+    "x": 180,
+    "y": 2280
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru_3",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 360,
+    "y": 2280
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer_3",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 540,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "anyEve_4",
+    "kind": "or",
+    "label": "anyEve",
+    "x": 720,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "cur_4",
+    "kind": "numeric_switch",
+    "label": "cur",
+    "x": 900,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "ela_4",
+    "kind": "numeric_switch",
+    "label": "ela",
+    "x": 0,
+    "y": 2400
+   },
+   {
+    "config": {},
+    "id": "eveAftIni_4",
+    "kind": "and",
+    "label": "eveAftIni",
+    "x": 180,
+    "y": 2400
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal_4",
+    "kind": "boolean_const",
+    "label": "fal",
+    "x": 360,
+    "y": 2400
+   },
+   {
+    "config": {
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
+    },
+    "id": "falU_4",
+    "kind": "boolean_falling_edge",
+    "label": "falU",
+    "x": 540,
+    "y": 2400
+   },
+   {
+    "config": {},
+    "id": "noEve_4",
+    "kind": "not",
+    "label": "noEve",
+    "x": 720,
+    "y": 2400
+   },
+   {
+    "config": {},
+    "id": "nonPos_4",
+    "kind": "not",
+    "label": "nonPos",
+    "x": 900,
+    "y": 2400
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni_4",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 0,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "notTog_4",
+    "kind": "not",
+    "label": "notTog",
+    "x": 180,
+    "y": 2520
+   },
+   {
+    "config": {
+     "value": 300.0
+    },
+    "id": "notYet_4_threshold",
+    "kind": "numeric_const",
+    "label": "notYet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notYet_4",
+    "kind": "less_than",
+    "label": "notYet",
+    "x": 360,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "pas_4",
+    "kind": "or",
+    "label": "pas",
+    "x": 540,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "pasIni_4",
+    "kind": "and",
+    "label": "pasIni",
+    "x": 720,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "pasOn_4",
+    "kind": "and",
+    "label": "pasOn",
+    "x": 900,
+    "y": 2520
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "pos_4_threshold",
+    "kind": "numeric_const",
+    "label": "pos threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pos_4",
+    "kind": "greater_than",
+    "label": "pos",
+    "x": 0,
+    "y": 2640
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preTog_4",
+    "kind": "boolean_pre_host_tick",
+    "label": "preTog",
+    "x": 180,
+    "y": 2640
+   },
+   {
+    "config": {},
+    "id": "rea_4",
+    "kind": "not",
+    "label": "rea",
+    "x": 360,
+    "y": 2640
+   },
+   {
+    "config": {},
+    "id": "res_4",
+    "kind": "or",
+    "label": "res",
+    "x": 540,
+    "y": 2640
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risRes_4",
+    "kind": "one_shot",
+    "label": "risRes",
+    "x": 720,
+    "y": 2640
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risU_4",
+    "kind": "one_shot",
+    "label": "risU",
+    "x": 900,
+    "y": 2640
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "see_4",
+    "kind": "boolean_set_reset",
+    "label": "see",
+    "x": 0,
+    "y": 2760
+   },
+   {
+    "config": {
+     "value": 300.0
+    },
+    "id": "thr_4",
+    "kind": "numeric_const",
+    "label": "thr",
+    "x": 180,
+    "y": 2760
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timFal_4",
+    "kind": "timer_accumulating",
+    "label": "timFal",
+    "x": 360,
+    "y": 2760
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRis_4",
+    "kind": "timer_accumulating",
+    "label": "timRis",
+    "x": 540,
+    "y": 2760
+   },
+   {
+    "config": {},
+    "id": "tog_4",
+    "kind": "xor",
+    "label": "tog",
+    "x": 720,
+    "y": 2760
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru_4",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 900,
+    "y": 2760
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer_4",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 0,
+    "y": 2880
+   },
+   {
+    "config": {},
+    "id": "anyEve_5",
+    "kind": "or",
+    "label": "anyEve",
+    "x": 180,
+    "y": 2880
+   },
+   {
+    "config": {},
+    "id": "cur_5",
+    "kind": "numeric_switch",
+    "label": "cur",
+    "x": 360,
+    "y": 2880
+   },
+   {
+    "config": {},
+    "id": "ela_5",
+    "kind": "numeric_switch",
+    "label": "ela",
+    "x": 540,
+    "y": 2880
+   },
+   {
+    "config": {},
+    "id": "eveAftIni_5",
+    "kind": "and",
+    "label": "eveAftIni",
+    "x": 720,
+    "y": 2880
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal_5",
+    "kind": "boolean_const",
+    "label": "fal",
+    "x": 900,
+    "y": 2880
+   },
+   {
+    "config": {
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
+    },
+    "id": "falU_5",
+    "kind": "boolean_falling_edge",
+    "label": "falU",
+    "x": 0,
+    "y": 3000
+   },
+   {
+    "config": {},
+    "id": "noEve_5",
+    "kind": "not",
+    "label": "noEve",
+    "x": 180,
+    "y": 3000
+   },
+   {
+    "config": {},
+    "id": "nonPos_5",
+    "kind": "not",
+    "label": "nonPos",
+    "x": 360,
+    "y": 3000
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni_5",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 540,
+    "y": 3000
+   },
+   {
+    "config": {},
+    "id": "notTog_5",
+    "kind": "not",
+    "label": "notTog",
+    "x": 720,
+    "y": 3000
+   },
+   {
+    "config": {
+     "value": 600.0
+    },
+    "id": "notYet_5_threshold",
+    "kind": "numeric_const",
+    "label": "notYet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notYet_5",
+    "kind": "less_than",
+    "label": "notYet",
+    "x": 900,
+    "y": 3000
+   },
+   {
+    "config": {},
+    "id": "pas_5",
+    "kind": "or",
+    "label": "pas",
+    "x": 0,
+    "y": 3120
+   },
+   {
+    "config": {},
+    "id": "pasIni_5",
+    "kind": "and",
+    "label": "pasIni",
+    "x": 180,
+    "y": 3120
+   },
+   {
+    "config": {},
+    "id": "pasOn_5",
+    "kind": "and",
+    "label": "pasOn",
+    "x": 360,
+    "y": 3120
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "pos_5_threshold",
+    "kind": "numeric_const",
+    "label": "pos threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pos_5",
+    "kind": "greater_than",
+    "label": "pos",
+    "x": 540,
+    "y": 3120
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preTog_5",
+    "kind": "boolean_pre_host_tick",
+    "label": "preTog",
+    "x": 720,
+    "y": 3120
+   },
+   {
+    "config": {},
+    "id": "rea_5",
+    "kind": "not",
+    "label": "rea",
+    "x": 900,
+    "y": 3120
+   },
+   {
+    "config": {},
+    "id": "res_5",
+    "kind": "or",
+    "label": "res",
+    "x": 0,
+    "y": 3240
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risRes_5",
+    "kind": "one_shot",
+    "label": "risRes",
+    "x": 180,
+    "y": 3240
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risU_5",
+    "kind": "one_shot",
+    "label": "risU",
+    "x": 360,
+    "y": 3240
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "see_5",
+    "kind": "boolean_set_reset",
+    "label": "see",
+    "x": 540,
+    "y": 3240
+   },
+   {
+    "config": {
+     "value": 600.0
+    },
+    "id": "thr_5",
+    "kind": "numeric_const",
+    "label": "thr",
+    "x": 720,
+    "y": 3240
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timFal_5",
+    "kind": "timer_accumulating",
+    "label": "timFal",
+    "x": 900,
+    "y": 3240
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRis_5",
+    "kind": "timer_accumulating",
+    "label": "timRis",
+    "x": 0,
+    "y": 3360
+   },
+   {
+    "config": {},
+    "id": "tog_5",
+    "kind": "xor",
+    "label": "tog",
+    "x": 180,
+    "y": 3360
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru_5",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 360,
+    "y": 3360
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer_5",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 540,
+    "y": 3360
+   },
+   {
+    "config": {},
+    "id": "anyEve_6",
+    "kind": "or",
+    "label": "anyEve",
+    "x": 720,
+    "y": 3360
+   },
+   {
+    "config": {},
+    "id": "cur_6",
+    "kind": "numeric_switch",
+    "label": "cur",
+    "x": 900,
+    "y": 3360
+   },
+   {
+    "config": {},
+    "id": "ela_6",
+    "kind": "numeric_switch",
+    "label": "ela",
+    "x": 0,
+    "y": 3480
+   },
+   {
+    "config": {},
+    "id": "eveAftIni_6",
+    "kind": "and",
+    "label": "eveAftIni",
+    "x": 180,
+    "y": 3480
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal_6",
+    "kind": "boolean_const",
+    "label": "fal",
+    "x": 360,
+    "y": 3480
+   },
+   {
+    "config": {
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
+    },
+    "id": "falU_6",
+    "kind": "boolean_falling_edge",
+    "label": "falU",
+    "x": 540,
+    "y": 3480
+   },
+   {
+    "config": {},
+    "id": "noEve_6",
+    "kind": "not",
+    "label": "noEve",
+    "x": 720,
+    "y": 3480
+   },
+   {
+    "config": {},
+    "id": "nonPos_6",
+    "kind": "not",
+    "label": "nonPos",
+    "x": 900,
+    "y": 3480
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni_6",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 0,
+    "y": 3600
+   },
+   {
+    "config": {},
+    "id": "notTog_6",
+    "kind": "not",
+    "label": "notTog",
+    "x": 180,
+    "y": 3600
+   },
+   {
+    "config": {
+     "value": 600.0
+    },
+    "id": "notYet_6_threshold",
+    "kind": "numeric_const",
+    "label": "notYet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notYet_6",
+    "kind": "less_than",
+    "label": "notYet",
+    "x": 360,
+    "y": 3600
+   },
+   {
+    "config": {},
+    "id": "pas_6",
+    "kind": "or",
+    "label": "pas",
+    "x": 540,
+    "y": 3600
+   },
+   {
+    "config": {},
+    "id": "pasIni_6",
+    "kind": "and",
+    "label": "pasIni",
+    "x": 720,
+    "y": 3600
+   },
+   {
+    "config": {},
+    "id": "pasOn_6",
+    "kind": "and",
+    "label": "pasOn",
+    "x": 900,
+    "y": 3600
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "pos_6_threshold",
+    "kind": "numeric_const",
+    "label": "pos threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pos_6",
+    "kind": "greater_than",
+    "label": "pos",
+    "x": 0,
+    "y": 3720
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preTog_6",
+    "kind": "boolean_pre_host_tick",
+    "label": "preTog",
+    "x": 180,
+    "y": 3720
+   },
+   {
+    "config": {},
+    "id": "rea_6",
+    "kind": "not",
+    "label": "rea",
+    "x": 360,
+    "y": 3720
+   },
+   {
+    "config": {},
+    "id": "res_6",
+    "kind": "or",
+    "label": "res",
+    "x": 540,
+    "y": 3720
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risRes_6",
+    "kind": "one_shot",
+    "label": "risRes",
+    "x": 720,
+    "y": 3720
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risU_6",
+    "kind": "one_shot",
+    "label": "risU",
+    "x": 900,
+    "y": 3720
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "see_6",
+    "kind": "boolean_set_reset",
+    "label": "see",
+    "x": 0,
+    "y": 3840
+   },
+   {
+    "config": {
+     "value": 600.0
+    },
+    "id": "thr_6",
+    "kind": "numeric_const",
+    "label": "thr",
+    "x": 180,
+    "y": 3840
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timFal_6",
+    "kind": "timer_accumulating",
+    "label": "timFal",
+    "x": 360,
+    "y": 3840
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRis_6",
+    "kind": "timer_accumulating",
+    "label": "timRis",
+    "x": 540,
+    "y": 3840
+   },
+   {
+    "config": {},
+    "id": "tog_6",
+    "kind": "xor",
+    "label": "tog",
+    "x": 720,
+    "y": 3840
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru_6",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 900,
+    "y": 3840
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer_6",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 0,
+    "y": 3960
    }
   ],
   "links": [
@@ -1125,6 +2664,78 @@
     "target_slot": "b"
    },
    {
+    "source": "notYet_threshold",
+    "source_slot": "out",
+    "target": "notYet",
+    "target_slot": "b"
+   },
+   {
+    "source": "pos_threshold",
+    "source_slot": "out",
+    "target": "pos",
+    "target_slot": "b"
+   },
+   {
+    "source": "notYet_2_threshold",
+    "source_slot": "out",
+    "target": "notYet_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "pos_2_threshold",
+    "source_slot": "out",
+    "target": "pos_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "notYet_3_threshold",
+    "source_slot": "out",
+    "target": "notYet_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "pos_3_threshold",
+    "source_slot": "out",
+    "target": "pos_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "notYet_4_threshold",
+    "source_slot": "out",
+    "target": "notYet_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "pos_4_threshold",
+    "source_slot": "out",
+    "target": "pos_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "notYet_5_threshold",
+    "source_slot": "out",
+    "target": "notYet_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "pos_5_threshold",
+    "source_slot": "out",
+    "target": "pos_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "notYet_6_threshold",
+    "source_slot": "out",
+    "target": "notYet_6",
+    "target_slot": "b"
+   },
+   {
+    "source": "pos_6_threshold",
+    "source_slot": "out",
+    "target": "pos_6",
+    "target_slot": "b"
+   },
+   {
     "source": "dp__1",
     "source_slot": "out",
     "target": "delDpSet__1",
@@ -1241,38 +2852,38 @@
    {
     "source": "anyCha_fold_4",
     "source_slot": "out",
-    "target": "timHigDp__1",
-    "target_slot": "reset"
+    "target": "risRes",
+    "target_slot": "in"
    },
    {
     "source": "anyCha_fold_4",
     "source_slot": "out",
-    "target": "timHigV",
-    "target_slot": "reset"
+    "target": "risRes_2",
+    "target_slot": "in"
    },
    {
     "source": "anyCha_fold_4",
     "source_slot": "out",
-    "target": "timHigY",
-    "target_slot": "reset"
+    "target": "risRes_3",
+    "target_slot": "in"
    },
    {
     "source": "anyCha_fold_4",
     "source_slot": "out",
-    "target": "timLowDp__1",
-    "target_slot": "reset"
+    "target": "risRes_4",
+    "target_slot": "in"
    },
    {
     "source": "anyCha_fold_4",
     "source_slot": "out",
-    "target": "timLowV",
-    "target_slot": "reset"
+    "target": "risRes_5",
+    "target_slot": "in"
    },
    {
     "source": "anyCha_fold_4",
     "source_slot": "out",
-    "target": "timLowY",
-    "target_slot": "reset"
+    "target": "risRes_6",
+    "target_slot": "in"
    },
    {
     "source": "booToRea__1",
@@ -1361,19 +2972,109 @@
    {
     "source": "higDp__1",
     "source_slot": "out",
-    "target": "timHigDp__1",
+    "target": "ela",
+    "target_slot": "selector"
+   },
+   {
+    "source": "higDp__1",
+    "source_slot": "out",
+    "target": "falU",
+    "target_slot": "in"
+   },
+   {
+    "source": "higDp__1",
+    "source_slot": "out",
+    "target": "pasOn",
+    "target_slot": "a"
+   },
+   {
+    "source": "higDp__1",
+    "source_slot": "out",
+    "target": "risU",
+    "target_slot": "in"
+   },
+   {
+    "source": "higDp__1",
+    "source_slot": "out",
+    "target": "timFal",
+    "target_slot": "in"
+   },
+   {
+    "source": "higDp__1",
+    "source_slot": "out",
+    "target": "timRis",
     "target_slot": "in"
    },
    {
     "source": "higV",
     "source_slot": "out",
-    "target": "timHigV",
+    "target": "ela_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "higV",
+    "source_slot": "out",
+    "target": "falU_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "higV",
+    "source_slot": "out",
+    "target": "pasOn_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "higV",
+    "source_slot": "out",
+    "target": "risU_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "higV",
+    "source_slot": "out",
+    "target": "timFal_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "higV",
+    "source_slot": "out",
+    "target": "timRis_2",
     "target_slot": "in"
    },
    {
     "source": "higY",
     "source_slot": "out",
-    "target": "timHigY",
+    "target": "ela_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "higY",
+    "source_slot": "out",
+    "target": "falU_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "higY",
+    "source_slot": "out",
+    "target": "pasOn_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "higY",
+    "source_slot": "out",
+    "target": "risU_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "higY",
+    "source_slot": "out",
+    "target": "timFal_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "higY",
+    "source_slot": "out",
+    "target": "timRis_3",
     "target_slot": "in"
    },
    {
@@ -1409,19 +3110,109 @@
    {
     "source": "lowDp__1",
     "source_slot": "out",
-    "target": "timLowDp__1",
+    "target": "ela_4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lowDp__1",
+    "source_slot": "out",
+    "target": "falU_4",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowDp__1",
+    "source_slot": "out",
+    "target": "pasOn_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "lowDp__1",
+    "source_slot": "out",
+    "target": "risU_4",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowDp__1",
+    "source_slot": "out",
+    "target": "timFal_4",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowDp__1",
+    "source_slot": "out",
+    "target": "timRis_4",
     "target_slot": "in"
    },
    {
     "source": "lowV",
     "source_slot": "out",
-    "target": "timLowV",
+    "target": "ela_5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lowV",
+    "source_slot": "out",
+    "target": "falU_5",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowV",
+    "source_slot": "out",
+    "target": "pasOn_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "lowV",
+    "source_slot": "out",
+    "target": "risU_5",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowV",
+    "source_slot": "out",
+    "target": "timFal_5",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowV",
+    "source_slot": "out",
+    "target": "timRis_5",
     "target_slot": "in"
    },
    {
     "source": "lowY",
     "source_slot": "out",
-    "target": "timLowY",
+    "target": "ela_6",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lowY",
+    "source_slot": "out",
+    "target": "falU_6",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowY",
+    "source_slot": "out",
+    "target": "pasOn_6",
+    "target_slot": "a"
+   },
+   {
+    "source": "lowY",
+    "source_slot": "out",
+    "target": "risU_6",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowY",
+    "source_slot": "out",
+    "target": "timFal_6",
+    "target_slot": "in"
+   },
+   {
+    "source": "lowY",
+    "source_slot": "out",
+    "target": "timRis_6",
     "target_slot": "in"
    },
    {
@@ -1509,52 +3300,1132 @@
     "target_slot": "b"
    },
    {
-    "source": "timHigDp__1",
-    "source_slot": "passed",
+    "source": "anyEve",
+    "source_slot": "out",
+    "target": "eveAftIni",
+    "target_slot": "b"
+   },
+   {
+    "source": "cur",
+    "source_slot": "out",
+    "target": "ela",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "ela",
+    "source_slot": "out",
+    "target": "notYet",
+    "target_slot": "a"
+   },
+   {
+    "source": "eveAftIni",
+    "source_slot": "out",
+    "target": "see",
+    "target_slot": "set"
+   },
+   {
+    "source": "fal",
+    "source_slot": "out",
+    "target": "see",
+    "target_slot": "clear"
+   },
+   {
+    "source": "falU",
+    "source_slot": "out",
+    "target": "anyEve",
+    "target_slot": "b"
+   },
+   {
+    "source": "noEve",
+    "source_slot": "out",
+    "target": "pasIni",
+    "target_slot": "a"
+   },
+   {
+    "source": "nonPos",
+    "source_slot": "out",
+    "target": "pasIni",
+    "target_slot": "b"
+   },
+   {
+    "source": "notIni",
+    "source_slot": "out",
+    "target": "eveAftIni",
+    "target_slot": "a"
+   },
+   {
+    "source": "notTog",
+    "source_slot": "out",
+    "target": "timFal",
+    "target_slot": "reset"
+   },
+   {
+    "source": "notYet",
+    "source_slot": "out",
+    "target": "rea",
+    "target_slot": "in"
+   },
+   {
+    "source": "pas",
+    "source_slot": "out",
     "target": "staDowAndPreFaiSaf_fold_3",
     "target_slot": "b"
    },
    {
-    "source": "timHigV",
-    "source_slot": "passed",
+    "source": "pasIni",
+    "source_slot": "out",
+    "target": "pas",
+    "target_slot": "b"
+   },
+   {
+    "source": "pasOn",
+    "source_slot": "out",
+    "target": "pas",
+    "target_slot": "a"
+   },
+   {
+    "source": "pos",
+    "source_slot": "out",
+    "target": "nonPos",
+    "target_slot": "in"
+   },
+   {
+    "source": "preTog",
+    "source_slot": "out",
+    "target": "tog",
+    "target_slot": "b"
+   },
+   {
+    "source": "rea",
+    "source_slot": "out",
+    "target": "pasOn",
+    "target_slot": "b"
+   },
+   {
+    "source": "res",
+    "source_slot": "out",
+    "target": "anyEve",
+    "target_slot": "a"
+   },
+   {
+    "source": "res",
+    "source_slot": "out",
+    "target": "tog",
+    "target_slot": "a"
+   },
+   {
+    "source": "risRes",
+    "source_slot": "out",
+    "target": "res",
+    "target_slot": "b"
+   },
+   {
+    "source": "risU",
+    "source_slot": "out",
+    "target": "res",
+    "target_slot": "a"
+   },
+   {
+    "source": "see",
+    "source_slot": "out",
+    "target": "noEve",
+    "target_slot": "in"
+   },
+   {
+    "source": "thr",
+    "source_slot": "out",
+    "target": "pos",
+    "target_slot": "a"
+   },
+   {
+    "source": "timFal",
+    "source_slot": "elapsed",
+    "target": "cur",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "timRis",
+    "source_slot": "elapsed",
+    "target": "cur",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "tog",
+    "source_slot": "out",
+    "target": "cur",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tog",
+    "source_slot": "out",
+    "target": "notTog",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog",
+    "source_slot": "out",
+    "target": "preTog",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog",
+    "source_slot": "out",
+    "target": "timRis",
+    "target_slot": "reset"
+   },
+   {
+    "source": "tru",
+    "source_slot": "out",
+    "target": "notIni",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "ela",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "anyEve_2",
+    "source_slot": "out",
+    "target": "eveAftIni_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "cur_2",
+    "source_slot": "out",
+    "target": "ela_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "ela_2",
+    "source_slot": "out",
+    "target": "notYet_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "eveAftIni_2",
+    "source_slot": "out",
+    "target": "see_2",
+    "target_slot": "set"
+   },
+   {
+    "source": "fal_2",
+    "source_slot": "out",
+    "target": "see_2",
+    "target_slot": "clear"
+   },
+   {
+    "source": "falU_2",
+    "source_slot": "out",
+    "target": "anyEve_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "noEve_2",
+    "source_slot": "out",
+    "target": "pasIni_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "nonPos_2",
+    "source_slot": "out",
+    "target": "pasIni_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "notIni_2",
+    "source_slot": "out",
+    "target": "eveAftIni_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "notTog_2",
+    "source_slot": "out",
+    "target": "timFal_2",
+    "target_slot": "reset"
+   },
+   {
+    "source": "notYet_2",
+    "source_slot": "out",
+    "target": "rea_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "pas_2",
+    "source_slot": "out",
     "target": "effOrFailSafUp",
     "target_slot": "a"
    },
    {
-    "source": "timHigV",
-    "source_slot": "passed",
+    "source": "pas_2",
+    "source_slot": "out",
     "target": "lckEff",
     "target_slot": "set"
    },
    {
-    "source": "timHigV",
-    "source_slot": "passed",
+    "source": "pas_2",
+    "source_slot": "out",
     "target": "lckFaiSaf",
     "target_slot": "clear"
    },
    {
-    "source": "timHigY",
-    "source_slot": "passed",
+    "source": "pasIni_2",
+    "source_slot": "out",
+    "target": "pas_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "pasOn_2",
+    "source_slot": "out",
+    "target": "pas_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "pos_2",
+    "source_slot": "out",
+    "target": "nonPos_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "preTog_2",
+    "source_slot": "out",
+    "target": "tog_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "rea_2",
+    "source_slot": "out",
+    "target": "pasOn_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "res_2",
+    "source_slot": "out",
+    "target": "anyEve_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "res_2",
+    "source_slot": "out",
+    "target": "tog_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "risRes_2",
+    "source_slot": "out",
+    "target": "res_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "risU_2",
+    "source_slot": "out",
+    "target": "res_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "see_2",
+    "source_slot": "out",
+    "target": "noEve_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "thr_2",
+    "source_slot": "out",
+    "target": "pos_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "timFal_2",
+    "source_slot": "elapsed",
+    "target": "cur_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "timRis_2",
+    "source_slot": "elapsed",
+    "target": "cur_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "tog_2",
+    "source_slot": "out",
+    "target": "cur_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tog_2",
+    "source_slot": "out",
+    "target": "notTog_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_2",
+    "source_slot": "out",
+    "target": "preTog_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_2",
+    "source_slot": "out",
+    "target": "timRis_2",
+    "target_slot": "reset"
+   },
+   {
+    "source": "tru_2",
+    "source_slot": "out",
+    "target": "notIni_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer_2",
+    "source_slot": "out",
+    "target": "ela_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "anyEve_3",
+    "source_slot": "out",
+    "target": "eveAftIni_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "cur_3",
+    "source_slot": "out",
+    "target": "ela_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "ela_3",
+    "source_slot": "out",
+    "target": "notYet_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "eveAftIni_3",
+    "source_slot": "out",
+    "target": "see_3",
+    "target_slot": "set"
+   },
+   {
+    "source": "fal_3",
+    "source_slot": "out",
+    "target": "see_3",
+    "target_slot": "clear"
+   },
+   {
+    "source": "falU_3",
+    "source_slot": "out",
+    "target": "anyEve_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "noEve_3",
+    "source_slot": "out",
+    "target": "pasIni_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "nonPos_3",
+    "source_slot": "out",
+    "target": "pasIni_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "notIni_3",
+    "source_slot": "out",
+    "target": "eveAftIni_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "notTog_3",
+    "source_slot": "out",
+    "target": "timFal_3",
+    "target_slot": "reset"
+   },
+   {
+    "source": "notYet_3",
+    "source_slot": "out",
+    "target": "rea_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "pas_3",
+    "source_slot": "out",
     "target": "higYAndLowDp",
     "target_slot": "a"
    },
    {
-    "source": "timLowDp__1",
-    "source_slot": "passed",
+    "source": "pasIni_3",
+    "source_slot": "out",
+    "target": "pas_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "pasOn_3",
+    "source_slot": "out",
+    "target": "pas_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "pos_3",
+    "source_slot": "out",
+    "target": "nonPos_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "preTog_3",
+    "source_slot": "out",
+    "target": "tog_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "rea_3",
+    "source_slot": "out",
+    "target": "pasOn_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "res_3",
+    "source_slot": "out",
+    "target": "anyEve_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "res_3",
+    "source_slot": "out",
+    "target": "tog_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "risRes_3",
+    "source_slot": "out",
+    "target": "res_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "risU_3",
+    "source_slot": "out",
+    "target": "res_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "see_3",
+    "source_slot": "out",
+    "target": "noEve_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "thr_3",
+    "source_slot": "out",
+    "target": "pos_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "timFal_3",
+    "source_slot": "elapsed",
+    "target": "cur_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "timRis_3",
+    "source_slot": "elapsed",
+    "target": "cur_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "tog_3",
+    "source_slot": "out",
+    "target": "cur_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tog_3",
+    "source_slot": "out",
+    "target": "notTog_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_3",
+    "source_slot": "out",
+    "target": "preTog_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_3",
+    "source_slot": "out",
+    "target": "timRis_3",
+    "target_slot": "reset"
+   },
+   {
+    "source": "tru_3",
+    "source_slot": "out",
+    "target": "notIni_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer_3",
+    "source_slot": "out",
+    "target": "ela_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "anyEve_4",
+    "source_slot": "out",
+    "target": "eveAftIni_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "cur_4",
+    "source_slot": "out",
+    "target": "ela_4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "ela_4",
+    "source_slot": "out",
+    "target": "notYet_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "eveAftIni_4",
+    "source_slot": "out",
+    "target": "see_4",
+    "target_slot": "set"
+   },
+   {
+    "source": "fal_4",
+    "source_slot": "out",
+    "target": "see_4",
+    "target_slot": "clear"
+   },
+   {
+    "source": "falU_4",
+    "source_slot": "out",
+    "target": "anyEve_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "noEve_4",
+    "source_slot": "out",
+    "target": "pasIni_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "nonPos_4",
+    "source_slot": "out",
+    "target": "pasIni_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "notIni_4",
+    "source_slot": "out",
+    "target": "eveAftIni_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "notTog_4",
+    "source_slot": "out",
+    "target": "timFal_4",
+    "target_slot": "reset"
+   },
+   {
+    "source": "notYet_4",
+    "source_slot": "out",
+    "target": "rea_4",
+    "target_slot": "in"
+   },
+   {
+    "source": "pas_4",
+    "source_slot": "out",
     "target": "higYAndLowDp",
     "target_slot": "b"
    },
    {
-    "source": "timLowV",
-    "source_slot": "passed",
+    "source": "pasIni_4",
+    "source_slot": "out",
+    "target": "pas_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "pasOn_4",
+    "source_slot": "out",
+    "target": "pas_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "pos_4",
+    "source_slot": "out",
+    "target": "nonPos_4",
+    "target_slot": "in"
+   },
+   {
+    "source": "preTog_4",
+    "source_slot": "out",
+    "target": "tog_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "rea_4",
+    "source_slot": "out",
+    "target": "pasOn_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "res_4",
+    "source_slot": "out",
+    "target": "anyEve_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "res_4",
+    "source_slot": "out",
+    "target": "tog_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "risRes_4",
+    "source_slot": "out",
+    "target": "res_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "risU_4",
+    "source_slot": "out",
+    "target": "res_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "see_4",
+    "source_slot": "out",
+    "target": "noEve_4",
+    "target_slot": "in"
+   },
+   {
+    "source": "thr_4",
+    "source_slot": "out",
+    "target": "pos_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "timFal_4",
+    "source_slot": "elapsed",
+    "target": "cur_4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "timRis_4",
+    "source_slot": "elapsed",
+    "target": "cur_4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "tog_4",
+    "source_slot": "out",
+    "target": "cur_4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tog_4",
+    "source_slot": "out",
+    "target": "notTog_4",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_4",
+    "source_slot": "out",
+    "target": "preTog_4",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_4",
+    "source_slot": "out",
+    "target": "timRis_4",
+    "target_slot": "reset"
+   },
+   {
+    "source": "tru_4",
+    "source_slot": "out",
+    "target": "notIni_4",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer_4",
+    "source_slot": "out",
+    "target": "ela_4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "anyEve_5",
+    "source_slot": "out",
+    "target": "eveAftIni_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "cur_5",
+    "source_slot": "out",
+    "target": "ela_5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "ela_5",
+    "source_slot": "out",
+    "target": "notYet_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "eveAftIni_5",
+    "source_slot": "out",
+    "target": "see_5",
+    "target_slot": "set"
+   },
+   {
+    "source": "fal_5",
+    "source_slot": "out",
+    "target": "see_5",
+    "target_slot": "clear"
+   },
+   {
+    "source": "falU_5",
+    "source_slot": "out",
+    "target": "anyEve_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "noEve_5",
+    "source_slot": "out",
+    "target": "pasIni_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "nonPos_5",
+    "source_slot": "out",
+    "target": "pasIni_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "notIni_5",
+    "source_slot": "out",
+    "target": "eveAftIni_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "notTog_5",
+    "source_slot": "out",
+    "target": "timFal_5",
+    "target_slot": "reset"
+   },
+   {
+    "source": "notYet_5",
+    "source_slot": "out",
+    "target": "rea_5",
+    "target_slot": "in"
+   },
+   {
+    "source": "pas_5",
+    "source_slot": "out",
     "target": "staDowAndPreEff",
     "target_slot": "a"
    },
    {
-    "source": "timLowY",
-    "source_slot": "passed",
+    "source": "pasIni_5",
+    "source_slot": "out",
+    "target": "pas_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "pasOn_5",
+    "source_slot": "out",
+    "target": "pas_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "pos_5",
+    "source_slot": "out",
+    "target": "nonPos_5",
+    "target_slot": "in"
+   },
+   {
+    "source": "preTog_5",
+    "source_slot": "out",
+    "target": "tog_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "rea_5",
+    "source_slot": "out",
+    "target": "pasOn_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "res_5",
+    "source_slot": "out",
+    "target": "anyEve_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "res_5",
+    "source_slot": "out",
+    "target": "tog_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "risRes_5",
+    "source_slot": "out",
+    "target": "res_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "risU_5",
+    "source_slot": "out",
+    "target": "res_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "see_5",
+    "source_slot": "out",
+    "target": "noEve_5",
+    "target_slot": "in"
+   },
+   {
+    "source": "thr_5",
+    "source_slot": "out",
+    "target": "pos_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "timFal_5",
+    "source_slot": "elapsed",
+    "target": "cur_5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "timRis_5",
+    "source_slot": "elapsed",
+    "target": "cur_5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "tog_5",
+    "source_slot": "out",
+    "target": "cur_5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tog_5",
+    "source_slot": "out",
+    "target": "notTog_5",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_5",
+    "source_slot": "out",
+    "target": "preTog_5",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_5",
+    "source_slot": "out",
+    "target": "timRis_5",
+    "target_slot": "reset"
+   },
+   {
+    "source": "tru_5",
+    "source_slot": "out",
+    "target": "notIni_5",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer_5",
+    "source_slot": "out",
+    "target": "ela_5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "anyEve_6",
+    "source_slot": "out",
+    "target": "eveAftIni_6",
+    "target_slot": "b"
+   },
+   {
+    "source": "cur_6",
+    "source_slot": "out",
+    "target": "ela_6",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "ela_6",
+    "source_slot": "out",
+    "target": "notYet_6",
+    "target_slot": "a"
+   },
+   {
+    "source": "eveAftIni_6",
+    "source_slot": "out",
+    "target": "see_6",
+    "target_slot": "set"
+   },
+   {
+    "source": "fal_6",
+    "source_slot": "out",
+    "target": "see_6",
+    "target_slot": "clear"
+   },
+   {
+    "source": "falU_6",
+    "source_slot": "out",
+    "target": "anyEve_6",
+    "target_slot": "b"
+   },
+   {
+    "source": "noEve_6",
+    "source_slot": "out",
+    "target": "pasIni_6",
+    "target_slot": "a"
+   },
+   {
+    "source": "nonPos_6",
+    "source_slot": "out",
+    "target": "pasIni_6",
+    "target_slot": "b"
+   },
+   {
+    "source": "notIni_6",
+    "source_slot": "out",
+    "target": "eveAftIni_6",
+    "target_slot": "a"
+   },
+   {
+    "source": "notTog_6",
+    "source_slot": "out",
+    "target": "timFal_6",
+    "target_slot": "reset"
+   },
+   {
+    "source": "notYet_6",
+    "source_slot": "out",
+    "target": "rea_6",
+    "target_slot": "in"
+   },
+   {
+    "source": "pas_6",
+    "source_slot": "out",
     "target": "staDowAndPreFaiSaf_fold_2",
     "target_slot": "a"
+   },
+   {
+    "source": "pasIni_6",
+    "source_slot": "out",
+    "target": "pas_6",
+    "target_slot": "b"
+   },
+   {
+    "source": "pasOn_6",
+    "source_slot": "out",
+    "target": "pas_6",
+    "target_slot": "a"
+   },
+   {
+    "source": "pos_6",
+    "source_slot": "out",
+    "target": "nonPos_6",
+    "target_slot": "in"
+   },
+   {
+    "source": "preTog_6",
+    "source_slot": "out",
+    "target": "tog_6",
+    "target_slot": "b"
+   },
+   {
+    "source": "rea_6",
+    "source_slot": "out",
+    "target": "pasOn_6",
+    "target_slot": "b"
+   },
+   {
+    "source": "res_6",
+    "source_slot": "out",
+    "target": "anyEve_6",
+    "target_slot": "a"
+   },
+   {
+    "source": "res_6",
+    "source_slot": "out",
+    "target": "tog_6",
+    "target_slot": "a"
+   },
+   {
+    "source": "risRes_6",
+    "source_slot": "out",
+    "target": "res_6",
+    "target_slot": "b"
+   },
+   {
+    "source": "risU_6",
+    "source_slot": "out",
+    "target": "res_6",
+    "target_slot": "a"
+   },
+   {
+    "source": "see_6",
+    "source_slot": "out",
+    "target": "noEve_6",
+    "target_slot": "in"
+   },
+   {
+    "source": "thr_6",
+    "source_slot": "out",
+    "target": "pos_6",
+    "target_slot": "a"
+   },
+   {
+    "source": "timFal_6",
+    "source_slot": "elapsed",
+    "target": "cur_6",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "timRis_6",
+    "source_slot": "elapsed",
+    "target": "cur_6",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "tog_6",
+    "source_slot": "out",
+    "target": "cur_6",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tog_6",
+    "source_slot": "out",
+    "target": "notTog_6",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_6",
+    "source_slot": "out",
+    "target": "preTog_6",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_6",
+    "source_slot": "out",
+    "target": "timRis_6",
+    "target_slot": "reset"
+   },
+   {
+    "source": "tru_6",
+    "source_slot": "out",
+    "target": "notIni_6",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer_6",
+    "source_slot": "out",
+    "target": "ela_6",
+    "target_slot": "when_false"
    }
   ],
   "metadata": {
@@ -1562,6 +4433,12 @@
     "anyCha_fold_2": "anyCha__fold_2",
     "anyCha_fold_3": "anyCha__fold_3",
     "anyCha_fold_4": "anyCha__fold_4",
+    "anyEve": "timHigDp__1.anyEve",
+    "anyEve_2": "timHigV.anyEve",
+    "anyEve_3": "timHigY.anyEve",
+    "anyEve_4": "timLowDp__1.anyEve",
+    "anyEve_5": "timLowV.anyEve",
+    "anyEve_6": "timLowY.anyEve",
     "booToRea__1": "booToRea__1",
     "booToRea__1_false": "booToRea__1",
     "booToRea__1_true": "booToRea__1",
@@ -1594,11 +4471,41 @@
     "cha__4_falling": "cha__4",
     "cha__4_invert": "cha__4",
     "cha__4_rising": "cha__4",
+    "cur": "timHigDp__1.cur",
+    "cur_2": "timHigV.cur",
+    "cur_3": "timHigY.cur",
+    "cur_4": "timLowDp__1.cur",
+    "cur_5": "timLowV.cur",
+    "cur_6": "timLowY.cur",
     "delDpSet__1": "delDpSet__1",
     "edgDow": "edgDow",
     "edgUp": "edgUp",
     "effOrFailSafDow": "effOrFailSafDow",
     "effOrFailSafUp": "effOrFailSafUp",
+    "ela": "timHigDp__1.ela",
+    "ela_2": "timHigV.ela",
+    "ela_3": "timHigY.ela",
+    "ela_4": "timLowDp__1.ela",
+    "ela_5": "timLowV.ela",
+    "ela_6": "timLowY.ela",
+    "eveAftIni": "timHigDp__1.eveAftIni",
+    "eveAftIni_2": "timHigV.eveAftIni",
+    "eveAftIni_3": "timHigY.eveAftIni",
+    "eveAftIni_4": "timLowDp__1.eveAftIni",
+    "eveAftIni_5": "timLowV.eveAftIni",
+    "eveAftIni_6": "timLowY.eveAftIni",
+    "fal": "timHigDp__1.fal",
+    "falU": "timHigDp__1.falU",
+    "falU_2": "timHigV.falU",
+    "falU_3": "timHigY.falU",
+    "falU_4": "timLowDp__1.falU",
+    "falU_5": "timLowV.falU",
+    "falU_6": "timLowY.falU",
+    "fal_2": "timHigV.fal",
+    "fal_3": "timHigY.fal",
+    "fal_4": "timLowDp__1.fal",
+    "fal_5": "timLowV.fal",
+    "fal_6": "timLowY.fal",
     "higDp__1": "higDp__1",
     "higDp__1_threshold": "higDp__1",
     "higV": "higV",
@@ -1615,71 +4522,208 @@
     "nOpe_fold_2": "nOpe__fold_2",
     "nOpe_fold_3": "nOpe__fold_3",
     "nOpe_fold_4": "nOpe__fold_4",
+    "noEve": "timHigDp__1.noEve",
+    "noEve_2": "timHigV.noEve",
+    "noEve_3": "timHigY.noEve",
+    "noEve_4": "timLowDp__1.noEve",
+    "noEve_5": "timLowV.noEve",
+    "noEve_6": "timLowY.noEve",
+    "nonPos": "timHigDp__1.nonPos",
+    "nonPos_2": "timHigV.nonPos",
+    "nonPos_3": "timHigY.nonPos",
+    "nonPos_4": "timLowDp__1.nonPos",
+    "nonPos_5": "timLowV.nonPos",
+    "nonPos_6": "timLowY.nonPos",
     "norN": "norN",
     "norN_parameter": "norN",
     "norV": "norV",
     "norV_parameter": "norV",
+    "notIni": "timHigDp__1.notIni",
+    "notIni_2": "timHigV.notIni",
+    "notIni_3": "timHigY.notIni",
+    "notIni_4": "timLowDp__1.notIni",
+    "notIni_5": "timLowV.notIni",
+    "notIni_6": "timLowY.notIni",
+    "notTog": "timHigDp__1.notTog",
+    "notTog_2": "timHigV.notTog",
+    "notTog_3": "timHigY.notTog",
+    "notTog_4": "timLowDp__1.notTog",
+    "notTog_5": "timLowV.notTog",
+    "notTog_6": "timLowY.notTog",
+    "notYet": "timHigDp__1.notYet",
+    "notYet_2": "timHigV.notYet",
+    "notYet_2_threshold": "timHigV.notYet",
+    "notYet_3": "timHigY.notYet",
+    "notYet_3_threshold": "timHigY.notYet",
+    "notYet_4": "timLowDp__1.notYet",
+    "notYet_4_threshold": "timLowDp__1.notYet",
+    "notYet_5": "timLowV.notYet",
+    "notYet_5_threshold": "timLowV.notYet",
+    "notYet_6": "timLowY.notYet",
+    "notYet_6_threshold": "timLowY.notYet",
+    "notYet_threshold": "timHigDp__1.notYet",
+    "pas": "timHigDp__1.pas",
+    "pasIni": "timHigDp__1.pasIni",
+    "pasIni_2": "timHigV.pasIni",
+    "pasIni_3": "timHigY.pasIni",
+    "pasIni_4": "timLowDp__1.pasIni",
+    "pasIni_5": "timLowV.pasIni",
+    "pasIni_6": "timLowY.pasIni",
+    "pasOn": "timHigDp__1.pasOn",
+    "pasOn_2": "timHigV.pasOn",
+    "pasOn_3": "timHigY.pasOn",
+    "pasOn_4": "timLowDp__1.pasOn",
+    "pasOn_5": "timLowV.pasOn",
+    "pasOn_6": "timLowY.pasOn",
+    "pas_2": "timHigV.pas",
+    "pas_3": "timHigY.pas",
+    "pas_4": "timLowDp__1.pas",
+    "pas_5": "timLowV.pas",
+    "pas_6": "timLowY.pas",
     "poiDow": "poiDow",
     "poiDow_parameter": "poiDow",
     "poiUp": "poiUp",
     "poiUp_parameter": "poiUp",
+    "pos": "timHigDp__1.pos",
+    "pos_2": "timHigV.pos",
+    "pos_2_threshold": "timHigV.pos",
+    "pos_3": "timHigY.pos",
+    "pos_3_threshold": "timHigY.pos",
+    "pos_4": "timLowDp__1.pos",
+    "pos_4_threshold": "timLowDp__1.pos",
+    "pos_5": "timLowV.pos",
+    "pos_5_threshold": "timLowV.pos",
+    "pos_6": "timLowY.pos",
+    "pos_6_threshold": "timLowY.pos",
+    "pos_threshold": "timHigDp__1.pos",
     "preEff": "preEff",
     "preFaiSaf": "preFaiSaf",
+    "preTog": "timHigDp__1.preTog",
+    "preTog_2": "timHigV.preTog",
+    "preTog_3": "timHigY.preTog",
+    "preTog_4": "timLowDp__1.preTog",
+    "preTog_5": "timLowV.preTog",
+    "preTog_6": "timLowY.preTog",
+    "rea": "timHigDp__1.rea",
+    "rea_2": "timHigV.rea",
+    "rea_3": "timHigY.rea",
+    "rea_4": "timLowDp__1.rea",
+    "rea_5": "timLowV.rea",
+    "rea_6": "timLowY.rea",
+    "res": "timHigDp__1.res",
+    "res_2": "timHigV.res",
+    "res_3": "timHigY.res",
+    "res_4": "timLowDp__1.res",
+    "res_5": "timLowV.res",
+    "res_6": "timLowY.res",
+    "risRes": "timHigDp__1.risRes",
+    "risRes_2": "timHigV.risRes",
+    "risRes_3": "timHigY.risRes",
+    "risRes_4": "timLowDp__1.risRes",
+    "risRes_5": "timLowV.risRes",
+    "risRes_6": "timLowY.risRes",
+    "risU": "timHigDp__1.risU",
+    "risU_2": "timHigV.risU",
+    "risU_3": "timHigY.risU",
+    "risU_4": "timLowDp__1.risU",
+    "risU_5": "timLowV.risU",
+    "risU_6": "timLowY.risU",
+    "see": "timHigDp__1.see",
+    "see_2": "timHigV.see",
+    "see_3": "timHigY.see",
+    "see_4": "timLowDp__1.see",
+    "see_5": "timLowV.see",
+    "see_6": "timLowY.see",
     "staDowAndPreEff": "staDowAndPreEff",
     "staDowAndPreFaiSaf_fold_2": "staDowAndPreFaiSaf__fold_2",
     "staDowAndPreFaiSaf_fold_3": "staDowAndPreFaiSaf__fold_3",
-    "timHigDp__1": "timHigDp__1",
-    "timHigV": "timHigV",
-    "timHigY": "timHigY",
-    "timLowDp__1": "timLowDp__1",
-    "timLowV": "timLowV",
-    "timLowY": "timLowY"
+    "thr": "timHigDp__1.thr",
+    "thr_2": "timHigV.thr",
+    "thr_3": "timHigY.thr",
+    "thr_4": "timLowDp__1.thr",
+    "thr_5": "timLowV.thr",
+    "thr_6": "timLowY.thr",
+    "timFal": "timHigDp__1.timFal",
+    "timFal_2": "timHigV.timFal",
+    "timFal_3": "timHigY.timFal",
+    "timFal_4": "timLowDp__1.timFal",
+    "timFal_5": "timLowV.timFal",
+    "timFal_6": "timLowY.timFal",
+    "timRis": "timHigDp__1.timRis",
+    "timRis_2": "timHigV.timRis",
+    "timRis_3": "timHigY.timRis",
+    "timRis_4": "timLowDp__1.timRis",
+    "timRis_5": "timLowV.timRis",
+    "timRis_6": "timLowY.timRis",
+    "tog": "timHigDp__1.tog",
+    "tog_2": "timHigV.tog",
+    "tog_3": "timHigY.tog",
+    "tog_4": "timLowDp__1.tog",
+    "tog_5": "timLowV.tog",
+    "tog_6": "timLowY.tog",
+    "tru": "timHigDp__1.tru",
+    "tru_2": "timHigV.tru",
+    "tru_3": "timHigY.tru",
+    "tru_4": "timLowDp__1.tru",
+    "tru_5": "timLowV.tru",
+    "tru_6": "timLowY.tru",
+    "zer": "timHigDp__1.zer",
+    "zer_2": "timHigV.zer",
+    "zer_3": "timHigY.zer",
+    "zer_4": "timLowDp__1.zer",
+    "zer_5": "timLowV.zer",
+    "zer_6": "timLowY.zer"
    },
    "coverage": {
     "boundary_inputs": 8,
     "boundary_outputs": 2,
     "class_counts": {
      "Buildings.Controls.OBC.CDL.Conversions.BooleanToReal": 4,
-     "Buildings.Controls.OBC.CDL.Logical.And": 4,
+     "Buildings.Controls.OBC.CDL.Logical.And": 22,
      "Buildings.Controls.OBC.CDL.Logical.Change": 4,
-     "Buildings.Controls.OBC.CDL.Logical.Edge": 2,
-     "Buildings.Controls.OBC.CDL.Logical.Latch": 2,
-     "Buildings.Controls.OBC.CDL.Logical.Or": 5,
-     "Buildings.Controls.OBC.CDL.Logical.Pre": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Edge": 14,
+     "Buildings.Controls.OBC.CDL.Logical.FallingEdge": 6,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 8,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 24,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 23,
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 14,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 12,
+     "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating": 12,
+     "Buildings.Controls.OBC.CDL.Logical.Xor": 6,
      "Buildings.Controls.OBC.CDL.Reals.Add": 3,
      "Buildings.Controls.OBC.CDL.Reals.AddParameter": 2,
      "Buildings.Controls.OBC.CDL.Reals.Greater": 1,
-     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 2,
+     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 8,
      "Buildings.Controls.OBC.CDL.Reals.Less": 1,
-     "Buildings.Controls.OBC.CDL.Reals.LessThreshold": 2,
+     "Buildings.Controls.OBC.CDL.Reals.LessThreshold": 8,
      "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 12,
      "Buildings.Controls.OBC.CDL.Reals.Subtract": 1,
-     "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset": 2,
-     "Utilities.TimerWithReset": 4
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 12
     },
-    "component_count": 43,
+    "component_count": 199,
     "exactness_blockers": [],
     "execution_profile": "host_tick_v1",
     "missing_components": [],
     "niagara_exactness_blockers": [],
     "niagara_translatable": false,
     "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.FallingEdge",
      "Buildings.Controls.OBC.CDL.Logical.Latch",
      "Buildings.Controls.OBC.CDL.Logical.Pre",
-     "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset",
-     "Utilities.TimerWithReset"
+     "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating"
     ],
     "root_id": "ex:Buildings.Templates.Plants.Controls.Pumps.Generic.StagingHeaderedDeltaP",
     "root_label": "StagingHeaderedDeltaP",
     "schema": "bactalk-cxf-lowering/v4",
-    "source_sha256": "e3efa9122951201fe7c422939aa018a9600c25f83265888ccd76ba0505b75673",
-    "supported_class_count": 43,
+    "source_sha256": "adf358056742b39f65500e2257a3d7b18b995f00f2487006271809a3c5013cb1",
+    "supported_class_count": 199,
     "translatable": true,
     "unsupported_classes": []
    },
    "lowering": "bactalk-cxf-lowering/v4",
    "source": "ASHRAE-231P-CXF",
-   "source_sha256": "e3efa9122951201fe7c422939aa018a9600c25f83265888ccd76ba0505b75673"
+   "source_sha256": "adf358056742b39f65500e2257a3d7b18b995f00f2487006271809a3c5013cb1"
   },
   "name": "StagingHeaderedDeltaP"
  }

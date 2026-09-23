@@ -1358,11 +1358,24 @@ class G36Library:
             if not changed:
                 break
 
+        enum_members = {enum["label"]: enum["value"] for enum in enum_parameters.values()}
         resolved_values: list[dict[str, Any]] = []
         for node in graph:
             if not isinstance(node, dict) or "S231:value" not in node:
                 continue
             previous = node["S231:value"]
+            if (
+                isinstance(previous, str)
+                and previous.strip() in enum_members
+                and node.get("@id") not in enum_parameters
+            ):
+                # a child modification that passes the enum down (``final typ=typ``)
+                # receives the member itself; the child grounds its own expressions
+                node["S231:value"] = enum_members[previous.strip()]
+                resolved_values.append(
+                    {"id": node.get("@id"), "previous_value": previous, "value": node["S231:value"]}
+                )
+                continue
             resolved = resolve_parameter_expression(previous, values)
             if resolved == previous or not isinstance(resolved, (bool, int, float)):
                 continue
@@ -1382,7 +1395,7 @@ class G36Library:
             if not isinstance(node, dict) or node.get("@id") in enum_ids:
                 continue
             value = node.get("S231:value")
-            if not isinstance(value, str):
+            if not isinstance(value, str) or value in enum_members.values():
                 continue
             for enum in enum_parameters.values():
                 if (

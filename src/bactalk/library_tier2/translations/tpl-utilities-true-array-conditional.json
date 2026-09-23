@@ -1,0 +1,1311 @@
+{
+ "cdl_substitutes": [
+  "Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional"
+ ],
+ "configuration_id": "tpl-utilities-true-array-conditional",
+ "controller_id": "Utilities.TrueArrayConditional",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional",
+  "inputs": [
+   {
+    "description": "Number of true elements",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.u",
+    "label": "u",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "Array of indices by order of priority to be true",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx__1",
+    "label": "uIdx__1",
+    "type": "S231:IntegerInput"
+   },
+   {
+    "description": "Array of indices by order of priority to be true",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx__2",
+    "label": "uIdx__2",
+    "type": "S231:IntegerInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Output",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.y1__1",
+    "label": "y1__1",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Output",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.y1__2",
+    "label": "y1__2",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 0
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "nin": 2
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "u",
+   "name": "u",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.u",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uIdx__1",
+   "name": "uIdx__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx__1",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uIdx__2",
+   "name": "uIdx__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx__2",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1__1",
+   "name": "y1__1",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.y1__1",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1__2",
+   "name": "y1__2",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.y1__2",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Utilities/TrueArrayConditional.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "52a3772b67b3de8dd3ad92549b0370645f29a127816265f21b21821dad48ef36",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "4221d00a5ea0b6be3071858bc816b42b7b284c0e437f00967e8c6e11e2359532",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "u",
+    "kind": "numeric_input",
+    "label": "u",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uIdx__1",
+    "kind": "numeric_input",
+    "label": "uIdx__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uIdx__2",
+    "kind": "numeric_input",
+    "label": "uIdx__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1__1",
+    "kind": "boolean_output",
+    "label": "y1__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1__2",
+    "kind": "boolean_output",
+    "label": "y1__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "aboMin__1_threshold",
+    "kind": "numeric_const",
+    "label": "aboMin__1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "aboMin__1",
+    "kind": "greater_than_or_equal",
+    "label": "aboMin__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "aboMin__2_threshold",
+    "kind": "numeric_const",
+    "label": "aboMin__2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "aboMin__2",
+    "kind": "greater_than_or_equal",
+    "label": "aboMin__2",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "aboOut__1_1_threshold",
+    "kind": "numeric_const",
+    "label": "aboOut__1_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "aboOut__1_1",
+    "kind": "greater_than_or_equal",
+    "label": "aboOut__1_1",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "aboOut__1_2_threshold",
+    "kind": "numeric_const",
+    "label": "aboOut__1_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "aboOut__1_2",
+    "kind": "greater_than_or_equal",
+    "label": "aboOut__1_2",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "aboOut__2_1_threshold",
+    "kind": "numeric_const",
+    "label": "aboOut__2_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "aboOut__2_1",
+    "kind": "greater_than_or_equal",
+    "label": "aboOut__2_1",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "aboOut__2_2_threshold",
+    "kind": "numeric_const",
+    "label": "aboOut__2_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "aboOut__2_2",
+    "kind": "greater_than_or_equal",
+    "label": "aboOut__2_2",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "anySel_nout__fold_2",
+    "kind": "or",
+    "label": "anySel[nout] fold 2",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "anySel_nout__fold_2_2",
+    "kind": "or",
+    "label": "anySel[nout] fold 2",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "belMax__1_threshold",
+    "kind": "numeric_const",
+    "label": "belMax__1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "belMax__1",
+    "kind": "less_than_or_equal",
+    "label": "belMax__1",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "belMax__2_threshold",
+    "kind": "numeric_const",
+    "label": "belMax__2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "belMax__2",
+    "kind": "less_than_or_equal",
+    "label": "belMax__2",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "belOut__1_1_threshold",
+    "kind": "numeric_const",
+    "label": "belOut__1_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "belOut__1_1",
+    "kind": "less_than_or_equal",
+    "label": "belOut__1_1",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "belOut__1_2_threshold",
+    "kind": "numeric_const",
+    "label": "belOut__1_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "belOut__1_2",
+    "kind": "less_than_or_equal",
+    "label": "belOut__1_2",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "belOut__2_1_threshold",
+    "kind": "numeric_const",
+    "label": "belOut__2_1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "belOut__2_1",
+    "kind": "less_than_or_equal",
+    "label": "belOut__2_1",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "belOut__2_2_threshold",
+    "kind": "numeric_const",
+    "label": "belOut__2_2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "belOut__2_2",
+    "kind": "less_than_or_equal",
+    "label": "belOut__2_2",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "cou_nin__fold_2",
+    "kind": "add",
+    "label": "cou[nin] fold 2",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "cou_nin__fold_2_2",
+    "kind": "add",
+    "label": "cou[nin] fold 2",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "fit__1",
+    "kind": "less_than_or_equal",
+    "label": "fit__1",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "fit__2",
+    "kind": "less_than_or_equal",
+    "label": "fit__2",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "isOut__1_1",
+    "kind": "and",
+    "label": "isOut__1_1",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "isOut__1_2",
+    "kind": "and",
+    "label": "isOut__1_2",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "isOut__2_1",
+    "kind": "and",
+    "label": "isOut__2_1",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "isOut__2_2",
+    "kind": "and",
+    "label": "isOut__2_2",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "sel__1_1",
+    "kind": "and",
+    "label": "sel__1_1",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "sel__1_2",
+    "kind": "and",
+    "label": "sel__1_2",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "sel__2_1",
+    "kind": "and",
+    "label": "sel__2_1",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "sel__2_2",
+    "kind": "and",
+    "label": "sel__2_2",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "tak__1",
+    "kind": "and",
+    "label": "tak__1",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "tak__2",
+    "kind": "and",
+    "label": "tak__2",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "upTo__1_1",
+    "kind": "boolean_const",
+    "label": "upTo__1_1",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "upTo__1_2",
+    "kind": "boolean_const",
+    "label": "upTo__1_2",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "upTo__2_1",
+    "kind": "boolean_const",
+    "label": "upTo__2_1",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "upTo__2_2",
+    "kind": "boolean_const",
+    "label": "upTo__2_2",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "val__1",
+    "kind": "and",
+    "label": "val__1",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "val__2",
+    "kind": "and",
+    "label": "val__2",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "valUpTo__1_1",
+    "kind": "and",
+    "label": "valUpTo__1_1",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "valUpTo__1_2",
+    "kind": "and",
+    "label": "valUpTo__1_2",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "valUpTo__2_1",
+    "kind": "and",
+    "label": "valUpTo__2_1",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "valUpTo__2_2",
+    "kind": "and",
+    "label": "valUpTo__2_2",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "valUpToInt__1_1_true",
+    "kind": "numeric_const",
+    "label": "valUpToInt__1_1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "valUpToInt__1_1_false",
+    "kind": "numeric_const",
+    "label": "valUpToInt__1_1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "valUpToInt__1_1",
+    "kind": "numeric_switch",
+    "label": "valUpToInt__1_1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "valUpToInt__1_2_true",
+    "kind": "numeric_const",
+    "label": "valUpToInt__1_2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "valUpToInt__1_2_false",
+    "kind": "numeric_const",
+    "label": "valUpToInt__1_2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "valUpToInt__1_2",
+    "kind": "numeric_switch",
+    "label": "valUpToInt__1_2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "valUpToInt__2_1_true",
+    "kind": "numeric_const",
+    "label": "valUpToInt__2_1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "valUpToInt__2_1_false",
+    "kind": "numeric_const",
+    "label": "valUpToInt__2_1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "valUpToInt__2_1",
+    "kind": "numeric_switch",
+    "label": "valUpToInt__2_1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "valUpToInt__2_2_true",
+    "kind": "numeric_const",
+    "label": "valUpToInt__2_2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "valUpToInt__2_2_false",
+    "kind": "numeric_const",
+    "label": "valUpToInt__2_2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "valUpToInt__2_2",
+    "kind": "numeric_switch",
+    "label": "valUpToInt__2_2",
+    "x": 0,
+    "y": 0
+   }
+  ],
+  "links": [
+   {
+    "source": "aboMin__1_threshold",
+    "source_slot": "out",
+    "target": "aboMin__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "aboMin__2_threshold",
+    "source_slot": "out",
+    "target": "aboMin__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "aboOut__1_1_threshold",
+    "source_slot": "out",
+    "target": "aboOut__1_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "aboOut__1_2_threshold",
+    "source_slot": "out",
+    "target": "aboOut__1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "aboOut__2_1_threshold",
+    "source_slot": "out",
+    "target": "aboOut__2_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "aboOut__2_2_threshold",
+    "source_slot": "out",
+    "target": "aboOut__2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "belMax__1_threshold",
+    "source_slot": "out",
+    "target": "belMax__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "belMax__2_threshold",
+    "source_slot": "out",
+    "target": "belMax__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "belOut__1_1_threshold",
+    "source_slot": "out",
+    "target": "belOut__1_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "belOut__1_2_threshold",
+    "source_slot": "out",
+    "target": "belOut__1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "belOut__2_1_threshold",
+    "source_slot": "out",
+    "target": "belOut__2_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "belOut__2_2_threshold",
+    "source_slot": "out",
+    "target": "belOut__2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "valUpToInt__1_1_true",
+    "source_slot": "out",
+    "target": "valUpToInt__1_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "valUpToInt__1_1_false",
+    "source_slot": "out",
+    "target": "valUpToInt__1_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "valUpToInt__1_2_true",
+    "source_slot": "out",
+    "target": "valUpToInt__1_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "valUpToInt__1_2_false",
+    "source_slot": "out",
+    "target": "valUpToInt__1_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "valUpToInt__2_1_true",
+    "source_slot": "out",
+    "target": "valUpToInt__2_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "valUpToInt__2_1_false",
+    "source_slot": "out",
+    "target": "valUpToInt__2_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "valUpToInt__2_2_true",
+    "source_slot": "out",
+    "target": "valUpToInt__2_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "valUpToInt__2_2_false",
+    "source_slot": "out",
+    "target": "valUpToInt__2_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "u",
+    "source_slot": "out",
+    "target": "fit__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "u",
+    "source_slot": "out",
+    "target": "fit__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "uIdx__1",
+    "source_slot": "out",
+    "target": "aboMin__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "uIdx__1",
+    "source_slot": "out",
+    "target": "aboOut__1_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "uIdx__1",
+    "source_slot": "out",
+    "target": "aboOut__2_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "uIdx__1",
+    "source_slot": "out",
+    "target": "belMax__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "uIdx__1",
+    "source_slot": "out",
+    "target": "belOut__1_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "uIdx__1",
+    "source_slot": "out",
+    "target": "belOut__2_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "uIdx__2",
+    "source_slot": "out",
+    "target": "aboMin__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "uIdx__2",
+    "source_slot": "out",
+    "target": "aboOut__1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "uIdx__2",
+    "source_slot": "out",
+    "target": "aboOut__2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "uIdx__2",
+    "source_slot": "out",
+    "target": "belMax__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "uIdx__2",
+    "source_slot": "out",
+    "target": "belOut__1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "uIdx__2",
+    "source_slot": "out",
+    "target": "belOut__2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "aboMin__1",
+    "source_slot": "out",
+    "target": "val__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "aboMin__2",
+    "source_slot": "out",
+    "target": "val__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "aboOut__1_1",
+    "source_slot": "out",
+    "target": "isOut__1_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "aboOut__1_2",
+    "source_slot": "out",
+    "target": "isOut__1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "aboOut__2_1",
+    "source_slot": "out",
+    "target": "isOut__2_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "aboOut__2_2",
+    "source_slot": "out",
+    "target": "isOut__2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "anySel_nout__fold_2",
+    "source_slot": "out",
+    "target": "y1__1",
+    "target_slot": "in"
+   },
+   {
+    "source": "anySel_nout__fold_2_2",
+    "source_slot": "out",
+    "target": "y1__2",
+    "target_slot": "in"
+   },
+   {
+    "source": "belMax__1",
+    "source_slot": "out",
+    "target": "val__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "belMax__2",
+    "source_slot": "out",
+    "target": "val__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "belOut__1_1",
+    "source_slot": "out",
+    "target": "isOut__1_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "belOut__1_2",
+    "source_slot": "out",
+    "target": "isOut__1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "belOut__2_1",
+    "source_slot": "out",
+    "target": "isOut__2_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "belOut__2_2",
+    "source_slot": "out",
+    "target": "isOut__2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "cou_nin__fold_2",
+    "source_slot": "out",
+    "target": "fit__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "cou_nin__fold_2_2",
+    "source_slot": "out",
+    "target": "fit__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "fit__1",
+    "source_slot": "out",
+    "target": "tak__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "fit__2",
+    "source_slot": "out",
+    "target": "tak__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isOut__1_1",
+    "source_slot": "out",
+    "target": "sel__1_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isOut__1_2",
+    "source_slot": "out",
+    "target": "sel__1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "isOut__2_1",
+    "source_slot": "out",
+    "target": "sel__2_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "isOut__2_2",
+    "source_slot": "out",
+    "target": "sel__2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "sel__1_1",
+    "source_slot": "out",
+    "target": "anySel_nout__fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "sel__1_2",
+    "source_slot": "out",
+    "target": "anySel_nout__fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "sel__2_1",
+    "source_slot": "out",
+    "target": "anySel_nout__fold_2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "sel__2_2",
+    "source_slot": "out",
+    "target": "anySel_nout__fold_2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "tak__1",
+    "source_slot": "out",
+    "target": "sel__1_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "tak__1",
+    "source_slot": "out",
+    "target": "sel__2_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "tak__2",
+    "source_slot": "out",
+    "target": "sel__1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "tak__2",
+    "source_slot": "out",
+    "target": "sel__2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "upTo__1_1",
+    "source_slot": "out",
+    "target": "valUpTo__1_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "upTo__1_2",
+    "source_slot": "out",
+    "target": "valUpTo__1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "upTo__2_1",
+    "source_slot": "out",
+    "target": "valUpTo__2_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "upTo__2_2",
+    "source_slot": "out",
+    "target": "valUpTo__2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "val__1",
+    "source_slot": "out",
+    "target": "tak__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "val__1",
+    "source_slot": "out",
+    "target": "valUpTo__1_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "val__1",
+    "source_slot": "out",
+    "target": "valUpTo__2_1",
+    "target_slot": "a"
+   },
+   {
+    "source": "val__2",
+    "source_slot": "out",
+    "target": "tak__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "val__2",
+    "source_slot": "out",
+    "target": "valUpTo__1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "val__2",
+    "source_slot": "out",
+    "target": "valUpTo__2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "valUpTo__1_1",
+    "source_slot": "out",
+    "target": "valUpToInt__1_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "valUpTo__1_2",
+    "source_slot": "out",
+    "target": "valUpToInt__1_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "valUpTo__2_1",
+    "source_slot": "out",
+    "target": "valUpToInt__2_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "valUpTo__2_2",
+    "source_slot": "out",
+    "target": "valUpToInt__2_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "valUpToInt__1_1",
+    "source_slot": "out",
+    "target": "cou_nin__fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "valUpToInt__1_2",
+    "source_slot": "out",
+    "target": "cou_nin__fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "valUpToInt__2_1",
+    "source_slot": "out",
+    "target": "cou_nin__fold_2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "valUpToInt__2_2",
+    "source_slot": "out",
+    "target": "cou_nin__fold_2_2",
+    "target_slot": "b"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "aboMin__1": "aboMin__1",
+    "aboMin__1_threshold": "aboMin__1",
+    "aboMin__2": "aboMin__2",
+    "aboMin__2_threshold": "aboMin__2",
+    "aboOut__1_1": "aboOut__1_1",
+    "aboOut__1_1_threshold": "aboOut__1_1",
+    "aboOut__1_2": "aboOut__1_2",
+    "aboOut__1_2_threshold": "aboOut__1_2",
+    "aboOut__2_1": "aboOut__2_1",
+    "aboOut__2_1_threshold": "aboOut__2_1",
+    "aboOut__2_2": "aboOut__2_2",
+    "aboOut__2_2_threshold": "aboOut__2_2",
+    "anySel_nout__fold_2": "anySel__1__fold_2",
+    "anySel_nout__fold_2_2": "anySel__2__fold_2",
+    "belMax__1": "belMax__1",
+    "belMax__1_threshold": "belMax__1",
+    "belMax__2": "belMax__2",
+    "belMax__2_threshold": "belMax__2",
+    "belOut__1_1": "belOut__1_1",
+    "belOut__1_1_threshold": "belOut__1_1",
+    "belOut__1_2": "belOut__1_2",
+    "belOut__1_2_threshold": "belOut__1_2",
+    "belOut__2_1": "belOut__2_1",
+    "belOut__2_1_threshold": "belOut__2_1",
+    "belOut__2_2": "belOut__2_2",
+    "belOut__2_2_threshold": "belOut__2_2",
+    "cou_nin__fold_2": "cou__1__fold_2",
+    "cou_nin__fold_2_2": "cou__2__fold_2",
+    "fit__1": "fit__1",
+    "fit__2": "fit__2",
+    "isOut__1_1": "isOut__1_1",
+    "isOut__1_2": "isOut__1_2",
+    "isOut__2_1": "isOut__2_1",
+    "isOut__2_2": "isOut__2_2",
+    "sel__1_1": "sel__1_1",
+    "sel__1_2": "sel__1_2",
+    "sel__2_1": "sel__2_1",
+    "sel__2_2": "sel__2_2",
+    "tak__1": "tak__1",
+    "tak__2": "tak__2",
+    "upTo__1_1": "upTo__1_1",
+    "upTo__1_2": "upTo__1_2",
+    "upTo__2_1": "upTo__2_1",
+    "upTo__2_2": "upTo__2_2",
+    "valUpToInt__1_1": "valUpToInt__1_1",
+    "valUpToInt__1_1_false": "valUpToInt__1_1",
+    "valUpToInt__1_1_true": "valUpToInt__1_1",
+    "valUpToInt__1_2": "valUpToInt__1_2",
+    "valUpToInt__1_2_false": "valUpToInt__1_2",
+    "valUpToInt__1_2_true": "valUpToInt__1_2",
+    "valUpToInt__2_1": "valUpToInt__2_1",
+    "valUpToInt__2_1_false": "valUpToInt__2_1",
+    "valUpToInt__2_1_true": "valUpToInt__2_1",
+    "valUpToInt__2_2": "valUpToInt__2_2",
+    "valUpToInt__2_2_false": "valUpToInt__2_2",
+    "valUpToInt__2_2_true": "valUpToInt__2_2",
+    "valUpTo__1_1": "valUpTo__1_1",
+    "valUpTo__1_2": "valUpTo__1_2",
+    "valUpTo__2_1": "valUpTo__2_1",
+    "valUpTo__2_2": "valUpTo__2_2",
+    "val__1": "val__1",
+    "val__2": "val__2"
+   },
+   "coverage": {
+    "boundary_inputs": 3,
+    "boundary_outputs": 2,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger": 4,
+     "Buildings.Controls.OBC.CDL.Integers.Add": 2,
+     "Buildings.Controls.OBC.CDL.Integers.GreaterEqualThreshold": 6,
+     "Buildings.Controls.OBC.CDL.Integers.LessEqual": 2,
+     "Buildings.Controls.OBC.CDL.Integers.LessEqualThreshold": 6,
+     "Buildings.Controls.OBC.CDL.Logical.And": 16,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 4
+    },
+    "component_count": 42,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": true,
+    "niagara_unsupported_classes": [],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional",
+    "root_label": "TrueArrayConditional",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "4221d00a5ea0b6be3071858bc816b42b7b284c0e437f00967e8c6e11e2359532",
+    "supported_class_count": 42,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "4221d00a5ea0b6be3071858bc816b42b7b284c0e437f00967e8c6e11e2359532"
+  },
+  "name": "TrueArrayConditional"
+ }
+}

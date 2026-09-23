@@ -41,6 +41,20 @@ public abstract class BKernelComponent extends BComponent {
    */
   public static final Action resample = newAction(Flags.HIDDEN, null);
 
+  /**
+   * Executes the kernel once at station start, after the links have delivered their start
+   * values (S-LINK-2 / S-MODULE-7, docs/decisions/016): every component contributes its
+   * first output at t = 0 instead of one execution period later.
+   */
+  public static final Action startExecute = newAction(Flags.HIDDEN, null);
+
+  /**
+   * Rebuilds the kernel and steps it once more at the end of the start instant, for a
+   * kernel whose first output ignores its input ({@link #latchesAtStart()}): it latches
+   * the settled start input, as CDL's Pre does at t = 0, and leaves its output unchanged.
+   */
+  public static final Action latch = newAction(Flags.HIDDEN, null);
+
   private Clock.Ticket ticket;
   private long startedMillis;
   private double lastTickSeconds = Double.NaN;
@@ -56,6 +70,27 @@ public abstract class BKernelComponent extends BComponent {
     startedMillis = Clock.millis();
     rebuildKernel();
     schedule();
+    Clock.schedule(this, BRelTime.make(0), startExecute, null);
+  }
+
+  public void doStartExecute() {
+    doExecute();
+    if (isRunning() && latchesAtStart()) {
+      Clock.schedule(this, BRelTime.make(0), latch, null);
+    }
+  }
+
+  public void doLatch() {
+    if (!isRunning() || !inputsValid()) {
+      return;
+    }
+    rebuildKernel();
+    step(0.0);
+  }
+
+  /** Whether the kernel's first output ignores its input, so it latches the settled start input. */
+  protected boolean latchesAtStart() {
+    return false;
   }
 
   @Override

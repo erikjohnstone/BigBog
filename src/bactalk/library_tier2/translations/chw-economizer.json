@@ -318,7 +318,7 @@
   "tag": "master after v13.0.0 (2026-09-16)"
  },
  "translator": {
-  "cxf_source_sha256": "123debb553637f697fc79aa6cb2921ed4193e7c75c54d8e08e2fa8e4d0ef44df",
+  "cxf_source_sha256": "6c4ceb210e13a5cbc9cb87ea363f6a7f7b6adb94d5bd01cd36213bcbd43ee19a",
   "lowering_schema": "bactalk-cxf-lowering/v4",
   "name": "LBNL modelica-json",
   "runtime": "Open Control Engine"
@@ -1152,20 +1152,56 @@
     "y": 1200
    },
    {
+    "config": {
+     "value": -0.02
+    },
+    "id": "mulSum_gain_1_parameter",
+    "kind": "numeric_const",
+    "label": "mulSum gain 1 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "mulSum_gain_1",
+    "kind": "multiply",
+    "label": "mulSum gain 1",
+    "x": 720,
+    "y": 1200
+   },
+   {
+    "config": {
+     "value": 0.02
+    },
+    "id": "mulSum_gain_2_parameter",
+    "kind": "numeric_const",
+    "label": "mulSum gain 2 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "mulSum_gain_2",
+    "kind": "multiply",
+    "label": "mulSum gain 2",
+    "x": 900,
+    "y": 1200
+   },
+   {
     "config": {},
     "id": "mulSum_fold_2_2",
     "kind": "add",
     "label": "mulSum fold 2",
-    "x": 720,
-    "y": 1200
+    "x": 0,
+    "y": 1320
    },
    {
     "config": {},
     "id": "mulSum_fold_3_2",
     "kind": "add",
     "label": "mulSum fold 3",
-    "x": 900,
-    "y": 1200
+    "x": 180,
+    "y": 1320
    },
    {
     "config": {
@@ -1176,7 +1212,7 @@
     "id": "preRes",
     "kind": "boolean_pre_host_tick",
     "label": "preRes",
-    "x": 0,
+    "x": 360,
     "y": 1320
    },
    {
@@ -1186,7 +1222,7 @@
     "id": "resVal",
     "kind": "numeric_const",
     "label": "resVal",
-    "x": 180,
+    "x": 540,
     "y": 1320
    },
    {
@@ -1194,7 +1230,7 @@
     "id": "sub1_2",
     "kind": "subtract",
     "label": "sub1",
-    "x": 360,
+    "x": 720,
     "y": 1320
    },
    {
@@ -1202,7 +1238,7 @@
     "id": "timDif",
     "kind": "subtract",
     "label": "timDif",
-    "x": 540,
+    "x": 900,
     "y": 1320
    },
    {
@@ -1213,8 +1249,8 @@
     "id": "triSam1",
     "kind": "numeric_latch",
     "label": "triSam1",
-    "x": 720,
-    "y": 1320
+    "x": 0,
+    "y": 1440
    },
    {
     "config": {
@@ -1224,8 +1260,8 @@
     "id": "triSam2",
     "kind": "numeric_latch",
     "label": "triSam2",
-    "x": 900,
-    "y": 1320
+    "x": 180,
+    "y": 1440
    },
    {
     "config": {
@@ -1235,7 +1271,7 @@
     "id": "wseEnaTim",
     "kind": "timer_accumulating",
     "label": "wseEnaTim",
-    "x": 0,
+    "x": 360,
     "y": 1440
    },
    {
@@ -1243,7 +1279,7 @@
     "id": "and1_3",
     "kind": "and",
     "label": "and1",
-    "x": 180,
+    "x": 540,
     "y": 1440
    },
    {
@@ -1253,7 +1289,7 @@
     "id": "con_2",
     "kind": "numeric_const",
     "label": "con",
-    "x": 360,
+    "x": 720,
     "y": 1440
    },
    {
@@ -1263,7 +1299,7 @@
     "id": "con1",
     "kind": "numeric_const",
     "label": "con1",
-    "x": 540,
+    "x": 900,
     "y": 1440
    },
    {
@@ -1285,23 +1321,23 @@
     "id": "conPID",
     "kind": "pid_with_reset",
     "label": "conPID",
-    "x": 720,
-    "y": 1440
+    "x": 0,
+    "y": 1560
    },
    {
     "config": {},
     "id": "swiInp",
     "kind": "numeric_switch",
     "label": "swiInp",
-    "x": 900,
-    "y": 1440
+    "x": 180,
+    "y": 1560
    },
    {
     "config": {},
     "id": "swiOut",
     "kind": "numeric_switch",
     "label": "swiOut",
-    "x": 0,
+    "x": 360,
     "y": 1560
    },
    {
@@ -1311,7 +1347,7 @@
     "id": "valDis",
     "kind": "numeric_const",
     "label": "valDis",
-    "x": 180,
+    "x": 540,
     "y": 1560
    },
    {
@@ -1319,7 +1355,7 @@
     "id": "disWse_3",
     "kind": "not",
     "label": "disWse",
-    "x": 360,
+    "x": 720,
     "y": 1560
    },
    {
@@ -1327,7 +1363,7 @@
     "id": "div1",
     "kind": "divide",
     "label": "div1",
-    "x": 540,
+    "x": 900,
     "y": 1560
    },
    {
@@ -1335,16 +1371,16 @@
     "id": "enaWse",
     "kind": "not",
     "label": "enaWse",
-    "x": 720,
-    "y": 1560
+    "x": 0,
+    "y": 1680
    },
    {
     "config": {},
     "id": "swi",
     "kind": "numeric_switch",
     "label": "swi",
-    "x": 900,
-    "y": 1560
+    "x": 180,
+    "y": 1680
    },
    {
     "config": {
@@ -1357,7 +1393,7 @@
     "id": "truDel_2",
     "kind": "boolean_delay",
     "label": "truDel",
-    "x": 0,
+    "x": 360,
     "y": 1680
    }
   ],
@@ -1402,6 +1438,18 @@
     "source": "lesThr1_threshold",
     "source_slot": "out",
     "target": "lesThr1",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulSum_gain_1_parameter",
+    "source_slot": "out",
+    "target": "mulSum_gain_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulSum_gain_2_parameter",
+    "source_slot": "out",
+    "target": "mulSum_gain_2",
     "target_slot": "b"
    },
    {
@@ -1917,14 +1965,14 @@
    {
     "source": "intToRea",
     "source_slot": "out",
-    "target": "mulSum_fold_2_2",
+    "target": "mulSum_gain_1",
     "target_slot": "a"
    },
    {
     "source": "intToRea1",
     "source_slot": "out",
-    "target": "mulSum_fold_2_2",
-    "target_slot": "b"
+    "target": "mulSum_gain_2",
+    "target_slot": "a"
    },
    {
     "source": "intWitRes",
@@ -1985,6 +2033,18 @@
     "source_slot": "out",
     "target": "intGreEquThr1",
     "target_slot": "a"
+   },
+   {
+    "source": "mulSum_gain_1",
+    "source_slot": "out",
+    "target": "mulSum_fold_2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulSum_gain_2",
+    "source_slot": "out",
+    "target": "mulSum_fold_2_2",
+    "target_slot": "b"
    },
    {
     "source": "mulSum_fold_2_2",
@@ -2242,6 +2302,10 @@
     "mulSum_fold_3": "wseTOut.mulSum__fold_3",
     "mulSum_fold_3_2": "wseTun.mulSum__fold_3",
     "mulSum_fold_4": "wseTOut.mulSum__fold_4",
+    "mulSum_gain_1": "wseTun.mulSum__gain_1",
+    "mulSum_gain_1_parameter": "wseTun.mulSum__gain_1",
+    "mulSum_gain_2": "wseTun.mulSum__gain_2",
+    "mulSum_gain_2_parameter": "wseTun.mulSum__gain_2",
     "not1": "not1",
     "notDisWse": "notDisWse",
     "notOpe": "notOpe",
@@ -2303,12 +2367,13 @@
      "Buildings.Controls.OBC.CDL.Reals.Max": 1,
      "Buildings.Controls.OBC.CDL.Reals.Min": 2,
      "Buildings.Controls.OBC.CDL.Reals.Multiply": 2,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 2,
      "Buildings.Controls.OBC.CDL.Reals.PIDWithReset": 1,
      "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 11,
      "Buildings.Controls.OBC.CDL.Reals.Subtract": 5,
      "Buildings.Controls.OBC.CDL.Reals.Switch": 3
     },
-    "component_count": 85,
+    "component_count": 87,
     "exactness_blockers": [],
     "execution_profile": "host_tick_v1",
     "missing_components": [],
@@ -2335,14 +2400,14 @@
     "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Economizers.Controller",
     "root_label": "Controller",
     "schema": "bactalk-cxf-lowering/v4",
-    "source_sha256": "123debb553637f697fc79aa6cb2921ed4193e7c75c54d8e08e2fa8e4d0ef44df",
-    "supported_class_count": 85,
+    "source_sha256": "6c4ceb210e13a5cbc9cb87ea363f6a7f7b6adb94d5bd01cd36213bcbd43ee19a",
+    "supported_class_count": 87,
     "translatable": true,
     "unsupported_classes": []
    },
    "lowering": "bactalk-cxf-lowering/v4",
    "source": "ASHRAE-231P-CXF",
-   "source_sha256": "123debb553637f697fc79aa6cb2921ed4193e7c75c54d8e08e2fa8e4d0ef44df"
+   "source_sha256": "6c4ceb210e13a5cbc9cb87ea363f6a7f7b6adb94d5bd01cd36213bcbd43ee19a"
   },
   "name": "Controller"
  }

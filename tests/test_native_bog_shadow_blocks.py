@@ -824,6 +824,33 @@ def test_sampling_kernels_take_the_settled_value_of_a_boundary_instant() -> None
     assert seen == [0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0]
 
 
+def test_pre_latches_the_settled_start_input() -> None:
+    """S-MODULE-7 (decision 016)."""
+
+    # A Pre inside a loop (latched = pre OR on): the start order opens the loop at the
+    # Pre, so it runs before the Or upstream of it has settled to True. CDL's Pre latches
+    # the settled t = 0 input, so one period later it must emit True, not the unsettled
+    # False the wrapper's zero value would give.
+    builder = BogBuilder("P")
+    builder.add("Params", "off", "kitControl:BooleanConst", [status_boolean("out", False)])
+    builder.add("Logic", "on", "kitControl:Not")
+    builder.add("Logic", "latched", "kitControl:Or")
+    builder.add(
+        "Logic",
+        "pre",
+        "bactalkG36:Pre",
+        [boolean("initialValue", False), rel_time("executionPeriod", 1.0)],
+    )
+    builder.link("Params/off", "out", "Logic/on", "in")
+    builder.link("Logic/on", "out", "Logic/latched", "inA")
+    builder.link("Logic/pre", "out", "Logic/latched", "inB")
+    builder.link("Logic/latched", "out", "Logic/pre", "in")
+    runtime = _runtime(builder)
+    assert _value(runtime, "/P/Logic/pre") is False  # t = 0: the start value
+    runtime.advance(1.0)
+    assert _value(runtime, "/P/Logic/pre") is True  # t = 1: the settled t = 0 input
+
+
 def test_module_component_missing_required_property_is_a_load_error() -> None:
     builder = BogBuilder("P")
     builder.add("Logic", "ud", "bactalkG36:UnitDelay")

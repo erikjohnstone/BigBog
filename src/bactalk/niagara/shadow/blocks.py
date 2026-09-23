@@ -1356,8 +1356,18 @@ class ModuleBlock(Block):
             self.ctx.schedule(self, self.period, "tick")
         if self.BINDING.resample:
             self.ctx.schedule(self, 0.0, "resample", late=True)
+        elif self.BINDING.source_at_start:
+            # S-MODULE-7 (decision 016): a kernel whose first output ignores its input
+            # executes first in the start pass, before its input has settled. At the end
+            # of the start instant it is rebuilt and stepped once more, which latches the
+            # settled input and leaves its output where it was, as CDL's Pre does at t = 0.
+            self.ctx.schedule(self, 0.0, "latch", late=True)
 
     def on_timer(self, tag: str) -> None:
+        if tag == "latch":
+            self.kernel = self.ctx.kernels.open(self.BINDING.kernel, self.params)
+            self.execute()
+            return
         self.execute()
         if tag == "resample":
             return

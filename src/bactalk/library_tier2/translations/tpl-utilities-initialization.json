@@ -1,0 +1,205 @@
+{
+ "cdl_substitutes": [
+  "Buildings.Templates.Plants.Controls.Utilities.Initialization"
+ ],
+ "configuration_id": "tpl-utilities-initialization",
+ "controller_id": "Utilities.Initialization",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.Initialization",
+  "inputs": [
+   {
+    "description": "Input",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.Initialization.u",
+    "label": "u",
+    "type": "S231:BooleanInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Output",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.Initialization.y",
+    "label": "y",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 1
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "yIni": false
+ },
+ "points": [
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u",
+   "name": "u",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.Initialization.u",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y",
+   "name": "y",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.Utilities.Initialization.y",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "Utilities/Initialization.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "aa284ed4c9ad73cd9d8478b38193ff5026331c15100d3ee9e095b279f92c3a30",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "c4f934cf072837996aa9fd56e92678351aa049b9c0328cde0912b1330b34e2b5",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u",
+    "kind": "boolean_input",
+    "label": "u",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y",
+    "kind": "boolean_output",
+    "label": "y",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "ini",
+    "kind": "boolean_const",
+    "label": "ini",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "boolean_switch",
+    "label": "swi",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 540,
+    "y": 0
+   }
+  ],
+  "links": [
+   {
+    "source": "u",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "ini",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "notIni",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "y",
+    "target_slot": "in"
+   },
+   {
+    "source": "tru",
+    "source_slot": "out",
+    "target": "notIni",
+    "target_slot": "in"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "ini": "ini",
+    "notIni": "notIni",
+    "swi": "swi",
+    "tru": "tru"
+   },
+   "coverage": {
+    "boundary_inputs": 1,
+    "boundary_outputs": 1,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 2,
+     "Buildings.Controls.OBC.CDL.Logical.Switch": 1
+    },
+    "component_count": 4,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Logical.Pre"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.Utilities.Initialization",
+    "root_label": "Initialization",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "c4f934cf072837996aa9fd56e92678351aa049b9c0328cde0912b1330b34e2b5",
+    "supported_class_count": 4,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "c4f934cf072837996aa9fd56e92678351aa049b9c0328cde0912b1330b34e2b5"
+  },
+  "name": "Initialization"
+ }
+}

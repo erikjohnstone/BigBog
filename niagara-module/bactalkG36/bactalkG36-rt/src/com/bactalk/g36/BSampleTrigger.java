@@ -68,4 +68,9 @@ public final class BSampleTrigger extends BKernelComponent {
     output.setValue(kernel.step(timeSeconds));
     markOk(output);
   }
+
+  @Override
+  protected boolean latchesAtStart() {
+    return true;
+  }
 }

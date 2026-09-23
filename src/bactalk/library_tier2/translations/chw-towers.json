@@ -576,7 +576,7 @@
   "tag": "master after v13.0.0 (2026-09-16)"
  },
  "translator": {
-  "cxf_source_sha256": "329e376db3970615f696f5c7c672e0a6878a07efeedcb88f3d3102a89ea6c13a",
+  "cxf_source_sha256": "fcd30cd2719bc97b7141657ce548c746be7a5c85973a39c97b41dc0270cf0d72",
   "lowering_schema": "bactalk-cxf-lowering/v4",
   "name": "LBNL modelica-json",
   "runtime": "Open Control Engine"
@@ -2818,12 +2818,48 @@
     "y": 3120
    },
    {
+    "config": {
+     "value": 1.1
+    },
+    "id": "totMinCycLoa_gain_1_parameter",
+    "kind": "numeric_const",
+    "label": "totMinCycLoa gain 1 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "totMinCycLoa_gain_1",
+    "kind": "multiply",
+    "label": "totMinCycLoa gain 1",
+    "x": 900,
+    "y": 3120
+   },
+   {
+    "config": {
+     "value": 1.1
+    },
+    "id": "totMinCycLoa_gain_2_parameter",
+    "kind": "numeric_const",
+    "label": "totMinCycLoa gain 2 parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "totMinCycLoa_gain_2",
+    "kind": "multiply",
+    "label": "totMinCycLoa gain 2",
+    "x": 0,
+    "y": 3240
+   },
+   {
     "config": {},
     "id": "totMinCycLoa_fold_2",
     "kind": "add",
     "label": "totMinCycLoa fold 2",
-    "x": 900,
-    "y": 3120
+    "x": 180,
+    "y": 3240
    },
    {
     "config": {
@@ -2832,7 +2868,7 @@
     "id": "zer__1",
     "kind": "numeric_const",
     "label": "zer__1",
-    "x": 0,
+    "x": 360,
     "y": 3240
    },
    {
@@ -2842,7 +2878,7 @@
     "id": "zer__2",
     "kind": "numeric_const",
     "label": "zer__2",
-    "x": 180,
+    "x": 540,
     "y": 3240
    },
    {
@@ -2852,7 +2888,7 @@
     "id": "zer1_3",
     "kind": "numeric_const",
     "label": "zer1",
-    "x": 360,
+    "x": 720,
     "y": 3240
    },
    {
@@ -2860,7 +2896,7 @@
     "id": "mulOr_fold_2_4",
     "kind": "or",
     "label": "mulOr fold 2",
-    "x": 540,
+    "x": 900,
     "y": 3240
    },
    {
@@ -2868,23 +2904,23 @@
     "id": "swi_4",
     "kind": "numeric_switch",
     "label": "swi",
-    "x": 720,
-    "y": 3240
+    "x": 0,
+    "y": 3360
    },
    {
     "config": {},
     "id": "swi1_2",
     "kind": "numeric_switch",
     "label": "swi1",
-    "x": 900,
-    "y": 3240
+    "x": 180,
+    "y": 3360
    },
    {
     "config": {},
     "id": "and2_3",
     "kind": "and",
     "label": "and2",
-    "x": 0,
+    "x": 360,
     "y": 3360
    },
    {
@@ -2892,7 +2928,7 @@
     "id": "anyEnaChi_fold_2",
     "kind": "or",
     "label": "anyEnaChi fold 2",
-    "x": 180,
+    "x": 540,
     "y": 3360
    },
    {
@@ -2914,7 +2950,7 @@
     "id": "conPID_3",
     "kind": "pid_with_reset",
     "label": "conPID",
-    "x": 360,
+    "x": 720,
     "y": 3360
    },
    {
@@ -2922,7 +2958,7 @@
     "id": "swiInp_3",
     "kind": "numeric_switch",
     "label": "swiInp",
-    "x": 540,
+    "x": 900,
     "y": 3360
    },
    {
@@ -2930,8 +2966,8 @@
     "id": "swiOut_3",
     "kind": "numeric_switch",
     "label": "swiOut",
-    "x": 720,
-    "y": 3360
+    "x": 0,
+    "y": 3480
    },
    {
     "config": {
@@ -2940,8 +2976,8 @@
     "id": "valDis_3",
     "kind": "numeric_const",
     "label": "valDis",
-    "x": 900,
-    "y": 3360
+    "x": 180,
+    "y": 3480
    },
    {
     "config": {
@@ -2954,7 +2990,7 @@
     "id": "cycOffTim",
     "kind": "boolean_delay",
     "label": "cycOffTim",
-    "x": 0,
+    "x": 360,
     "y": 3480
    },
    {
@@ -2962,7 +2998,7 @@
     "id": "cycOn",
     "kind": "and",
     "label": "cycOn",
-    "x": 180,
+    "x": 540,
     "y": 3480
    },
    {
@@ -2970,7 +3006,7 @@
     "id": "dFanSpe",
     "kind": "subtract",
     "label": "dFanSpe",
-    "x": 360,
+    "x": 720,
     "y": 3480
    },
    {
@@ -2978,7 +3014,7 @@
     "id": "dTChiSup",
     "kind": "subtract",
     "label": "dTChiSup",
-    "x": 540,
+    "x": 900,
     "y": 3480
    },
    {
@@ -2986,8 +3022,8 @@
     "id": "enaFan",
     "kind": "and",
     "label": "enaFan",
-    "x": 720,
-    "y": 3480
+    "x": 0,
+    "y": 3600
    },
    {
     "config": {
@@ -2996,8 +3032,8 @@
     "id": "fanCycOff",
     "kind": "boolean_set_reset",
     "label": "fanCycOff",
-    "x": 900,
-    "y": 3480
+    "x": 180,
+    "y": 3600
    },
    {
     "config": {
@@ -3008,7 +3044,7 @@
     "id": "hys1",
     "kind": "hysteresis",
     "label": "hys1",
-    "x": 0,
+    "x": 360,
     "y": 3600
    },
    {
@@ -3020,7 +3056,7 @@
     "id": "hys2_2",
     "kind": "hysteresis",
     "label": "hys2",
-    "x": 180,
+    "x": 540,
     "y": 3600
    },
    {
@@ -3032,7 +3068,7 @@
     "id": "hys3_2",
     "kind": "hysteresis",
     "label": "hys3",
-    "x": 360,
+    "x": 720,
     "y": 3600
    },
    {
@@ -3114,8 +3150,8 @@
     "id": "maxTowSpe_2",
     "kind": "numeric_const",
     "label": "maxTowSpe",
-    "x": 720,
-    "y": 3600
+    "x": 0,
+    "y": 3720
    },
    {
     "config": {
@@ -3124,15 +3160,15 @@
     "id": "minTowSpe_3",
     "kind": "numeric_const",
     "label": "minTowSpe",
-    "x": 900,
-    "y": 3600
+    "x": 180,
+    "y": 3720
    },
    {
     "config": {},
     "id": "noChi",
     "kind": "not",
     "label": "noChi",
-    "x": 0,
+    "x": 360,
     "y": 3720
    },
    {
@@ -3140,7 +3176,7 @@
     "id": "not1_3",
     "kind": "not",
     "label": "not1",
-    "x": 180,
+    "x": 540,
     "y": 3720
    },
    {
@@ -3148,7 +3184,7 @@
     "id": "not2_2",
     "kind": "not",
     "label": "not2",
-    "x": 360,
+    "x": 720,
     "y": 3720
    },
    {
@@ -3156,7 +3192,7 @@
     "id": "not3_2",
     "kind": "not",
     "label": "not3",
-    "x": 540,
+    "x": 900,
     "y": 3720
    },
    {
@@ -3166,16 +3202,16 @@
     "id": "one_2",
     "kind": "numeric_const",
     "label": "one",
-    "x": 720,
-    "y": 3720
+    "x": 0,
+    "y": 3840
    },
    {
     "config": {},
     "id": "onlWse",
     "kind": "and",
     "label": "onlWse",
-    "x": 900,
-    "y": 3720
+    "x": 180,
+    "y": 3840
    },
    {
     "config": {
@@ -3186,7 +3222,7 @@
     "id": "pre_2",
     "kind": "boolean_pre_host_tick",
     "label": "pre",
-    "x": 0,
+    "x": 360,
     "y": 3840
    },
    {
@@ -3198,7 +3234,7 @@
     "id": "pre1",
     "kind": "boolean_pre_host_tick",
     "label": "pre1",
-    "x": 180,
+    "x": 540,
     "y": 3840
    },
    {
@@ -3206,7 +3242,7 @@
     "id": "swi_5",
     "kind": "numeric_switch",
     "label": "swi",
-    "x": 360,
+    "x": 720,
     "y": 3840
    },
    {
@@ -3220,7 +3256,7 @@
     "id": "truDel_3",
     "kind": "boolean_delay",
     "label": "truDel",
-    "x": 540,
+    "x": 900,
     "y": 3840
    },
    {
@@ -3230,8 +3266,8 @@
     "id": "zer_2",
     "kind": "numeric_const",
     "label": "zer",
-    "x": 720,
-    "y": 3840
+    "x": 0,
+    "y": 3960
    },
    {
     "config": {
@@ -3240,8 +3276,8 @@
     "id": "zerSpe",
     "kind": "numeric_const",
     "label": "zerSpe",
-    "x": 900,
-    "y": 3840
+    "x": 180,
+    "y": 3960
    },
    {
     "config": {
@@ -3250,7 +3286,7 @@
     "id": "zer_3",
     "kind": "numeric_const",
     "label": "zer",
-    "x": 0,
+    "x": 360,
     "y": 3960
    },
    {
@@ -3258,7 +3294,7 @@
     "id": "add3",
     "kind": "add",
     "label": "add3",
-    "x": 180,
+    "x": 540,
     "y": 3960
    },
    {
@@ -3266,7 +3302,7 @@
     "id": "anyPumOn",
     "kind": "and",
     "label": "anyPumOn",
-    "x": 360,
+    "x": 720,
     "y": 3960
    },
    {
@@ -3480,16 +3516,16 @@
     "id": "celOnNum_index____4",
     "kind": "less_than",
     "label": "celOnNum index <= 4",
-    "x": 720,
-    "y": 4080
+    "x": 0,
+    "y": 4200
    },
    {
     "config": {},
     "id": "celOnNum_element_4",
     "kind": "numeric_switch",
     "label": "celOnNum element 4",
-    "x": 900,
-    "y": 4080
+    "x": 180,
+    "y": 4200
    },
    {
     "config": {
@@ -3506,7 +3542,7 @@
     "id": "celOnNum_index____3",
     "kind": "less_than",
     "label": "celOnNum index <= 3",
-    "x": 0,
+    "x": 360,
     "y": 4200
    },
    {
@@ -3514,7 +3550,7 @@
     "id": "celOnNum_element_3",
     "kind": "numeric_switch",
     "label": "celOnNum element 3",
-    "x": 180,
+    "x": 540,
     "y": 4200
    },
    {
@@ -3532,7 +3568,7 @@
     "id": "celOnNum_index____2",
     "kind": "less_than",
     "label": "celOnNum index <= 2",
-    "x": 360,
+    "x": 720,
     "y": 4200
    },
    {
@@ -3540,7 +3576,7 @@
     "id": "celOnNum_element_2",
     "kind": "numeric_switch",
     "label": "celOnNum element 2",
-    "x": 540,
+    "x": 900,
     "y": 4200
    },
    {
@@ -3558,16 +3594,16 @@
     "id": "celOnNum_index____1",
     "kind": "less_than",
     "label": "celOnNum index <= 1",
-    "x": 720,
-    "y": 4200
+    "x": 0,
+    "y": 4320
    },
    {
     "config": {},
     "id": "celOnNum_element_1",
     "kind": "numeric_switch",
     "label": "celOnNum element 1",
-    "x": 900,
-    "y": 4200
+    "x": 180,
+    "y": 4320
    },
    {
     "config": {
@@ -3576,7 +3612,7 @@
     "id": "con4__1",
     "kind": "numeric_const",
     "label": "con4__1",
-    "x": 0,
+    "x": 360,
     "y": 4320
    },
    {
@@ -3586,7 +3622,7 @@
     "id": "con4__2",
     "kind": "numeric_const",
     "label": "con4__2",
-    "x": 180,
+    "x": 540,
     "y": 4320
    },
    {
@@ -3596,7 +3632,7 @@
     "id": "con4__3",
     "kind": "numeric_const",
     "label": "con4__3",
-    "x": 360,
+    "x": 720,
     "y": 4320
    },
    {
@@ -3606,7 +3642,7 @@
     "id": "con4__4",
     "kind": "numeric_const",
     "label": "con4__4",
-    "x": 540,
+    "x": 900,
     "y": 4320
    },
    {
@@ -3616,8 +3652,8 @@
     "id": "con4__5",
     "kind": "numeric_const",
     "label": "con4__5",
-    "x": 720,
-    "y": 4320
+    "x": 0,
+    "y": 4440
    },
    {
     "config": {
@@ -3626,8 +3662,8 @@
     "id": "con5__1",
     "kind": "numeric_const",
     "label": "con5__1",
-    "x": 900,
-    "y": 4320
+    "x": 180,
+    "y": 4440
    },
    {
     "config": {
@@ -3636,7 +3672,7 @@
     "id": "con5__2",
     "kind": "numeric_const",
     "label": "con5__2",
-    "x": 0,
+    "x": 360,
     "y": 4440
    },
    {
@@ -3646,7 +3682,7 @@
     "id": "con5__3",
     "kind": "numeric_const",
     "label": "con5__3",
-    "x": 180,
+    "x": 540,
     "y": 4440
    },
    {
@@ -3656,7 +3692,7 @@
     "id": "con5__4",
     "kind": "numeric_const",
     "label": "con5__4",
-    "x": 360,
+    "x": 720,
     "y": 4440
    },
    {
@@ -3666,7 +3702,7 @@
     "id": "con5__5",
     "kind": "numeric_const",
     "label": "con5__5",
-    "x": 540,
+    "x": 900,
     "y": 4440
    },
    {
@@ -3676,8 +3712,8 @@
     "id": "conInt_2",
     "kind": "numeric_const",
     "label": "conInt",
-    "x": 720,
-    "y": 4440
+    "x": 0,
+    "y": 4560
    },
    {
     "config": {
@@ -3694,8 +3730,8 @@
     "id": "greEquThr__1",
     "kind": "greater_than",
     "label": "greEquThr__1",
-    "x": 900,
-    "y": 4440
+    "x": 180,
+    "y": 4560
    },
    {
     "config": {
@@ -3712,7 +3748,7 @@
     "id": "greEquThr__2",
     "kind": "greater_than",
     "label": "greEquThr__2",
-    "x": 0,
+    "x": 360,
     "y": 4560
    },
    {
@@ -3730,7 +3766,7 @@
     "id": "greEquThr__3",
     "kind": "greater_than",
     "label": "greEquThr__3",
-    "x": 180,
+    "x": 540,
     "y": 4560
    },
    {
@@ -3748,7 +3784,7 @@
     "id": "greEquThr__4",
     "kind": "greater_than",
     "label": "greEquThr__4",
-    "x": 360,
+    "x": 720,
     "y": 4560
    },
    {
@@ -3766,7 +3802,7 @@
     "id": "greEquThr__5",
     "kind": "greater_than",
     "label": "greEquThr__5",
-    "x": 540,
+    "x": 900,
     "y": 4560
    },
    {
@@ -3784,16 +3820,16 @@
     "id": "intGreThr",
     "kind": "greater_than",
     "label": "intGreThr",
-    "x": 720,
-    "y": 4560
+    "x": 0,
+    "y": 4680
    },
    {
     "config": {},
     "id": "intSwi",
     "kind": "numeric_switch",
     "label": "intSwi",
-    "x": 900,
-    "y": 4560
+    "x": 180,
+    "y": 4680
    },
    {
     "config": {
@@ -3810,7 +3846,7 @@
     "id": "intToRea1",
     "kind": "add",
     "label": "intToRea1",
-    "x": 0,
+    "x": 360,
     "y": 4680
    },
    {
@@ -3828,7 +3864,7 @@
     "id": "intToRea2",
     "kind": "add",
     "label": "intToRea2",
-    "x": 180,
+    "x": 540,
     "y": 4680
    },
    {
@@ -3836,7 +3872,7 @@
     "id": "mulInt",
     "kind": "multiply",
     "label": "mulInt",
-    "x": 360,
+    "x": 720,
     "y": 4680
    },
    {
@@ -3844,7 +3880,7 @@
     "id": "mulSumInt_fold_2_2",
     "kind": "add",
     "label": "mulSumInt fold 2",
-    "x": 540,
+    "x": 900,
     "y": 4680
    },
    {
@@ -3852,23 +3888,23 @@
     "id": "mulSumInt_fold_3",
     "kind": "add",
     "label": "mulSumInt fold 3",
-    "x": 720,
-    "y": 4680
+    "x": 0,
+    "y": 4800
    },
    {
     "config": {},
     "id": "mulSumInt_fold_4",
     "kind": "add",
     "label": "mulSumInt fold 4",
-    "x": 900,
-    "y": 4680
+    "x": 180,
+    "y": 4800
    },
    {
     "config": {},
     "id": "mulSumInt_fold_5",
     "kind": "add",
     "label": "mulSumInt fold 5",
-    "x": 0,
+    "x": 360,
     "y": 4800
    },
    {
@@ -3876,7 +3912,7 @@
     "id": "norOpe",
     "kind": "equal",
     "label": "norOpe",
-    "x": 180,
+    "x": 540,
     "y": 4800
    },
    {
@@ -3884,7 +3920,7 @@
     "id": "or1",
     "kind": "or",
     "label": "or1",
-    "x": 360,
+    "x": 720,
     "y": 4800
    },
    {
@@ -3892,7 +3928,7 @@
     "id": "or2",
     "kind": "or",
     "label": "or2",
-    "x": 540,
+    "x": 900,
     "y": 4800
    },
    {
@@ -3904,8 +3940,8 @@
     "id": "pre1__1",
     "kind": "boolean_pre_host_tick",
     "label": "pre1__1",
-    "x": 720,
-    "y": 4800
+    "x": 0,
+    "y": 4920
    },
    {
     "config": {
@@ -3916,8 +3952,8 @@
     "id": "pre1__2",
     "kind": "boolean_pre_host_tick",
     "label": "pre1__2",
-    "x": 900,
-    "y": 4800
+    "x": 180,
+    "y": 4920
    },
    {
     "config": {
@@ -3928,7 +3964,7 @@
     "id": "pre1__3",
     "kind": "boolean_pre_host_tick",
     "label": "pre1__3",
-    "x": 0,
+    "x": 360,
     "y": 4920
    },
    {
@@ -3940,7 +3976,7 @@
     "id": "pre1__4",
     "kind": "boolean_pre_host_tick",
     "label": "pre1__4",
-    "x": 180,
+    "x": 540,
     "y": 4920
    },
    {
@@ -3952,7 +3988,7 @@
     "id": "pre1__5",
     "kind": "boolean_pre_host_tick",
     "label": "pre1__5",
-    "x": 360,
+    "x": 720,
     "y": 4920
    },
    {
@@ -3960,7 +3996,7 @@
     "id": "sub4__1",
     "kind": "subtract",
     "label": "sub4__1",
-    "x": 540,
+    "x": 900,
     "y": 4920
    },
    {
@@ -3968,23 +4004,23 @@
     "id": "sub4__2",
     "kind": "subtract",
     "label": "sub4__2",
-    "x": 720,
-    "y": 4920
+    "x": 0,
+    "y": 5040
    },
    {
     "config": {},
     "id": "sub4__3",
     "kind": "subtract",
     "label": "sub4__3",
-    "x": 900,
-    "y": 4920
+    "x": 180,
+    "y": 5040
    },
    {
     "config": {},
     "id": "sub4__4",
     "kind": "subtract",
     "label": "sub4__4",
-    "x": 0,
+    "x": 360,
     "y": 5040
    },
    {
@@ -3992,7 +4028,7 @@
     "id": "sub4__5",
     "kind": "subtract",
     "label": "sub4__5",
-    "x": 180,
+    "x": 540,
     "y": 5040
    },
    {
@@ -4000,7 +4036,7 @@
     "id": "swi_6",
     "kind": "numeric_switch",
     "label": "swi",
-    "x": 360,
+    "x": 720,
     "y": 5040
    },
    {
@@ -4008,7 +4044,7 @@
     "id": "swi1_3",
     "kind": "numeric_switch",
     "label": "swi1",
-    "x": 540,
+    "x": 900,
     "y": 5040
    },
    {
@@ -4128,7 +4164,7 @@
     "id": "chaCel__1",
     "kind": "not",
     "label": "chaCel__1",
-    "x": 360,
+    "x": 720,
     "y": 5160
    },
    {
@@ -4136,7 +4172,7 @@
     "id": "chaCel__2",
     "kind": "not",
     "label": "chaCel__2",
-    "x": 540,
+    "x": 900,
     "y": 5160
    },
    {
@@ -4146,8 +4182,8 @@
     "id": "conInt__1",
     "kind": "numeric_const",
     "label": "conInt__1",
-    "x": 720,
-    "y": 5160
+    "x": 0,
+    "y": 5280
    },
    {
     "config": {
@@ -4156,15 +4192,15 @@
     "id": "conInt__2",
     "kind": "numeric_const",
     "label": "conInt__2",
-    "x": 900,
-    "y": 5160
+    "x": 180,
+    "y": 5280
    },
    {
     "config": {},
     "id": "intEqu__1",
     "kind": "equal",
     "label": "intEqu__1",
-    "x": 0,
+    "x": 360,
     "y": 5280
    },
    {
@@ -4172,7 +4208,7 @@
     "id": "intEqu__2",
     "kind": "equal",
     "label": "intEqu__2",
-    "x": 180,
+    "x": 540,
     "y": 5280
    },
    {
@@ -4180,7 +4216,7 @@
     "id": "intLesEqu__1",
     "kind": "less_than_or_equal",
     "label": "intLesEqu__1",
-    "x": 360,
+    "x": 720,
     "y": 5280
    },
    {
@@ -4188,7 +4224,7 @@
     "id": "intLesEqu__2",
     "kind": "less_than_or_equal",
     "label": "intLesEqu__2",
-    "x": 540,
+    "x": 900,
     "y": 5280
    },
    {
@@ -4196,23 +4232,23 @@
     "id": "not1__1_2",
     "kind": "not",
     "label": "not1__1",
-    "x": 720,
-    "y": 5280
+    "x": 0,
+    "y": 5400
    },
    {
     "config": {},
     "id": "not1__2_2",
     "kind": "not",
     "label": "not1__2",
-    "x": 900,
-    "y": 5280
+    "x": 180,
+    "y": 5400
    },
    {
     "config": {},
     "id": "not2__1",
     "kind": "not",
     "label": "not2__1",
-    "x": 0,
+    "x": 360,
     "y": 5400
    },
    {
@@ -4220,7 +4256,7 @@
     "id": "not2__2",
     "kind": "not",
     "label": "not2__2",
-    "x": 180,
+    "x": 540,
     "y": 5400
    },
    {
@@ -4234,7 +4270,7 @@
     "id": "truDel__1",
     "kind": "boolean_delay",
     "label": "truDel__1",
-    "x": 360,
+    "x": 720,
     "y": 5400
    },
    {
@@ -4248,7 +4284,7 @@
     "id": "truDel__2",
     "kind": "boolean_delay",
     "label": "truDel__2",
-    "x": 540,
+    "x": 900,
     "y": 5400
    },
    {
@@ -4256,23 +4292,23 @@
     "id": "and1__1",
     "kind": "and",
     "label": "and1__1",
-    "x": 720,
-    "y": 5400
+    "x": 0,
+    "y": 5520
    },
    {
     "config": {},
     "id": "and1__2",
     "kind": "and",
     "label": "and1__2",
-    "x": 900,
-    "y": 5400
+    "x": 180,
+    "y": 5520
    },
    {
     "config": {},
     "id": "and2__1",
     "kind": "and",
     "label": "and2__1",
-    "x": 0,
+    "x": 360,
     "y": 5520
    },
    {
@@ -4280,7 +4316,7 @@
     "id": "and2__2",
     "kind": "and",
     "label": "and2__2",
-    "x": 180,
+    "x": 540,
     "y": 5520
    },
    {
@@ -4288,7 +4324,7 @@
     "id": "and4__1",
     "kind": "and",
     "label": "and4__1",
-    "x": 360,
+    "x": 720,
     "y": 5520
    },
    {
@@ -4296,7 +4332,7 @@
     "id": "and4__2",
     "kind": "and",
     "label": "and4__2",
-    "x": 540,
+    "x": 900,
     "y": 5520
    },
    {
@@ -4304,23 +4340,23 @@
     "id": "celChaSta__1",
     "kind": "or",
     "label": "celChaSta__1",
-    "x": 720,
-    "y": 5520
+    "x": 0,
+    "y": 5640
    },
    {
     "config": {},
     "id": "celChaSta__2",
     "kind": "or",
     "label": "celChaSta__2",
-    "x": 900,
-    "y": 5520
+    "x": 180,
+    "y": 5640
    },
    {
     "config": {},
     "id": "celVec__1",
     "kind": "boolean_switch",
     "label": "celVec__1",
-    "x": 0,
+    "x": 360,
     "y": 5640
    },
    {
@@ -4328,7 +4364,7 @@
     "id": "celVec__2",
     "kind": "boolean_switch",
     "label": "celVec__2",
-    "x": 180,
+    "x": 540,
     "y": 5640
    },
    {
@@ -4336,7 +4372,7 @@
     "id": "celVec1__1",
     "kind": "boolean_switch",
     "label": "celVec1__1",
-    "x": 360,
+    "x": 720,
     "y": 5640
    },
    {
@@ -4344,7 +4380,7 @@
     "id": "celVec1__2",
     "kind": "boolean_switch",
     "label": "celVec1__2",
-    "x": 540,
+    "x": 900,
     "y": 5640
    },
    {
@@ -4410,7 +4446,7 @@
     "id": "con1__1_2",
     "kind": "boolean_const",
     "label": "con1__1",
-    "x": 0,
+    "x": 360,
     "y": 5760
    },
    {
@@ -4420,7 +4456,7 @@
     "id": "con1__2_2",
     "kind": "boolean_const",
     "label": "con1__2",
-    "x": 180,
+    "x": 540,
     "y": 5760
    },
    {
@@ -4430,7 +4466,7 @@
     "id": "con2__1",
     "kind": "boolean_const",
     "label": "con2__1",
-    "x": 360,
+    "x": 720,
     "y": 5760
    },
    {
@@ -4440,7 +4476,7 @@
     "id": "con2__2",
     "kind": "boolean_const",
     "label": "con2__2",
-    "x": 540,
+    "x": 900,
     "y": 5760
    },
    {
@@ -4448,23 +4484,23 @@
     "id": "disCel",
     "kind": "not",
     "label": "disCel",
-    "x": 720,
-    "y": 5760
+    "x": 0,
+    "y": 5880
    },
    {
     "config": {},
     "id": "disCelVec__1",
     "kind": "not",
     "label": "disCelVec__1",
-    "x": 900,
-    "y": 5760
+    "x": 180,
+    "y": 5880
    },
    {
     "config": {},
     "id": "disCelVec__2",
     "kind": "not",
     "label": "disCelVec__2",
-    "x": 0,
+    "x": 360,
     "y": 5880
    },
    {
@@ -4472,7 +4508,7 @@
     "id": "disExiCel__1",
     "kind": "boolean_switch",
     "label": "disExiCel__1",
-    "x": 180,
+    "x": 540,
     "y": 5880
    },
    {
@@ -4480,7 +4516,7 @@
     "id": "disExiCel__2",
     "kind": "boolean_switch",
     "label": "disExiCel__2",
-    "x": 360,
+    "x": 720,
     "y": 5880
    },
    {
@@ -4488,7 +4524,7 @@
     "id": "disExiCel1__1",
     "kind": "boolean_switch",
     "label": "disExiCel1__1",
-    "x": 540,
+    "x": 900,
     "y": 5880
    },
    {
@@ -4496,16 +4532,16 @@
     "id": "disExiCel1__2",
     "kind": "boolean_switch",
     "label": "disExiCel1__2",
-    "x": 720,
-    "y": 5880
+    "x": 0,
+    "y": 6000
    },
    {
     "config": {},
     "id": "disPro",
     "kind": "and",
     "label": "disPro",
-    "x": 900,
-    "y": 5880
+    "x": 180,
+    "y": 6000
    },
    {
     "config": {
@@ -4514,7 +4550,7 @@
     "id": "edg__1",
     "kind": "one_shot",
     "label": "edg__1",
-    "x": 0,
+    "x": 360,
     "y": 6000
    },
    {
@@ -4524,7 +4560,7 @@
     "id": "edg__2",
     "kind": "one_shot",
     "label": "edg__2",
-    "x": 180,
+    "x": 540,
     "y": 6000
    },
    {
@@ -4532,7 +4568,7 @@
     "id": "enaCel_fold_2",
     "kind": "and",
     "label": "enaCel fold 2",
-    "x": 360,
+    "x": 720,
     "y": 6000
    },
    {
@@ -4596,15 +4632,15 @@
     "id": "enaCelVec__1",
     "kind": "or",
     "label": "enaCelVec__1",
-    "x": 900,
-    "y": 6000
+    "x": 180,
+    "y": 6120
    },
    {
     "config": {},
     "id": "enaCelVec__2",
     "kind": "or",
     "label": "enaCelVec__2",
-    "x": 0,
+    "x": 360,
     "y": 6120
    },
    {
@@ -4612,7 +4648,7 @@
     "id": "enaNexCel__1",
     "kind": "boolean_switch",
     "label": "enaNexCel__1",
-    "x": 180,
+    "x": 540,
     "y": 6120
    },
    {
@@ -4620,7 +4656,7 @@
     "id": "enaNexCel__2",
     "kind": "boolean_switch",
     "label": "enaNexCel__2",
-    "x": 360,
+    "x": 720,
     "y": 6120
    },
    {
@@ -4628,7 +4664,7 @@
     "id": "enaPro",
     "kind": "and",
     "label": "enaPro",
-    "x": 540,
+    "x": 900,
     "y": 6120
    },
    {
@@ -4636,8 +4672,8 @@
     "id": "endStaPro_fold_2",
     "kind": "or",
     "label": "endStaPro fold 2",
-    "x": 720,
-    "y": 6120
+    "x": 0,
+    "y": 6240
    },
    {
     "config": {
@@ -4647,8 +4683,8 @@
     "id": "falEdg__1",
     "kind": "boolean_falling_edge",
     "label": "falEdg__1",
-    "x": 900,
-    "y": 6120
+    "x": 180,
+    "y": 6240
    },
    {
     "config": {
@@ -4658,7 +4694,7 @@
     "id": "falEdg__2",
     "kind": "boolean_falling_edge",
     "label": "falEdg__2",
-    "x": 0,
+    "x": 360,
     "y": 6240
    },
    {
@@ -4666,7 +4702,7 @@
     "id": "intEqu1__1",
     "kind": "equal",
     "label": "intEqu1__1",
-    "x": 180,
+    "x": 540,
     "y": 6240
    },
    {
@@ -4674,7 +4710,7 @@
     "id": "intEqu1__2",
     "kind": "equal",
     "label": "intEqu1__2",
-    "x": 360,
+    "x": 720,
     "y": 6240
    },
    {
@@ -4684,7 +4720,7 @@
     "id": "lat__1",
     "kind": "boolean_set_reset",
     "label": "lat__1",
-    "x": 540,
+    "x": 900,
     "y": 6240
    },
    {
@@ -4694,23 +4730,23 @@
     "id": "lat__2",
     "kind": "boolean_set_reset",
     "label": "lat__2",
-    "x": 720,
-    "y": 6240
+    "x": 0,
+    "y": 6360
    },
    {
     "config": {},
     "id": "newTowCell__1",
     "kind": "boolean_switch",
     "label": "newTowCell__1",
-    "x": 900,
-    "y": 6240
+    "x": 180,
+    "y": 6360
    },
    {
     "config": {},
     "id": "newTowCell__2",
     "kind": "boolean_switch",
     "label": "newTowCell__2",
-    "x": 0,
+    "x": 360,
     "y": 6360
    },
    {
@@ -4724,7 +4760,7 @@
     "id": "newValCha",
     "kind": "boolean_delay",
     "label": "newValCha",
-    "x": 180,
+    "x": 540,
     "y": 6360
    },
    {
@@ -4732,7 +4768,7 @@
     "id": "not1__1_3",
     "kind": "not",
     "label": "not1__1",
-    "x": 360,
+    "x": 720,
     "y": 6360
    },
    {
@@ -4740,7 +4776,7 @@
     "id": "not1__2_3",
     "kind": "not",
     "label": "not1__2",
-    "x": 540,
+    "x": 900,
     "y": 6360
    },
    {
@@ -4748,8 +4784,8 @@
     "id": "staPro_fold_2",
     "kind": "or",
     "label": "staPro fold 2",
-    "x": 720,
-    "y": 6360
+    "x": 0,
+    "y": 6480
    },
    {
     "config": {
@@ -4758,8 +4794,8 @@
     "id": "zer_4",
     "kind": "numeric_const",
     "label": "zer",
-    "x": 900,
-    "y": 6360
+    "x": 180,
+    "y": 6480
    }
   ],
   "links": [
@@ -5091,6 +5127,18 @@
     "source": "regFanSpe_upper_limit",
     "source_slot": "out",
     "target": "regFanSpe_scaled",
+    "target_slot": "b"
+   },
+   {
+    "source": "totMinCycLoa_gain_1_parameter",
+    "source_slot": "out",
+    "target": "totMinCycLoa_gain_1",
+    "target_slot": "b"
+   },
+   {
+    "source": "totMinCycLoa_gain_2_parameter",
+    "source_slot": "out",
+    "target": "totMinCycLoa_gain_2",
     "target_slot": "b"
    },
    {
@@ -7148,11 +7196,23 @@
    {
     "source": "swi__1_3",
     "source_slot": "out",
-    "target": "totMinCycLoa_fold_2",
+    "target": "totMinCycLoa_gain_1",
     "target_slot": "a"
    },
    {
     "source": "swi__2_3",
+    "source_slot": "out",
+    "target": "totMinCycLoa_gain_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "totMinCycLoa_gain_1",
+    "source_slot": "out",
+    "target": "totMinCycLoa_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "totMinCycLoa_gain_2",
     "source_slot": "out",
     "target": "totMinCycLoa_fold_2",
     "target_slot": "b"
@@ -8831,6 +8891,10 @@
     "swi__2_3": "towFanSpe.fanSpeWse.intOpe.swi__2",
     "tarLif": "towFanSpe.fanSpeRetTem.conWatRetSet.tarLif",
     "totMinCycLoa_fold_2": "towFanSpe.fanSpeWse.intOpe.totMinCycLoa__fold_2",
+    "totMinCycLoa_gain_1": "towFanSpe.fanSpeWse.intOpe.totMinCycLoa__gain_1",
+    "totMinCycLoa_gain_1_parameter": "towFanSpe.fanSpeWse.intOpe.totMinCycLoa__gain_1",
+    "totMinCycLoa_gain_2": "towFanSpe.fanSpeWse.intOpe.totMinCycLoa__gain_2",
+    "totMinCycLoa_gain_2_parameter": "towFanSpe.fanSpeWse.intOpe.totMinCycLoa__gain_2",
     "truDel": "towFanSpe.fanSpeRetTem.enaTow.truDel",
     "truDel1": "towFanSpe.fanSpeRetTem.enaTow.truDel1",
     "truDel2": "towFanSpe.fanSpeRetTem.enaTow.truDel2",
@@ -8895,14 +8959,14 @@
      "Buildings.Controls.OBC.CDL.Reals.Min": 6,
      "Buildings.Controls.OBC.CDL.Reals.MovingAverage": 1,
      "Buildings.Controls.OBC.CDL.Reals.Multiply": 1,
-     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 8,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 10,
      "Buildings.Controls.OBC.CDL.Reals.PIDWithReset": 3,
      "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 52,
      "Buildings.Controls.OBC.CDL.Reals.Subtract": 20,
      "Buildings.Controls.OBC.CDL.Reals.Switch": 27,
      "Buildings.Controls.OBC.CDL.Utilities.Assert": 2
     },
-    "component_count": 324,
+    "component_count": 326,
     "exactness_blockers": [],
     "execution_profile": "host_tick_v1",
     "missing_components": [],
@@ -8929,14 +8993,14 @@
     "root_id": "ex:Buildings.Controls.OBC.ASHRAE.G36.Plants.Chillers.Towers.Controller",
     "root_label": "Controller",
     "schema": "bactalk-cxf-lowering/v4",
-    "source_sha256": "329e376db3970615f696f5c7c672e0a6878a07efeedcb88f3d3102a89ea6c13a",
-    "supported_class_count": 324,
+    "source_sha256": "fcd30cd2719bc97b7141657ce548c746be7a5c85973a39c97b41dc0270cf0d72",
+    "supported_class_count": 326,
     "translatable": true,
     "unsupported_classes": []
    },
    "lowering": "bactalk-cxf-lowering/v4",
    "source": "ASHRAE-231P-CXF",
-   "source_sha256": "329e376db3970615f696f5c7c672e0a6878a07efeedcb88f3d3102a89ea6c13a"
+   "source_sha256": "fcd30cd2719bc97b7141657ce548c746be7a5c85973a39c97b41dc0270cf0d72"
   },
   "name": "Controller"
  }

@@ -20,6 +20,7 @@ from bactalk.integrations.cxf_importer import (
 _VECTOR_REPLICATORS = {
     "Buildings.Controls.OBC.CDL.Routing.BooleanVectorReplicator": "boolean",
     "Buildings.Controls.OBC.CDL.Routing.RealVectorReplicator": "real",
+    "Buildings.Controls.OBC.CDL.Routing.IntegerVectorReplicator": "integer",
 }
 _VECTOR_FILTERS = {
     "Buildings.Controls.OBC.CDL.Routing.BooleanVectorFilter",
@@ -62,6 +63,23 @@ _EXTRACTORS = {
         "Buildings.Controls.OBC.CDL.Integers.Switch"
     ),
 }
+# CDL time tables have a vector output sized by the table, which the engine's CXF subset
+# cannot hold inside a composite. A column that holds one value in every row is that
+# value at every time (the table's row selection never matters), so it becomes a scalar
+# constant; a time-varying column is refused with that reason (decision 016).
+_TIME_TABLES = {
+    "Buildings.Controls.OBC.CDL.Logical.Sources.TimeTable": (
+        "Buildings.Controls.OBC.CDL.Logical.Sources.Constant"
+    ),
+    "Buildings.Controls.OBC.CDL.Integers.Sources.TimeTable": (
+        "Buildings.Controls.OBC.CDL.Integers.Sources.Constant"
+    ),
+    "Buildings.Controls.OBC.CDL.Reals.Sources.TimeTable": (
+        "Buildings.Controls.OBC.CDL.Reals.Sources.Constant"
+    ),
+}
+# The engine's table value for Integer and Boolean tables: floor(v + CDL small).
+_TIME_TABLE_SMALL = 1.0e-37
 # y[i] = u[extract[i]]: pure routing, one wire per output element.
 _EXTRACT_SIGNALS = {
     "Buildings.Controls.OBC.CDL.Routing.BooleanExtractSignal",
@@ -508,9 +526,24 @@ def _parse_array_expression(
             and isinstance(root_values.get(node.value.id), list)
         ):
             # ``chiTyp[i]`` inside a comprehension: one-based element of a grounded
-            # array parameter.
-            position = evaluate(node.slice, text)
+            # array parameter; ``staEqu[i, j]`` indexes a matrix.
             values = root_values[node.value.id]
+            if isinstance(node.slice, ast.Tuple):
+                *leading, last = node.slice.elts
+                for axis in leading:
+                    row = evaluate(axis, text)
+                    if (
+                        isinstance(row, bool)
+                        or not isinstance(row, (int, float))
+                        or not float(row).is_integer()
+                        or not 1 <= int(row) <= len(values)
+                        or not isinstance(values[int(row) - 1], list)
+                    ):
+                        raise CxfArrayScalarizationError(f"{context} indexes outside an array")
+                    values = values[int(row) - 1]
+                position = evaluate(last, text)
+            else:
+                position = evaluate(node.slice, text)
             if (
                 isinstance(position, bool)
                 or not isinstance(position, (int, float))
@@ -716,6 +749,10 @@ def _parse_array_expression(
             # ``{idxEquAlt for i in 1:n}``: a grounded array body repeats as a row.
             if isinstance(root_values.get(body), list) and body not in local:
                 return copy.deepcopy(root_values[body])
+            if body.startswith("{") and body.endswith("}"):
+                # a nested comprehension (``{{staEqu[i, j] for i in 1:nSta} for j in
+                # 1:nEqu}``) sees the outer iterators as grounded names
+                return _parse_array_expression(body, {**root_values, **local}, context=context)
             return evaluate_scalar(body)
 
         def build(depth: int) -> Any:
@@ -740,6 +777,32 @@ def _parse_array_expression(
             context=f"{context} comprehension bound",
         )
         return list(range(1, count + 1))
+    if stripped.startswith("[") and stripped.endswith("]"):
+        # Modelica matrix construction ``[0, 1; 24*3600, 1]``: rows by ``;``
+        def split_top(text: str, separator: str) -> list[str]:
+            parts: list[str] = []
+            depth = 0
+            current = ""
+            for character in text:
+                if character in "([{":
+                    depth += 1
+                elif character in ")]}":
+                    depth -= 1
+                if character == separator and depth == 0:
+                    parts.append(current)
+                    current = ""
+                    continue
+                current += character
+            parts.append(current)
+            return [part.strip() for part in parts]
+
+        matrix = [
+            [evaluate_scalar(element) for element in split_top(row, ",")]
+            for row in split_top(stripped[1:-1], ";")
+        ]
+        if not matrix or any(not row or "" in row for row in matrix):
+            raise CxfArrayScalarizationError(f"{context} is not a literal matrix")
+        return matrix
     if not stripped.startswith("{") or not stripped.endswith("}"):
         raise CxfArrayScalarizationError(
             f"{context} uses an unsupported array expression {expression!r}"
@@ -1054,6 +1117,7 @@ def _scalarize_filter_reduction_network(
         | _SCALAR_REPLICATORS
         | set(_EXTRACTORS)
         | _EXTRACT_SIGNALS
+        | set(_TIME_TABLES)
         | set(_MATRIX_REDUCTIONS)
         | set(_VECTOR_REPLICATORS)
         | {_MATRIX_GAIN, _LIMITER, _SORT}
@@ -1529,6 +1593,77 @@ def _scalarize_filter_reduction_network(
             disjoint.union(selected, endpoint_maps[output_base][()])
             extractor_count += 1
             continue
+        if class_name in _TIME_TABLES:
+            table = component_value(component_id, "table")
+            rows = (
+                table
+                if isinstance(table, list)
+                else _parse_array_expression(
+                    str(table),
+                    {**root_values, **root_array_values},
+                    context=f"{component_id}.table",
+                )
+            )
+            if (
+                not rows
+                or not all(isinstance(row, list) and len(row) >= 2 for row in rows)
+                or len({len(row) for row in rows}) != 1
+            ):
+                raise CxfArrayScalarizationError(
+                    f"{component_id}.table must be a rectangular matrix with a time column"
+                )
+            offsets: list[float] = []
+            if class_name.endswith("Reals.Sources.TimeTable") and by_id.get(
+                f"{component_id}.offset"
+            ):
+                offsets = [
+                    float(value)
+                    for value in _flatten(
+                        _parse_array_expression(
+                            component_value(component_id, "offset"),
+                            {**root_values, **root_array_values},
+                            context=f"{component_id}.offset",
+                        )
+                    )
+                ]
+            nout = len(rows[0]) - 1
+            output_base = f"{component_id}.y"
+            dynamic_endpoint(output_base, (nout,))
+            label = str(component.get("S231:label", component_id))
+            for column in range(1, nout + 1):
+                values = [float(row[column]) for row in rows]
+                if class_name.endswith("Reals.Sources.TimeTable"):
+                    distinct = set(values)
+                    constant: Any = values[0] + (offsets[column - 1] if offsets else 0.0)
+                else:
+                    levels = [math.floor(value + _TIME_TABLE_SMALL) for value in values]
+                    distinct = set(levels)
+                    constant = (
+                        levels[0] > 0
+                        if class_name.endswith("Logical.Sources.TimeTable")
+                        else levels[0]
+                    )
+                if len(distinct) != 1:
+                    raise CxfArrayScalarizationError(
+                        f"{component_id} column {column} is a time-varying schedule; the "
+                        "engine's CXF subset cannot hold a time table and BACTalk has no "
+                        "schedule kind yet (only constant columns are rewritten)"
+                    )
+                constant_id = f"{component_id}__column_{column}"
+                register(
+                    _component(
+                        constant_id,
+                        _TIME_TABLES[class_name],
+                        f"{label} column {column} (constant schedule)",
+                        [f"{constant_id}.k", f"{constant_id}.y"],
+                    )
+                )
+                register({"@id": f"{constant_id}.k", "S231:isFinal": True, "S231:value": constant})
+                register(_port(f"{constant_id}.y"), "source")
+                new_component_ids.append(constant_id)
+                disjoint.union(f"{constant_id}.y", endpoint_maps[output_base][(column,)])
+            scalar_replicator_count += 1
+            continue
         if class_name in _EXTRACT_SIGNALS:
             nin = _component_parameter(component_id, "nin", by_id, root_values)
             nout = _component_parameter(component_id, "nout", by_id, root_values)
@@ -1762,12 +1897,55 @@ def _scalarize_filter_reduction_network(
             continue
         if class_name in _REDUCTIONS:
             nin = _component_parameter(component_id, "nin", by_id, root_values)
+            gains: list[float] = []
+            if class_name.endswith("MultiSum") and "S231:value" in by_id.get(
+                f"{component_id}.k", {}
+            ):
+                gains = [
+                    float(gain)
+                    for gain in _flatten(
+                        _parse_array_expression(
+                            component_value(component_id, "k"),
+                            {**root_values, **root_array_values},
+                            context=f"{component_id}.k",
+                        )
+                    )
+                ]
+                if len(gains) != nin:
+                    raise CxfArrayScalarizationError(f"{component_id}.k must have {nin} gains")
+                if class_name.startswith("Buildings.Controls.OBC.CDL.Integers.") and any(
+                    gain != 1.0 for gain in gains
+                ):
+                    raise CxfArrayScalarizationError(
+                        f"{component_id}.k: Integer gains other than 1 are not expanded"
+                    )
             input_base = f"{component_id}.u"
             output_base = f"{component_id}.y"
             dynamic_endpoint(input_base, (nin,))
             dynamic_endpoint(output_base, ())
+            # y = sum(k[i] * u[i]): an input whose gain is not 1 passes through a
+            # MultiplyByParameter before the fold (decision 016)
+            terms = {index: endpoint_maps[input_base][(index,)] for index in range(1, nin + 1)}
+            for index, gain in enumerate(gains, start=1):
+                if gain == 1.0:
+                    continue
+                gain_id = f"{component_id}__gain_{index}"
+                register(
+                    _component(
+                        gain_id,
+                        "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter",
+                        f"{component.get('S231:label', component_id)} gain {index}",
+                        [f"{gain_id}.k", f"{gain_id}.u", f"{gain_id}.y"],
+                    )
+                )
+                register({"@id": f"{gain_id}.k", "S231:isFinal": True, "S231:value": gain})
+                register(_port(f"{gain_id}.u"), "sink")
+                register(_port(f"{gain_id}.y"), "source")
+                new_component_ids.append(gain_id)
+                disjoint.union(terms[index], f"{gain_id}.u")
+                terms[index] = f"{gain_id}.y"
             if nin == 1:
-                disjoint.union(endpoint_maps[input_base][(1,)], endpoint_maps[output_base][()])
+                disjoint.union(terms[1], endpoint_maps[output_base][()])
             else:
                 previous_output: str | None = None
                 for input_index in range(2, nin + 1):
@@ -1787,10 +1965,10 @@ def _scalarize_filter_reduction_network(
                     register(_port(output), "source")
                     new_component_ids.append(fold_id)
                     if previous_output is None:
-                        disjoint.union(endpoint_maps[input_base][(1,)], u1)
+                        disjoint.union(terms[1], u1)
                     else:
                         disjoint.union(previous_output, u1)
-                    disjoint.union(endpoint_maps[input_base][(input_index,)], u2)
+                    disjoint.union(terms[input_index], u2)
                     previous_output = output
                 assert previous_output is not None
                 disjoint.union(previous_output, endpoint_maps[output_base][()])
@@ -2170,7 +2348,7 @@ def scalarize_fixed_arrays(
                 label = str(component.get("S231:label", component_id.rsplit(".", 1)[-1])) + suffix
                 source_connector = scalar_inputs[source_id][(column,)]
                 target_connector = scalar_outputs[target_id][(row, column)]
-                if data_type == "real":
+                if data_type in {"real", "integer"}:
                     parameter_id = f"{identity_id}.p"
                     input_port = f"{identity_id}.u"
                     output_port = f"{identity_id}.y"
@@ -2178,11 +2356,17 @@ def scalarize_fixed_arrays(
                         [
                             _component(
                                 identity_id,
-                                "Buildings.Controls.OBC.CDL.Reals.AddParameter",
+                                "Buildings.Controls.OBC.CDL.Reals.AddParameter"
+                                if data_type == "real"
+                                else "Buildings.Controls.OBC.CDL.Integers.AddParameter",
                                 label,
                                 [parameter_id, input_port, output_port],
                             ),
-                            {"@id": parameter_id, "S231:isFinal": True, "S231:value": 0.0},
+                            {
+                                "@id": parameter_id,
+                                "S231:isFinal": True,
+                                "S231:value": 0.0 if data_type == "real" else 0,
+                            },
                             _port(input_port),
                             _port(output_port, [target_connector]),
                         ]

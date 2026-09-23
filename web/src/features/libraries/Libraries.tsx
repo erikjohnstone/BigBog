@@ -225,6 +225,15 @@ function CoverageMatrix({ coverage }: { coverage: LibraryCoverage }) {
                         <StatusPill tone="warn">pre-release</StatusPill>
                       </span>
                     )}
+                    {item.cdl_substitutes && item.cdl_substitutes.length > 0 && (
+                      <span
+                        title={`The engine ran BACTalk's CDL block diagram for ${item.cdl_substitutes
+                          .map((name) => name.split('.').pop())
+                          .join(', ')}, which LBNL writes as Modelica equations; each is checked against LBNL's source`}
+                      >
+                        <StatusPill tone="info">CDL substitute</StatusPill>
+                      </span>
+                    )}
                   </span>
                 </td>
                 <td className="px-4 num text-xs">{item.tier}</td>

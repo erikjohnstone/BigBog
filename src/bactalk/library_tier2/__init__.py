@@ -573,6 +573,21 @@ CONFIGURATIONS = CONFIGURATIONS + (
             "rho_default": 996.0,
         },
         "Heat recovery chiller enable, mode control, load averaging and dedicated pump disable",
+        # both plants on; 0.02 m3/s at 5 K on chilled water (about 416 kW) and 0.01 m3/s
+        # at 5 K on hot water (about 208 kW), both above the chiller's minimum capacities,
+        # with the leaving temperatures inside their limits
+        {
+            "u1Coo": True,
+            "u1Hea": True,
+            "TChiWatSupSet": 280.15,
+            "TChiWatRetUpsHrc": 285.15,
+            "VChiWatLoa_flow": 0.02,
+            "THeaWatSupSet": 318.15,
+            "THeaWatRetUpsHrc": 313.15,
+            "VHeaWatLoa_flow": 0.01,
+            "TChiWatHrcLvg": 280.15,
+            "THeaWatHrcLvg": 318.15,
+        },
     ),
     _template(
         "tpl-enabling-enable",
@@ -580,6 +595,9 @@ CONFIGURATIONS = CONFIGURATIONS + (
         "Enable · enaHea",
         {"nReqIgn": 1, "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating"},
         "Plant enable from requests and schedule",
+        # three plant requests (one is ignored) and 10 °C outdoors, under the 18 °C
+        # heating lockout: the plant has cause to enable
+        {"nReqPla": 3},
     ),
     _template(
         "tpl-heat-recovery-chillers-mode-control",
@@ -715,6 +733,9 @@ CONFIGURATIONS = CONFIGURATIONS + (
             "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating",
         },
         "Failsafe stage-up condition from supply temperature",
+        # primary and secondary supply 5 K under a 60 °C setpoint (the trigger is 2.5 K)
+        # for longer than the 15 min runtime: the failsafe stage-up can fire
+        {"TSupSet": 333.15, "TPriSup": 328.15, "TSecSup": 328.15},
     ),
     _template(
         "tpl-staging-rotation-stage-completion",
@@ -854,7 +875,13 @@ CONFIGURATIONS = CONFIGURATIONS + (
         "tpl-staging-rotation-equipment-enable",
         "StagingRotation.EquipmentEnable",
         "EquipmentEnable · equEnaOneTwo",
-        {"staEqu": [[1, 0, 0], [0, 0.5, 0.5], [1, 0.5, 0.5], [0, 1, 1], [1, 1, 1]]},
+        {
+            "staEqu": [[1, 0, 0], [0, 0.5, 0.5], [1, 0.5, 0.5], [0, 1, 1], [1, 1, 1]],
+            # LBNL's default binding for nEquAlt (the most part-load units in a stage),
+            # max over stages of the count of 0 < staEqu[i, j] < 1: stages 2 and 3 hold
+            # two each. Supplied because BACTalk does not evaluate that expression.
+            "nEquAlt": 2,
+        },
         "Equipment enable from the stage and lead/lag order",
     ),
     _template(
@@ -877,6 +904,8 @@ CONFIGURATIONS = CONFIGURATIONS + (
         "TrueArrayConditional · truArrConSam",
         {"nin": 2},
         "Indices of true signals",
+        # two true elements requested, by priority index 2 then 1
+        {"u": 2, "uIdx__1": 2, "uIdx__2": 1},
     ),
     _template(
         "tpl-staging-rotation-load-average",
@@ -974,6 +1003,8 @@ CONFIGURATIONS = CONFIGURATIONS + (
         "nin = 3",
         {"nin": 3},
         "Maximum of an Integer vector (y = max(u))",
+        # distinct inputs, so raising any one of them moves the maximum
+        {"u__1": 3, "u__2": 5, "u__3": 7},
     ),
     _template(
         "tpl-utilities-multi-min-integer",
@@ -981,6 +1012,8 @@ CONFIGURATIONS = CONFIGURATIONS + (
         "nin = 3",
         {"nin": 3},
         "Minimum of an Integer vector (y = min(u))",
+        # distinct inputs, so lowering any one of them moves the minimum
+        {"u__1": 3, "u__2": 5, "u__3": 7},
     ),
     _template(
         "tpl-utilities-stage-index",
@@ -1399,29 +1432,6 @@ def _ranges(reference: dict[str, Any]) -> dict[str, float]:
     return {signal: high[signal] - low[signal] for signal in low}
 
 
-def _alternates(values: list[Any], tolerance: float) -> bool:
-    """True when the last four samples alternate: up, down, up (or the reverse)."""
-
-    tail = values[-4:]
-    if len(tail) < 4:
-        return False
-    if any(isinstance(value, bool) for value in tail):
-        return all(isinstance(value, bool) for value in tail) and all(
-            tail[index] != tail[index + 1] for index in range(3)
-        )
-    try:
-        numbers = [float(value) for value in tail]
-    except (TypeError, ValueError):
-        return False
-    if not all(math.isfinite(number) for number in numbers):
-        return False
-    steps = [numbers[index + 1] - numbers[index] for index in range(3)]
-    threshold = max(tolerance, 1e-9)
-    return all(abs(step) > threshold for step in steps) and all(
-        (steps[index] > 0) != (steps[index + 1] > 0) for index in range(2)
-    )
-
-
 def expectations_for(config_id: str, case_name: str) -> list[OutputExpectation]:
     """The reference's final values, inside the D3 band."""
 
@@ -1438,11 +1448,6 @@ def expectations_for(config_id: str, case_name: str) -> list[OutputExpectation]:
     for signal, values in sorted(entry["outputs"].items()):
         final = values[-1]
         kind = types.get(signal, "numeric")
-        if _alternates(values, RELATIVE_TOLERANCE * ranges.get(signal, 0.0)):
-            # A scenario that ends inside a period-2 limit cycle has no final value: a
-            # one-scan phase shift, which the scan band set allows (decision 011),
-            # would flip it. D3 still judges the whole trajectory (decision 015).
-            continue
         if kind == "boolean" or isinstance(final, bool):
             expectations.append(OutputExpectation(target=signal, value=bool(final)))
             continue

@@ -3,68 +3,20 @@
   "reason": "RuntimeError: Open Control Engine rejected request: CXF validation failed: model build/schedule error: algebraic loop detected: 68 connector(s) form a cycle not broken by a state-holding block. CDL \u00a77.16 forbids algebraic loops. Remedy: insert a delay block (CDL.Logical.Pre, CDL.Discrete.UnitDelay) or an integrator into the loop, since their outputs do not depend directly on the current input. Cycle members: [\"CDL.Logical.Or#b9.out#c18\", \"CDL.Logical.Not#b274.in#c543\", \"CDL.Logical.Not#b274.out#c544\", \"CDL.Logical.And#b233.in#c443\", \"CDL.Logical.And#b233.out#c444\", \"CDL.Logical.Switch#b260.in#c506\", \"CDL.Lo",
   "stage": "translation"
  },
- "tpl-enabling-enable": {
-  "reason": "RuntimeError: Open Control Engine rejected request; composite/array-parameter: array-valued composite parameters are not supported by this CXF lowering subset; composite/vector-port-instance: instance of class `CDL.Logical.MultiAnd` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.MultiOr` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.Sources.TimeTable` derives its port count from a parameter (17 engine errors)",
-  "stage": "translation"
- },
  "tpl-heat-pumps-air-to-water": {
   "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains StagingRotation.EquipmentAvailability (Modelica.StateGraph), Utilities.Initialization (Modelica equations), Utilities.StageIndex (Modelica.StateGraph), Utilities.TimerWithReset (Modelica equations), Utilities.TrueArrayConditional (an algorithm section). First failure: CxfArrayScalarizationError: ex:Buildings.Templates.Plants.Controls.StagingRotation.StageAvailability.u1Ava dimension nEqu must resolve to an integer from 1 to 512",
-  "stage": "translation"
- },
- "tpl-heat-recovery-chillers-controller": {
-  "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: CXF composite assembly cannot expand ex:Utilities.Initialization, so the parent reaches the engine unassembled: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable, Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl, Pumps.Primary.DisableDedicated, StagingRotation.LoadAverage (40 engine errors)",
   "stage": "translation"
  },
  "tpl-pumps-generic-staging-headered": {
   "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.StageIndex (Modelica.StateGraph), Utilities.TimerWithReset (Modelica equations), Utilities.TrueArrayConditional (an algorithm section). First failure: CxfArrayScalarizationError: ex:Buildings.Templates.Plants.Controls.StagingRotation.EquipmentEnable.u1Ava dimension nEqu must resolve to an integer from 1 to 512",
   "stage": "translation"
  },
- "tpl-pumps-generic-staging-headered-deltap": {
-  "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.Utilities.TimerWithReset, Utilities.TimerWithReset (32 engine errors)",
-  "stage": "reference"
- },
- "tpl-pumps-primary-disable-dedicated": {
-  "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.Initialization inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference",
-  "stage": "reference"
- },
  "tpl-staging-rotation-equipment-availability": {
   "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains StagingRotation.EquipmentAvailability (Modelica.StateGraph). First failure: RuntimeError: CXF composite assembly is incomplete; missing classes: ex:Modelica.StateGraph.InitialStepWithSignal, ex:Modelica.StateGraph.StateGraphRoot, ex:Modelica.StateGraph.Step, ex:Modelica.StateGraph.StepWithSignal, ex:Modelica.StateGraph.Transition, ex:Modelica.StateGraph.TransitionWithSignal",
   "stage": "translation"
  },
- "tpl-staging-rotation-equipment-enable": {
-  "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: CxfArrayScalarizationError: ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx dimension nin must resolve to an integer from 1 to 512",
-  "stage": "translation"
- },
- "tpl-staging-rotation-failsafe-condition": {
-  "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.PlaceholderLogical, Utilities.TimerWithReset inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference",
-  "stage": "reference"
- },
- "tpl-staging-rotation-stage-change-command": {
-  "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: ValueError: compile-time enum grounding left an unresolved dependency in ex:Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.capReq.typ: typ",
-  "stage": "translation"
- },
- "tpl-utilities-initialization": {
-  "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/Initialization.jsonld",
-  "stage": "translation"
- },
- "tpl-utilities-multi-max-integer": {
-  "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMaxInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMaxInteger.jsonld",
-  "stage": "translation"
- },
- "tpl-utilities-multi-min-integer": {
-  "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMinInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMinInteger.jsonld",
-  "stage": "translation"
- },
  "tpl-utilities-stage-index": {
   "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.StageIndex (Modelica.StateGraph), Utilities.TrueArrayConditional (an algorithm section). First failure: RuntimeError: CXF composite assembly is incomplete; missing classes: ex:Integer, ex:Modelica.StateGraph.InitialStepWithSignal, ex:Modelica.StateGraph.StateGraphRoot, ex:Modelica.StateGraph.StepWithSignal, ex:Modelica.StateGraph.TransitionWithSignal",
-  "stage": "translation"
- },
- "tpl-utilities-timer-with-reset": {
-  "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/TimerWithReset.jsonld",
-  "stage": "translation"
- },
- "tpl-utilities-true-array-conditional": {
-  "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: RuntimeError: Open Control Engine rejected request; no block class for Integer; composite/array-connector: array-valued connector nodes are not supported (4 engine errors)",
   "stage": "translation"
  }
 }

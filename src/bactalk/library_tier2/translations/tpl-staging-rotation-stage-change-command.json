@@ -1,0 +1,5148 @@
+{
+ "cdl_substitutes": [
+  "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset"
+ ],
+ "configuration_id": "tpl-staging-rotation-stage-change-command",
+ "controller_id": "StagingRotation.StageChangeCommand",
+ "execution_profile": "host_tick_v1",
+ "interface": {
+  "controller_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand",
+  "inputs": [
+   {
+    "description": "Primary supply temperature",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.TPriSup",
+    "label": "TPriSup",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Return temperature used to compute required capacity",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.TRet",
+    "label": "TRet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Active supply temperature setpoint used to compute required capacity",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.TSupSet",
+    "label": "TSupSet",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Volume flow rate used to compute required capacity",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.V_flow",
+    "label": "V_flow",
+    "type": "S231:RealInput"
+   },
+   {
+    "description": "Stage available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.u1AvaSta__1",
+    "label": "u1AvaSta__1",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Stage available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.u1AvaSta__2",
+    "label": "u1AvaSta__2",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Stage available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.u1AvaSta__3",
+    "label": "u1AvaSta__3",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Stage available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.u1AvaSta__4",
+    "label": "u1AvaSta__4",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Stage available signal",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.u1AvaSta__5",
+    "label": "u1AvaSta__5",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Staging process in progress",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.u1StaPro",
+    "label": "u1StaPro",
+    "type": "S231:BooleanInput"
+   },
+   {
+    "description": "Stage index",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.uSta",
+    "label": "uSta",
+    "type": "S231:IntegerInput"
+   }
+  ],
+  "outputs": [
+   {
+    "description": "Stage down command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.y1Dow",
+    "label": "y1Dow",
+    "type": "S231:BooleanOutput"
+   },
+   {
+    "description": "Stage up command",
+    "id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.y1Up",
+    "label": "y1Up",
+    "type": "S231:BooleanOutput"
+   }
+  ]
+ },
+ "library": "plant_controls",
+ "niagara_target": {
+  "complete": true,
+  "generated_program_count": 22
+ },
+ "note": "Retained so a base install can build the Tier 2 job without the vendored translation toolchain (GOAL-NATIVE-BOG.md N8). Regenerate with scripts/retain_tier2.py.",
+ "parameters": {
+  "capEqu": [
+   100000.0,
+   450000.0,
+   450000.0
+  ],
+  "cp_default": 4184.0,
+  "dT": 2.5,
+  "have_pumSec": false,
+  "nEqu": 3,
+  "nSta": 5,
+  "plrSta": 0.9,
+  "rho_default": 996.0,
+  "staEqu": [
+   [
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    0.5,
+    0.5
+   ],
+   [
+    1,
+    0.5,
+    0.5
+   ],
+   [
+    0,
+    1,
+    1
+   ],
+   [
+    1,
+    1,
+    1
+   ]
+  ],
+  "traStaEqu": [
+   [
+    1,
+    0,
+    1,
+    0,
+    1
+   ],
+   [
+    0,
+    0.5,
+    0.5,
+    1,
+    1
+   ],
+   [
+    0,
+    0.5,
+    0.5,
+    1,
+    1
+   ]
+  ],
+  "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating"
+ },
+ "points": [
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TPriSup",
+   "name": "TPriSup",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.TPriSup",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TRet",
+   "name": "TRet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.TRet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "TSupSet",
+   "name": "TSupSet",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.TSupSet",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "V_flow",
+   "name": "V_flow",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.V_flow",
+   "source_interface_type": "S231:RealInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1AvaSta__1",
+   "name": "u1AvaSta__1",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.u1AvaSta__1",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1AvaSta__2",
+   "name": "u1AvaSta__2",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.u1AvaSta__2",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1AvaSta__3",
+   "name": "u1AvaSta__3",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.u1AvaSta__3",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1AvaSta__4",
+   "name": "u1AvaSta__4",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.u1AvaSta__4",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1AvaSta__5",
+   "name": "u1AvaSta__5",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.u1AvaSta__5",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "u1StaPro",
+   "name": "u1StaPro",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.u1StaPro",
+   "source_interface_type": "S231:BooleanInput"
+  },
+  {
+   "data_type": "numeric",
+   "default": 0.0,
+   "label": "uSta",
+   "name": "uSta",
+   "required": true,
+   "role": "sensor",
+   "source_interface_direction": "input",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.uSta",
+   "source_interface_type": "S231:IntegerInput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1Dow",
+   "name": "y1Dow",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.y1Dow",
+   "source_interface_type": "S231:BooleanOutput"
+  },
+  {
+   "data_type": "boolean",
+   "default": false,
+   "label": "y1Up",
+   "name": "y1Up",
+   "required": true,
+   "role": "command",
+   "source_interface_direction": "output",
+   "source_interface_id": "http://example.org#Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.y1Up",
+   "source_interface_type": "S231:BooleanOutput"
+  }
+ ],
+ "schema": "bactalk.retained-library-translation/v1",
+ "source": {
+  "relative_path": "StagingRotation/StageChangeCommand.mo",
+  "repository": "https://github.com/lbl-srg/modelica-buildings",
+  "revision": "55abf579598ca81cae0a82f337350375958e6722",
+  "source_sha256": "3badd6c646d9c5ee65cc728e2630f8ef8e771642cf0d60f20c61aab5375cae84",
+  "tag": "v13.0.0"
+ },
+ "translator": {
+  "cxf_source_sha256": "e91b89d6135b4f0357d12dd0276dc59fedaf1367ef495e51e5f8cfe23eaf28a1",
+  "lowering_schema": "bactalk-cxf-lowering/v4",
+  "name": "LBNL modelica-json",
+  "runtime": "Open Control Engine"
+ },
+ "typed_ir": {
+  "blocks": [
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TPriSup",
+    "kind": "numeric_input",
+    "label": "TPriSup",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TRet",
+    "kind": "numeric_input",
+    "label": "TRet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "TSupSet",
+    "kind": "numeric_input",
+    "label": "TSupSet",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1AvaSta__1",
+    "kind": "boolean_input",
+    "label": "u1AvaSta__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1AvaSta__2",
+    "kind": "boolean_input",
+    "label": "u1AvaSta__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1AvaSta__3",
+    "kind": "boolean_input",
+    "label": "u1AvaSta__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1AvaSta__4",
+    "kind": "boolean_input",
+    "label": "u1AvaSta__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1AvaSta__5",
+    "kind": "boolean_input",
+    "label": "u1AvaSta__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": false
+    },
+    "id": "u1StaPro",
+    "kind": "boolean_input",
+    "label": "u1StaPro",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "uSta",
+    "kind": "numeric_input",
+    "label": "uSta",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "default": 0.0
+    },
+    "id": "V_flow",
+    "kind": "numeric_input",
+    "label": "V_flow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1Dow",
+    "kind": "boolean_output",
+    "label": "y1Dow",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "y1Up",
+    "kind": "boolean_output",
+    "label": "y1Up",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 100000.0
+    },
+    "id": "capEquPar__1",
+    "kind": "numeric_const",
+    "label": "capEquPar__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 450000.0
+    },
+    "id": "capEquPar__2",
+    "kind": "numeric_const",
+    "label": "capEquPar__2",
+    "x": 180,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 450000.0
+    },
+    "id": "capEquPar__3",
+    "kind": "numeric_const",
+    "label": "capEquPar__3",
+    "x": 360,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "capEquSta__1",
+    "kind": "multiply",
+    "label": "capEquSta__1",
+    "x": 540,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "capEquSta__2",
+    "kind": "multiply",
+    "label": "capEquSta__2",
+    "x": 720,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "capEquSta__3",
+    "kind": "multiply",
+    "label": "capEquSta__3",
+    "x": 900,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "capEquStaLow__1",
+    "kind": "multiply",
+    "label": "capEquStaLow__1",
+    "x": 0,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "capEquStaLow__2",
+    "kind": "multiply",
+    "label": "capEquStaLow__2",
+    "x": 180,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "capEquStaLow__3",
+    "kind": "multiply",
+    "label": "capEquStaLow__3",
+    "x": 360,
+    "y": 120
+   },
+   {
+    "config": {
+     "value": 4167264.0
+    },
+    "id": "capFlo_parameter",
+    "kind": "numeric_const",
+    "label": "capFlo parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "capFlo",
+    "kind": "multiply",
+    "label": "capFlo",
+    "x": 540,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "capReq",
+    "kind": "multiply",
+    "label": "capReq",
+    "x": 720,
+    "y": 120
+   },
+   {
+    "config": {},
+    "id": "delT",
+    "kind": "subtract",
+    "label": "delT",
+    "x": 900,
+    "y": 120
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Reals.MovingAverage",
+     "window_seconds": 300.0
+    },
+    "id": "movAve",
+    "kind": "moving_average",
+    "label": "movAve",
+    "x": 0,
+    "y": 240
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "polHeaCoo_parameter",
+    "kind": "numeric_const",
+    "label": "polHeaCoo parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "polHeaCoo",
+    "kind": "multiply",
+    "label": "polHeaCoo",
+    "x": 180,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "capSta_fold_2",
+    "kind": "add",
+    "label": "capSta fold 2",
+    "x": 360,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "capSta_fold_3",
+    "kind": "add",
+    "label": "capSta fold 3",
+    "x": 540,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "capStaLow_fold_2",
+    "kind": "add",
+    "label": "capStaLow fold 2",
+    "x": 720,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "capStaLow_fold_3",
+    "kind": "add",
+    "label": "capStaLow fold 3",
+    "x": 900,
+    "y": 240
+   },
+   {
+    "config": {},
+    "id": "effAndNotFaiSaf",
+    "kind": "and",
+    "label": "effAndNotFaiSaf",
+    "x": 0,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "effOrFaiSaf",
+    "kind": "or",
+    "label": "effOrFaiSaf",
+    "x": 180,
+    "y": 360
+   },
+   {
+    "config": {
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
+    },
+    "id": "endStaPro",
+    "kind": "boolean_falling_edge",
+    "label": "endStaPro",
+    "x": 360,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "any",
+    "kind": "or",
+    "label": "any",
+    "x": 540,
+    "y": 360
+   },
+   {
+    "config": {},
+    "id": "dTPriSet",
+    "kind": "subtract",
+    "label": "dTPriSet",
+    "x": 720,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": -2.5
+    },
+    "id": "lesPriSet_threshold",
+    "kind": "numeric_const",
+    "label": "lesPriSet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "lesPriSet",
+    "kind": "less_than",
+    "label": "lesPriSet",
+    "x": 900,
+    "y": 360
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "ph",
+    "kind": "boolean_const",
+    "label": "ph",
+    "x": 0,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "polHeaCoo_2_parameter",
+    "kind": "numeric_const",
+    "label": "polHeaCoo parameter",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "polHeaCoo_2",
+    "kind": "multiply",
+    "label": "polHeaCoo",
+    "x": 180,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "anyEve",
+    "kind": "or",
+    "label": "anyEve",
+    "x": 360,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "cur",
+    "kind": "numeric_switch",
+    "label": "cur",
+    "x": 540,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "ela",
+    "kind": "numeric_switch",
+    "label": "ela",
+    "x": 720,
+    "y": 480
+   },
+   {
+    "config": {},
+    "id": "eveAftIni",
+    "kind": "and",
+    "label": "eveAftIni",
+    "x": 900,
+    "y": 480
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal",
+    "kind": "boolean_const",
+    "label": "fal",
+    "x": 0,
+    "y": 600
+   },
+   {
+    "config": {
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
+    },
+    "id": "falU",
+    "kind": "boolean_falling_edge",
+    "label": "falU",
+    "x": 180,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "noEve",
+    "kind": "not",
+    "label": "noEve",
+    "x": 360,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "nonPos",
+    "kind": "not",
+    "label": "nonPos",
+    "x": 540,
+    "y": 600
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 720,
+    "y": 600
+   },
+   {
+    "config": {},
+    "id": "notTog",
+    "kind": "not",
+    "label": "notTog",
+    "x": 900,
+    "y": 600
+   },
+   {
+    "config": {
+     "value": 900.0
+    },
+    "id": "notYet_threshold",
+    "kind": "numeric_const",
+    "label": "notYet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notYet",
+    "kind": "less_than",
+    "label": "notYet",
+    "x": 0,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "pas",
+    "kind": "or",
+    "label": "pas",
+    "x": 180,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "pasIni",
+    "kind": "and",
+    "label": "pasIni",
+    "x": 360,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "pasOn",
+    "kind": "and",
+    "label": "pasOn",
+    "x": 540,
+    "y": 720
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "pos_threshold",
+    "kind": "numeric_const",
+    "label": "pos threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pos",
+    "kind": "greater_than",
+    "label": "pos",
+    "x": 720,
+    "y": 720
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preTog",
+    "kind": "boolean_pre_host_tick",
+    "label": "preTog",
+    "x": 900,
+    "y": 720
+   },
+   {
+    "config": {},
+    "id": "rea",
+    "kind": "not",
+    "label": "rea",
+    "x": 0,
+    "y": 840
+   },
+   {
+    "config": {},
+    "id": "res",
+    "kind": "or",
+    "label": "res",
+    "x": 180,
+    "y": 840
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risRes",
+    "kind": "one_shot",
+    "label": "risRes",
+    "x": 360,
+    "y": 840
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risU",
+    "kind": "one_shot",
+    "label": "risU",
+    "x": 540,
+    "y": 840
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "see",
+    "kind": "boolean_set_reset",
+    "label": "see",
+    "x": 720,
+    "y": 840
+   },
+   {
+    "config": {
+     "value": 900.0
+    },
+    "id": "thr",
+    "kind": "numeric_const",
+    "label": "thr",
+    "x": 900,
+    "y": 840
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timFal",
+    "kind": "timer_accumulating",
+    "label": "timFal",
+    "x": 0,
+    "y": 960
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRis",
+    "kind": "timer_accumulating",
+    "label": "timRis",
+    "x": 180,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "tog",
+    "kind": "xor",
+    "label": "tog",
+    "x": 360,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 540,
+    "y": 960
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 720,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "gre",
+    "kind": "greater_than",
+    "label": "gre",
+    "x": 900,
+    "y": 960
+   },
+   {
+    "config": {},
+    "id": "swi",
+    "kind": "numeric_switch",
+    "label": "swi",
+    "x": 0,
+    "y": 1080
+   },
+   {
+    "config": {
+     "initial": 0.0,
+     "semantic_contract": "CDL.Discrete.TriggeredSampler"
+    },
+    "id": "triSam",
+    "kind": "numeric_latch",
+    "label": "triSam",
+    "x": 180,
+    "y": 1080
+   },
+   {
+    "config": {
+     "false_hold_seconds": 0.0,
+     "true_hold_seconds": 900.0
+    },
+    "id": "truHol",
+    "kind": "boolean_true_false_hold",
+    "label": "truHol",
+    "x": 360,
+    "y": 1080
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "booToInt__1_true",
+    "kind": "numeric_const",
+    "label": "booToInt__1 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__1_false",
+    "kind": "numeric_const",
+    "label": "booToInt__1 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__1",
+    "kind": "numeric_switch",
+    "label": "booToInt__1",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "booToInt__2_true",
+    "kind": "numeric_const",
+    "label": "booToInt__2 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__2_false",
+    "kind": "numeric_const",
+    "label": "booToInt__2 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__2",
+    "kind": "numeric_switch",
+    "label": "booToInt__2",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "booToInt__3_true",
+    "kind": "numeric_const",
+    "label": "booToInt__3 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__3_false",
+    "kind": "numeric_const",
+    "label": "booToInt__3 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__3",
+    "kind": "numeric_switch",
+    "label": "booToInt__3",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "booToInt__4_true",
+    "kind": "numeric_const",
+    "label": "booToInt__4 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__4_false",
+    "kind": "numeric_const",
+    "label": "booToInt__4 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__4",
+    "kind": "numeric_switch",
+    "label": "booToInt__4",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "booToInt__5_true",
+    "kind": "numeric_const",
+    "label": "booToInt__5 true",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "booToInt__5_false",
+    "kind": "numeric_const",
+    "label": "booToInt__5 false",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "booToInt__5",
+    "kind": "numeric_switch",
+    "label": "booToInt__5",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "mulMax_fold_2",
+    "kind": "maximum",
+    "label": "mulMax fold 2",
+    "x": 360,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "mulMax_fold_3",
+    "kind": "maximum",
+    "label": "mulMax fold 3",
+    "x": 540,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "mulMax_fold_4",
+    "kind": "maximum",
+    "label": "mulMax fold 4",
+    "x": 720,
+    "y": 1200
+   },
+   {
+    "config": {},
+    "id": "mulMax_fold_5",
+    "kind": "maximum",
+    "label": "mulMax fold 5",
+    "x": 900,
+    "y": 1200
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "idxSta__1",
+    "kind": "numeric_const",
+    "label": "idxSta__1",
+    "x": 0,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "idxSta__2",
+    "kind": "numeric_const",
+    "label": "idxSta__2",
+    "x": 180,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "idxSta__3",
+    "kind": "numeric_const",
+    "label": "idxSta__3",
+    "x": 360,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "idxSta__4",
+    "kind": "numeric_const",
+    "label": "idxSta__4",
+    "x": 540,
+    "y": 1320
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "idxSta__5",
+    "kind": "numeric_const",
+    "label": "idxSta__5",
+    "x": 720,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "idxStaLesAct__1",
+    "kind": "less_than",
+    "label": "idxStaLesAct__1",
+    "x": 900,
+    "y": 1320
+   },
+   {
+    "config": {},
+    "id": "idxStaLesAct__2",
+    "kind": "less_than",
+    "label": "idxStaLesAct__2",
+    "x": 0,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "idxStaLesAct__3",
+    "kind": "less_than",
+    "label": "idxStaLesAct__3",
+    "x": 180,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "idxStaLesAct__4",
+    "kind": "less_than",
+    "label": "idxStaLesAct__4",
+    "x": 360,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "idxStaLesAct__5",
+    "kind": "less_than",
+    "label": "idxStaLesAct__5",
+    "x": 540,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "idxStaLesActAva__1",
+    "kind": "and",
+    "label": "idxStaLesActAva__1",
+    "x": 720,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "idxStaLesActAva__2",
+    "kind": "and",
+    "label": "idxStaLesActAva__2",
+    "x": 900,
+    "y": 1440
+   },
+   {
+    "config": {},
+    "id": "idxStaLesActAva__3",
+    "kind": "and",
+    "label": "idxStaLesActAva__3",
+    "x": 0,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "idxStaLesActAva__4",
+    "kind": "and",
+    "label": "idxStaLesActAva__4",
+    "x": 180,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "idxStaLesActAva__5",
+    "kind": "and",
+    "label": "idxStaLesActAva__5",
+    "x": 360,
+    "y": 1560
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "intToRea_zero",
+    "kind": "numeric_const",
+    "label": "intToRea zero",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "intToRea",
+    "kind": "add",
+    "label": "intToRea",
+    "x": 540,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "les",
+    "kind": "less_than",
+    "label": "les",
+    "x": 720,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "maxInt",
+    "kind": "maximum",
+    "label": "maxInt",
+    "x": 900,
+    "y": 1560
+   },
+   {
+    "config": {},
+    "id": "maxInt1",
+    "kind": "maximum",
+    "label": "maxInt1",
+    "x": 0,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "minInt",
+    "kind": "minimum",
+    "label": "minInt",
+    "x": 180,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "notFaiSaf",
+    "kind": "not",
+    "label": "notFaiSaf",
+    "x": 360,
+    "y": 1680
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "one",
+    "kind": "numeric_const",
+    "label": "one",
+    "x": 540,
+    "y": 1680
+   },
+   {
+    "config": {
+     "value": 0.9
+    },
+    "id": "ph_2",
+    "kind": "numeric_const",
+    "label": "ph",
+    "x": 720,
+    "y": 1680
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "reqEquSta_nEqu__index____4_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquSta[nEqu] index <= 4 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__index____4",
+    "kind": "less_than",
+    "label": "reqEquSta[nEqu] index <= 4",
+    "x": 900,
+    "y": 1680
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__element_4",
+    "kind": "numeric_switch",
+    "label": "reqEquSta[nEqu] element 4",
+    "x": 0,
+    "y": 1800
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "reqEquSta_nEqu__index____3_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquSta[nEqu] index <= 3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__index____3",
+    "kind": "less_than",
+    "label": "reqEquSta[nEqu] index <= 3",
+    "x": 180,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__element_3",
+    "kind": "numeric_switch",
+    "label": "reqEquSta[nEqu] element 3",
+    "x": 360,
+    "y": 1800
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "reqEquSta_nEqu__index____2_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquSta[nEqu] index <= 2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__index____2",
+    "kind": "less_than",
+    "label": "reqEquSta[nEqu] index <= 2",
+    "x": 540,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__element_2",
+    "kind": "numeric_switch",
+    "label": "reqEquSta[nEqu] element 2",
+    "x": 720,
+    "y": 1800
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "reqEquSta_nEqu__index____1_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquSta[nEqu] index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__index____1",
+    "kind": "less_than",
+    "label": "reqEquSta[nEqu] index <= 1",
+    "x": 900,
+    "y": 1800
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__element_1",
+    "kind": "numeric_switch",
+    "label": "reqEquSta[nEqu] element 1",
+    "x": 0,
+    "y": 1920
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "reqEquSta_nEqu__index____4_2_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquSta[nEqu] index <= 4 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__index____4_2",
+    "kind": "less_than",
+    "label": "reqEquSta[nEqu] index <= 4",
+    "x": 180,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__element_4_2",
+    "kind": "numeric_switch",
+    "label": "reqEquSta[nEqu] element 4",
+    "x": 360,
+    "y": 1920
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "reqEquSta_nEqu__index____3_2_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquSta[nEqu] index <= 3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__index____3_2",
+    "kind": "less_than",
+    "label": "reqEquSta[nEqu] index <= 3",
+    "x": 540,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__element_3_2",
+    "kind": "numeric_switch",
+    "label": "reqEquSta[nEqu] element 3",
+    "x": 720,
+    "y": 1920
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "reqEquSta_nEqu__index____2_2_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquSta[nEqu] index <= 2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__index____2_2",
+    "kind": "less_than",
+    "label": "reqEquSta[nEqu] index <= 2",
+    "x": 900,
+    "y": 1920
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__element_2_2",
+    "kind": "numeric_switch",
+    "label": "reqEquSta[nEqu] element 2",
+    "x": 0,
+    "y": 2040
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "reqEquSta_nEqu__index____1_2_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquSta[nEqu] index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__index____1_2",
+    "kind": "less_than",
+    "label": "reqEquSta[nEqu] index <= 1",
+    "x": 180,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__element_1_2",
+    "kind": "numeric_switch",
+    "label": "reqEquSta[nEqu] element 1",
+    "x": 360,
+    "y": 2040
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "reqEquSta_nEqu__index____4_3_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquSta[nEqu] index <= 4 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__index____4_3",
+    "kind": "less_than",
+    "label": "reqEquSta[nEqu] index <= 4",
+    "x": 540,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__element_4_3",
+    "kind": "numeric_switch",
+    "label": "reqEquSta[nEqu] element 4",
+    "x": 720,
+    "y": 2040
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "reqEquSta_nEqu__index____3_3_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquSta[nEqu] index <= 3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__index____3_3",
+    "kind": "less_than",
+    "label": "reqEquSta[nEqu] index <= 3",
+    "x": 900,
+    "y": 2040
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__element_3_3",
+    "kind": "numeric_switch",
+    "label": "reqEquSta[nEqu] element 3",
+    "x": 0,
+    "y": 2160
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "reqEquSta_nEqu__index____2_3_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquSta[nEqu] index <= 2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__index____2_3",
+    "kind": "less_than",
+    "label": "reqEquSta[nEqu] index <= 2",
+    "x": 180,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__element_2_3",
+    "kind": "numeric_switch",
+    "label": "reqEquSta[nEqu] element 2",
+    "x": 360,
+    "y": 2160
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "reqEquSta_nEqu__index____1_3_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquSta[nEqu] index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__index____1_3",
+    "kind": "less_than",
+    "label": "reqEquSta[nEqu] index <= 1",
+    "x": 540,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "reqEquSta_nEqu__element_1_3",
+    "kind": "numeric_switch",
+    "label": "reqEquSta[nEqu] element 1",
+    "x": 720,
+    "y": 2160
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "reqEquStaLow_nEqu__index____4_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquStaLow[nEqu] index <= 4 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__index____4",
+    "kind": "less_than",
+    "label": "reqEquStaLow[nEqu] index <= 4",
+    "x": 900,
+    "y": 2160
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__element_4",
+    "kind": "numeric_switch",
+    "label": "reqEquStaLow[nEqu] element 4",
+    "x": 0,
+    "y": 2280
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "reqEquStaLow_nEqu__index____3_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquStaLow[nEqu] index <= 3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__index____3",
+    "kind": "less_than",
+    "label": "reqEquStaLow[nEqu] index <= 3",
+    "x": 180,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__element_3",
+    "kind": "numeric_switch",
+    "label": "reqEquStaLow[nEqu] element 3",
+    "x": 360,
+    "y": 2280
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "reqEquStaLow_nEqu__index____2_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquStaLow[nEqu] index <= 2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__index____2",
+    "kind": "less_than",
+    "label": "reqEquStaLow[nEqu] index <= 2",
+    "x": 540,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__element_2",
+    "kind": "numeric_switch",
+    "label": "reqEquStaLow[nEqu] element 2",
+    "x": 720,
+    "y": 2280
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "reqEquStaLow_nEqu__index____1_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquStaLow[nEqu] index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__index____1",
+    "kind": "less_than",
+    "label": "reqEquStaLow[nEqu] index <= 1",
+    "x": 900,
+    "y": 2280
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__element_1",
+    "kind": "numeric_switch",
+    "label": "reqEquStaLow[nEqu] element 1",
+    "x": 0,
+    "y": 2400
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "reqEquStaLow_nEqu__index____4_2_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquStaLow[nEqu] index <= 4 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__index____4_2",
+    "kind": "less_than",
+    "label": "reqEquStaLow[nEqu] index <= 4",
+    "x": 180,
+    "y": 2400
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__element_4_2",
+    "kind": "numeric_switch",
+    "label": "reqEquStaLow[nEqu] element 4",
+    "x": 360,
+    "y": 2400
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "reqEquStaLow_nEqu__index____3_2_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquStaLow[nEqu] index <= 3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__index____3_2",
+    "kind": "less_than",
+    "label": "reqEquStaLow[nEqu] index <= 3",
+    "x": 540,
+    "y": 2400
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__element_3_2",
+    "kind": "numeric_switch",
+    "label": "reqEquStaLow[nEqu] element 3",
+    "x": 720,
+    "y": 2400
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "reqEquStaLow_nEqu__index____2_2_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquStaLow[nEqu] index <= 2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__index____2_2",
+    "kind": "less_than",
+    "label": "reqEquStaLow[nEqu] index <= 2",
+    "x": 900,
+    "y": 2400
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__element_2_2",
+    "kind": "numeric_switch",
+    "label": "reqEquStaLow[nEqu] element 2",
+    "x": 0,
+    "y": 2520
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "reqEquStaLow_nEqu__index____1_2_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquStaLow[nEqu] index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__index____1_2",
+    "kind": "less_than",
+    "label": "reqEquStaLow[nEqu] index <= 1",
+    "x": 180,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__element_1_2",
+    "kind": "numeric_switch",
+    "label": "reqEquStaLow[nEqu] element 1",
+    "x": 360,
+    "y": 2520
+   },
+   {
+    "config": {
+     "value": 5.0
+    },
+    "id": "reqEquStaLow_nEqu__index____4_3_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquStaLow[nEqu] index <= 4 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__index____4_3",
+    "kind": "less_than",
+    "label": "reqEquStaLow[nEqu] index <= 4",
+    "x": 540,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__element_4_3",
+    "kind": "numeric_switch",
+    "label": "reqEquStaLow[nEqu] element 4",
+    "x": 720,
+    "y": 2520
+   },
+   {
+    "config": {
+     "value": 4.0
+    },
+    "id": "reqEquStaLow_nEqu__index____3_3_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquStaLow[nEqu] index <= 3 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__index____3_3",
+    "kind": "less_than",
+    "label": "reqEquStaLow[nEqu] index <= 3",
+    "x": 900,
+    "y": 2520
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__element_3_3",
+    "kind": "numeric_switch",
+    "label": "reqEquStaLow[nEqu] element 3",
+    "x": 0,
+    "y": 2640
+   },
+   {
+    "config": {
+     "value": 3.0
+    },
+    "id": "reqEquStaLow_nEqu__index____2_3_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquStaLow[nEqu] index <= 2 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__index____2_3",
+    "kind": "less_than",
+    "label": "reqEquStaLow[nEqu] index <= 2",
+    "x": 180,
+    "y": 2640
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__element_2_3",
+    "kind": "numeric_switch",
+    "label": "reqEquStaLow[nEqu] element 2",
+    "x": 360,
+    "y": 2640
+   },
+   {
+    "config": {
+     "value": 2.0
+    },
+    "id": "reqEquStaLow_nEqu__index____1_3_threshold",
+    "kind": "numeric_const",
+    "label": "reqEquStaLow[nEqu] index <= 1 threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__index____1_3",
+    "kind": "less_than",
+    "label": "reqEquStaLow[nEqu] index <= 1",
+    "x": 540,
+    "y": 2640
+   },
+   {
+    "config": {},
+    "id": "reqEquStaLow_nEqu__element_1_3",
+    "kind": "numeric_switch",
+    "label": "reqEquStaLow[nEqu] element 1",
+    "x": 720,
+    "y": 2640
+   },
+   {
+    "config": {},
+    "id": "setZer",
+    "kind": "multiply",
+    "label": "setZer",
+    "x": 900,
+    "y": 2640
+   },
+   {
+    "config": {},
+    "id": "splTimCapSta",
+    "kind": "multiply",
+    "label": "splTimCapSta",
+    "x": 0,
+    "y": 2760
+   },
+   {
+    "config": {},
+    "id": "splTimCapStaLow",
+    "kind": "multiply",
+    "label": "splTimCapStaLow",
+    "x": 180,
+    "y": 2760
+   },
+   {
+    "config": {},
+    "id": "anyEve_2",
+    "kind": "or",
+    "label": "anyEve",
+    "x": 360,
+    "y": 2760
+   },
+   {
+    "config": {},
+    "id": "cur_2",
+    "kind": "numeric_switch",
+    "label": "cur",
+    "x": 540,
+    "y": 2760
+   },
+   {
+    "config": {},
+    "id": "ela_2",
+    "kind": "numeric_switch",
+    "label": "ela",
+    "x": 720,
+    "y": 2760
+   },
+   {
+    "config": {},
+    "id": "eveAftIni_2",
+    "kind": "and",
+    "label": "eveAftIni",
+    "x": 900,
+    "y": 2760
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal_2",
+    "kind": "boolean_const",
+    "label": "fal",
+    "x": 0,
+    "y": 2880
+   },
+   {
+    "config": {
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
+    },
+    "id": "falU_2",
+    "kind": "boolean_falling_edge",
+    "label": "falU",
+    "x": 180,
+    "y": 2880
+   },
+   {
+    "config": {},
+    "id": "noEve_2",
+    "kind": "not",
+    "label": "noEve",
+    "x": 360,
+    "y": 2880
+   },
+   {
+    "config": {},
+    "id": "nonPos_2",
+    "kind": "not",
+    "label": "nonPos",
+    "x": 540,
+    "y": 2880
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni_2",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 720,
+    "y": 2880
+   },
+   {
+    "config": {},
+    "id": "notTog_2",
+    "kind": "not",
+    "label": "notTog",
+    "x": 900,
+    "y": 2880
+   },
+   {
+    "config": {
+     "value": 900.0
+    },
+    "id": "notYet_2_threshold",
+    "kind": "numeric_const",
+    "label": "notYet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notYet_2",
+    "kind": "less_than",
+    "label": "notYet",
+    "x": 0,
+    "y": 3000
+   },
+   {
+    "config": {},
+    "id": "pas_2",
+    "kind": "or",
+    "label": "pas",
+    "x": 180,
+    "y": 3000
+   },
+   {
+    "config": {},
+    "id": "pasIni_2",
+    "kind": "and",
+    "label": "pasIni",
+    "x": 360,
+    "y": 3000
+   },
+   {
+    "config": {},
+    "id": "pasOn_2",
+    "kind": "and",
+    "label": "pasOn",
+    "x": 540,
+    "y": 3000
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "pos_2_threshold",
+    "kind": "numeric_const",
+    "label": "pos threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pos_2",
+    "kind": "greater_than",
+    "label": "pos",
+    "x": 720,
+    "y": 3000
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preTog_2",
+    "kind": "boolean_pre_host_tick",
+    "label": "preTog",
+    "x": 900,
+    "y": 3000
+   },
+   {
+    "config": {},
+    "id": "rea_2",
+    "kind": "not",
+    "label": "rea",
+    "x": 0,
+    "y": 3120
+   },
+   {
+    "config": {},
+    "id": "res_2",
+    "kind": "or",
+    "label": "res",
+    "x": 180,
+    "y": 3120
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risRes_2",
+    "kind": "one_shot",
+    "label": "risRes",
+    "x": 360,
+    "y": 3120
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risU_2",
+    "kind": "one_shot",
+    "label": "risU",
+    "x": 540,
+    "y": 3120
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "see_2",
+    "kind": "boolean_set_reset",
+    "label": "see",
+    "x": 720,
+    "y": 3120
+   },
+   {
+    "config": {
+     "value": 900.0
+    },
+    "id": "thr_2",
+    "kind": "numeric_const",
+    "label": "thr",
+    "x": 900,
+    "y": 3120
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timFal_2",
+    "kind": "timer_accumulating",
+    "label": "timFal",
+    "x": 0,
+    "y": 3240
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRis_2",
+    "kind": "timer_accumulating",
+    "label": "timRis",
+    "x": 180,
+    "y": 3240
+   },
+   {
+    "config": {},
+    "id": "tog_2",
+    "kind": "xor",
+    "label": "tog",
+    "x": 360,
+    "y": 3240
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru_2",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 540,
+    "y": 3240
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer_2",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 720,
+    "y": 3240
+   },
+   {
+    "config": {},
+    "id": "anyEve_3",
+    "kind": "or",
+    "label": "anyEve",
+    "x": 900,
+    "y": 3240
+   },
+   {
+    "config": {},
+    "id": "cur_3",
+    "kind": "numeric_switch",
+    "label": "cur",
+    "x": 0,
+    "y": 3360
+   },
+   {
+    "config": {},
+    "id": "ela_3",
+    "kind": "numeric_switch",
+    "label": "ela",
+    "x": 180,
+    "y": 3360
+   },
+   {
+    "config": {},
+    "id": "eveAftIni_3",
+    "kind": "and",
+    "label": "eveAftIni",
+    "x": 360,
+    "y": 3360
+   },
+   {
+    "config": {
+     "value": false
+    },
+    "id": "fal_3",
+    "kind": "boolean_const",
+    "label": "fal",
+    "x": 540,
+    "y": 3360
+   },
+   {
+    "config": {
+     "pre_u_start": false,
+     "semantic_contract": "CDL.Logical.FallingEdge"
+    },
+    "id": "falU_3",
+    "kind": "boolean_falling_edge",
+    "label": "falU",
+    "x": 720,
+    "y": 3360
+   },
+   {
+    "config": {},
+    "id": "noEve_3",
+    "kind": "not",
+    "label": "noEve",
+    "x": 900,
+    "y": 3360
+   },
+   {
+    "config": {},
+    "id": "nonPos_3",
+    "kind": "not",
+    "label": "nonPos",
+    "x": 0,
+    "y": 3480
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "notIni_3",
+    "kind": "boolean_pre_host_tick",
+    "label": "notIni",
+    "x": 180,
+    "y": 3480
+   },
+   {
+    "config": {},
+    "id": "notTog_3",
+    "kind": "not",
+    "label": "notTog",
+    "x": 360,
+    "y": 3480
+   },
+   {
+    "config": {
+     "value": 900.0
+    },
+    "id": "notYet_3_threshold",
+    "kind": "numeric_const",
+    "label": "notYet threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "notYet_3",
+    "kind": "less_than",
+    "label": "notYet",
+    "x": 540,
+    "y": 3480
+   },
+   {
+    "config": {},
+    "id": "pas_3",
+    "kind": "or",
+    "label": "pas",
+    "x": 720,
+    "y": 3480
+   },
+   {
+    "config": {},
+    "id": "pasIni_3",
+    "kind": "and",
+    "label": "pasIni",
+    "x": 900,
+    "y": 3480
+   },
+   {
+    "config": {},
+    "id": "pasOn_3",
+    "kind": "and",
+    "label": "pasOn",
+    "x": 0,
+    "y": 3600
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "pos_3_threshold",
+    "kind": "numeric_const",
+    "label": "pos threshold",
+    "x": 0,
+    "y": 0
+   },
+   {
+    "config": {},
+    "id": "pos_3",
+    "kind": "greater_than",
+    "label": "pos",
+    "x": 180,
+    "y": 3600
+   },
+   {
+    "config": {
+     "execution_profile": "host_tick_v1",
+     "initial": false,
+     "semantic_contract": "CDL.Logical.Pre"
+    },
+    "id": "preTog_3",
+    "kind": "boolean_pre_host_tick",
+    "label": "preTog",
+    "x": 360,
+    "y": 3600
+   },
+   {
+    "config": {},
+    "id": "rea_3",
+    "kind": "not",
+    "label": "rea",
+    "x": 540,
+    "y": 3600
+   },
+   {
+    "config": {},
+    "id": "res_3",
+    "kind": "or",
+    "label": "res",
+    "x": 720,
+    "y": 3600
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risRes_3",
+    "kind": "one_shot",
+    "label": "risRes",
+    "x": 900,
+    "y": 3600
+   },
+   {
+    "config": {
+     "initial": false
+    },
+    "id": "risU_3",
+    "kind": "one_shot",
+    "label": "risU",
+    "x": 0,
+    "y": 3720
+   },
+   {
+    "config": {
+     "semantic_contract": "CDL.Logical.Latch"
+    },
+    "id": "see_3",
+    "kind": "boolean_set_reset",
+    "label": "see",
+    "x": 180,
+    "y": 3720
+   },
+   {
+    "config": {
+     "value": 900.0
+    },
+    "id": "thr_3",
+    "kind": "numeric_const",
+    "label": "thr",
+    "x": 360,
+    "y": 3720
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timFal_3",
+    "kind": "timer_accumulating",
+    "label": "timFal",
+    "x": 540,
+    "y": 3720
+   },
+   {
+    "config": {
+     "semantic_contract": "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "threshold_seconds": 0.0
+    },
+    "id": "timRis_3",
+    "kind": "timer_accumulating",
+    "label": "timRis",
+    "x": 720,
+    "y": 3720
+   },
+   {
+    "config": {},
+    "id": "tog_3",
+    "kind": "xor",
+    "label": "tog",
+    "x": 900,
+    "y": 3720
+   },
+   {
+    "config": {
+     "value": true
+    },
+    "id": "tru_3",
+    "kind": "boolean_const",
+    "label": "tru",
+    "x": 0,
+    "y": 3840
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "zer_3",
+    "kind": "numeric_const",
+    "label": "zer",
+    "x": 180,
+    "y": 3840
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "traMatStaEqu__1_1",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__1_1",
+    "x": 360,
+    "y": 3840
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "traMatStaEqu__1_2",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__1_2",
+    "x": 540,
+    "y": 3840
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "traMatStaEqu__1_3",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__1_3",
+    "x": 720,
+    "y": 3840
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "traMatStaEqu__1_4",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__1_4",
+    "x": 900,
+    "y": 3840
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "traMatStaEqu__1_5",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__1_5",
+    "x": 0,
+    "y": 3960
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "traMatStaEqu__2_1",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__2_1",
+    "x": 180,
+    "y": 3960
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "traMatStaEqu__2_2",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__2_2",
+    "x": 360,
+    "y": 3960
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "traMatStaEqu__2_3",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__2_3",
+    "x": 540,
+    "y": 3960
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "traMatStaEqu__2_4",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__2_4",
+    "x": 720,
+    "y": 3960
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "traMatStaEqu__2_5",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__2_5",
+    "x": 900,
+    "y": 3960
+   },
+   {
+    "config": {
+     "value": 0.0
+    },
+    "id": "traMatStaEqu__3_1",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__3_1",
+    "x": 0,
+    "y": 4080
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "traMatStaEqu__3_2",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__3_2",
+    "x": 180,
+    "y": 4080
+   },
+   {
+    "config": {
+     "value": 0.5
+    },
+    "id": "traMatStaEqu__3_3",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__3_3",
+    "x": 360,
+    "y": 4080
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "traMatStaEqu__3_4",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__3_4",
+    "x": 540,
+    "y": 4080
+   },
+   {
+    "config": {
+     "value": 1.0
+    },
+    "id": "traMatStaEqu__3_5",
+    "kind": "numeric_const",
+    "label": "traMatStaEqu__3_5",
+    "x": 720,
+    "y": 4080
+   }
+  ],
+  "links": [
+   {
+    "source": "capFlo_parameter",
+    "source_slot": "out",
+    "target": "capFlo",
+    "target_slot": "b"
+   },
+   {
+    "source": "polHeaCoo_parameter",
+    "source_slot": "out",
+    "target": "polHeaCoo",
+    "target_slot": "b"
+   },
+   {
+    "source": "lesPriSet_threshold",
+    "source_slot": "out",
+    "target": "lesPriSet",
+    "target_slot": "b"
+   },
+   {
+    "source": "polHeaCoo_2_parameter",
+    "source_slot": "out",
+    "target": "polHeaCoo_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "notYet_threshold",
+    "source_slot": "out",
+    "target": "notYet",
+    "target_slot": "b"
+   },
+   {
+    "source": "pos_threshold",
+    "source_slot": "out",
+    "target": "pos",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__1_true",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__1_false",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__2_true",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__2_false",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__3_true",
+    "source_slot": "out",
+    "target": "booToInt__3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__3_false",
+    "source_slot": "out",
+    "target": "booToInt__3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__4_true",
+    "source_slot": "out",
+    "target": "booToInt__4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__4_false",
+    "source_slot": "out",
+    "target": "booToInt__4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "booToInt__5_true",
+    "source_slot": "out",
+    "target": "booToInt__5",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "booToInt__5_false",
+    "source_slot": "out",
+    "target": "booToInt__5",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "intToRea_zero",
+    "source_slot": "out",
+    "target": "intToRea",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____4_threshold",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____4",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____3_threshold",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____3",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____2_threshold",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____2",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____1_threshold",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____1",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____4_2_threshold",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____4_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____3_2_threshold",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____2_2_threshold",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____1_2_threshold",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____4_3_threshold",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____4_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____3_3_threshold",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____3_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____2_3_threshold",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____1_3_threshold",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____1_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____4_threshold",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____4",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____3_threshold",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____3",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____2_threshold",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____2",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____1_threshold",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____1",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____4_2_threshold",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____4_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____3_2_threshold",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____3_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____2_2_threshold",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____2_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____1_2_threshold",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____1_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____4_3_threshold",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____4_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____3_3_threshold",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____3_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____2_3_threshold",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____2_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____1_3_threshold",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____1_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "notYet_2_threshold",
+    "source_slot": "out",
+    "target": "notYet_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "pos_2_threshold",
+    "source_slot": "out",
+    "target": "pos_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "notYet_3_threshold",
+    "source_slot": "out",
+    "target": "notYet_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "pos_3_threshold",
+    "source_slot": "out",
+    "target": "pos_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "TPriSup",
+    "source_slot": "out",
+    "target": "dTPriSet",
+    "target_slot": "a"
+   },
+   {
+    "source": "TRet",
+    "source_slot": "out",
+    "target": "delT",
+    "target_slot": "b"
+   },
+   {
+    "source": "TSupSet",
+    "source_slot": "out",
+    "target": "delT",
+    "target_slot": "a"
+   },
+   {
+    "source": "TSupSet",
+    "source_slot": "out",
+    "target": "dTPriSet",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1AvaSta__1",
+    "source_slot": "out",
+    "target": "idxStaLesActAva__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1AvaSta__2",
+    "source_slot": "out",
+    "target": "idxStaLesActAva__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1AvaSta__3",
+    "source_slot": "out",
+    "target": "idxStaLesActAva__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1AvaSta__4",
+    "source_slot": "out",
+    "target": "idxStaLesActAva__4",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1AvaSta__5",
+    "source_slot": "out",
+    "target": "idxStaLesActAva__5",
+    "target_slot": "b"
+   },
+   {
+    "source": "u1StaPro",
+    "source_slot": "out",
+    "target": "endStaPro",
+    "target_slot": "in"
+   },
+   {
+    "source": "u1StaPro",
+    "source_slot": "out",
+    "target": "triSam",
+    "target_slot": "clock"
+   },
+   {
+    "source": "u1StaPro",
+    "source_slot": "out",
+    "target": "truHol",
+    "target_slot": "in"
+   },
+   {
+    "source": "uSta",
+    "source_slot": "out",
+    "target": "idxStaLesAct__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "uSta",
+    "source_slot": "out",
+    "target": "idxStaLesAct__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "uSta",
+    "source_slot": "out",
+    "target": "idxStaLesAct__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "uSta",
+    "source_slot": "out",
+    "target": "idxStaLesAct__4",
+    "target_slot": "b"
+   },
+   {
+    "source": "uSta",
+    "source_slot": "out",
+    "target": "idxStaLesAct__5",
+    "target_slot": "b"
+   },
+   {
+    "source": "uSta",
+    "source_slot": "out",
+    "target": "maxInt",
+    "target_slot": "a"
+   },
+   {
+    "source": "V_flow",
+    "source_slot": "out",
+    "target": "capFlo",
+    "target_slot": "a"
+   },
+   {
+    "source": "capEquPar__1",
+    "source_slot": "out",
+    "target": "capEquStaLow__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "capEquPar__1",
+    "source_slot": "out",
+    "target": "capEquSta__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "capEquPar__2",
+    "source_slot": "out",
+    "target": "capEquStaLow__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "capEquPar__2",
+    "source_slot": "out",
+    "target": "capEquSta__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "capEquPar__3",
+    "source_slot": "out",
+    "target": "capEquStaLow__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "capEquPar__3",
+    "source_slot": "out",
+    "target": "capEquSta__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "capEquSta__1",
+    "source_slot": "out",
+    "target": "capSta_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "capEquSta__2",
+    "source_slot": "out",
+    "target": "capSta_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "capEquSta__3",
+    "source_slot": "out",
+    "target": "capSta_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "capEquStaLow__1",
+    "source_slot": "out",
+    "target": "capStaLow_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "capEquStaLow__2",
+    "source_slot": "out",
+    "target": "capStaLow_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "capEquStaLow__3",
+    "source_slot": "out",
+    "target": "capStaLow_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "capFlo",
+    "source_slot": "out",
+    "target": "capReq",
+    "target_slot": "b"
+   },
+   {
+    "source": "capReq",
+    "source_slot": "out",
+    "target": "polHeaCoo",
+    "target_slot": "a"
+   },
+   {
+    "source": "delT",
+    "source_slot": "out",
+    "target": "capReq",
+    "target_slot": "a"
+   },
+   {
+    "source": "movAve",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "movAve",
+    "source_slot": "out",
+    "target": "triSam",
+    "target_slot": "in"
+   },
+   {
+    "source": "polHeaCoo",
+    "source_slot": "out",
+    "target": "movAve",
+    "target_slot": "in"
+   },
+   {
+    "source": "capSta_fold_2",
+    "source_slot": "out",
+    "target": "capSta_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "capSta_fold_3",
+    "source_slot": "out",
+    "target": "splTimCapSta",
+    "target_slot": "b"
+   },
+   {
+    "source": "capStaLow_fold_2",
+    "source_slot": "out",
+    "target": "capStaLow_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "capStaLow_fold_3",
+    "source_slot": "out",
+    "target": "setZer",
+    "target_slot": "a"
+   },
+   {
+    "source": "effAndNotFaiSaf",
+    "source_slot": "out",
+    "target": "y1Dow",
+    "target_slot": "in"
+   },
+   {
+    "source": "effOrFaiSaf",
+    "source_slot": "out",
+    "target": "y1Up",
+    "target_slot": "in"
+   },
+   {
+    "source": "endStaPro",
+    "source_slot": "out",
+    "target": "risRes",
+    "target_slot": "in"
+   },
+   {
+    "source": "endStaPro",
+    "source_slot": "out",
+    "target": "risRes_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "endStaPro",
+    "source_slot": "out",
+    "target": "risRes_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "any",
+    "source_slot": "out",
+    "target": "effOrFaiSaf",
+    "target_slot": "a"
+   },
+   {
+    "source": "any",
+    "source_slot": "out",
+    "target": "notFaiSaf",
+    "target_slot": "in"
+   },
+   {
+    "source": "dTPriSet",
+    "source_slot": "out",
+    "target": "polHeaCoo_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "lesPriSet",
+    "source_slot": "out",
+    "target": "ela",
+    "target_slot": "selector"
+   },
+   {
+    "source": "lesPriSet",
+    "source_slot": "out",
+    "target": "falU",
+    "target_slot": "in"
+   },
+   {
+    "source": "lesPriSet",
+    "source_slot": "out",
+    "target": "pasOn",
+    "target_slot": "a"
+   },
+   {
+    "source": "lesPriSet",
+    "source_slot": "out",
+    "target": "risU",
+    "target_slot": "in"
+   },
+   {
+    "source": "lesPriSet",
+    "source_slot": "out",
+    "target": "timFal",
+    "target_slot": "in"
+   },
+   {
+    "source": "lesPriSet",
+    "source_slot": "out",
+    "target": "timRis",
+    "target_slot": "in"
+   },
+   {
+    "source": "ph",
+    "source_slot": "out",
+    "target": "any",
+    "target_slot": "b"
+   },
+   {
+    "source": "polHeaCoo_2",
+    "source_slot": "out",
+    "target": "lesPriSet",
+    "target_slot": "a"
+   },
+   {
+    "source": "anyEve",
+    "source_slot": "out",
+    "target": "eveAftIni",
+    "target_slot": "b"
+   },
+   {
+    "source": "cur",
+    "source_slot": "out",
+    "target": "ela",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "ela",
+    "source_slot": "out",
+    "target": "notYet",
+    "target_slot": "a"
+   },
+   {
+    "source": "eveAftIni",
+    "source_slot": "out",
+    "target": "see",
+    "target_slot": "set"
+   },
+   {
+    "source": "fal",
+    "source_slot": "out",
+    "target": "see",
+    "target_slot": "clear"
+   },
+   {
+    "source": "falU",
+    "source_slot": "out",
+    "target": "anyEve",
+    "target_slot": "b"
+   },
+   {
+    "source": "noEve",
+    "source_slot": "out",
+    "target": "pasIni",
+    "target_slot": "a"
+   },
+   {
+    "source": "nonPos",
+    "source_slot": "out",
+    "target": "pasIni",
+    "target_slot": "b"
+   },
+   {
+    "source": "notIni",
+    "source_slot": "out",
+    "target": "eveAftIni",
+    "target_slot": "a"
+   },
+   {
+    "source": "notTog",
+    "source_slot": "out",
+    "target": "timFal",
+    "target_slot": "reset"
+   },
+   {
+    "source": "notYet",
+    "source_slot": "out",
+    "target": "rea",
+    "target_slot": "in"
+   },
+   {
+    "source": "pas",
+    "source_slot": "out",
+    "target": "any",
+    "target_slot": "a"
+   },
+   {
+    "source": "pasIni",
+    "source_slot": "out",
+    "target": "pas",
+    "target_slot": "b"
+   },
+   {
+    "source": "pasOn",
+    "source_slot": "out",
+    "target": "pas",
+    "target_slot": "a"
+   },
+   {
+    "source": "pos",
+    "source_slot": "out",
+    "target": "nonPos",
+    "target_slot": "in"
+   },
+   {
+    "source": "preTog",
+    "source_slot": "out",
+    "target": "tog",
+    "target_slot": "b"
+   },
+   {
+    "source": "rea",
+    "source_slot": "out",
+    "target": "pasOn",
+    "target_slot": "b"
+   },
+   {
+    "source": "res",
+    "source_slot": "out",
+    "target": "anyEve",
+    "target_slot": "a"
+   },
+   {
+    "source": "res",
+    "source_slot": "out",
+    "target": "tog",
+    "target_slot": "a"
+   },
+   {
+    "source": "risRes",
+    "source_slot": "out",
+    "target": "res",
+    "target_slot": "b"
+   },
+   {
+    "source": "risU",
+    "source_slot": "out",
+    "target": "res",
+    "target_slot": "a"
+   },
+   {
+    "source": "see",
+    "source_slot": "out",
+    "target": "noEve",
+    "target_slot": "in"
+   },
+   {
+    "source": "thr",
+    "source_slot": "out",
+    "target": "pos",
+    "target_slot": "a"
+   },
+   {
+    "source": "timFal",
+    "source_slot": "elapsed",
+    "target": "cur",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "timRis",
+    "source_slot": "elapsed",
+    "target": "cur",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "tog",
+    "source_slot": "out",
+    "target": "cur",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tog",
+    "source_slot": "out",
+    "target": "notTog",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog",
+    "source_slot": "out",
+    "target": "preTog",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog",
+    "source_slot": "out",
+    "target": "timRis",
+    "target_slot": "reset"
+   },
+   {
+    "source": "tru",
+    "source_slot": "out",
+    "target": "notIni",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer",
+    "source_slot": "out",
+    "target": "ela",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "gre",
+    "source_slot": "out",
+    "target": "ela_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "gre",
+    "source_slot": "out",
+    "target": "falU_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "gre",
+    "source_slot": "out",
+    "target": "pasOn_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "gre",
+    "source_slot": "out",
+    "target": "risU_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "gre",
+    "source_slot": "out",
+    "target": "timFal_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "gre",
+    "source_slot": "out",
+    "target": "timRis_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "gre",
+    "target_slot": "a"
+   },
+   {
+    "source": "swi",
+    "source_slot": "out",
+    "target": "les",
+    "target_slot": "a"
+   },
+   {
+    "source": "triSam",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "truHol",
+    "source_slot": "out",
+    "target": "swi",
+    "target_slot": "selector"
+   },
+   {
+    "source": "booToInt__1",
+    "source_slot": "out",
+    "target": "mulMax_fold_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "booToInt__2",
+    "source_slot": "out",
+    "target": "mulMax_fold_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__3",
+    "source_slot": "out",
+    "target": "mulMax_fold_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__4",
+    "source_slot": "out",
+    "target": "mulMax_fold_4",
+    "target_slot": "b"
+   },
+   {
+    "source": "booToInt__5",
+    "source_slot": "out",
+    "target": "mulMax_fold_5",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulMax_fold_2",
+    "source_slot": "out",
+    "target": "mulMax_fold_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulMax_fold_3",
+    "source_slot": "out",
+    "target": "mulMax_fold_4",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulMax_fold_4",
+    "source_slot": "out",
+    "target": "mulMax_fold_5",
+    "target_slot": "a"
+   },
+   {
+    "source": "mulMax_fold_5",
+    "source_slot": "out",
+    "target": "maxInt1",
+    "target_slot": "b"
+   },
+   {
+    "source": "mulMax_fold_5",
+    "source_slot": "out",
+    "target": "minInt",
+    "target_slot": "b"
+   },
+   {
+    "source": "idxSta__1",
+    "source_slot": "out",
+    "target": "idxStaLesAct__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "idxSta__2",
+    "source_slot": "out",
+    "target": "idxStaLesAct__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "idxSta__3",
+    "source_slot": "out",
+    "target": "idxStaLesAct__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "idxSta__4",
+    "source_slot": "out",
+    "target": "idxStaLesAct__4",
+    "target_slot": "a"
+   },
+   {
+    "source": "idxSta__5",
+    "source_slot": "out",
+    "target": "idxStaLesAct__5",
+    "target_slot": "a"
+   },
+   {
+    "source": "idxStaLesAct__1",
+    "source_slot": "out",
+    "target": "idxStaLesActAva__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "idxStaLesAct__2",
+    "source_slot": "out",
+    "target": "idxStaLesActAva__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "idxStaLesAct__3",
+    "source_slot": "out",
+    "target": "idxStaLesActAva__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "idxStaLesAct__4",
+    "source_slot": "out",
+    "target": "idxStaLesActAva__4",
+    "target_slot": "a"
+   },
+   {
+    "source": "idxStaLesAct__5",
+    "source_slot": "out",
+    "target": "idxStaLesActAva__5",
+    "target_slot": "a"
+   },
+   {
+    "source": "idxStaLesActAva__1",
+    "source_slot": "out",
+    "target": "booToInt__1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "idxStaLesActAva__2",
+    "source_slot": "out",
+    "target": "booToInt__2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "idxStaLesActAva__3",
+    "source_slot": "out",
+    "target": "booToInt__3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "idxStaLesActAva__4",
+    "source_slot": "out",
+    "target": "booToInt__4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "idxStaLesActAva__5",
+    "source_slot": "out",
+    "target": "booToInt__5",
+    "target_slot": "selector"
+   },
+   {
+    "source": "intToRea",
+    "source_slot": "out",
+    "target": "setZer",
+    "target_slot": "b"
+   },
+   {
+    "source": "les",
+    "source_slot": "out",
+    "target": "ela_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "les",
+    "source_slot": "out",
+    "target": "falU_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "les",
+    "source_slot": "out",
+    "target": "pasOn_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "les",
+    "source_slot": "out",
+    "target": "risU_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "les",
+    "source_slot": "out",
+    "target": "timFal_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "les",
+    "source_slot": "out",
+    "target": "timRis_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "maxInt",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____1",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____2",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____4",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____4_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____1_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____3_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__index____4_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____1",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____2",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____4",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____1_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____2_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____3_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____4_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____1_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____2_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____3_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "maxInt1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__index____4_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "minInt",
+    "source_slot": "out",
+    "target": "intToRea",
+    "target_slot": "a"
+   },
+   {
+    "source": "notFaiSaf",
+    "source_slot": "out",
+    "target": "effAndNotFaiSaf",
+    "target_slot": "a"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "maxInt",
+    "target_slot": "b"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "maxInt1",
+    "target_slot": "a"
+   },
+   {
+    "source": "one",
+    "source_slot": "out",
+    "target": "minInt",
+    "target_slot": "a"
+   },
+   {
+    "source": "ph_2",
+    "source_slot": "out",
+    "target": "splTimCapSta",
+    "target_slot": "a"
+   },
+   {
+    "source": "ph_2",
+    "source_slot": "out",
+    "target": "splTimCapStaLow",
+    "target_slot": "a"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____4",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquSta_nEqu__element_4",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____3",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquSta_nEqu__element_3",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____2",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquSta_nEqu__element_2",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____1",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquSta_nEqu__element_1",
+    "source_slot": "out",
+    "target": "capEquSta__1",
+    "target_slot": "a"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____4_2",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_4_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquSta_nEqu__element_4_2",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_3_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____3_2",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_3_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquSta_nEqu__element_3_2",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_2_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____2_2",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_2_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquSta_nEqu__element_2_2",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_1_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____1_2",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_1_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquSta_nEqu__element_1_2",
+    "source_slot": "out",
+    "target": "capEquSta__2",
+    "target_slot": "a"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____4_3",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_4_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquSta_nEqu__element_4_3",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_3_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____3_3",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_3_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquSta_nEqu__element_3_3",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_2_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____2_3",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_2_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquSta_nEqu__element_2_3",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_1_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquSta_nEqu__index____1_3",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_1_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquSta_nEqu__element_1_3",
+    "source_slot": "out",
+    "target": "capEquSta__3",
+    "target_slot": "a"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____4",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_4",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__element_4",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____3",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__element_3",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____2",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__element_2",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_1",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_1",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__element_1",
+    "source_slot": "out",
+    "target": "capEquStaLow__1",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____4_2",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_4_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__element_4_2",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_3_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____3_2",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_3_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__element_3_2",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_2_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____2_2",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_2_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__element_2_2",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_1_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____1_2",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_1_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__element_1_2",
+    "source_slot": "out",
+    "target": "capEquStaLow__2",
+    "target_slot": "b"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____4_3",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_4_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__element_4_3",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_3_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____3_3",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_3_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__element_3_3",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_2_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____2_3",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_2_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__element_2_3",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_1_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__index____1_3",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_1_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "reqEquStaLow_nEqu__element_1_3",
+    "source_slot": "out",
+    "target": "capEquStaLow__3",
+    "target_slot": "b"
+   },
+   {
+    "source": "setZer",
+    "source_slot": "out",
+    "target": "splTimCapStaLow",
+    "target_slot": "b"
+   },
+   {
+    "source": "splTimCapSta",
+    "source_slot": "out",
+    "target": "gre",
+    "target_slot": "b"
+   },
+   {
+    "source": "splTimCapStaLow",
+    "source_slot": "out",
+    "target": "les",
+    "target_slot": "b"
+   },
+   {
+    "source": "anyEve_2",
+    "source_slot": "out",
+    "target": "eveAftIni_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "cur_2",
+    "source_slot": "out",
+    "target": "ela_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "ela_2",
+    "source_slot": "out",
+    "target": "notYet_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "eveAftIni_2",
+    "source_slot": "out",
+    "target": "see_2",
+    "target_slot": "set"
+   },
+   {
+    "source": "fal_2",
+    "source_slot": "out",
+    "target": "see_2",
+    "target_slot": "clear"
+   },
+   {
+    "source": "falU_2",
+    "source_slot": "out",
+    "target": "anyEve_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "noEve_2",
+    "source_slot": "out",
+    "target": "pasIni_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "nonPos_2",
+    "source_slot": "out",
+    "target": "pasIni_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "notIni_2",
+    "source_slot": "out",
+    "target": "eveAftIni_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "notTog_2",
+    "source_slot": "out",
+    "target": "timFal_2",
+    "target_slot": "reset"
+   },
+   {
+    "source": "notYet_2",
+    "source_slot": "out",
+    "target": "rea_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "pas_2",
+    "source_slot": "out",
+    "target": "effAndNotFaiSaf",
+    "target_slot": "b"
+   },
+   {
+    "source": "pasIni_2",
+    "source_slot": "out",
+    "target": "pas_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "pasOn_2",
+    "source_slot": "out",
+    "target": "pas_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "pos_2",
+    "source_slot": "out",
+    "target": "nonPos_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "preTog_2",
+    "source_slot": "out",
+    "target": "tog_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "rea_2",
+    "source_slot": "out",
+    "target": "pasOn_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "res_2",
+    "source_slot": "out",
+    "target": "anyEve_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "res_2",
+    "source_slot": "out",
+    "target": "tog_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "risRes_2",
+    "source_slot": "out",
+    "target": "res_2",
+    "target_slot": "b"
+   },
+   {
+    "source": "risU_2",
+    "source_slot": "out",
+    "target": "res_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "see_2",
+    "source_slot": "out",
+    "target": "noEve_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "thr_2",
+    "source_slot": "out",
+    "target": "pos_2",
+    "target_slot": "a"
+   },
+   {
+    "source": "timFal_2",
+    "source_slot": "elapsed",
+    "target": "cur_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "timRis_2",
+    "source_slot": "elapsed",
+    "target": "cur_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "tog_2",
+    "source_slot": "out",
+    "target": "cur_2",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tog_2",
+    "source_slot": "out",
+    "target": "notTog_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_2",
+    "source_slot": "out",
+    "target": "preTog_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_2",
+    "source_slot": "out",
+    "target": "timRis_2",
+    "target_slot": "reset"
+   },
+   {
+    "source": "tru_2",
+    "source_slot": "out",
+    "target": "notIni_2",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer_2",
+    "source_slot": "out",
+    "target": "ela_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "anyEve_3",
+    "source_slot": "out",
+    "target": "eveAftIni_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "cur_3",
+    "source_slot": "out",
+    "target": "ela_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "ela_3",
+    "source_slot": "out",
+    "target": "notYet_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "eveAftIni_3",
+    "source_slot": "out",
+    "target": "see_3",
+    "target_slot": "set"
+   },
+   {
+    "source": "fal_3",
+    "source_slot": "out",
+    "target": "see_3",
+    "target_slot": "clear"
+   },
+   {
+    "source": "falU_3",
+    "source_slot": "out",
+    "target": "anyEve_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "noEve_3",
+    "source_slot": "out",
+    "target": "pasIni_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "nonPos_3",
+    "source_slot": "out",
+    "target": "pasIni_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "notIni_3",
+    "source_slot": "out",
+    "target": "eveAftIni_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "notTog_3",
+    "source_slot": "out",
+    "target": "timFal_3",
+    "target_slot": "reset"
+   },
+   {
+    "source": "notYet_3",
+    "source_slot": "out",
+    "target": "rea_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "pas_3",
+    "source_slot": "out",
+    "target": "effOrFaiSaf",
+    "target_slot": "b"
+   },
+   {
+    "source": "pasIni_3",
+    "source_slot": "out",
+    "target": "pas_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "pasOn_3",
+    "source_slot": "out",
+    "target": "pas_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "pos_3",
+    "source_slot": "out",
+    "target": "nonPos_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "preTog_3",
+    "source_slot": "out",
+    "target": "tog_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "rea_3",
+    "source_slot": "out",
+    "target": "pasOn_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "res_3",
+    "source_slot": "out",
+    "target": "anyEve_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "res_3",
+    "source_slot": "out",
+    "target": "tog_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "risRes_3",
+    "source_slot": "out",
+    "target": "res_3",
+    "target_slot": "b"
+   },
+   {
+    "source": "risU_3",
+    "source_slot": "out",
+    "target": "res_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "see_3",
+    "source_slot": "out",
+    "target": "noEve_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "thr_3",
+    "source_slot": "out",
+    "target": "pos_3",
+    "target_slot": "a"
+   },
+   {
+    "source": "timFal_3",
+    "source_slot": "elapsed",
+    "target": "cur_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "timRis_3",
+    "source_slot": "elapsed",
+    "target": "cur_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "tog_3",
+    "source_slot": "out",
+    "target": "cur_3",
+    "target_slot": "selector"
+   },
+   {
+    "source": "tog_3",
+    "source_slot": "out",
+    "target": "notTog_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_3",
+    "source_slot": "out",
+    "target": "preTog_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "tog_3",
+    "source_slot": "out",
+    "target": "timRis_3",
+    "target_slot": "reset"
+   },
+   {
+    "source": "tru_3",
+    "source_slot": "out",
+    "target": "notIni_3",
+    "target_slot": "in"
+   },
+   {
+    "source": "zer_3",
+    "source_slot": "out",
+    "target": "ela_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "traMatStaEqu__1_1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__1_1",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_1",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__1_2",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__1_2",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__1_3",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__1_3",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__1_4",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__1_4",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_4",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__1_5",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "traMatStaEqu__1_5",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_4",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "traMatStaEqu__2_1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_1_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__2_1",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_1_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__2_2",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_2_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__2_2",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_2_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__2_3",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_3_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__2_3",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_3_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__2_4",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_4_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__2_4",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_4_2",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__2_5",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_4_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "traMatStaEqu__2_5",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_4_2",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "traMatStaEqu__3_1",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_1_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__3_1",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_1_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__3_2",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_2_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__3_2",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_2_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__3_3",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_3_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__3_3",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_3_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__3_4",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_4_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__3_4",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_4_3",
+    "target_slot": "when_true"
+   },
+   {
+    "source": "traMatStaEqu__3_5",
+    "source_slot": "out",
+    "target": "reqEquStaLow_nEqu__element_4_3",
+    "target_slot": "when_false"
+   },
+   {
+    "source": "traMatStaEqu__3_5",
+    "source_slot": "out",
+    "target": "reqEquSta_nEqu__element_4_3",
+    "target_slot": "when_false"
+   }
+  ],
+  "metadata": {
+   "block_origins": {
+    "any": "faiSaf.any",
+    "anyEve": "faiSaf.timPriSet.anyEve",
+    "anyEve_2": "timDow.anyEve",
+    "anyEve_3": "timUp.anyEve",
+    "booToInt__1": "idxLasTru.booToInt__1",
+    "booToInt__1_false": "idxLasTru.booToInt__1",
+    "booToInt__1_true": "idxLasTru.booToInt__1",
+    "booToInt__2": "idxLasTru.booToInt__2",
+    "booToInt__2_false": "idxLasTru.booToInt__2",
+    "booToInt__2_true": "idxLasTru.booToInt__2",
+    "booToInt__3": "idxLasTru.booToInt__3",
+    "booToInt__3_false": "idxLasTru.booToInt__3",
+    "booToInt__3_true": "idxLasTru.booToInt__3",
+    "booToInt__4": "idxLasTru.booToInt__4",
+    "booToInt__4_false": "idxLasTru.booToInt__4",
+    "booToInt__4_true": "idxLasTru.booToInt__4",
+    "booToInt__5": "idxLasTru.booToInt__5",
+    "booToInt__5_false": "idxLasTru.booToInt__5",
+    "booToInt__5_true": "idxLasTru.booToInt__5",
+    "capEquPar__1": "capEquPar__1",
+    "capEquPar__2": "capEquPar__2",
+    "capEquPar__3": "capEquPar__3",
+    "capEquStaLow__1": "capEquStaLow__1",
+    "capEquStaLow__2": "capEquStaLow__2",
+    "capEquStaLow__3": "capEquStaLow__3",
+    "capEquSta__1": "capEquSta__1",
+    "capEquSta__2": "capEquSta__2",
+    "capEquSta__3": "capEquSta__3",
+    "capFlo": "capReq.capFlo",
+    "capFlo_parameter": "capReq.capFlo",
+    "capReq": "capReq.capReq",
+    "capStaLow_fold_2": "capStaLow__fold_2",
+    "capStaLow_fold_3": "capStaLow__fold_3",
+    "capSta_fold_2": "capSta__fold_2",
+    "capSta_fold_3": "capSta__fold_3",
+    "cur": "faiSaf.timPriSet.cur",
+    "cur_2": "timDow.cur",
+    "cur_3": "timUp.cur",
+    "dTPriSet": "faiSaf.dTPriSet",
+    "delT": "capReq.delT",
+    "effAndNotFaiSaf": "effAndNotFaiSaf",
+    "effOrFaiSaf": "effOrFaiSaf",
+    "ela": "faiSaf.timPriSet.ela",
+    "ela_2": "timDow.ela",
+    "ela_3": "timUp.ela",
+    "endStaPro": "endStaPro",
+    "eveAftIni": "faiSaf.timPriSet.eveAftIni",
+    "eveAftIni_2": "timDow.eveAftIni",
+    "eveAftIni_3": "timUp.eveAftIni",
+    "fal": "faiSaf.timPriSet.fal",
+    "falU": "faiSaf.timPriSet.falU",
+    "falU_2": "timDow.falU",
+    "falU_3": "timUp.falU",
+    "fal_2": "timDow.fal",
+    "fal_3": "timUp.fal",
+    "gre": "gre",
+    "idxStaLesActAva__1": "idxStaLesActAva__1",
+    "idxStaLesActAva__2": "idxStaLesActAva__2",
+    "idxStaLesActAva__3": "idxStaLesActAva__3",
+    "idxStaLesActAva__4": "idxStaLesActAva__4",
+    "idxStaLesActAva__5": "idxStaLesActAva__5",
+    "idxStaLesAct__1": "idxStaLesAct__1",
+    "idxStaLesAct__2": "idxStaLesAct__2",
+    "idxStaLesAct__3": "idxStaLesAct__3",
+    "idxStaLesAct__4": "idxStaLesAct__4",
+    "idxStaLesAct__5": "idxStaLesAct__5",
+    "idxSta__1": "idxSta__1",
+    "idxSta__2": "idxSta__2",
+    "idxSta__3": "idxSta__3",
+    "idxSta__4": "idxSta__4",
+    "idxSta__5": "idxSta__5",
+    "intToRea": "intToRea",
+    "intToRea_zero": "intToRea",
+    "les": "les",
+    "lesPriSet": "faiSaf.lesPriSet",
+    "lesPriSet_threshold": "faiSaf.lesPriSet",
+    "maxInt": "maxInt",
+    "maxInt1": "maxInt1",
+    "minInt": "minInt",
+    "movAve": "capReq.movAve",
+    "mulMax_fold_2": "idxLasTru.mulMax__fold_2",
+    "mulMax_fold_3": "idxLasTru.mulMax__fold_3",
+    "mulMax_fold_4": "idxLasTru.mulMax__fold_4",
+    "mulMax_fold_5": "idxLasTru.mulMax__fold_5",
+    "noEve": "faiSaf.timPriSet.noEve",
+    "noEve_2": "timDow.noEve",
+    "noEve_3": "timUp.noEve",
+    "nonPos": "faiSaf.timPriSet.nonPos",
+    "nonPos_2": "timDow.nonPos",
+    "nonPos_3": "timUp.nonPos",
+    "notFaiSaf": "notFaiSaf",
+    "notIni": "faiSaf.timPriSet.notIni",
+    "notIni_2": "timDow.notIni",
+    "notIni_3": "timUp.notIni",
+    "notTog": "faiSaf.timPriSet.notTog",
+    "notTog_2": "timDow.notTog",
+    "notTog_3": "timUp.notTog",
+    "notYet": "faiSaf.timPriSet.notYet",
+    "notYet_2": "timDow.notYet",
+    "notYet_2_threshold": "timDow.notYet",
+    "notYet_3": "timUp.notYet",
+    "notYet_3_threshold": "timUp.notYet",
+    "notYet_threshold": "faiSaf.timPriSet.notYet",
+    "one": "one",
+    "pas": "faiSaf.timPriSet.pas",
+    "pasIni": "faiSaf.timPriSet.pasIni",
+    "pasIni_2": "timDow.pasIni",
+    "pasIni_3": "timUp.pasIni",
+    "pasOn": "faiSaf.timPriSet.pasOn",
+    "pasOn_2": "timDow.pasOn",
+    "pasOn_3": "timUp.pasOn",
+    "pas_2": "timDow.pas",
+    "pas_3": "timUp.pas",
+    "ph": "faiSaf.ph.ph",
+    "ph_2": "parPlrSta.ph",
+    "polHeaCoo": "capReq.polHeaCoo",
+    "polHeaCoo_2": "faiSaf.polHeaCoo",
+    "polHeaCoo_2_parameter": "faiSaf.polHeaCoo",
+    "polHeaCoo_parameter": "capReq.polHeaCoo",
+    "pos": "faiSaf.timPriSet.pos",
+    "pos_2": "timDow.pos",
+    "pos_2_threshold": "timDow.pos",
+    "pos_3": "timUp.pos",
+    "pos_3_threshold": "timUp.pos",
+    "pos_threshold": "faiSaf.timPriSet.pos",
+    "preTog": "faiSaf.timPriSet.preTog",
+    "preTog_2": "timDow.preTog",
+    "preTog_3": "timUp.preTog",
+    "rea": "faiSaf.timPriSet.rea",
+    "rea_2": "timDow.rea",
+    "rea_3": "timUp.rea",
+    "reqEquStaLow_nEqu__element_1": "reqEquStaLow__1__select_1",
+    "reqEquStaLow_nEqu__element_1_2": "reqEquStaLow__2__select_1",
+    "reqEquStaLow_nEqu__element_1_3": "reqEquStaLow__3__select_1",
+    "reqEquStaLow_nEqu__element_2": "reqEquStaLow__1__select_2",
+    "reqEquStaLow_nEqu__element_2_2": "reqEquStaLow__2__select_2",
+    "reqEquStaLow_nEqu__element_2_3": "reqEquStaLow__3__select_2",
+    "reqEquStaLow_nEqu__element_3": "reqEquStaLow__1__select_3",
+    "reqEquStaLow_nEqu__element_3_2": "reqEquStaLow__2__select_3",
+    "reqEquStaLow_nEqu__element_3_3": "reqEquStaLow__3__select_3",
+    "reqEquStaLow_nEqu__element_4": "reqEquStaLow__1__select_4",
+    "reqEquStaLow_nEqu__element_4_2": "reqEquStaLow__2__select_4",
+    "reqEquStaLow_nEqu__element_4_3": "reqEquStaLow__3__select_4",
+    "reqEquStaLow_nEqu__index____1": "reqEquStaLow__1__atMost_1",
+    "reqEquStaLow_nEqu__index____1_2": "reqEquStaLow__2__atMost_1",
+    "reqEquStaLow_nEqu__index____1_2_threshold": "reqEquStaLow__2__atMost_1",
+    "reqEquStaLow_nEqu__index____1_3": "reqEquStaLow__3__atMost_1",
+    "reqEquStaLow_nEqu__index____1_3_threshold": "reqEquStaLow__3__atMost_1",
+    "reqEquStaLow_nEqu__index____1_threshold": "reqEquStaLow__1__atMost_1",
+    "reqEquStaLow_nEqu__index____2": "reqEquStaLow__1__atMost_2",
+    "reqEquStaLow_nEqu__index____2_2": "reqEquStaLow__2__atMost_2",
+    "reqEquStaLow_nEqu__index____2_2_threshold": "reqEquStaLow__2__atMost_2",
+    "reqEquStaLow_nEqu__index____2_3": "reqEquStaLow__3__atMost_2",
+    "reqEquStaLow_nEqu__index____2_3_threshold": "reqEquStaLow__3__atMost_2",
+    "reqEquStaLow_nEqu__index____2_threshold": "reqEquStaLow__1__atMost_2",
+    "reqEquStaLow_nEqu__index____3": "reqEquStaLow__1__atMost_3",
+    "reqEquStaLow_nEqu__index____3_2": "reqEquStaLow__2__atMost_3",
+    "reqEquStaLow_nEqu__index____3_2_threshold": "reqEquStaLow__2__atMost_3",
+    "reqEquStaLow_nEqu__index____3_3": "reqEquStaLow__3__atMost_3",
+    "reqEquStaLow_nEqu__index____3_3_threshold": "reqEquStaLow__3__atMost_3",
+    "reqEquStaLow_nEqu__index____3_threshold": "reqEquStaLow__1__atMost_3",
+    "reqEquStaLow_nEqu__index____4": "reqEquStaLow__1__atMost_4",
+    "reqEquStaLow_nEqu__index____4_2": "reqEquStaLow__2__atMost_4",
+    "reqEquStaLow_nEqu__index____4_2_threshold": "reqEquStaLow__2__atMost_4",
+    "reqEquStaLow_nEqu__index____4_3": "reqEquStaLow__3__atMost_4",
+    "reqEquStaLow_nEqu__index____4_3_threshold": "reqEquStaLow__3__atMost_4",
+    "reqEquStaLow_nEqu__index____4_threshold": "reqEquStaLow__1__atMost_4",
+    "reqEquSta_nEqu__element_1": "reqEquSta__1__select_1",
+    "reqEquSta_nEqu__element_1_2": "reqEquSta__2__select_1",
+    "reqEquSta_nEqu__element_1_3": "reqEquSta__3__select_1",
+    "reqEquSta_nEqu__element_2": "reqEquSta__1__select_2",
+    "reqEquSta_nEqu__element_2_2": "reqEquSta__2__select_2",
+    "reqEquSta_nEqu__element_2_3": "reqEquSta__3__select_2",
+    "reqEquSta_nEqu__element_3": "reqEquSta__1__select_3",
+    "reqEquSta_nEqu__element_3_2": "reqEquSta__2__select_3",
+    "reqEquSta_nEqu__element_3_3": "reqEquSta__3__select_3",
+    "reqEquSta_nEqu__element_4": "reqEquSta__1__select_4",
+    "reqEquSta_nEqu__element_4_2": "reqEquSta__2__select_4",
+    "reqEquSta_nEqu__element_4_3": "reqEquSta__3__select_4",
+    "reqEquSta_nEqu__index____1": "reqEquSta__1__atMost_1",
+    "reqEquSta_nEqu__index____1_2": "reqEquSta__2__atMost_1",
+    "reqEquSta_nEqu__index____1_2_threshold": "reqEquSta__2__atMost_1",
+    "reqEquSta_nEqu__index____1_3": "reqEquSta__3__atMost_1",
+    "reqEquSta_nEqu__index____1_3_threshold": "reqEquSta__3__atMost_1",
+    "reqEquSta_nEqu__index____1_threshold": "reqEquSta__1__atMost_1",
+    "reqEquSta_nEqu__index____2": "reqEquSta__1__atMost_2",
+    "reqEquSta_nEqu__index____2_2": "reqEquSta__2__atMost_2",
+    "reqEquSta_nEqu__index____2_2_threshold": "reqEquSta__2__atMost_2",
+    "reqEquSta_nEqu__index____2_3": "reqEquSta__3__atMost_2",
+    "reqEquSta_nEqu__index____2_3_threshold": "reqEquSta__3__atMost_2",
+    "reqEquSta_nEqu__index____2_threshold": "reqEquSta__1__atMost_2",
+    "reqEquSta_nEqu__index____3": "reqEquSta__1__atMost_3",
+    "reqEquSta_nEqu__index____3_2": "reqEquSta__2__atMost_3",
+    "reqEquSta_nEqu__index____3_2_threshold": "reqEquSta__2__atMost_3",
+    "reqEquSta_nEqu__index____3_3": "reqEquSta__3__atMost_3",
+    "reqEquSta_nEqu__index____3_3_threshold": "reqEquSta__3__atMost_3",
+    "reqEquSta_nEqu__index____3_threshold": "reqEquSta__1__atMost_3",
+    "reqEquSta_nEqu__index____4": "reqEquSta__1__atMost_4",
+    "reqEquSta_nEqu__index____4_2": "reqEquSta__2__atMost_4",
+    "reqEquSta_nEqu__index____4_2_threshold": "reqEquSta__2__atMost_4",
+    "reqEquSta_nEqu__index____4_3": "reqEquSta__3__atMost_4",
+    "reqEquSta_nEqu__index____4_3_threshold": "reqEquSta__3__atMost_4",
+    "reqEquSta_nEqu__index____4_threshold": "reqEquSta__1__atMost_4",
+    "res": "faiSaf.timPriSet.res",
+    "res_2": "timDow.res",
+    "res_3": "timUp.res",
+    "risRes": "faiSaf.timPriSet.risRes",
+    "risRes_2": "timDow.risRes",
+    "risRes_3": "timUp.risRes",
+    "risU": "faiSaf.timPriSet.risU",
+    "risU_2": "timDow.risU",
+    "risU_3": "timUp.risU",
+    "see": "faiSaf.timPriSet.see",
+    "see_2": "timDow.see",
+    "see_3": "timUp.see",
+    "setZer": "setZer",
+    "splTimCapSta": "splTimCapSta",
+    "splTimCapStaLow": "splTimCapStaLow",
+    "swi": "hol.swi",
+    "thr": "faiSaf.timPriSet.thr",
+    "thr_2": "timDow.thr",
+    "thr_3": "timUp.thr",
+    "timFal": "faiSaf.timPriSet.timFal",
+    "timFal_2": "timDow.timFal",
+    "timFal_3": "timUp.timFal",
+    "timRis": "faiSaf.timPriSet.timRis",
+    "timRis_2": "timDow.timRis",
+    "timRis_3": "timUp.timRis",
+    "tog": "faiSaf.timPriSet.tog",
+    "tog_2": "timDow.tog",
+    "tog_3": "timUp.tog",
+    "traMatStaEqu__1_1": "traMatStaEqu__1_1",
+    "traMatStaEqu__1_2": "traMatStaEqu__1_2",
+    "traMatStaEqu__1_3": "traMatStaEqu__1_3",
+    "traMatStaEqu__1_4": "traMatStaEqu__1_4",
+    "traMatStaEqu__1_5": "traMatStaEqu__1_5",
+    "traMatStaEqu__2_1": "traMatStaEqu__2_1",
+    "traMatStaEqu__2_2": "traMatStaEqu__2_2",
+    "traMatStaEqu__2_3": "traMatStaEqu__2_3",
+    "traMatStaEqu__2_4": "traMatStaEqu__2_4",
+    "traMatStaEqu__2_5": "traMatStaEqu__2_5",
+    "traMatStaEqu__3_1": "traMatStaEqu__3_1",
+    "traMatStaEqu__3_2": "traMatStaEqu__3_2",
+    "traMatStaEqu__3_3": "traMatStaEqu__3_3",
+    "traMatStaEqu__3_4": "traMatStaEqu__3_4",
+    "traMatStaEqu__3_5": "traMatStaEqu__3_5",
+    "triSam": "hol.triSam",
+    "tru": "faiSaf.timPriSet.tru",
+    "truHol": "hol.truHol",
+    "tru_2": "timDow.tru",
+    "tru_3": "timUp.tru",
+    "zer": "faiSaf.timPriSet.zer",
+    "zer_2": "timDow.zer",
+    "zer_3": "timUp.zer"
+   },
+   "coverage": {
+    "boundary_inputs": 11,
+    "boundary_outputs": 2,
+    "class_counts": {
+     "Buildings.Controls.OBC.CDL.Conversions.BooleanToInteger": 5,
+     "Buildings.Controls.OBC.CDL.Conversions.IntegerToReal": 1,
+     "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler": 1,
+     "Buildings.Controls.OBC.CDL.Integers.Less": 5,
+     "Buildings.Controls.OBC.CDL.Integers.LessThreshold": 24,
+     "Buildings.Controls.OBC.CDL.Integers.Max": 6,
+     "Buildings.Controls.OBC.CDL.Integers.Min": 1,
+     "Buildings.Controls.OBC.CDL.Integers.Sources.Constant": 6,
+     "Buildings.Controls.OBC.CDL.Logical.And": 15,
+     "Buildings.Controls.OBC.CDL.Logical.Edge": 6,
+     "Buildings.Controls.OBC.CDL.Logical.FallingEdge": 4,
+     "Buildings.Controls.OBC.CDL.Logical.Latch": 3,
+     "Buildings.Controls.OBC.CDL.Logical.Not": 13,
+     "Buildings.Controls.OBC.CDL.Logical.Or": 11,
+     "Buildings.Controls.OBC.CDL.Logical.Pre": 6,
+     "Buildings.Controls.OBC.CDL.Logical.Sources.Constant": 7,
+     "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating": 6,
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold": 1,
+     "Buildings.Controls.OBC.CDL.Logical.Xor": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Add": 4,
+     "Buildings.Controls.OBC.CDL.Reals.Greater": 1,
+     "Buildings.Controls.OBC.CDL.Reals.GreaterThreshold": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Less": 1,
+     "Buildings.Controls.OBC.CDL.Reals.LessThreshold": 4,
+     "Buildings.Controls.OBC.CDL.Reals.MovingAverage": 1,
+     "Buildings.Controls.OBC.CDL.Reals.Multiply": 10,
+     "Buildings.Controls.OBC.CDL.Reals.MultiplyByParameter": 3,
+     "Buildings.Controls.OBC.CDL.Reals.Sources.Constant": 25,
+     "Buildings.Controls.OBC.CDL.Reals.Subtract": 2,
+     "Buildings.Controls.OBC.CDL.Reals.Switch": 31
+    },
+    "component_count": 209,
+    "exactness_blockers": [],
+    "execution_profile": "host_tick_v1",
+    "missing_components": [],
+    "niagara_exactness_blockers": [],
+    "niagara_translatable": false,
+    "niagara_unsupported_classes": [
+     "Buildings.Controls.OBC.CDL.Discrete.TriggeredSampler",
+     "Buildings.Controls.OBC.CDL.Logical.FallingEdge",
+     "Buildings.Controls.OBC.CDL.Logical.Latch",
+     "Buildings.Controls.OBC.CDL.Logical.Pre",
+     "Buildings.Controls.OBC.CDL.Logical.TimerAccumulating",
+     "Buildings.Controls.OBC.CDL.Logical.TrueFalseHold",
+     "Buildings.Controls.OBC.CDL.Reals.MovingAverage"
+    ],
+    "root_id": "ex:Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand",
+    "root_label": "StageChangeCommand",
+    "schema": "bactalk-cxf-lowering/v4",
+    "source_sha256": "e91b89d6135b4f0357d12dd0276dc59fedaf1367ef495e51e5f8cfe23eaf28a1",
+    "supported_class_count": 209,
+    "translatable": true,
+    "unsupported_classes": []
+   },
+   "lowering": "bactalk-cxf-lowering/v4",
+   "source": "ASHRAE-231P-CXF",
+   "source_sha256": "e91b89d6135b4f0357d12dd0276dc59fedaf1367ef495e51e5f8cfe23eaf28a1"
+  },
+  "name": "StageChangeCommand"
+ }
+}
