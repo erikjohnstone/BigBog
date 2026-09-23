@@ -1375,6 +1375,19 @@ def scenarios_for(
                     else float(value)
                 )
         scenarios.append(Scenario(event, dict(nominal), why, after=after, at_scan=at_scan))
+    # An Integer interface input carries whole numbers. Its point is typed numeric, so a
+    # perturbation can be fractional (half of 3 requests); retention truncates it for the
+    # engine (scripts/retain_tier2.py _case_samples), and the job must feed the same value.
+    integers = {
+        port["label"]
+        for port in translation["interface"]["inputs"]
+        if "Integer" in str(port.get("type"))
+    }
+    for scenario in scenarios:
+        for values in (scenario.inputs, scenario.after):
+            for name in integers & set(values or {}):
+                if not isinstance(values[name], bool):
+                    values[name] = int(values[name])
     return scenarios[:limit] if limit is not None else scenarios
 
 
