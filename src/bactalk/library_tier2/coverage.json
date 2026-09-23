@@ -42,7 +42,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 288.9,
+    "seconds": 364.1,
     "survivors": [
      {
       "caught_by": null,
@@ -185,7 +185,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 13.7
+    "seconds": 14.7
    },
    "d4": {
     "band_set": "default",
@@ -201,7 +201,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 435.9,
+    "seconds": 470.7,
     "survivors": [
      {
       "caught_by": null,
@@ -393,7 +393,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 112.4
+    "seconds": 112.8
    },
    "d4": {
     "band_set": "scan",
@@ -408,7 +408,7 @@
     "passed": false,
     "policy": "scan-module-tick",
     "sample": 40,
-    "seconds": 839.4,
+    "seconds": 744.4,
     "survivors": [
      {
       "caught_by": null,
@@ -598,7 +598,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 111.2
+    "seconds": 114.4
    },
    "d4": {
     "band_set": "scan",
@@ -614,7 +614,7 @@
     "passed": false,
     "policy": "scan-module-tick",
     "sample": 40,
-    "seconds": 799.1,
+    "seconds": 766.7,
     "survivors": [
      {
       "caught_by": null,
@@ -797,7 +797,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 50.9
+    "seconds": 52.0
    },
    "d4": {
     "band_set": "scan",
@@ -812,7 +812,7 @@
     "passed": false,
     "policy": "scan-module-tick",
     "sample": 40,
-    "seconds": 227.7,
+    "seconds": 222.0,
     "survivors": [
      {
       "caught_by": null,
@@ -946,7 +946,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 34.2
+    "seconds": 34.5
    },
    "d4": {
     "band_set": "default",
@@ -963,7 +963,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 410.2,
+    "seconds": 411.9,
     "survivors": [
      {
       "caught_by": null,
@@ -1109,7 +1109,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 30.6
+    "seconds": 31.0
    },
    "d4": {
     "band_set": "default",
@@ -1124,7 +1124,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 560.7,
+    "seconds": 435.6,
     "survivors": [
      {
       "caught_by": null,
@@ -1328,7 +1328,7 @@
     ],
     "passed": false,
     "reference_available": true,
-    "seconds": 60.4
+    "seconds": 62.2
    },
    "d4": {
     "band_set": "coarse",
@@ -1343,7 +1343,7 @@
     "passed": false,
     "policy": "coarse-module-tick",
     "sample": 40,
-    "seconds": 168.4,
+    "seconds": 164.1,
     "survivors": [
      {
       "caught_by": null,
@@ -1510,7 +1510,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 59.8
+    "seconds": 60.5
    },
    "d4": {
     "band_set": "scan",
@@ -1525,7 +1525,7 @@
     "passed": false,
     "policy": "scan-module-tick",
     "sample": 40,
-    "seconds": 271.7,
+    "seconds": 266.1,
     "survivors": [
      {
       "caught_by": null,
@@ -1688,7 +1688,7 @@
     ],
     "passed": false,
     "reference_available": true,
-    "seconds": 65.2
+    "seconds": 66.5
    },
    "d4": {
     "band_set": "coarse",
@@ -1704,7 +1704,7 @@
     "passed": false,
     "policy": "coarse-module-tick",
     "sample": 40,
-    "seconds": 180.1,
+    "seconds": 180.2,
     "survivors": [
      {
       "caught_by": null,
@@ -1850,7 +1850,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 61.5
+    "seconds": 63.7
    },
    "d4": {
     "band_set": "scan",
@@ -1867,7 +1867,7 @@
     "passed": false,
     "policy": "scan-module-tick",
     "sample": 40,
-    "seconds": 304.9,
+    "seconds": 290.4,
     "survivors": [
      {
       "caught_by": null,
@@ -2001,7 +2001,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 65.3
+    "seconds": 65.5
    },
    "d4": {
     "band_set": "scan",
@@ -2016,7 +2016,7 @@
     "passed": false,
     "policy": "scan-module-tick",
     "sample": 40,
-    "seconds": 319.7,
+    "seconds": 306.3,
     "survivors": [
      {
       "caught_by": null,
@@ -2136,7 +2136,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 46.1
+    "seconds": 47.6
    },
    "d4": {
     "band_set": "default",
@@ -2151,7 +2151,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 737.5,
+    "seconds": 676.0,
     "survivors": [
      {
       "caught_by": null,
@@ -2313,7 +2313,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 61.6
+    "seconds": 60.0
    },
    "d4": {
     "band_set": "default",
@@ -2328,7 +2328,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 2283.0,
+    "seconds": 823.1,
     "survivors": [
      {
       "caught_by": null,
@@ -2496,7 +2496,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 51.1
+    "seconds": 51.9
    },
    "d4": {
     "band_set": "default",
@@ -2511,7 +2511,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 852.7,
+    "seconds": 669.5,
     "survivors": [
      {
       "caught_by": null,
@@ -2680,7 +2680,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 1083.7,
+    "seconds": 882.7,
     "survivors": [
      {
       "caught_by": null,
@@ -2885,7 +2885,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 71.6,
+    "seconds": 60.1,
     "survivors": [
      {
       "caught_by": null,
@@ -3054,7 +3054,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 2.4
+    "seconds": 2.5
    },
    "d4": {
     "band_set": "scan",
@@ -3069,7 +3069,7 @@
     "passed": false,
     "policy": "scan-module-tick",
     "sample": 40,
-    "seconds": 3.1,
+    "seconds": 2.9,
     "survivors": [
      {
       "caught_by": null,
@@ -3235,7 +3235,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 1.4
+    "seconds": 1.3
    },
    "d4": {
     "band_set": "default",
@@ -3250,7 +3250,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 22.8,
+    "seconds": 18.6,
     "survivors": [
      {
       "caught_by": null,
@@ -3437,7 +3437,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 0.3
+    "seconds": 0.4
    },
    "d4": {
     "band_set": "default",
@@ -3453,7 +3453,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 4.8,
+    "seconds": 4.0,
     "survivors": [
      {
       "caught_by": null,
@@ -3599,7 +3599,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 2.2,
+    "seconds": 1.8,
     "survivors": [
      {
       "caught_by": null,
@@ -3968,7 +3968,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 21.5
+    "seconds": 20.6
    },
    "d4": {
     "band_set": "default",
@@ -3983,7 +3983,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 232.8,
+    "seconds": 193.6,
     "survivors": [
      {
       "caught_by": null,
@@ -4149,7 +4149,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 14.0
+    "seconds": 13.6
    },
    "d4": {
     "band_set": "default",
@@ -4164,7 +4164,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 249.0,
+    "seconds": 199.4,
     "survivors": [
      {
       "caught_by": null,
@@ -4367,7 +4367,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 1.5
+    "seconds": 1.4
    },
    "d4": {
     "band_set": "default",
@@ -4384,7 +4384,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 18.4,
+    "seconds": 18.5,
     "survivors": [
      {
       "caught_by": null,
@@ -4494,7 +4494,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 1.6
+    "seconds": 1.7
    },
    "d4": {
     "band_set": "default",
@@ -4509,7 +4509,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 18.1,
+    "seconds": 18.3,
     "survivors": [
      {
       "caught_by": null,
@@ -4792,7 +4792,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 12.7,
+    "seconds": 12.8,
     "survivors": [
      {
       "caught_by": null,
@@ -4899,7 +4899,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 5.8,
+    "seconds": 5.7,
     "survivors": [
      {
       "caught_by": null,
@@ -5019,14 +5019,14 @@
     "passed": true
    },
    "d2": {
-    "components": 118,
+    "components": 122,
     "errors": [],
-    "links": 136,
+    "links": 140,
     "passed": true,
     "warnings": 0
    },
    "d3": {
-    "coarse_passed": false,
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -5037,14 +5037,101 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 21.8
+    "seconds": 21.2
    },
    "d4": {
-    "band_set": "scan",
-    "blocker": "baseline: default: the unmutated .bog is already caught by the suite oracle (TChiWatRetDow hot: y: observed False, expected eq True \u00b1 0.0); the catch rate would be meaningless | scan-module-tick: the unmutated .bog is already caught by the differential oracle (nominal: {'signals': ['y', 'yConWatIsoVal'], 'first_violation_time': 60.0, 'time_seconds': 60.0, 'band': 0.0, 'scan': 1, 'block': 'pre1', 'kind': 'boolean_pre_host_tick', 'slot': 'out', 'interpreter': True, 'shadow': False, 'shadow_key': 'Controller/pre1.out'}); the catch rate would be meaningless",
-    "mutants_generated": 332,
+    "band_set": "default",
+    "by_catcher": {
+     "suite": 16,
+     "survived": 11,
+     "validator": 13
+    },
+    "catch_rate": 0.725,
+    "caught": 29,
+    "mutants_generated": 344,
     "passed": false,
-    "policy": "scan-module-tick"
+    "policy": "default",
+    "sample": 40,
+    "seconds": 179.9,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 243,
+      "operator": "delete_link",
+      "path": "/Controller/WseTun/maxInt/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 132,
+      "operator": "change_block_type",
+      "path": "/Controller/WseTun/intToRea1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 244,
+      "operator": "delete_link",
+      "path": "/Controller/WseTun/intToRea1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 173,
+      "operator": "delete_link",
+      "path": "/Controller/Controller/notOpe/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 301,
+      "operator": "alter_constant",
+      "path": "/Controller/WseTun/lesThr_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 317,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/VChiWat_flow"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 159,
+      "operator": "delete_link",
+      "path": "/Controller/Controller/not1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 330,
+      "operator": "change_priority_level",
+      "path": "/Controller/Outputs/yConWatIsoVal/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 130,
+      "operator": "change_block_type",
+      "path": "/Controller/WseTun/intToRea"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 111,
+      "operator": "change_block_type",
+      "path": "/Controller/Controller/opeVal"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 181,
+      "operator": "delete_link",
+      "path": "/Controller/Controller/opeVal/Link1"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "Plants.Chillers",
@@ -5084,7 +5171,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 19.3
+    "seconds": 18.9
    },
    "d4": {
     "band_set": "default",
@@ -5100,7 +5187,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 305.5,
+    "seconds": 232.2,
     "survivors": [
      {
       "caught_by": null,
@@ -5247,7 +5334,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 0.4
+    "seconds": 0.3
    },
    "d4": {
     "band_set": "default",
@@ -5262,7 +5349,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 7.9,
+    "seconds": 7.1,
     "survivors": [
      {
       "caught_by": null,
@@ -5361,14 +5448,14 @@
     "passed": true
    },
    "d2": {
-    "components": 472,
+    "components": 476,
     "errors": [],
-    "links": 608,
+    "links": 612,
     "passed": true,
     "warnings": 0
    },
    "d3": {
-    "coarse_passed": false,
+    "coarse_passed": true,
     "failing_cases": [],
     "first_divergence": null,
     "interpreter_passed": true,
@@ -5379,149 +5466,163 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 65.9
+    "seconds": 57.9
    },
    "d4": {
     "band_set": "default",
     "by_catcher": {
-     "differential": 2,
-     "suite": 12,
-     "survived": 18,
-     "validator": 8
+     "differential": 3,
+     "suite": 5,
+     "survived": 20,
+     "validator": 12
     },
-    "catch_rate": 0.55,
-    "caught": 22,
-    "mutants_generated": 1454,
+    "catch_rate": 0.5,
+    "caught": 20,
+    "mutants_generated": 1466,
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 972.7,
+    "seconds": 936.4,
     "survivors": [
      {
       "caught_by": null,
       "detail": "every scenario still passes",
-      "index": 1423,
-      "operator": "change_priority_level",
-      "path": "/Controller/Outputs/yMakUp/Link"
-     },
-     {
-      "caught_by": null,
-      "detail": "every scenario still passes",
-      "index": 846,
-      "operator": "delete_link",
-      "path": "/Controller/TowFanSpe_3/and3/Link"
-     },
-     {
-      "caught_by": null,
-      "detail": "every scenario still passes",
-      "index": 500,
+      "index": 626,
       "operator": "change_block_type",
-      "path": "/Controller/TowFanSpe_1/addPar_2"
+      "path": "/Controller/TowSta_2/intToRea2"
      },
      {
       "caught_by": null,
       "detail": "every scenario still passes",
-      "index": 811,
+      "index": 793,
       "operator": "delete_link",
-      "path": "/Controller/TowFanSpe_2/mulOr_fold_2/Link"
+      "path": "/Controller/TowFanSpe_2/hys2/Link"
      },
      {
       "caught_by": null,
       "detail": "every scenario still passes",
-      "index": 586,
-      "operator": "change_block_type",
-      "path": "/Controller/TowFanSpe_5/onlWse"
-     },
-     {
-      "caught_by": null,
-      "detail": "every scenario still passes",
-      "index": 920,
+      "index": 767,
       "operator": "delete_link",
-      "path": "/Controller/TowFanSpe_4/fanCycOff/Link1"
-     },
-     {
-      "caught_by": null,
-      "detail": "every scenario still passes",
-      "index": 1051,
-      "operator": "delete_link",
-      "path": "/Controller/TowSta_1/greEquThr__5/Link1"
-     },
-     {
-      "caught_by": null,
-      "detail": "every scenario still passes",
-      "index": 882,
-      "operator": "delete_link",
-      "path": "/Controller/TowFanSpe_3/plrTowMaxSpe_lower_limit/Link1"
-     },
-     {
-      "caught_by": null,
-      "detail": "every scenario still passes",
-      "index": 1268,
-      "operator": "alter_constant",
-      "path": "/Controller/Inputs/watLev"
-     },
-     {
-      "caught_by": null,
-      "detail": "every scenario still passes",
-      "index": 918,
-      "operator": "delete_link",
-      "path": "/Controller/TowFanSpe_4/dTChiSup/Link1"
-     },
-     {
-      "caught_by": null,
-      "detail": "every scenario still passes",
-      "index": 1390,
-      "operator": "alter_constant",
-      "path": "/Controller/TowSta_3/enaCelSta__2_true"
-     },
-     {
-      "caught_by": null,
-      "detail": "every scenario still passes",
-      "index": 885,
-      "operator": "delete_link",
-      "path": "/Controller/TowFanSpe_3/swiOut/Link2"
-     },
-     {
-      "caught_by": null,
-      "detail": "every scenario still passes",
-      "index": 1259,
-      "operator": "alter_constant",
-      "path": "/Controller/Inputs/TChiWatSupSet"
+      "path": "/Controller/TowFanSpe_2/CWSTSpd_upper_limit/Link1"
      },
      {
       "caught_by": null,
       "detail": "every scenario still passes",
       "index": 1024,
       "operator": "delete_link",
-      "path": "/Controller/TowSta_1/booToInt__1/Link"
+      "path": "/Controller/TowFanSpe_5/pre/Link"
      },
      {
       "caught_by": null,
       "detail": "every scenario still passes",
-      "index": 1419,
-      "operator": "change_priority_level",
-      "path": "/Controller/Outputs/y1IsoVal__2/Link"
+      "index": 481,
+      "operator": "change_block_type",
+      "path": "/Controller/TowFanSpe_1/lowDesConWatRet_fold_2"
      },
      {
       "caught_by": null,
       "detail": "every scenario still passes",
-      "index": 772,
+      "index": 1190,
       "operator": "delete_link",
-      "path": "/Controller/TowFanSpe_2/sub1/Link"
+      "path": "/Controller/TowSta_3/falEdg__1/Link"
      },
      {
       "caught_by": null,
       "detail": "every scenario still passes",
-      "index": 1364,
+      "index": 1352,
       "operator": "alter_constant",
-      "path": "/Controller/TowSta_1/conInt"
+      "path": "/Controller/TowSta_1/booToInt__2_false"
      },
      {
       "caught_by": null,
       "detail": "every scenario still passes",
-      "index": 1037,
+      "index": 478,
+      "operator": "change_block_type",
+      "path": "/Controller/TowFanSpe_1/and2_2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 930,
       "operator": "delete_link",
-      "path": "/Controller/TowSta_1/booToInt__5/Link1"
+      "path": "/Controller/TowFanSpe_4/fanCycOff/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 958,
+      "operator": "delete_link",
+      "path": "/Controller/TowFanSpe_4/conPID/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 619,
+      "operator": "change_block_type",
+      "path": "/Controller/TowSta_2/sub4__1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1015,
+      "operator": "delete_link",
+      "path": "/Controller/TowFanSpe_4/lin_b_x/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 575,
+      "operator": "change_block_type",
+      "path": "/Controller/TowFanSpe_4/totMinCycLoa_fold_2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1413,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/TConWatRet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1417,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/uChiSta"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 785,
+      "operator": "delete_link",
+      "path": "/Controller/TowFanSpe_2/swi__2/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 892,
+      "operator": "delete_link",
+      "path": "/Controller/TowFanSpe_3/fanSpe_fold_2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 804,
+      "operator": "delete_link",
+      "path": "/Controller/TowFanSpe_2/CWSTSpd_intercept/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 1020,
+      "operator": "delete_link",
+      "path": "/Controller/TowFanSpe_5/noChi/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 576,
+      "operator": "change_block_type",
+      "path": "/Controller/TowFanSpe_4/dFanSpe"
      }
     ]
    },
@@ -5566,7 +5667,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 53.6
+    "seconds": 49.6
    },
    "d4": {
     "band_set": "default",
@@ -5581,7 +5682,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 783.2,
+    "seconds": 670.5,
     "survivors": [
      {
       "caught_by": null,
@@ -5765,7 +5866,7 @@
     ],
     "passed": false,
     "reference_available": true,
-    "seconds": 90.4
+    "seconds": 93.3
    },
    "d4": {
     "blocker": "D3: the unmutated .bog leaves the bands on stage up to 2; a catch rate would count that, not defects",
@@ -5951,7 +6052,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 79.7
+    "seconds": 81.1
    },
    "d4": {
     "band_set": "default",
@@ -5966,7 +6067,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 1582.3,
+    "seconds": 1432.3,
     "survivors": [
      {
       "caught_by": null,
@@ -6133,26 +6234,158 @@
    "variant": "two chillers"
   },
   {
-   "blocker": {
-    "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: CXF composite assembly cannot expand ex:Utilities.Initialization, so the parent reaches the engine unassembled: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable, Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl, Pumps.Primary.DisableDedicated, StagingRotation.LoadAverage (40 engine errors)",
-    "stage": "translation"
-   },
+   "cdl_substitutes": [
+    "Buildings.Templates.Plants.Controls.Utilities.Initialization"
+   ],
    "controller": "HeatRecoveryChillers.Controller",
    "d1": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: CXF composite assembly cannot expand ex:Utilities.Initialization, so the parent reaches the engine unassembled: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable, Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl, Pumps.Primary.DisableDedicated, StagingRotation.LoadAverage (40 engine errors)",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: CXF composite assembly cannot expand ex:Utilities.Initialization, so the parent reaches the engine unassembled: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable, Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl, Pumps.Primary.DisableDedicated, StagingRotation.LoadAverage (40 engine errors)",
-    "passed": false
+    "components": 122,
+    "errors": [],
+    "links": 130,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: CXF composite assembly cannot expand ex:Utilities.Initialization, so the parent reaches the engine unassembled: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable, Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl, Pumps.Primary.DisableDedicated, StagingRotation.LoadAverage (40 engine errors)",
-    "passed": false
+    "coarse_passed": false,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 23.0
    },
    "d4": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: CXF composite assembly cannot expand ex:Utilities.Initialization, so the parent reaches the engine unassembled: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.HeatRecoveryChillers.Enable, Buildings.Templates.Plants.Controls.HeatRecoveryChillers.ModeControl, Pumps.Primary.DisableDedicated, StagingRotation.LoadAverage (40 engine errors)",
-    "passed": false
+    "band_set": "default",
+    "by_catcher": {
+     "differential": 2,
+     "suite": 8,
+     "survived": 15,
+     "validator": 15
+    },
+    "catch_rate": 0.625,
+    "caught": 25,
+    "mutants_generated": 331,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 274.2,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 205,
+      "operator": "delete_link",
+      "path": "/Controller/Ena/anyDis_fold_3/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 115,
+      "operator": "change_block_type",
+      "path": "/Controller/Ena/allEna_fold_3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 145,
+      "operator": "change_block_type",
+      "path": "/Controller/PumHeaWat/timOff"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 283,
+      "operator": "alter_constant",
+      "path": "/Controller/Inputs/TChiWatSupSet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 251,
+      "operator": "delete_link",
+      "path": "/Controller/PumHeaWat/dis/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 99,
+      "operator": "change_block_type",
+      "path": "/Controller/Ena/runDis"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 155,
+      "operator": "delete_link",
+      "path": "/Controller/Ena/enaAndCoo/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 301,
+      "operator": "alter_constant",
+      "path": "/Controller/SetMod/QEvaHea_flow_parameter"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 304,
+      "operator": "drop_facets",
+      "path": "/Controller/Inputs/TChiWatRetUpsHrc"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 103,
+      "operator": "change_block_type",
+      "path": "/Controller/Ena/higTHeaWatLvg1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 201,
+      "operator": "delete_link",
+      "path": "/Controller/Ena/anyLowLoaAndOff/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 292,
+      "operator": "alter_constant",
+      "path": "/Controller/Ena/higTHeaWatLvg2_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 120,
+      "operator": "change_block_type",
+      "path": "/Controller/Ena/anyTHeaWatLvg"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 270,
+      "operator": "delete_link",
+      "path": "/Controller/SetMod/QEvaHea_flow/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 287,
+      "operator": "alter_constant",
+      "path": "/Controller/Inputs/VChiWatLoa_flow"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "Plants.Templates",
@@ -6167,30 +6400,58 @@
     "rho_default": 996.0
    },
    "release": "release",
+   "scenarios": 20,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2b",
    "variant": "EnableAndModeControl (composed)"
   },
   {
-   "blocker": {
-    "reason": "RuntimeError: Open Control Engine rejected request; composite/array-parameter: array-valued composite parameters are not supported by this CXF lowering subset; composite/vector-port-instance: instance of class `CDL.Logical.MultiAnd` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.MultiOr` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.Sources.TimeTable` derives its port count from a parameter (17 engine errors)",
-    "stage": "translation"
-   },
    "controller": "Enabling.Enable",
    "d1": {
-    "blocker": "translation: RuntimeError: Open Control Engine rejected request; composite/array-parameter: array-valued composite parameters are not supported by this CXF lowering subset; composite/vector-port-instance: instance of class `CDL.Logical.MultiAnd` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.MultiOr` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.Sources.TimeTable` derives its port count from a parameter (17 engine errors)",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: RuntimeError: Open Control Engine rejected request; composite/array-parameter: array-valued composite parameters are not supported by this CXF lowering subset; composite/vector-port-instance: instance of class `CDL.Logical.MultiAnd` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.MultiOr` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.Sources.TimeTable` derives its port count from a parameter (17 engine errors)",
-    "passed": false
+    "components": 31,
+    "errors": [],
+    "links": 29,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: RuntimeError: Open Control Engine rejected request; composite/array-parameter: array-valued composite parameters are not supported by this CXF lowering subset; composite/vector-port-instance: instance of class `CDL.Logical.MultiAnd` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.MultiOr` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.Sources.TimeTable` derives its port count from a parameter (17 engine errors)",
-    "passed": false
+    "coarse_passed": false,
+    "failing_cases": [
+     "nReqPla half"
+    ],
+    "first_divergence": {
+     "band": 0.0,
+     "block": "timEna",
+     "first_violation_time": 900.0,
+     "interpreter": 0.0,
+     "kind": "timer",
+     "scan": 16,
+     "shadow": 58.0,
+     "shadow_key": "Enable/timEna.elapsed",
+     "signals": [
+      "y1"
+     ],
+     "slot": "elapsed",
+     "time_seconds": 900.0
+    },
+    "interpreter_passed": false,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": false,
+    "reference_available": true,
+    "seconds": 1.2
    },
    "d4": {
-    "blocker": "translation: RuntimeError: Open Control Engine rejected request; composite/array-parameter: array-valued composite parameters are not supported by this CXF lowering subset; composite/vector-port-instance: instance of class `CDL.Logical.MultiAnd` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.MultiOr` derives its port count from a parameter; composite/vector-port-instance: instance of class `CDL.Logical.Sources.TimeTable` derives its port count from a parameter (17 engine errors)",
+    "blocker": "D3: the unmutated .bog leaves the bands on nReqPla half; a catch rate would count that, not defects",
+    "mutants_generated": 82,
     "passed": false
    },
    "expectations": "reference-derived (docs/decisions/010)",
@@ -6201,6 +6462,7 @@
     "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating"
    },
    "release": "release",
+   "scenarios": 5,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2b",
    "variant": "Enable \u00b7 enaHea"
@@ -6246,7 +6508,7 @@
     "passed": false,
     "policy": "default",
     "sample": 37,
-    "seconds": 4.8,
+    "seconds": 3.7,
     "survivors": [
      {
       "caught_by": null,
@@ -6400,7 +6662,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 7.0
+    "seconds": 7.1
    },
    "d4": {
     "band_set": "default",
@@ -6416,7 +6678,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 131.8,
+    "seconds": 105.4,
     "survivors": [
      {
       "caught_by": null,
@@ -6729,7 +6991,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 0.6,
+    "seconds": 0.7,
     "survivors": [
      {
       "caught_by": null,
@@ -6857,7 +7119,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 11.9,
+    "seconds": 10.2,
     "survivors": [
      {
       "caught_by": null,
@@ -6981,7 +7243,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 3.0
+    "seconds": 3.1
    },
    "d4": {
     "band_set": "default",
@@ -6996,7 +7258,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 33.6,
+    "seconds": 28.0,
     "survivors": [
      {
       "caught_by": null,
@@ -7154,7 +7416,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 19.4,
+    "seconds": 17.6,
     "survivors": [
      {
       "caught_by": null,
@@ -7317,7 +7579,7 @@
     "passed": false,
     "policy": "scan-module-tick",
     "sample": 40,
-    "seconds": 1.5,
+    "seconds": 1.4,
     "survivors": [
      {
       "caught_by": null,
@@ -7430,7 +7692,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 1.7
+    "seconds": 1.6
    },
    "d4": {
     "band_set": "default",
@@ -7445,7 +7707,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 30.7,
+    "seconds": 25.9,
     "survivors": [
      {
       "caught_by": null,
@@ -7664,7 +7926,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 0.1
+    "seconds": 0.2
    },
    "d4": {
     "band_set": "default",
@@ -7780,56 +8042,196 @@
    "variant": "CountTrue \u00b7 couTru"
   },
   {
-   "blocker": {
-    "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.Initialization inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference",
-    "stage": "reference"
-   },
+   "cdl_substitutes": [
+    "Buildings.Templates.Plants.Controls.Utilities.Initialization"
+   ],
    "controller": "Pumps.Primary.DisableDedicated",
    "d1": {
-    "blocker": "reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.Initialization inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.Initialization inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference",
-    "passed": false
+    "components": 23,
+    "errors": [],
+    "links": 15,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.Initialization inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 0.8
    },
    "d4": {
-    "blocker": "reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.Initialization inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference",
-    "passed": false
+    "band_set": "default",
+    "by_catcher": {
+     "suite": 10,
+     "survived": 11,
+     "validator": 10
+    },
+    "catch_rate": 0.6452,
+    "caught": 20,
+    "mutants_generated": 31,
+    "passed": false,
+    "policy": "default",
+    "sample": 31,
+    "seconds": 6.3,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 19,
+      "operator": "delete_link",
+      "path": "/DisableDedicated/DisableDedicated/offOrNotReq/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 30,
+      "operator": "invert_parameter",
+      "path": "/DisableDedicated/DisableDedicated/timOff"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 29,
+      "operator": "change_priority_level",
+      "path": "/DisableDedicated/Outputs/y1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 22,
+      "operator": "delete_link",
+      "path": "/DisableDedicated/DisableDedicated/disAndOffOrNotReq/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 13,
+      "operator": "change_block_type",
+      "path": "/DisableDedicated/DisableDedicated/edg"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 26,
+      "operator": "delete_link",
+      "path": "/DisableDedicated/Ini/swi/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 18,
+      "operator": "delete_link",
+      "path": "/DisableDedicated/DisableDedicated/timOff/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 11,
+      "operator": "change_block_type",
+      "path": "/DisableDedicated/DisableDedicated/offOrNotReq"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 17,
+      "operator": "delete_link",
+      "path": "/DisableDedicated/DisableDedicated/off/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 20,
+      "operator": "delete_link",
+      "path": "/DisableDedicated/DisableDedicated/offOrNotReq/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 10,
+      "operator": "change_block_type",
+      "path": "/DisableDedicated/DisableDedicated/timOff"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "Plants.Templates",
    "id": "tpl-pumps-primary-disable-dedicated",
    "parameters": {},
    "release": "release",
+   "scenarios": 4,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2b",
    "variant": "DisableDedicated \u00b7 enaDed"
   },
   {
-   "blocker": {
-    "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.PlaceholderLogical, Utilities.TimerWithReset inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference",
-    "stage": "reference"
-   },
+   "cdl_substitutes": [
+    "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset"
+   ],
    "controller": "StagingRotation.FailsafeCondition",
    "d1": {
-    "blocker": "reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.PlaceholderLogical, Utilities.TimerWithReset inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.PlaceholderLogical, Utilities.TimerWithReset inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference",
-    "passed": false
+    "components": 118,
+    "errors": [],
+    "links": 140,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.PlaceholderLogical, Utilities.TimerWithReset inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference",
-    "passed": false
+    "coarse_passed": false,
+    "failing_cases": [
+     "nominal",
+     "TPriSup cold",
+     "TPriSup hot",
+     "TSecSup cold",
+     "TSecSup hot",
+     "TSupSet hot",
+     "reset toggled"
+    ],
+    "first_divergence": {
+     "band": 0.0,
+     "block": "preTog",
+     "first_violation_time": 1020.0,
+     "interpreter": true,
+     "kind": "boolean_pre_host_tick",
+     "scan": 17,
+     "shadow": false,
+     "shadow_key": "TimPriSet/preTog.out",
+     "signals": [
+      "y1"
+     ],
+     "slot": "out",
+     "time_seconds": 1020.0
+    },
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": false,
+    "reference_available": true,
+    "seconds": 24.8
    },
    "d4": {
-    "blocker": "reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: the Open Control Engine cannot load Utilities.PlaceholderLogical, Utilities.TimerWithReset inside this controller, so only BACTalk's own interpreter runs it, which is not an independent reference",
+    "blocker": "D3: the unmutated .bog leaves the bands on nominal, TPriSup cold, TPriSup hot; a catch rate would count that, not defects",
+    "mutants_generated": 324,
     "passed": false
    },
    "expectations": "reference-derived (docs/decisions/010)",
@@ -7841,6 +8243,7 @@
     "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating"
    },
    "release": "release",
+   "scenarios": 8,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2b",
    "variant": "FailsafeCondition \u00b7 faiSafHea"
@@ -7886,7 +8289,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 47.8,
+    "seconds": 38.9,
     "survivors": [
      {
       "caught_by": null,
@@ -8119,7 +8522,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 184.8,
+    "seconds": 157.7,
     "survivors": [
      {
       "caught_by": null,
@@ -8227,26 +8630,226 @@
    "variant": "SortRuntime \u00b7 sorRunTim"
   },
   {
-   "blocker": {
-    "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.Utilities.TimerWithReset, Utilities.TimerWithReset (32 engine errors)",
-    "stage": "reference"
-   },
+   "cdl_substitutes": [
+    "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset"
+   ],
    "controller": "Pumps.Generic.StagingHeaderedDeltaP",
    "d1": {
-    "blocker": "reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.Utilities.TimerWithReset, Utilities.TimerWithReset (32 engine errors)",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.Utilities.TimerWithReset, Utilities.TimerWithReset (32 engine errors)",
-    "passed": false
+    "components": 261,
+    "errors": [],
+    "links": 322,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.Utilities.TimerWithReset, Utilities.TimerWithReset (32 engine errors)",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 48.4
    },
    "d4": {
-    "blocker": "reference: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: Open Control Engine rejected request; no block class for Buildings.Templates.Plants.Controls.Utilities.TimerWithReset, Utilities.TimerWithReset (32 engine errors)",
-    "passed": false
+    "band_set": "default",
+    "by_catcher": {
+     "survived": 29,
+     "validator": 11
+    },
+    "catch_rate": 0.275,
+    "caught": 11,
+    "mutants_generated": 735,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 868.9,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 672,
+      "operator": "alter_constant",
+      "path": "/StagingHeaderedDeltaP/Inputs/y"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 698,
+      "operator": "alter_constant",
+      "path": "/StagingHeaderedDeltaP/TimHigY/pos_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 631,
+      "operator": "delete_link",
+      "path": "/StagingHeaderedDeltaP/TimLowY/falU/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 446,
+      "operator": "delete_link",
+      "path": "/StagingHeaderedDeltaP/TimHigDp__1/timFal/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 416,
+      "operator": "delete_link",
+      "path": "/StagingHeaderedDeltaP/StagingHeaderedDeltaP/anyCha_fold_3/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 257,
+      "operator": "change_block_type",
+      "path": "/StagingHeaderedDeltaP/TimHigDp__1/res"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 669,
+      "operator": "alter_constant",
+      "path": "/StagingHeaderedDeltaP/Inputs/V_flow"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 711,
+      "operator": "alter_constant",
+      "path": "/StagingHeaderedDeltaP/TimLowY/thr"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 652,
+      "operator": "delete_link",
+      "path": "/StagingHeaderedDeltaP/TimLowY/anyEve/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 482,
+      "operator": "delete_link",
+      "path": "/StagingHeaderedDeltaP/TimHigV/timRis/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 320,
+      "operator": "change_block_type",
+      "path": "/StagingHeaderedDeltaP/TimLowV/pos"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 426,
+      "operator": "delete_link",
+      "path": "/StagingHeaderedDeltaP/StagingHeaderedDeltaP/anyCha_fold_4/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 487,
+      "operator": "delete_link",
+      "path": "/StagingHeaderedDeltaP/TimHigV/ela/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 552,
+      "operator": "delete_link",
+      "path": "/StagingHeaderedDeltaP/TimLowDp__1/cur/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 659,
+      "operator": "delete_link",
+      "path": "/StagingHeaderedDeltaP/TimLowY/eveAftIni/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 248,
+      "operator": "change_block_type",
+      "path": "/StagingHeaderedDeltaP/StagingHeaderedDeltaP/edgDow"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 282,
+      "operator": "change_block_type",
+      "path": "/StagingHeaderedDeltaP/TimHigV/pas"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 483,
+      "operator": "delete_link",
+      "path": "/StagingHeaderedDeltaP/TimHigV/timRis/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 419,
+      "operator": "delete_link",
+      "path": "/StagingHeaderedDeltaP/StagingHeaderedDeltaP/staDowAndPreFaiSaf_fold_3/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 511,
+      "operator": "delete_link",
+      "path": "/StagingHeaderedDeltaP/TimHigY/cur/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 343,
+      "operator": "change_block_type",
+      "path": "/StagingHeaderedDeltaP/TimLowY/eveAftIni"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 251,
+      "operator": "change_block_type",
+      "path": "/StagingHeaderedDeltaP/TimHigDp__1/falU"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 295,
+      "operator": "change_block_type",
+      "path": "/StagingHeaderedDeltaP/TimHigY/eveAftIni"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 340,
+      "operator": "change_block_type",
+      "path": "/StagingHeaderedDeltaP/TimLowY/notYet"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 277,
+      "operator": "change_block_type",
+      "path": "/StagingHeaderedDeltaP/TimHigV/tog"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "Plants.Templates",
@@ -8257,30 +8860,61 @@
     "nSenDp": 1
    },
    "release": "release",
+   "scenarios": 12,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2b",
    "variant": "StagingHeaderedDeltaP \u00b7 staPum"
   },
   {
-   "blocker": {
-    "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: ValueError: compile-time enum grounding left an unresolved dependency in ex:Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.capReq.typ: typ",
-    "stage": "translation"
-   },
+   "cdl_substitutes": [
+    "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset"
+   ],
    "controller": "StagingRotation.StageChangeCommand",
    "d1": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: ValueError: compile-time enum grounding left an unresolved dependency in ex:Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.capReq.typ: typ",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: ValueError: compile-time enum grounding left an unresolved dependency in ex:Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.capReq.typ: typ",
-    "passed": false
+    "components": 281,
+    "errors": [],
+    "links": 349,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: ValueError: compile-time enum grounding left an unresolved dependency in ex:Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.capReq.typ: typ",
-    "passed": false
+    "coarse_passed": false,
+    "failing_cases": [
+     "u1StaPro toggled"
+    ],
+    "first_divergence": {
+     "band": 0.0,
+     "block": "timRis_2",
+     "first_violation_time": 1080.0,
+     "interpreter": 1020.0,
+     "kind": "timer_accumulating",
+     "scan": 18,
+     "shadow": 0.0,
+     "shadow_key": "TimDow/timRis.elapsed",
+     "signals": [
+      "y1Dow"
+     ],
+     "slot": "elapsed",
+     "time_seconds": 1080.0
+    },
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": false,
+    "reference_available": true,
+    "seconds": 21.8
    },
    "d4": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: ValueError: compile-time enum grounding left an unresolved dependency in ex:Buildings.Templates.Plants.Controls.StagingRotation.StageChangeCommand.capReq.typ: typ",
+    "blocker": "D3: the unmutated .bog leaves the bands on u1StaPro toggled; a catch rate would count that, not defects",
+    "mutants_generated": 871,
     "passed": false
    },
    "expectations": "reference-derived (docs/decisions/010)",
@@ -8352,6 +8986,7 @@
     "typ": "Buildings.Templates.Plants.Controls.Types.Application.Heating"
    },
    "release": "release",
+   "scenarios": 16,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2b",
    "variant": "StageChangeCommand \u00b7 chaSta"
@@ -8423,7 +9058,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 5.4
+    "seconds": 5.6
    },
    "d4": {
     "band_set": "default",
@@ -8438,7 +9073,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 54.6,
+    "seconds": 41.3,
     "survivors": [
      {
       "caught_by": null,
@@ -8661,31 +9296,233 @@
    "variant": "AirToWater \u00b7 ctl"
   },
   {
-   "blocker": {
-    "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: CxfArrayScalarizationError: ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx dimension nin must resolve to an integer from 1 to 512",
-    "stage": "translation"
-   },
+   "cdl_substitutes": [
+    "Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional"
+   ],
    "controller": "StagingRotation.EquipmentEnable",
    "d1": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: CxfArrayScalarizationError: ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx dimension nin must resolve to an integer from 1 to 512",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: CxfArrayScalarizationError: ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx dimension nin must resolve to an integer from 1 to 512",
-    "passed": false
+    "components": 229,
+    "errors": [],
+    "links": 280,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: CxfArrayScalarizationError: ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx dimension nin must resolve to an integer from 1 to 512",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 2.3
    },
    "d4": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: CxfArrayScalarizationError: ex:Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional.uIdx dimension nin must resolve to an integer from 1 to 512",
-    "passed": false
+    "band_set": "default",
+    "by_catcher": {
+     "suite": 3,
+     "survived": 30,
+     "validator": 7
+    },
+    "catch_rate": 0.25,
+    "caught": 10,
+    "mutants_generated": 745,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 61.8,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 250,
+      "operator": "change_block_type",
+      "path": "/EquipmentEnable/EquipmentEnable_1/isNotReqNoAlt__3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 415,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/EquipmentEnable_1/isReqAltAva_nEqu__fold_3_2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 626,
+      "operator": "alter_constant",
+      "path": "/EquipmentEnable/Parameters/isNotReqNoAlt__1_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 635,
+      "operator": "alter_constant",
+      "path": "/EquipmentEnable/Parameters/one"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 712,
+      "operator": "drop_facets",
+      "path": "/EquipmentEnable/Parameters/isReq__2_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 362,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/EquipmentEnable_1/isReqPosAlt__2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 700,
+      "operator": "drop_facets",
+      "path": "/EquipmentEnable/Inputs/uIdxAltSor__2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 252,
+      "operator": "change_block_type",
+      "path": "/EquipmentEnable/EquipmentEnable_1/isReqPosAlt__1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 433,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/EquipmentEnable_1/ena__3/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 257,
+      "operator": "change_block_type",
+      "path": "/EquipmentEnable/EquipmentEnable_1/isReq__3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 494,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/NEnaAvaPre/booToInt__1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 438,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/EquipmentEnable_1/reqEquSta_nEqu__element_3/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 279,
+      "operator": "change_block_type",
+      "path": "/EquipmentEnable/EquipmentEnable_1/isReqAltAva_nEqu__fold_3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 556,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/TruArrCon_1/fit__1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 729,
+      "operator": "drop_facets",
+      "path": "/EquipmentEnable/Parameters/traMatStaEqu__1_3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 453,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/EquipmentEnable_1/reqEquSta_nEqu__element_2/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 295,
+      "operator": "change_block_type",
+      "path": "/EquipmentEnable/NReq/sumMul_fold_2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 550,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/TruArrCon_1/belOut__2_2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 420,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/EquipmentEnable_1/reqEquSta_nEqu__element_4/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 368,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/EquipmentEnable_1/isReq__2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 613,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/TruArrCon_2/valUpToInt__2_1/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 418,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/EquipmentEnable_1/reqEquSta_nEqu__element_4/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 474,
+      "operator": "delete_link",
+      "path": "/EquipmentEnable/EquipmentEnable_2/reqEquSta_nEqu__index____2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 724,
+      "operator": "drop_facets",
+      "path": "/EquipmentEnable/Parameters/reqEquSta_nEqu__index____4_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 277,
+      "operator": "change_block_type",
+      "path": "/EquipmentEnable/EquipmentEnable_1/isReqAltAvaNee__3"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "Plants.Templates",
    "id": "tpl-staging-rotation-equipment-enable",
    "parameters": {
+    "nEquAlt": 2,
     "staEqu": [
      [
       1,
@@ -8715,6 +9552,7 @@
     ]
    },
    "release": "release",
+   "scenarios": 7,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2b",
    "variant": "EquipmentEnable \u00b7 equEnaOneTwo"
@@ -8943,7 +9781,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 1.6,
+    "seconds": 1.5,
     "survivors": [
      {
       "caught_by": null,
@@ -9135,26 +9973,185 @@
    "variant": "LastTrueIndex \u00b7 idxLasTru"
   },
   {
-   "blocker": {
-    "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: RuntimeError: Open Control Engine rejected request; no block class for Integer; composite/array-connector: array-valued connector nodes are not supported (4 engine errors)",
-    "stage": "translation"
-   },
+   "cdl_substitutes": [
+    "Buildings.Templates.Plants.Controls.Utilities.TrueArrayConditional"
+   ],
    "controller": "Utilities.TrueArrayConditional",
    "d1": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: RuntimeError: Open Control Engine rejected request; no block class for Integer; composite/array-connector: array-valued connector nodes are not supported (4 engine errors)",
-    "passed": false
+    "blockers": [],
+    "lane": "native_stock",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: RuntimeError: Open Control Engine rejected request; no block class for Integer; composite/array-connector: array-valued connector nodes are not supported (4 engine errors)",
-    "passed": false
+    "components": 73,
+    "errors": [],
+    "links": 82,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: RuntimeError: Open Control Engine rejected request; no block class for Integer; composite/array-connector: array-valued connector nodes are not supported (4 engine errors)",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 0.2
    },
    "d4": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TrueArrayConditional (an algorithm section). First failure: RuntimeError: Open Control Engine rejected request; no block class for Integer; composite/array-connector: array-valued connector nodes are not supported (4 engine errors)",
-    "passed": false
+    "band_set": "default",
+    "by_catcher": {
+     "suite": 12,
+     "survived": 19,
+     "validator": 9
+    },
+    "catch_rate": 0.525,
+    "caught": 21,
+    "mutants_generated": 240,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 3.4,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 112,
+      "operator": "delete_link",
+      "path": "/TrueArrayConditional/TrueArrayConditional/aboMin__2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 124,
+      "operator": "delete_link",
+      "path": "/TrueArrayConditional/TrueArrayConditional/belMax__2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 77,
+      "operator": "change_block_type",
+      "path": "/TrueArrayConditional/TrueArrayConditional/aboMin__2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 102,
+      "operator": "change_block_type",
+      "path": "/TrueArrayConditional/TrueArrayConditional/tak__1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 203,
+      "operator": "alter_constant",
+      "path": "/TrueArrayConditional/Parameters/belOut__1_1_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 202,
+      "operator": "alter_constant",
+      "path": "/TrueArrayConditional/Parameters/belMax__2_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 177,
+      "operator": "delete_link",
+      "path": "/TrueArrayConditional/TrueArrayConditional/tak__2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 233,
+      "operator": "drop_facets",
+      "path": "/TrueArrayConditional/Parameters/valUpToInt__1_2_true"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 186,
+      "operator": "delete_link",
+      "path": "/TrueArrayConditional/TrueArrayConditional/anySel_nout__fold_2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 113,
+      "operator": "delete_link",
+      "path": "/TrueArrayConditional/TrueArrayConditional/aboMin__2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 189,
+      "operator": "delete_link",
+      "path": "/TrueArrayConditional/TrueArrayConditional/anySel_nout__fold_2_2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 205,
+      "operator": "alter_constant",
+      "path": "/TrueArrayConditional/Parameters/belOut__2_1_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 86,
+      "operator": "change_block_type",
+      "path": "/TrueArrayConditional/TrueArrayConditional/belOut__2_1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 162,
+      "operator": "delete_link",
+      "path": "/TrueArrayConditional/TrueArrayConditional/valUpToInt__1_2/Link2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 132,
+      "operator": "delete_link",
+      "path": "/TrueArrayConditional/TrueArrayConditional/belOut__2_2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 117,
+      "operator": "delete_link",
+      "path": "/TrueArrayConditional/TrueArrayConditional/aboOut__1_2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 226,
+      "operator": "drop_facets",
+      "path": "/TrueArrayConditional/Parameters/belOut__1_1_threshold"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 153,
+      "operator": "delete_link",
+      "path": "/TrueArrayConditional/TrueArrayConditional/valUpTo__2_2/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 183,
+      "operator": "delete_link",
+      "path": "/TrueArrayConditional/TrueArrayConditional/sel__2_1/Link1"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "Plants.Templates",
@@ -9163,6 +10160,7 @@
     "nin": 2
    },
    "release": "release",
+   "scenarios": 4,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2b",
    "variant": "TrueArrayConditional \u00b7 truArrConSam"
@@ -9208,7 +10206,7 @@
     "passed": false,
     "policy": "default",
     "sample": 36,
-    "seconds": 5.2,
+    "seconds": 4.5,
     "survivors": [
      {
       "caught_by": null,
@@ -9416,7 +10414,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 0.7
+    "seconds": 0.6
    },
    "d4": {
     "band_set": "default",
@@ -9431,7 +10429,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 20.9,
+    "seconds": 20.7,
     "survivors": [
      {
       "caught_by": null,
@@ -9663,7 +10661,7 @@
     ],
     "passed": true,
     "reference_available": true,
-    "seconds": 1.1
+    "seconds": 1.2
    },
    "d4": {
     "band_set": "default",
@@ -9678,7 +10676,7 @@
     "passed": false,
     "policy": "default",
     "sample": 40,
-    "seconds": 15.5,
+    "seconds": 12.6,
     "survivors": [
      {
       "caught_by": null,
@@ -9859,7 +10857,7 @@
     "passed": false,
     "policy": "default",
     "sample": 2,
-    "seconds": 0.0,
+    "seconds": 0.1,
     "survivors": [
      {
       "caught_by": null,
@@ -9931,7 +10929,7 @@
     "passed": false,
     "policy": "default",
     "sample": 6,
-    "seconds": 0.1,
+    "seconds": 0.2,
     "survivors": [
      {
       "caught_by": null,
@@ -10017,7 +11015,7 @@
     "passed": false,
     "policy": "default",
     "sample": 6,
-    "seconds": 0.1,
+    "seconds": 0.2,
     "survivors": [
      {
       "caught_by": null,
@@ -10064,26 +11062,66 @@
    "variant": "PlaceholderInteger \u00b7 phPar"
   },
   {
-   "blocker": {
-    "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/Initialization.jsonld",
-    "stage": "translation"
-   },
+   "cdl_substitutes": [
+    "Buildings.Templates.Plants.Controls.Utilities.Initialization"
+   ],
    "controller": "Utilities.Initialization",
    "d1": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/Initialization.jsonld",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/Initialization.jsonld",
-    "passed": false
+    "components": 12,
+    "errors": [],
+    "links": 5,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/Initialization.jsonld",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 0.1
    },
    "d4": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.Initialization (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/Initialization.jsonld",
-    "passed": false
+    "band_set": "default",
+    "by_catcher": {
+     "suite": 4,
+     "survived": 2,
+     "validator": 2
+    },
+    "catch_rate": 0.75,
+    "caught": 6,
+    "mutants_generated": 8,
+    "passed": false,
+    "policy": "default",
+    "sample": 8,
+    "seconds": 0.4,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 7,
+      "operator": "change_priority_level",
+      "path": "/Initialization/Outputs/y/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 4,
+      "operator": "delete_link",
+      "path": "/Initialization/Initialization/swi/Link1"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "Plants.Templates",
@@ -10092,31 +11130,205 @@
     "yIni": false
    },
    "release": "release",
+   "scenarios": 2,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2b",
    "variant": "default"
   },
   {
-   "blocker": {
-    "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMaxInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMaxInteger.jsonld",
-    "stage": "translation"
-   },
+   "cdl_substitutes": [
+    "Buildings.Templates.Plants.Controls.Utilities.MultiMaxInteger"
+   ],
    "controller": "Utilities.MultiMaxInteger",
    "d1": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMaxInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMaxInteger.jsonld",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMaxInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMaxInteger.jsonld",
-    "passed": false
+    "components": 19,
+    "errors": [],
+    "links": 12,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMaxInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMaxInteger.jsonld",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 0.2
    },
    "d4": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMaxInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMaxInteger.jsonld",
-    "passed": false
+    "band_set": "default",
+    "by_catcher": {
+     "suite": 10,
+     "survived": 21,
+     "validator": 9
+    },
+    "catch_rate": 0.475,
+    "caught": 19,
+    "mutants_generated": 42,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 2.4,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 41,
+      "operator": "change_priority_level",
+      "path": "/MultiMaxInteger/Outputs/y/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 40,
+      "operator": "drop_facets",
+      "path": "/MultiMaxInteger/Outputs/y"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 16,
+      "operator": "delete_link",
+      "path": "/MultiMaxInteger/MultiMaxInteger/intToRea__1/Link1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 10,
+      "operator": "change_block_type",
+      "path": "/MultiMaxInteger/MultiMaxInteger/intToRea__1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 15,
+      "operator": "delete_link",
+      "path": "/MultiMaxInteger/MultiMaxInteger/intToRea__1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 11,
+      "operator": "change_block_type",
+      "path": "/MultiMaxInteger/MultiMaxInteger/intToRea__2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 35,
+      "operator": "drop_facets",
+      "path": "/MultiMaxInteger/Inputs/u__2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 37,
+      "operator": "drop_facets",
+      "path": "/MultiMaxInteger/Parameters/intToRea__1_zero"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 19,
+      "operator": "delete_link",
+      "path": "/MultiMaxInteger/MultiMaxInteger/intToRea__3/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 36,
+      "operator": "drop_facets",
+      "path": "/MultiMaxInteger/Inputs/u__3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 12,
+      "operator": "change_block_type",
+      "path": "/MultiMaxInteger/MultiMaxInteger/intToRea__3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 21,
+      "operator": "delete_link",
+      "path": "/MultiMaxInteger/MultiMaxInteger/maxRea_fold_2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 39,
+      "operator": "drop_facets",
+      "path": "/MultiMaxInteger/Parameters/intToRea__3_zero"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 33,
+      "operator": "alter_constant",
+      "path": "/MultiMaxInteger/Outputs/y"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 30,
+      "operator": "alter_constant",
+      "path": "/MultiMaxInteger/Parameters/intToRea__1_zero"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 27,
+      "operator": "alter_constant",
+      "path": "/MultiMaxInteger/Inputs/u__1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 17,
+      "operator": "delete_link",
+      "path": "/MultiMaxInteger/MultiMaxInteger/intToRea__2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 29,
+      "operator": "alter_constant",
+      "path": "/MultiMaxInteger/Inputs/u__3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 28,
+      "operator": "alter_constant",
+      "path": "/MultiMaxInteger/Inputs/u__2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 38,
+      "operator": "drop_facets",
+      "path": "/MultiMaxInteger/Parameters/intToRea__2_zero"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 34,
+      "operator": "drop_facets",
+      "path": "/MultiMaxInteger/Inputs/u__1"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "Plants.Templates",
@@ -10125,31 +11337,184 @@
     "nin": 3
    },
    "release": "release",
+   "scenarios": 4,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2b",
    "variant": "nin = 3"
   },
   {
-   "blocker": {
-    "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMinInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMinInteger.jsonld",
-    "stage": "translation"
-   },
+   "cdl_substitutes": [
+    "Buildings.Templates.Plants.Controls.Utilities.MultiMinInteger"
+   ],
    "controller": "Utilities.MultiMinInteger",
    "d1": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMinInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMinInteger.jsonld",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMinInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMinInteger.jsonld",
-    "passed": false
+    "components": 19,
+    "errors": [],
+    "links": 12,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMinInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMinInteger.jsonld",
-    "passed": false
+    "coarse_passed": true,
+    "failing_cases": [],
+    "first_divergence": null,
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": true,
+    "reference_available": true,
+    "seconds": 0.2
    },
    "d4": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.MultiMinInteger (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/MultiMinInteger.jsonld",
-    "passed": false
+    "band_set": "default",
+    "by_catcher": {
+     "suite": 13,
+     "survived": 18,
+     "validator": 9
+    },
+    "catch_rate": 0.55,
+    "caught": 22,
+    "mutants_generated": 42,
+    "passed": false,
+    "policy": "default",
+    "sample": 40,
+    "seconds": 2.2,
+    "survivors": [
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 41,
+      "operator": "change_priority_level",
+      "path": "/MultiMinInteger/Outputs/y/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 40,
+      "operator": "drop_facets",
+      "path": "/MultiMinInteger/Outputs/y"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 10,
+      "operator": "change_block_type",
+      "path": "/MultiMinInteger/MultiMinInteger/intToRea__1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 15,
+      "operator": "delete_link",
+      "path": "/MultiMinInteger/MultiMinInteger/intToRea__1/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 11,
+      "operator": "change_block_type",
+      "path": "/MultiMinInteger/MultiMinInteger/intToRea__2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 35,
+      "operator": "drop_facets",
+      "path": "/MultiMinInteger/Inputs/u__2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 37,
+      "operator": "drop_facets",
+      "path": "/MultiMinInteger/Parameters/intToRea__1_zero"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 19,
+      "operator": "delete_link",
+      "path": "/MultiMinInteger/MultiMinInteger/intToRea__3/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 36,
+      "operator": "drop_facets",
+      "path": "/MultiMinInteger/Inputs/u__3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 12,
+      "operator": "change_block_type",
+      "path": "/MultiMinInteger/MultiMinInteger/intToRea__3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 39,
+      "operator": "drop_facets",
+      "path": "/MultiMinInteger/Parameters/intToRea__3_zero"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 33,
+      "operator": "alter_constant",
+      "path": "/MultiMinInteger/Outputs/y"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 27,
+      "operator": "alter_constant",
+      "path": "/MultiMinInteger/Inputs/u__1"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 17,
+      "operator": "delete_link",
+      "path": "/MultiMinInteger/MultiMinInteger/intToRea__2/Link"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 29,
+      "operator": "alter_constant",
+      "path": "/MultiMinInteger/Inputs/u__3"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 28,
+      "operator": "alter_constant",
+      "path": "/MultiMinInteger/Inputs/u__2"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 38,
+      "operator": "drop_facets",
+      "path": "/MultiMinInteger/Parameters/intToRea__2_zero"
+     },
+     {
+      "caught_by": null,
+      "detail": "every scenario still passes",
+      "index": 34,
+      "operator": "drop_facets",
+      "path": "/MultiMinInteger/Inputs/u__1"
+     }
+    ]
    },
    "expectations": "reference-derived (docs/decisions/010)",
    "family": "Plants.Templates",
@@ -10158,6 +11523,7 @@
     "nin": 3
    },
    "release": "release",
+   "scenarios": 4,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2b",
    "variant": "nin = 3"
@@ -10197,25 +11563,56 @@
    "variant": "nSta = 3"
   },
   {
-   "blocker": {
-    "reason": "not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/TimerWithReset.jsonld",
-    "stage": "translation"
-   },
+   "cdl_substitutes": [
+    "Buildings.Templates.Plants.Controls.Utilities.TimerWithReset"
+   ],
    "controller": "Utilities.TimerWithReset",
    "d1": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/TimerWithReset.jsonld",
-    "passed": false
+    "blockers": [],
+    "lane": "native_with_module",
+    "passed": true
    },
    "d2": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/TimerWithReset.jsonld",
-    "passed": false
+    "components": 39,
+    "errors": [],
+    "links": 41,
+    "passed": true,
+    "warnings": 0
    },
    "d3": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/TimerWithReset.jsonld",
-    "passed": false
+    "coarse_passed": false,
+    "failing_cases": [
+     "u toggled"
+    ],
+    "first_divergence": {
+     "band": 0.0,
+     "block": "preTog",
+     "first_violation_time": 60.0,
+     "interpreter": true,
+     "kind": "boolean_pre_host_tick",
+     "scan": 1,
+     "shadow": false,
+     "shadow_key": "TimerWithReset/preTog.out",
+     "signals": [
+      "passed",
+      "y"
+     ],
+     "slot": "out",
+     "time_seconds": 60.0
+    },
+    "interpreter_passed": true,
+    "legs": [
+     "interpreter",
+     "reference",
+     "shadow"
+    ],
+    "passed": false,
+    "reference_available": true,
+    "seconds": 2.7
    },
    "d4": {
-    "blocker": "translation: not a CDL block diagram, so the Open Control Engine cannot execute it: contains Utilities.TimerWithReset (Modelica equations). First failure: RuntimeError: translated root CXF has no unique composite root: Buildings/Templates/Plants/Controls/Utilities/TimerWithReset.jsonld",
+    "blocker": "D3: the unmutated .bog leaves the bands on u toggled; a catch rate would count that, not defects",
+    "mutants_generated": 93,
     "passed": false
    },
    "expectations": "reference-derived (docs/decisions/010)",
@@ -10225,6 +11622,7 @@
     "t": 60.0
    },
    "release": "release",
+   "scenarios": 3,
    "source_of_truth": "Open Control Engine (retained reference)",
    "tier": "2b",
    "variant": "t = 60 s"
@@ -12189,11 +13587,11 @@
  "schema": "bactalk.native-bog-coverage/v1",
  "summary": {
   "all_four": 1,
-  "blocked": 17,
+  "blocked": 5,
   "configurations": 87,
-  "d1": 70,
-  "d2": 70,
-  "d3": 67,
+  "d1": 82,
+  "d2": 82,
+  "d3": 75,
   "d4": 1
  }
 }
